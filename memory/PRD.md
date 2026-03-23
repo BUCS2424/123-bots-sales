@@ -40,6 +40,8 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 - [x] **CheckoutPage** - Full restyle with dark theme (blue/green progress, dark forms)
 - [x] **Coming Soon Password Gate** - Connected to feature flags with admin-configurable on/off toggle and custom password
 - [x] **Chatbot Icon Upload** - Added to Site Information section in dev settings with drag & drop upload
+- [x] **Header Shop Navigation** - Added `Shop` link in top bar and main navigation
+- [x] **Category Landing Page** - Created `/categories` with 5 category rows, Product Info + Shop CTAs, SEO metadata, and full route wiring
 
 ### Testing Status
 - Frontend Testing: PASS (100% success rate)
@@ -65,6 +67,7 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 | Events & Stadiums | /industries/events-stadiums |
 | Education | /industries/education |
 | Shop | /shop |
+| Shop Categories | /categories |
 | Contact | /contact |
 
 ## Tech Stack
@@ -96,6 +99,8 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 - `GET /api/health` - Health check
 
 ## Future/Backlog Tasks
+- [ ] Generate ~20 SEO resource articles per robot product (dated back to Jan 2025)
+- [ ] Pre-launch: disable Coming Soon gate when ready and populate shop inventory
 - [ ] Build location landing page template (state-specific pages)
 - [ ] Link robot info pages to shop products
 - [ ] Code cleanup and security review
