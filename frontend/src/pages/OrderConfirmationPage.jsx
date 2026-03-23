@@ -66,11 +66,11 @@ const OrderConfirmationPage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-purple-50/30 pt-32 pb-20">
         <div className="max-w-lg mx-auto px-6 text-center">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-slate-100 flex items-center justify-center">
-            <Package className="w-10 h-10 text-slate-400" />
+          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-bots-surface flex items-center justify-center">
+            <Package className="w-10 h-10 text-gray-500" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-800 mb-4">No Order Found</h1>
-          <p className="text-slate-500 mb-8">
+          <h1 className="text-2xl font-bold text-white mb-4">No Order Found</h1>
+          <p className="text-gray-400 mb-8">
             It looks like you haven't placed an order yet, or the order details have expired.
           </p>
           <Link
@@ -105,10 +105,10 @@ const OrderConfirmationPage = () => {
               }`}>
                 <Clock className="w-12 h-12 text-white" />
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold text-slate-800 mb-3">
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
                 Order Placed - Payment Pending
               </h1>
-              <p className="text-lg text-slate-600 max-w-lg mx-auto">
+              <p className="text-lg text-gray-400 max-w-lg mx-auto">
                 Your order has been placed. Please complete your payment using{' '}
                 <span className={`font-semibold ${
                   order.payment_method === 'cashapp'
@@ -129,10 +129,10 @@ const OrderConfirmationPage = () => {
               <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/30">
                 <CheckCircle className="w-12 h-12 text-white" />
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold text-slate-800 mb-3">
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
                 Thank You for Your Order!
               </h1>
-              <p className="text-lg text-slate-600 max-w-md mx-auto">
+              <p className="text-lg text-gray-400 max-w-md mx-auto">
                 Your order has been placed successfully. A confirmation email has been sent to{' '}
                 <span className="font-medium text-purple-600">{order.shipping?.email || order.customer_email}</span>
               </p>
@@ -254,16 +254,16 @@ const OrderConfirmationPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white border border-slate-200 rounded-2xl p-6"
+            className="bg-bots-surface border border-gray-700 rounded-2xl p-6"
           >
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
                 <Truck className="w-5 h-5 text-blue-600" />
               </div>
-              <h2 className="font-heading text-lg font-bold text-slate-800">Shipping To</h2>
+              <h2 className="font-heading text-lg font-bold text-white">Shipping To</h2>
             </div>
-            <div className="space-y-2 text-slate-600">
-              <p className="font-semibold text-slate-800">
+            <div className="space-y-2 text-gray-400">
+              <p className="font-semibold text-white">
                 {order.shipping?.firstName} {order.shipping?.lastName}
               </p>
               {order.shipping?.company && (
@@ -276,11 +276,11 @@ const OrderConfirmationPage = () => {
               </p>
               <div className="pt-3 mt-3 border-t border-slate-100 space-y-1">
                 <p className="flex items-center gap-2 text-sm">
-                  <Mail className="w-4 h-4 text-slate-400" />
+                  <Mail className="w-4 h-4 text-gray-500" />
                   {order.shipping?.email}
                 </p>
                 <p className="flex items-center gap-2 text-sm">
-                  <Phone className="w-4 h-4 text-slate-400" />
+                  <Phone className="w-4 h-4 text-gray-500" />
                   {order.shipping?.phone}
                 </p>
               </div>
@@ -292,7 +292,7 @@ const OrderConfirmationPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white border border-slate-200 rounded-2xl p-6"
+            className="bg-bots-surface border border-gray-700 rounded-2xl p-6"
           >
             <div className="flex items-center gap-3 mb-4">
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
@@ -310,7 +310,7 @@ const OrderConfirmationPage = () => {
                   <CreditCard className="w-5 h-5 text-purple-600" />
                 )}
               </div>
-              <h2 className="font-heading text-lg font-bold text-slate-800">Payment</h2>
+              <h2 className="font-heading text-lg font-bold text-white">Payment</h2>
             </div>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
@@ -320,8 +320,8 @@ const OrderConfirmationPage = () => {
                       <DollarSign className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <p className="font-semibold text-slate-800">CashApp</p>
-                      <p className="text-sm text-slate-500">
+                      <p className="font-semibold text-white">CashApp</p>
+                      <p className="text-sm text-gray-400">
                         {order.awaiting_payment ? 'Awaiting Payment' : 'Payment Received'}
                       </p>
                     </div>
@@ -332,8 +332,8 @@ const OrderConfirmationPage = () => {
                       <span className="text-white font-bold">V</span>
                     </div>
                     <div>
-                      <p className="font-semibold text-slate-800">Venmo</p>
-                      <p className="text-sm text-slate-500">
+                      <p className="font-semibold text-white">Venmo</p>
+                      <p className="text-sm text-gray-400">
                         {order.awaiting_payment ? 'Awaiting Payment' : 'Payment Received'}
                       </p>
                     </div>
@@ -344,8 +344,8 @@ const OrderConfirmationPage = () => {
                       <span className="text-white font-bold text-xs">PP</span>
                     </div>
                     <div>
-                      <p className="font-semibold text-slate-800">PayPal</p>
-                      <p className="text-sm text-slate-500">
+                      <p className="font-semibold text-white">PayPal</p>
+                      <p className="text-sm text-gray-400">
                         {order.awaiting_payment ? 'Awaiting Payment Completion' : 'Payment Captured'}
                       </p>
                     </div>
@@ -356,8 +356,8 @@ const OrderConfirmationPage = () => {
                       <CreditCard className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <p className="font-mono text-slate-800">•••• •••• •••• {order.payment_last_four}</p>
-                      <p className="text-sm text-slate-500">Credit Card</p>
+                      <p className="font-mono text-white">•••• •••• •••• {order.payment_last_four}</p>
+                      <p className="text-sm text-gray-400">Credit Card</p>
                     </div>
                   </>
                 )}
@@ -378,21 +378,21 @@ const OrderConfirmationPage = () => {
               
               <div className="pt-4 border-t border-slate-100 space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Subtotal</span>
+                  <span className="text-gray-400">Subtotal</span>
                   <span className="font-mono text-slate-700">${order.subtotal?.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Shipping</span>
+                  <span className="text-gray-400">Shipping</span>
                   <span className="font-mono text-slate-700">
                     {order.shipping_cost === 0 ? 'FREE' : `$${order.shipping_cost?.toFixed(2)}`}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Tax</span>
+                  <span className="text-gray-400">Tax</span>
                   <span className="font-mono text-slate-700">${order.tax?.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-slate-100">
-                  <span className="font-semibold text-slate-800">
+                  <span className="font-semibold text-white">
                     {order.awaiting_payment ? 'Total Due' : 'Total Paid'}
                   </span>
                   <span className="font-mono font-bold text-lg text-purple-600">${order.total?.toFixed(2)}</span>
@@ -407,13 +407,13 @@ const OrderConfirmationPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white border border-slate-200 rounded-2xl p-6 mb-8"
+          className="bg-bots-surface border border-gray-700 rounded-2xl p-6 mb-8"
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
               <Package className="w-5 h-5 text-amber-600" />
             </div>
-            <h2 className="font-heading text-lg font-bold text-slate-800">
+            <h2 className="font-heading text-lg font-bold text-white">
               Order Items ({order.items?.length || 0})
             </h2>
           </div>
@@ -421,21 +421,21 @@ const OrderConfirmationPage = () => {
             {order.items?.map((item, index) => (
               <div
                 key={index}
-                className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl"
+                className="flex items-center gap-4 p-4 bg-bots-dark rounded-xl"
               >
-                <div className="w-16 h-16 rounded-lg bg-white border border-slate-200 flex items-center justify-center overflow-hidden">
+                <div className="w-16 h-16 rounded-lg bg-bots-surface border border-gray-700 flex items-center justify-center overflow-hidden">
                   <ButterflyIcon className="w-8 h-8 text-[#ff8c42]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-slate-800 truncate">{item.name}</p>
-                  <p className="text-sm text-slate-500">
+                  <p className="font-semibold text-white truncate">{item.name}</p>
+                  <p className="text-sm text-gray-400">
                     Qty: {item.quantity}
                     {getDisplayOptionSummary(item) ? ` • ${getDisplayOptionSummary(item)}` : ''}
                   </p>
-                  {item.custom_notes && <p className="text-xs text-slate-400 mt-1 line-clamp-2">Notes: {item.custom_notes}</p>}
-                  {item.custom_image_url && <p className="text-xs text-slate-400 mt-1">Custom image attached</p>}
+                  {item.custom_notes && <p className="text-xs text-gray-500 mt-1 line-clamp-2">Notes: {item.custom_notes}</p>}
+                  {item.custom_image_url && <p className="text-xs text-gray-500 mt-1">Custom image attached</p>}
                 </div>
-                <p className="font-mono font-semibold text-slate-800">
+                <p className="font-mono font-semibold text-white">
                   ${(item.price * item.quantity).toFixed(2)}
                 </p>
               </div>
@@ -458,7 +458,7 @@ const OrderConfirmationPage = () => {
               : 'bg-gradient-to-br from-purple-50 to-amber-50 border-purple-200'
           }`}
         >
-          <h3 className="font-heading text-lg font-bold text-slate-800 mb-4">What Happens Next?</h3>
+          <h3 className="font-heading text-lg font-bold text-white mb-4">What Happens Next?</h3>
           {order.awaiting_payment ? (
             <div className="grid md:grid-cols-3 gap-4">
               <div className="flex items-start gap-3">
@@ -466,10 +466,10 @@ const OrderConfirmationPage = () => {
                   order.payment_method === 'cashapp' ? 'bg-green-600' : order.payment_method === 'paypal' ? 'bg-sky-600' : 'bg-blue-600'
                 }`}>1</div>
                 <div>
-                  <p className="font-semibold text-slate-800">
+                  <p className="font-semibold text-white">
                     {order.payment_method === 'paypal' ? 'Complete PayPal Checkout' : 'Send Payment'}
                   </p>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm text-gray-400">
                     Send ${order.total?.toFixed(2)} via {
                       order.payment_method === 'cashapp'
                         ? 'CashApp'
@@ -485,8 +485,8 @@ const OrderConfirmationPage = () => {
                   order.payment_method === 'cashapp' ? 'bg-green-600' : order.payment_method === 'paypal' ? 'bg-sky-600' : 'bg-blue-600'
                 }`}>2</div>
                 <div>
-                  <p className="font-semibold text-slate-800">We Verify</p>
-                  <p className="text-sm text-slate-600">We'll confirm your payment within 24 hours</p>
+                  <p className="font-semibold text-white">We Verify</p>
+                  <p className="text-sm text-gray-400">We'll confirm your payment within 24 hours</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -494,8 +494,8 @@ const OrderConfirmationPage = () => {
                   order.payment_method === 'cashapp' ? 'bg-green-600' : order.payment_method === 'paypal' ? 'bg-sky-600' : 'bg-blue-600'
                 }`}>3</div>
                 <div>
-                  <p className="font-semibold text-slate-800">Order Ships</p>
-                  <p className="text-sm text-slate-600">Tracking info sent to your email</p>
+                  <p className="font-semibold text-white">Order Ships</p>
+                  <p className="text-sm text-gray-400">Tracking info sent to your email</p>
                 </div>
               </div>
             </div>
@@ -504,22 +504,22 @@ const OrderConfirmationPage = () => {
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">1</div>
                 <div>
-                  <p className="font-semibold text-slate-800">Order Processing</p>
-                  <p className="text-sm text-slate-600">We'll verify and process your order within 24 hours</p>
+                  <p className="font-semibold text-white">Order Processing</p>
+                  <p className="text-sm text-gray-400">We'll verify and process your order within 24 hours</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">2</div>
                 <div>
-                  <p className="font-semibold text-slate-800">Quality Check</p>
-                  <p className="text-sm text-slate-600">Products undergo final quality verification</p>
+                  <p className="font-semibold text-white">Quality Check</p>
+                  <p className="text-sm text-gray-400">Products undergo final quality verification</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">3</div>
                 <div>
-                  <p className="font-semibold text-slate-800">Shipped</p>
-                  <p className="text-sm text-slate-600">Tracking info sent to your email</p>
+                  <p className="font-semibold text-white">Shipped</p>
+                  <p className="text-sm text-gray-400">Tracking info sent to your email</p>
                 </div>
               </div>
             </div>
@@ -555,7 +555,7 @@ const OrderConfirmationPage = () => {
           </Link>
           <Link
             to="/shop"
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white border-2 border-purple-600 text-purple-600 font-semibold rounded-full hover:bg-purple-50 transition-all"
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-bots-surface border-2 border-purple-600 text-purple-600 font-semibold rounded-full hover:bg-purple-50 transition-all"
             data-testid="continue-shopping-btn"
           >
             Continue Shopping

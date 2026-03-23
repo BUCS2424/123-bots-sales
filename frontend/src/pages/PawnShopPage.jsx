@@ -166,7 +166,7 @@ const PeptidesShopPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-28 pb-32" data-testid="shop-page">
+    <div className="min-h-screen bg-bots-dark pt-28 pb-32" data-testid="shop-page">
       {/* Wholesale Banner */}
       {isAuthenticated && isWholesale && (
         <motion.div
@@ -188,7 +188,7 @@ const PeptidesShopPage = () => {
       )}
 
       {/* Hero banner */}
-      <section className="relative py-16 mb-8 bg-gradient-to-b from-white to-slate-50">
+      <section className="relative py-16 mb-8 bg-gradient-to-b from-bots-surface to-bots-dark">
         <div className="absolute inset-0 grid-bg opacity-30" />
         
         <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-center">
@@ -196,14 +196,14 @@ const PeptidesShopPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ff8c42]/10 border border-[#ff8c42]/30 text-[#ff8c42] text-sm font-semibold tracking-wider mb-6">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-sm font-semibold tracking-wider mb-6">
               <ButterflyIcon className="w-4 h-4" />
               PRE-PRINTED AND CUSTOM SUBLIMATION
             </span>
-            <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-slate-800 mb-4">
+            <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
               123Bots
             </h1>
-            <p className="text-slate-600 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
               Browse our collection of custom printables, unique gifts, and personalized treasures. Made with care, just for you.
             </p>
           </motion.div>
@@ -234,22 +234,22 @@ const PeptidesShopPage = () => {
               transition={{ delay: 0.1 }}
               className="mb-8"
             >
-          <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl shadow-sm">
+          <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between p-4 bg-bots-surface border border-gray-700 rounded-2xl shadow-sm">
             {/* Search */}
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
               <input
                 type="text"
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#ff8c42] focus:ring-2 focus:ring-[#ff8c42]/20 transition-all"
+                className="w-full pl-12 pr-4 py-3 bg-bots-dark border border-gray-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
                 data-testid="search-input"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-400"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -262,14 +262,14 @@ const PeptidesShopPage = () => {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="appearance-none px-4 py-3 pr-10 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:outline-none focus:border-[#ff8c42] cursor-pointer"
+                  className="appearance-none px-4 py-3 pr-10 bg-bots-dark border border-gray-700 rounded-xl text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer"
                   data-testid="category-filter"
                 >
                   {categories.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
               </div>
 
               {/* Sort */}
@@ -277,28 +277,28 @@ const PeptidesShopPage = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none px-4 py-3 pr-10 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:outline-none focus:border-[#ff8c42] cursor-pointer"
+                  className="appearance-none px-4 py-3 pr-10 bg-bots-dark border border-gray-700 rounded-xl text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer"
                   data-testid="sort-filter"
                 >
                   {sortOptions.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
               </div>
 
               {/* View toggle */}
-              <div className="flex items-center gap-1 p-1 bg-slate-50 border border-slate-200 rounded-xl">
+              <div className="flex items-center gap-1 p-1 bg-bots-dark border border-gray-700 rounded-xl">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-[#6e2ea8] text-white' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-[#6e2ea8] text-white' : 'text-gray-500 hover:text-gray-400'}`}
                   data-testid="view-grid-btn"
                 >
                   <Grid className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-[#6e2ea8] text-white' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-[#6e2ea8] text-white' : 'text-gray-500 hover:text-gray-400'}`}
                   data-testid="view-list-btn"
                 >
                   <LayoutList className="w-5 h-5" />
@@ -337,14 +337,14 @@ const PeptidesShopPage = () => {
             animate={{ opacity: 1 }}
             className="text-center py-20"
           >
-            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-slate-100 border border-gray-700 flex items-center justify-center">
               <ButterflyIcon className="w-10 h-10 text-slate-300" />
             </div>
-            <h3 className="font-heading text-xl text-slate-800 mb-2">No products found</h3>
+            <h3 className="font-heading text-xl text-white mb-2">No products found</h3>
             <p className="text-slate-500 mb-6">Try adjusting your search or filter criteria</p>
             <button
               onClick={() => { setSearchQuery(''); setSelectedCategory('All'); }}
-              className="px-6 py-3 bg-[#ff8c42]/10 border border-[#ff8c42] text-[#ff8c42] rounded-full hover:bg-[#ff8c42]/20 transition-all font-semibold"
+              className="px-6 py-3 bg-blue-500/10 border border-[#ff8c42] text-blue-400 rounded-full hover:bg-[#ff8c42]/20 transition-all font-semibold"
             >
               Clear Filters
             </button>

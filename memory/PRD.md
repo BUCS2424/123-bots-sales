@@ -35,6 +35,10 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 - [x] **SEO** - Comprehensive SEO library with presets, JSON-LD generators
 - [x] **Analytics** - a2ganalytics.com script added to index.html
 - [x] **index.html** - Full SEO meta tags, Open Graph, Twitter Cards, JSON-LD schema
+- [x] **ShopPage** - NEW: Created with dark theme matching site design
+- [x] **CartDrawer** - Restyled with dark theme (blue accents, dark surfaces)
+- [x] **CheckoutPage** - Full restyle with dark theme (blue/green progress, dark forms)
+- [x] **OrderConfirmationPage** - Restyled with dark theme
 
 ### Testing Status
 - Frontend Testing: PASS (100% success rate)
@@ -71,8 +75,12 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 ## Key Files
 - `/app/frontend/src/App.js` - Main router
 - `/app/frontend/src/pages/HomePage.jsx` - Homepage
+- `/app/frontend/src/pages/ShopPage.jsx` - Shop/catalog page (NEW)
+- `/app/frontend/src/pages/CheckoutPage.jsx` - Checkout flow
+- `/app/frontend/src/pages/OrderConfirmationPage.jsx` - Order confirmation
 - `/app/frontend/src/components/Header.jsx` - Navigation
 - `/app/frontend/src/components/Footer.jsx` - Footer
+- `/app/frontend/src/components/CartDrawer.jsx` - Cart sidebar
 - `/app/frontend/src/lib/seo.js` - SEO utilities
 - `/app/frontend/public/index.html` - HTML with meta tags
 - `/app/backend/leads.py` - Leads API

@@ -7,7 +7,7 @@ import { SiteSettingsProvider, useSiteSettings } from './context/SiteSettingsCon
 import { Toaster } from './components/ui/toaster';
 import FloatingNav from './components/FloatingNav';
 import HomePage from './pages/HomePage';
-import PeptidesShopPage from './pages/PawnShopPage';
+import ShopPage from './pages/ShopPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import LegacyProductRedirectPage from './pages/LegacyProductRedirectPage';
 import LegacyProductSlugRedirectPage from './pages/LegacyProductSlugRedirectPage';
@@ -215,7 +215,7 @@ const AppContent = () => {
               <PublicLayout>
                 <Routes>
                   <Route path="/" element={<HomePage />} />
-                  <Route path="/shop" element={<PeptidesShopPage />} />
+                  <Route path="/shop" element={<ShopPage />} />
                   <Route path="/shop/:legacySlug" element={<LegacyProductSlugRedirectPage />} />
                   <Route path="/shop/:categorySlug/:productSlug" element={<ProductDetailPage />} />
                   <Route path="/product/:productId" element={<LegacyProductRedirectPage />} />
