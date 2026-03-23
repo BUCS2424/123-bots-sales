@@ -53,7 +53,7 @@ def generate_location_page_html(
     # Get hero image URLs from settings
     hero_bg_image = hero_settings.get("hero_background_image_url", "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png")
     hero_card_image = hero_settings.get("hero_card_image_url", "")
-    hero_video_url = hero_settings.get("hero_video_url", "/videos/butterfly_alpha.webm")
+    hero_video_url = "https://customer-assets.emergentagent.com/job_62e47598-ad36-4ef0-a5ae-6e9fba5248f0/artifacts/gicykru3_123-bots-home-background.mp4"
     hero_card_title = hero_settings.get("hero_card_title", "CUSTOM EMPORIUM")
     hero_card_subtitle = hero_settings.get("hero_card_subtitle", "Unique & Personalized")
     hero_card_description = hero_settings.get("hero_card_description", "Made with care, just for you")
@@ -1546,7 +1546,7 @@ def generate_location_page_html(
   <section class="hero">
     <div class="hero-bg-image"></div>
     <video class="hero-video" autoplay muted loop playsinline>
-      <source src="{hero_video_url}" type="video/webm">
+      <source src="{hero_video_url}" type="video/mp4">
     </video>
     <div class="hero-overlay"></div>
     <div class="hero-glow-1"></div>
