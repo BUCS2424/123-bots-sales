@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Bot, Zap, X, Lock, Eye, EyeOff } from 'lucide-react';
 import { useSiteSettings } from '../context/SiteSettingsContext';
-
-const SITE_PASSWORD = '8487';
+import { useSiteFeatureFlags } from '../hooks/useSiteFeatureFlags';
 
 const AgeVerificationModal = () => {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
@@ -14,6 +13,11 @@ const AgeVerificationModal = () => {
   const [error, setError] = useState('');
   const location = useLocation();
   const siteSettings = useSiteSettings();
+  const featureFlags = useSiteFeatureFlags();
+  
+  // Get password from feature flags
+  const SITE_PASSWORD = featureFlags.coming_soon_password || '8487';
+  const COMING_SOON_ENABLED = featureFlags.coming_soon_enabled;
 
   useEffect(() => {
     // Skip modals for admin and dev routes
@@ -21,6 +25,14 @@ const AgeVerificationModal = () => {
                          location.pathname.startsWith('/dev');
     
     if (isAdminRoute) {
+      setShowWelcomeModal(false);
+      setShowComingSoon(false);
+      document.body.style.overflow = 'auto';
+      return;
+    }
+
+    // If coming soon is disabled, don't show any modals
+    if (!COMING_SOON_ENABLED) {
       setShowWelcomeModal(false);
       setShowComingSoon(false);
       document.body.style.overflow = 'auto';
@@ -46,7 +58,7 @@ const AgeVerificationModal = () => {
       setShowComingSoon(true);
       document.body.style.overflow = 'hidden';
     }
-  }, [location.pathname]);
+  }, [location.pathname, COMING_SOON_ENABLED]);
 
   const handleEnterWelcome = () => {
     localStorage.setItem('123Bots_welcomed', 'true');

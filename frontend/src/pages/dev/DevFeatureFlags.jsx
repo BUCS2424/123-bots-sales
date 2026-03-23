@@ -57,6 +57,8 @@ const DevFeatureFlags = () => {
     owner_chat_enabled: false,
     owner_chat_ai_enabled: false,
     left_menu_enabled: true,
+    coming_soon_enabled: true,
+    coming_soon_password: '8487',
   });
   const [featureFlagsSaving, setFeatureFlagsSaving] = useState(false);
 
@@ -374,6 +376,83 @@ const DevFeatureFlags = () => {
               data-testid="feature-flag-email-verification-toggle"
             />
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Coming Soon / Password Gate Settings */}
+      <Card className="mb-4 border-blue-200 bg-blue-50/30" data-testid="coming-soon-feature-flags">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <ToggleLeft className="w-5 h-5 text-blue-600" />
+            Coming Soon / Password Gate
+          </CardTitle>
+          <CardDescription>
+            Control the site preview password gate for visitors
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between p-4 bg-white rounded-lg border" data-testid="feature-flag-coming-soon-row">
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="font-medium">Enable Coming Soon Password Gate</p>
+                <Badge variant={featureFlags.coming_soon_enabled ? 'default' : 'secondary'}>
+                  {featureFlags.coming_soon_enabled ? 'ON' : 'OFF'}
+                </Badge>
+              </div>
+              <p className="text-sm text-gray-500 mt-1">
+                When ON, visitors must enter a password to access the site. When OFF, the site is fully open.
+              </p>
+            </div>
+            <Switch
+              checked={featureFlags.coming_soon_enabled}
+              onCheckedChange={() => handleFeatureFlagToggle('coming_soon_enabled')}
+              disabled={featureFlagsSaving}
+              data-testid="feature-flag-coming-soon-toggle"
+            />
+          </div>
+
+          {featureFlags.coming_soon_enabled && (
+            <div className="p-4 bg-white rounded-lg border">
+              <Label htmlFor="coming-soon-password" className="text-sm font-medium">
+                Site Password
+              </Label>
+              <p className="text-sm text-gray-500 mb-2">
+                Visitors will need this password to access the site
+              </p>
+              <div className="flex gap-2">
+                <Input
+                  id="coming-soon-password"
+                  type="text"
+                  value={featureFlags.coming_soon_password}
+                  onChange={(e) => setFeatureFlags(prev => ({ ...prev, coming_soon_password: e.target.value }))}
+                  placeholder="Enter site password"
+                  className="max-w-xs"
+                  data-testid="coming-soon-password-input"
+                />
+                <Button
+                  onClick={async () => {
+                    setFeatureFlagsSaving(true);
+                    try {
+                      const token = localStorage.getItem('token');
+                      await axios.put(`${API}/api/admin-settings/feature-flags`, featureFlags, {
+                        headers: { Authorization: `Bearer ${token}` },
+                      });
+                      toast({ title: 'Password Saved', description: 'Site password has been updated' });
+                    } catch (error) {
+                      toast({ title: 'Error', description: 'Failed to save password', variant: 'destructive' });
+                    } finally {
+                      setFeatureFlagsSaving(false);
+                    }
+                  }}
+                  disabled={featureFlagsSaving}
+                  className="bg-blue-600 hover:bg-blue-700"
+                  data-testid="coming-soon-password-save-btn"
+                >
+                  {featureFlagsSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save Password'}
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

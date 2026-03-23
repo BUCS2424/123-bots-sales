@@ -38,7 +38,7 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 - [x] **ShopPage** - NEW: Created with dark theme matching site design
 - [x] **CartDrawer** - Restyled with dark theme (blue accents, dark surfaces)
 - [x] **CheckoutPage** - Full restyle with dark theme (blue/green progress, dark forms)
-- [x] **OrderConfirmationPage** - Restyled with dark theme
+- [x] **Coming Soon Password Gate** - Connected to feature flags with admin-configurable on/off toggle and custom password
 
 ### Testing Status
 - Frontend Testing: PASS (100% success rate)

@@ -7,6 +7,8 @@ export const useSiteFeatureFlags = () => {
     require_account_for_checkout: false,
     require_email_verification_for_registration: true,
     left_menu_enabled: true,
+    coming_soon_enabled: true,
+    coming_soon_password: '8487',
   });
 
   useEffect(() => {
@@ -35,6 +37,8 @@ export const useSiteFeatureFlags = () => {
           require_email_verification_for_registration:
             siteData.require_email_verification_for_registration !== false,
           left_menu_enabled: featureData.left_menu_enabled !== false,
+          coming_soon_enabled: featureData.coming_soon_enabled !== false,
+          coming_soon_password: featureData.coming_soon_password || '8487',
         });
       } catch (error) {
         // Keep safe defaults

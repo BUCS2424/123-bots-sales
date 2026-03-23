@@ -818,6 +818,8 @@ class FeatureFlags(BaseModel):
     owner_chat_enabled: bool = False
     owner_chat_ai_enabled: bool = False
     left_menu_enabled: bool = True  # Show/hide left accordion menu on product pages
+    coming_soon_enabled: bool = True  # Show coming soon password gate
+    coming_soon_password: str = "8487"  # Password to bypass coming soon gate
 
 
 @router.get("/feature-flags")
@@ -872,6 +874,8 @@ async def get_public_feature_flags(db=Depends(get_db)):
             "owner_chat_enabled": 1,
             "owner_chat_ai_enabled": 1,
             "left_menu_enabled": 1,
+            "coming_soon_enabled": 1,
+            "coming_soon_password": 1,
         },
     )
     return {
@@ -880,6 +884,8 @@ async def get_public_feature_flags(db=Depends(get_db)):
         "owner_chat_enabled": bool(settings.get("owner_chat_enabled", False)) if settings else False,
         "owner_chat_ai_enabled": bool(settings.get("owner_chat_ai_enabled", False)) if settings else False,
         "left_menu_enabled": bool(settings.get("left_menu_enabled", True)) if settings else True,
+        "coming_soon_enabled": bool(settings.get("coming_soon_enabled", True)) if settings else True,
+        "coming_soon_password": settings.get("coming_soon_password", "8487") if settings else "8487",
     }
 
 
