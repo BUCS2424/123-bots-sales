@@ -71,7 +71,7 @@ const VerifyEmailPage = () => {
     if (result.success) {
       toast({
         title: 'Email Verified!',
-        description: 'Welcome to GingerKare. You can now view prices and place orders.',
+        description: 'Welcome to 123Bots. You can now view prices and place orders.',
       });
       navigate('/shop');
     } else {

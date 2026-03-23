@@ -221,7 +221,7 @@ const Johnny5Invoice = () => {
         <div className="border-t pt-6 text-center text-sm text-gray-500">
           <p className="font-medium text-gray-700 mb-1">Thank you for your order!</p>
           <p>For research use only. Not for human consumption.</p>
-          <p className="mt-2">Questions? Contact {business.email || 'support@gingerkare.com'}</p>
+          <p className="mt-2">Questions? Contact {business.email || 'support@123bots.com'}</p>
         </div>
 
         {/* Packing Slip Barcode Area (for scanning) */}

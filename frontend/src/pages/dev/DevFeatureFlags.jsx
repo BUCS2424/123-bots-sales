@@ -13,7 +13,7 @@ const API = process.env.REACT_APP_BACKEND_URL;
 
 const DevFeatureFlags = () => {
   const [siteSettings, setSiteSettings] = useState({
-    site_name: 'Gingerkare Custom Emporium',
+    site_name: '123Bots',
     site_url: '',
     logo_url: '',
     favicon_url: '',
@@ -429,7 +429,7 @@ const DevFeatureFlags = () => {
             <div className="rounded-lg border border-amber-300 bg-amber-50 p-3" data-testid="printful-callback-url-whitelist-note">
               <p className="text-xs font-semibold text-amber-900">Important: add this exact URL to your Printful app Redirect URLs whitelist.</p>
               <p className="text-xs text-amber-800 mt-1">
-                It must match exactly, including <strong>https</strong>, domain, and <strong>/api/printful/callback</strong>. A bare domain like <strong>https://gingerkare.com</strong> will not work.
+                It must match exactly, including <strong>https</strong>, domain, and <strong>/api/printful/callback</strong>. A bare domain like <strong>https://123bots.com</strong> will not work.
               </p>
             </div>
           </div>

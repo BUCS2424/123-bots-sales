@@ -28,8 +28,8 @@ const ContactPage = () => {
   useEffect(() => {
     setSeoMetadata({
       title: 'Contact Us',
-      description: 'Get in touch with GingerKare Custom Emporium. We\'re here to help with your custom product needs, quotes, and questions!',
-      keywords: 'contact GingerKare, custom order inquiry, customer support, request quote',
+      description: 'Get in touch with 123Bots. We\'re here to help with your custom product needs, quotes, and questions!',
+      keywords: 'contact 123Bots, custom order inquiry, customer support, request quote',
       canonicalPath: '/contact',
       ogType: 'website',
       jsonLd: generateLocalBusinessSchema(),
@@ -247,7 +247,7 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <h3 className="font-heading font-semibold text-slate-800">Email</h3>
-                  <p className="text-slate-500 text-sm">{businessInfo?.email || 'support@gingerkare.com'}</p>
+                  <p className="text-slate-500 text-sm">{businessInfo?.email || 'support@123bots.com'}</p>
                 </div>
               </div>
             </div>

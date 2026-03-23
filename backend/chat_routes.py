@@ -97,10 +97,10 @@ agent_availability = {}
 active_visitors = {}  # Track visitors on site: {visitor_id: {page, timestamp, name, etc.}}
 visitor_chat_invites = {}  # Track pending chat invites: {visitor_id: {chat_id, agent_name, page}}
 
-# Knowledge base for Betty - GingerKare Custom Emporium AI Assistant
-ATOM_SYSTEM_PROMPT = """You are Betty, a friendly and helpful AI assistant for GingerKare Custom Emporium, a custom printing and personalized gifts shop.
+# Knowledge base for Betty - 123Bots AI Assistant
+ATOM_SYSTEM_PROMPT = """You are Betty, a friendly and helpful AI assistant for 123Bots, a custom printing and personalized gifts shop.
 
-## About GingerKare:
+## About 123Bots:
 - Family-owned business specializing in custom sublimation printing
 - Based in Alabama, shipping nationwide
 - Made-to-order products with love and care
@@ -214,7 +214,7 @@ async def start_chat_session(
     welcome_message = {
         "id": str(uuid.uuid4()),
         "type": ChatMessageType.AI,
-        "text": "Hi there! I'm Betty, your shopping assistant at GingerKare Custom Emporium! I can help you find the perfect custom gift, explore our personalized products, or answer questions about custom orders. What can I help you with today?",
+        "text": "Hi there! I'm Betty, your shopping assistant at 123Bots! I can help you find the perfect custom gift, explore our personalized products, or answer questions about custom orders. What can I help you with today?",
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
     
@@ -693,7 +693,7 @@ async def initiate_chat_with_visitor(
     welcome_message = {
         "id": str(uuid.uuid4()),
         "type": "agent",
-        "text": f"Hi! I noticed you're browsing our {visitor.get('page_title', 'site')}. I'm {agent_name.split()[0]} from GingerKare. Can I help you find something special?",
+        "text": f"Hi! I noticed you're browsing our {visitor.get('page_title', 'site')}. I'm {agent_name.split()[0]} from 123Bots. Can I help you find something special?",
         "agent_id": current_user.user_id,
         "agent_name": agent_name,
         "timestamp": now.isoformat()
@@ -927,7 +927,7 @@ async def close_chat(chat_id: str, current_user: TokenData = Depends(require_adm
     system_message = {
         "id": str(uuid.uuid4()),
         "type": ChatMessageType.SYSTEM,
-        "text": "This chat session has been closed. Thank you for shopping with GingerKare!",
+        "text": "This chat session has been closed. Thank you for shopping with 123Bots!",
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
     

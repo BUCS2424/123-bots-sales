@@ -28,7 +28,7 @@ const AgeVerificationModal = () => {
     }
     
     // Check if user has already unlocked the site
-    const siteUnlocked = localStorage.getItem('gingerkare_unlocked');
+    const siteUnlocked = localStorage.getItem('123Bots_unlocked');
     if (siteUnlocked) {
       setShowWelcomeModal(false);
       setShowComingSoon(false);
@@ -37,7 +37,7 @@ const AgeVerificationModal = () => {
     }
     
     // Check if user has already seen welcome
-    const welcomed = localStorage.getItem('gingerkare_welcomed');
+    const welcomed = localStorage.getItem('123Bots_welcomed');
     if (!welcomed) {
       setShowWelcomeModal(true);
       document.body.style.overflow = 'hidden';
@@ -49,8 +49,8 @@ const AgeVerificationModal = () => {
   }, [location.pathname]);
 
   const handleEnterWelcome = () => {
-    localStorage.setItem('gingerkare_welcomed', 'true');
-    localStorage.setItem('gingerkare_welcomed_date', new Date().toISOString());
+    localStorage.setItem('123Bots_welcomed', 'true');
+    localStorage.setItem('123Bots_welcomed_date', new Date().toISOString());
     setIsExiting(true);
     setTimeout(() => {
       setShowWelcomeModal(false);
@@ -66,7 +66,7 @@ const AgeVerificationModal = () => {
   const handlePasswordSubmit = (e) => {
     e.preventDefault();
     if (password === SITE_PASSWORD) {
-      localStorage.setItem('gingerkare_unlocked', 'true');
+      localStorage.setItem('123Bots_unlocked', 'true');
       setIsExiting(true);
       setTimeout(() => {
         setShowComingSoon(false);
@@ -122,7 +122,7 @@ const AgeVerificationModal = () => {
             
             {/* Title */}
             <h2 className="text-2xl font-bold text-center text-white mb-2">
-              Welcome to GingerKare!
+              Welcome to 123Bots!
             </h2>
             
             {/* Subtitle */}

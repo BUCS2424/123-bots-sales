@@ -21,8 +21,8 @@ const HomePage = () => {
   useEffect(() => {
     setSeoMetadata({
       title: 'Custom Printables & Unique Gifts',
-      description: 'GingerKare Custom Emporium - Your destination for custom printables, personalized gifts, and unique treasures. T-shirts, mugs, tumblers, canvas art and more!',
-      keywords: 'custom printables, personalized gifts, custom mugs, custom t-shirts, tumblers, canvas art, patches, stickers, GingerKare, sublimation printing',
+      description: '123Bots - Your destination for custom printables, personalized gifts, and unique treasures. T-shirts, mugs, tumblers, canvas art and more!',
+      keywords: 'custom printables, personalized gifts, custom mugs, custom t-shirts, tumblers, canvas art, patches, stickers, 123Bots, sublimation printing',
       canonicalPath: '/',
       ogType: 'website',
       jsonLd: [
@@ -31,12 +31,12 @@ const HomePage = () => {
         {
           '@context': 'https://schema.org',
           '@type': 'WebPage',
-          name: 'GingerKare Custom Emporium - Home',
+          name: '123Bots - Home',
           description: 'Custom printables, personalized gifts, and unique treasures made just for you.',
           isPartOf: {
             '@type': 'WebSite',
-            name: 'GingerKare Custom Emporium',
-            url: 'https://gingerkare.com',
+            name: '123Bots',
+            url: 'https://123bots.com',
           },
         },
       ],
@@ -61,7 +61,7 @@ const HomePage = () => {
     fetchData();
   }, []);
 
-  // Printable categories for GingerKare
+  // Printable categories for 123Bots
   const printableCategories = [
     { icon: Coffee, name: 'Coffee Mugs', description: 'Start your day with a custom mug', link: '/shop?category=coffee-mugs', color: 'from-amber-500 to-orange-600' },
     { icon: Shirt, name: 'T-Shirts', description: 'Wear your style proudly', link: '/shop?category=t-shirts', color: 'from-blue-500 to-cyan-500' },
@@ -83,7 +83,7 @@ const HomePage = () => {
     {
       title: 'Custom Printing',
       description: 'Customize print on any of our items',
-      image: 'https://customer-assets.emergentagent.com/job_38142eca-d39f-438c-945a-8be7be193bd7/artifacts/hiqzaimq_gingerkare-custom-printables1.jpg',
+      image: 'https://customer-assets.emergentagent.com/job_38142eca-d39f-438c-945a-8be7be193bd7/artifacts/hiqzaimq_123Bots-custom-printables1.jpg',
       link: '/shop',
       badge: 'Popular'
     },
@@ -382,7 +382,7 @@ const HomePage = () => {
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <a
-                href="mailto:info@gingerkare.com"
+                href="mailto:info@123bots.com"
                 className="inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-white text-white font-heading font-bold uppercase tracking-wider rounded-full hover:bg-white/10 transition-all"
               >
                 Email Us
@@ -412,7 +412,7 @@ const HomePage = () => {
                 Your destination for custom printables, personalized gifts, and unique treasures. Whatever your pleasure, here you'll find the perfect treasure!
               </p>
               <div className="flex gap-4">
-                <a href="https://www.facebook.com/gingerkare.collectibles" target="_blank" rel="noopener noreferrer" className="text-[#ffd4b8] hover:text-[#00bfff] transition-colors" data-testid="footer-social-facebook">Facebook</a>
+                <a href="https://www.facebook.com/123bots.collectibles" target="_blank" rel="noopener noreferrer" className="text-[#ffd4b8] hover:text-[#00bfff] transition-colors" data-testid="footer-social-facebook">Facebook</a>
                 <a href={`mailto:${siteSettings.supportEmail}`} className="text-[#ffd4b8] hover:text-[#ff8c42] transition-colors" data-testid="footer-social-email">Email</a>
               </div>
             </div>

@@ -116,7 +116,7 @@ const AdminLandingPage = () => {
           <div className="flex items-center gap-4">
             <img
               src="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png"
-              alt="Gingerkare Custom Emporium"
+              alt="123Bots"
               className="h-12"
             />
           </div>
@@ -175,7 +175,7 @@ const AdminLandingPage = () => {
 
         {/* Footer */}
         <footer className="p-6 text-center text-gray-400 text-sm">
-          <p>Gingerkare Custom Emporium © {new Date().getFullYear()}</p>
+          <p>123Bots © {new Date().getFullYear()}</p>
         </footer>
       </div>
     </>

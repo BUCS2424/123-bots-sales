@@ -174,7 +174,7 @@ const ReviewsSection = () => {
           Trusted by Researchers Worldwide
         </h2>
         <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-6">
-          Join thousands of customers who rely on Gingerkare for high-quality custom products
+          Join thousands of customers who rely on 123Bots for high-quality custom products
         </p>
         
         {/* Stats */}

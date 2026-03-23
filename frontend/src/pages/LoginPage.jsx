@@ -116,7 +116,7 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Animated gradient background - GingerKare warm theme */}
+      {/* Animated gradient background - 123Bots warm theme */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#2c1810] via-[#3a1f12] to-[#1a0f0a]" />
       
       {/* Animated particles/orbs */}

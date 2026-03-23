@@ -55,7 +55,7 @@ const RegisterPage = () => {
         navigate(`/verify-email?email=${encodeURIComponent(formData.email)}&sent=${result.emailSent}`);
       } else {
         toast({
-          title: 'Welcome to GingerKare!',
+          title: 'Welcome to 123Bots!',
           description: 'Your account has been created.',
         });
         navigate('/shop');

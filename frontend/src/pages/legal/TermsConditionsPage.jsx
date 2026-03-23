@@ -7,8 +7,8 @@ const TermsConditionsPage = () => {
   useEffect(() => {
     setSeoMetadata({
       title: 'Terms & Conditions',
-      description: 'GingerKare Custom Emporium Terms and Conditions. Read our policies on ordering, custom products, and more.',
-      keywords: 'terms and conditions, policies, GingerKare terms',
+      description: '123Bots Terms and Conditions. Read our policies on ordering, custom products, and more.',
+      keywords: 'terms and conditions, policies, 123Bots terms',
       canonicalPath: '/terms-conditions',
       noIndex: false,
     });
@@ -39,9 +39,9 @@ const TermsConditionsPage = () => {
             <div className="flex items-start gap-3">
               <Gift className="w-6 h-6 text-[#ff8c42] flex-shrink-0 mt-1" />
               <div>
-                <h3 className="font-bold text-[#2c1810] text-lg">Welcome to GingerKare Custom Emporium</h3>
+                <h3 className="font-bold text-[#2c1810] text-lg">Welcome to 123Bots</h3>
                 <p className="text-gray-700 mt-2">
-                  Thank you for choosing GingerKare for your custom printed products. 
+                  Thank you for choosing 123Bots for your custom printed products. 
                   We take pride in creating unique, personalized items made with care, just for you. 
                   Please review our terms and conditions below.
                 </p>
@@ -52,14 +52,14 @@ const TermsConditionsPage = () => {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Acceptance of Terms</h2>
             <p className="text-gray-600 leading-relaxed">
-              By accessing and using the GingerKare Custom Emporium website and purchasing our products, you accept and agree to be bound by these Terms and Conditions. If you do not agree to these terms, you must not use our website or purchase our products.
+              By accessing and using the 123Bots website and purchasing our products, you accept and agree to be bound by these Terms and Conditions. If you do not agree to these terms, you must not use our website or purchase our products.
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">2. Products and Services</h2>
             <p className="text-gray-600 leading-relaxed mb-4">
-              GingerKare Custom Emporium offers custom printed products including but not limited to:
+              123Bots offers custom printed products including but not limited to:
             </p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
               <li>Custom t-shirts and apparel</li>
@@ -95,7 +95,7 @@ const TermsConditionsPage = () => {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">5. Product Information</h2>
             <p className="text-gray-600 leading-relaxed">
-              GingerKare strives to provide accurate product descriptions, including colors, sizes, and specifications. Colors may vary slightly due to monitor settings and printing processes. While we make every effort to ensure accuracy, we do not warrant that product descriptions or other content on our website are error-free, complete, or current.
+              123Bots strives to provide accurate product descriptions, including colors, sizes, and specifications. Colors may vary slightly due to monitor settings and printing processes. While we make every effort to ensure accuracy, we do not warrant that product descriptions or other content on our website are error-free, complete, or current.
             </p>
           </section>
 
@@ -119,21 +119,21 @@ const TermsConditionsPage = () => {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">8. Intellectual Property</h2>
             <p className="text-gray-600 leading-relaxed">
-              All content on the GingerKare Custom Emporium website, including text, graphics, logos, images, and software, is the property of GingerKare or its content suppliers and is protected by intellectual property laws. You may not reproduce, distribute, or create derivative works without our express written permission.
+              All content on the 123Bots website, including text, graphics, logos, images, and software, is the property of 123Bots or its content suppliers and is protected by intellectual property laws. You may not reproduce, distribute, or create derivative works without our express written permission.
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">9. Limitation of Liability</h2>
             <p className="text-gray-600 leading-relaxed">
-              To the maximum extent permitted by law, GingerKare Custom Emporium shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or related to your use of our products or website. Our total liability shall not exceed the amount paid for the specific product giving rise to the claim.
+              To the maximum extent permitted by law, 123Bots shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or related to your use of our products or website. Our total liability shall not exceed the amount paid for the specific product giving rise to the claim.
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">10. Indemnification</h2>
             <p className="text-gray-600 leading-relaxed">
-              You agree to indemnify, defend, and hold harmless GingerKare Custom Emporium and its officers, directors, employees, and agents from any claims, damages, losses, liabilities, and expenses (including attorney's fees) arising from your use of our products, violation of these terms, or violation of any rights of a third party.
+              You agree to indemnify, defend, and hold harmless 123Bots and its officers, directors, employees, and agents from any claims, damages, losses, liabilities, and expenses (including attorney's fees) arising from your use of our products, violation of these terms, or violation of any rights of a third party.
             </p>
           </section>
 
@@ -147,7 +147,7 @@ const TermsConditionsPage = () => {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">12. Changes to Terms</h2>
             <p className="text-gray-600 leading-relaxed">
-              GingerKare Custom Emporium reserves the right to modify these Terms and Conditions at any time. Changes will be effective immediately upon posting to our website. Your continued use of the website following any changes constitutes acceptance of the revised terms.
+              123Bots reserves the right to modify these Terms and Conditions at any time. Changes will be effective immediately upon posting to our website. Your continued use of the website following any changes constitutes acceptance of the revised terms.
             </p>
           </section>
 
@@ -157,8 +157,8 @@ const TermsConditionsPage = () => {
               For questions regarding these Terms and Conditions, please contact us:
             </p>
             <div className="mt-4 p-4 bg-[#fff8f3] rounded-lg border border-[#ffe4d4]">
-              <p className="font-semibold text-[#2c1810]">GingerKare Custom Emporium</p>
-              <p className="text-[#ff8c42]">Email: support@gingerkare.com</p>
+              <p className="font-semibold text-[#2c1810]">123Bots</p>
+              <p className="text-[#ff8c42]">Email: support@123bots.com</p>
             </div>
           </section>
 

@@ -1,10 +1,10 @@
-# GingerKare Custom Emporium - Product Requirements Document
+# 123Bots - Product Requirements Document
 
 ## Original Problem Statement
-Set up project from GitHub repository `https://github.com/BUCS2424/peptides-cart-new/tree/2.0-complete-test` and redesign as "GingerKare Custom Emporium" with design inspiration from `https://gingerkare.com`.
+Set up project from GitHub repository `https://github.com/BUCS2424/peptides-cart-new/tree/2.0-complete-test` and redesign as "123Bots" with design inspiration from `https://123bots.com`.
 
 ## Brand Identity
-- **Name:** GingerKare Custom Emporium
+- **Name:** 123Bots
 - **Theme:** Warm, inviting color scheme (oranges, purples, golds)
 - **Focus:** Custom printables and personalized gifts
 
@@ -57,8 +57,8 @@ Set up project from GitHub repository `https://github.com/BUCS2424/peptides-cart
 
 ### March 20, 2026
 - [x] **Brand Cleanup Pass (Peptide/AMINO-CHAIN wording reduction) + Sitemap Domain Fixes**
-  - Replaced high-visibility frontend branding and copy defaults from `AMINO-CHAIN/Peptides` to `Gingerkare`/`products` across admin/public screens, contracts, HR/job pages, notifications, accounting text, and contact defaults.
-  - Updated backend default business/email/from-name text to Gingerkare equivalents in settings, shipping, HR, invoices/emails, and abandoned cart flows.
+  - Replaced high-visibility frontend branding and copy defaults from `AMINO-CHAIN/Peptides` to `123Bots`/`products` across admin/public screens, contracts, HR/job pages, notifications, accounting text, and contact defaults.
+  - Updated backend default business/email/from-name text to 123Bots equivalents in settings, shipping, HR, invoices/emails, and abandoned cart flows.
   - Removed hardcoded `amino-chain.com` references from active runtime paths and defaults.
   - Updated sitemap systems (`/api/sitemap.xml`, `/api/sitemap-locations.xml`, `/api/robots.txt`, and sitemap generator endpoints) to avoid hardcoded legacy domain and use configured deployment URL behavior.
   - Updated sitemap route output from legacy peptide paths to current storefront routes (`/shop`, `/research`, and matching product/category URLs).
@@ -106,7 +106,7 @@ Set up project from GitHub repository `https://github.com/BUCS2424/peptides-cart
   - Frontend testing agent verified popup behavior, unchanged parent URL, external Printful popup URL, and updated popup-window copy
 - [x] **Printful Redirect Whitelist Note Added**
   - Added a clear note in Dev Settings warning that the exact callback URL must be added to Printful’s Redirect URLs whitelist
-  - Note explicitly warns that a bare domain like `https://gingerkare.com` will fail and that `/api/printful/callback` must be included
+  - Note explicitly warns that a bare domain like `https://123bots.com` will fail and that `/api/printful/callback` must be included
 
 ### March 17, 2026
 - [x] **General Settings Typing Regression Re-verified**
@@ -119,20 +119,20 @@ Set up project from GitHub repository `https://github.com/BUCS2424/peptides-cart
   - Removed duplicated frontend branding fetch logic and centralized default site settings
 - [x] **Public Site Settings API Expanded**
   - `/api/settings/site` now returns `support_email` for public frontend consumption
-  - Legacy blank/AMINO-CHAIN site defaults are normalized back to GingerKare branding for public/frontend reads
+  - Legacy blank/AMINO-CHAIN site defaults are normalized back to 123Bots branding for public/frontend reads
 - [x] **Product Duplication Re-verified**
   - Backend duplication flow validated via API create/verify/delete cycle
   - Admin products duplication UI validated from `/admin/products` with success toast and row-count increase
 
 ### March 16, 2026
 - [x] **Full SEO Implementation** - Comprehensive SEO across all pages
-  - Updated `index.html` with GingerKare branding, Open Graph, Twitter Cards, meta tags
+  - Updated `index.html` with 123Bots branding, Open Graph, Twitter Cards, meta tags
   - Created enhanced `seo.js` library with JSON-LD schema generators (Organization, Product, Article, FAQ, Breadcrumb, LocalBusiness)
   - Created `useSeo.js` React hook for easy page-level SEO management
-  - Updated `robots.txt` for GingerKare with proper allow/disallow rules
+  - Updated `robots.txt` for 123Bots with proper allow/disallow rules
   - Updated `sitemap.xml` static file with main pages
   - Created dynamic `/api/sitemap.xml` endpoint with products and articles (58 URLs)
-  - Updated `manifest.json` for PWA with GingerKare branding
+  - Updated `manifest.json` for PWA with 123Bots branding
   - Added SEO to all pages: HomePage, Shop, ProductDetail, Research, FAQ, About, Contact, legal pages
   - Schema types: WebSite, Organization, Product, Article, FAQPage, CollectionPage
 - [x] **Coming Soon Password Gate** - Added password protection (8487) after welcome popup
@@ -143,10 +143,10 @@ Set up project from GitHub repository `https://github.com/BUCS2424/peptides-cart
   - All peptide references removed from research pages (titles, SEO, links, buttons)
   - "Research" link added to homepage footer under Support section
 - [x] **Location Page Articles Updated** - Replaced peptide research catalog section with sublimation content
-  - Changed "Peptide Categories" to "GingerKare Tips" badge
+  - Changed "Peptide Categories" to "123Bots Tips" badge
   - Added Design Inspiration & Tips section with 3 cards: Sublimation Printing, Design Tips, Business & Marketing
   - Updated testimonials from research partners to customer reviews (t-shirts, mugs, canvas, flags)
-  - Updated all AMINO-CHAIN branding to GingerKare
+  - Updated all AMINO-CHAIN branding to 123Bots
   - Updated footer links from /peptides-research to /research
 - [x] **Left Menu on Product Detail Pages** - Added left accordion menu to product detail pages, matching shop page layout
   - Controlled by `left_menu_enabled` feature flag
@@ -155,11 +155,11 @@ Set up project from GitHub repository `https://github.com/BUCS2424/peptides-cart
 - [x] **Peptide Content Removal** - Removed all peptide-related content from customer-facing pages:
   - Product detail trust badges: Changed from "HPLC Verified", "COA Included" to "Quality Guaranteed", "Made with Care", "Fast Shipping"
   - Product specs: Changed from peptide fields to "Category", "Quality", "Production", "SKU"
-  - Order confirmation: Changed "FOR RESEARCH USE ONLY" to "Thank you for shopping with GingerKare Custom Emporium!"
-  - Registration toast: Changed "Welcome to AMINO-CHAIN!" to "Welcome to GingerKare!"
-  - Email verification toast: Changed "Welcome to AMINO-CHAIN" to "Welcome to GingerKare"
+  - Order confirmation: Changed "FOR RESEARCH USE ONLY" to "Thank you for shopping with 123Bots!"
+  - Registration toast: Changed "Welcome to AMINO-CHAIN!" to "Welcome to 123Bots!"
+  - Email verification toast: Changed "Welcome to AMINO-CHAIN" to "Welcome to 123Bots"
   - Shop page: Changed "Lab Grade" default condition to "Premium Quality"
-- [x] **UI Branding Updates** - Trust badges now use GingerKare orange/amber color scheme
+- [x] **UI Branding Updates** - Trust badges now use 123Bots orange/amber color scheme
 - [x] **Mega Menu Builder Feature** - Full admin interface at `/admin/settings/mega-menu` under Website section
   - Create/edit/delete menu items with Label, Icon, URL, Description
   - Sub-menu support with Parent Menu Item selection
@@ -187,7 +187,7 @@ Set up project from GitHub repository `https://github.com/BUCS2424/peptides-cart
 
 ### March 15, 2026
 - [x] Project setup from GitHub
-- [x] GingerKare branding applied (logo, colors, nav)
+- [x] 123Bots branding applied (logo, colors, nav)
 - [x] Homepage redesigned with warm theme
 - [x] HeroSection fixed - background image + video overlay both working
 - [x] Welcome modal implemented (replaces age verification)
@@ -233,15 +233,15 @@ Set up project from GitHub repository `https://github.com/BUCS2424/peptides-cart
 - [ ] Monitor and re-check the General Settings page if the user still sees the typing bug on their machine; current fork verification passes
 
 ### P1 - High Priority
-- [ ] Complete any remaining frontend branding touchpoints still using hardcoded GingerKare copy/assets
+- [ ] Complete any remaining frontend branding touchpoints still using hardcoded 123Bots copy/assets
 - [ ] Security hardening pass for settings/admin routes
-- [ ] Printful OAuth production verification on `gingerkare.com` after redeploy + Printful redirect domain verification (blocked on user-side deployment/config)
+- [ ] Printful OAuth production verification on `123bots.com` after redeploy + Printful redirect domain verification (blocked on user-side deployment/config)
 - [ ] Decide whether users should also get a “manage trusted browsers” view to revoke remembered devices manually
 - [ ] Review the coming-soon overlay for flaky automated-test behavior, even though manual storefront validation passed
 
 ### P2 - Medium Priority
 - [ ] Review code redundancies and remove duplicate settings-fetch patterns in remaining pages
-- [ ] Import product catalog from `/app/uploads/gingerkare_products_import_ready.csv`
+- [ ] Import product catalog from `/app/uploads/123bots_products_import_ready.csv`
 - [ ] Fully implement YOYCOL settings/webhook flows
 
 ### P3 - Low Priority

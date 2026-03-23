@@ -36,14 +36,14 @@ const PeptidesShopPage = () => {
     const categoryText = selectedCategory !== 'All' ? `${selectedCategory} - ` : '';
     setSeoMetadata({
       title: `${categoryText}Shop Custom Products`,
-      description: `Browse our collection of ${selectedCategory !== 'All' ? selectedCategory.toLowerCase() : 'custom printables and personalized products'}. T-shirts, mugs, tumblers, canvas art, and more at GingerKare!`,
-      keywords: `${selectedCategory !== 'All' ? selectedCategory + ', ' : ''}custom products, personalized gifts, t-shirts, mugs, tumblers, sublimation, GingerKare shop`,
+      description: `Browse our collection of ${selectedCategory !== 'All' ? selectedCategory.toLowerCase() : 'custom printables and personalized products'}. T-shirts, mugs, tumblers, canvas art, and more at 123Bots!`,
+      keywords: `${selectedCategory !== 'All' ? selectedCategory + ', ' : ''}custom products, personalized gifts, t-shirts, mugs, tumblers, sublimation, 123Bots shop`,
       canonicalPath: selectedCategory !== 'All' ? `/shop?category=${selectedCategory.toLowerCase().replace(/\s+/g, '-')}` : '/shop',
       ogType: 'website',
       jsonLd: {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
-        name: `GingerKare Shop${selectedCategory !== 'All' ? ` - ${selectedCategory}` : ''}`,
+        name: `123Bots Shop${selectedCategory !== 'All' ? ` - ${selectedCategory}` : ''}`,
         description: 'Browse custom printables and personalized products',
         numberOfItems: products.length,
       },
@@ -201,7 +201,7 @@ const PeptidesShopPage = () => {
               PRE-PRINTED AND CUSTOM SUBLIMATION
             </span>
             <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-slate-800 mb-4">
-              GingerKare Custom Emporium
+              123Bots
             </h1>
             <p className="text-slate-600 text-lg max-w-2xl mx-auto">
               Browse our collection of custom printables, unique gifts, and personalized treasures. Made with care, just for you.

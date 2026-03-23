@@ -33,11 +33,11 @@ def generate_location_page_html(
     city_count: int = 0,
     counties: list | None = None,
     cities: list | None = None,
-    base_url: str = "https://gingerkare.com",
+    base_url: str = "https://123bots.com",
     logo_url: str = "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png",
-    site_name: str = "GingerKare Custom Emporium",
+    site_name: str = "123Bots",
     phone: str = "(334) 555-0123",
-    email: str = "gingerkare44@yahoo.com",
+    email: str = "info@123bots.com",
     background_image: str = "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png",
     video_url: str = "/videos/butterfly_alpha.webm",
 ) -> str:
@@ -51,33 +51,33 @@ def generate_location_page_html(
     if location_type == "state":
         location_slug = state_slug
         location_label = safe_location_name
-        title = f"Custom Printables in {safe_location_name} | GingerKare Custom Emporium"
-        hero_headline = f"GingerKare Custom Emporium"
+        title = f"Custom Printables in {safe_location_name} | 123Bots"
+        hero_headline = f"123Bots"
         hero_tagline = f"Your Local Custom Printables Destination in {safe_location_name}"
     elif location_type == "county":
         location_slug = f"{_slugify(location_name.replace(' County', ''))}-{state_abbr.lower()}"
         location_label = f"{safe_location_name}, {safe_state_name}"
-        title = f"Custom Printables in {safe_location_name}, {safe_state_name} | GingerKare"
-        hero_headline = f"GingerKare Custom Emporium"
+        title = f"Custom Printables in {safe_location_name}, {safe_state_name} | 123Bots"
+        hero_headline = f"123Bots"
         hero_tagline = f"Serving {safe_location_name}, {safe_state_name}"
     else:
         location_slug = f"{_slugify(location_name)}-{state_abbr.lower()}"
         location_label = f"{safe_location_name}, {state_abbr}"
-        title = f"Custom Printables in {safe_location_name}, {state_abbr} | GingerKare"
-        hero_headline = f"GingerKare Custom Emporium"
+        title = f"Custom Printables in {safe_location_name}, {state_abbr} | 123Bots"
+        hero_headline = f"123Bots"
         hero_tagline = f"Serving {safe_location_name}, {state_abbr}"
 
     description = (
-        f"GingerKare Custom Emporium delivers high-quality custom printables to {location_label}. "
+        f"123Bots delivers high-quality custom printables to {location_label}. "
         f"T-shirts, mugs, tumblers, canvas art, stickers, and more. Visit us today!"
     )
-    canonical_path = f"/locations/gingerkare-{location_slug}"
+    canonical_path = f"/locations/123Bots-{location_slug}"
     canonical_url = f"{base_url}{canonical_path}"
 
     json_ld_payload = {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
-        "name": "GingerKare Custom Emporium",
+        "name": "123Bots",
         "description": description,
         "url": canonical_url,
         "telephone": phone,
@@ -117,13 +117,13 @@ def generate_location_page_html(
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{escape(title)}</title>
   <meta name="description" content="{escape(description)}" />
-  <meta name="keywords" content="GingerKare, custom printables {escape(location_name)}, t-shirts, mugs, tumblers, canvas art, {escape(location_name)}" />
+  <meta name="keywords" content="123Bots, custom printables {escape(location_name)}, t-shirts, mugs, tumblers, canvas art, {escape(location_name)}" />
   <meta name="robots" content="index,follow" />
   <meta property="og:title" content="{escape(title)}" />
   <meta property="og:description" content="{escape(description)}" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="{canonical_url}" />
-  <meta property="og:site_name" content="GingerKare Custom Emporium" />
+  <meta property="og:site_name" content="123Bots" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="{escape(title)}" />
   <meta name="twitter:description" content="{escape(description)}" />
@@ -574,7 +574,7 @@ def generate_location_page_html(
     
     <!-- Footer -->
     <footer>
-      <p>&copy; 2024 GingerKare Custom Emporium. All rights reserved.</p>
+      <p>&copy; 2024 123Bots. All rights reserved.</p>
     </footer>
   </div>
   

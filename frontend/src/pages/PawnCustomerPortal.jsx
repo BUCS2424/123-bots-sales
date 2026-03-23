@@ -470,7 +470,7 @@ const PeptidesCustomerPortal = () => {
             <Link to="/" className="flex items-center gap-3">
               <img 
                 src="https://i.ibb.co/JwNWWxp4/ap-logo.png" 
-                alt="Gingerkare Custom Emporium" 
+                alt="123Bots" 
                 className="h-12"
               />
               <div>
@@ -506,7 +506,7 @@ const PeptidesCustomerPortal = () => {
                     <MapPin className="w-5 h-5 text-[#c41e3a]" /> Visit Us
                   </h3>
                   <p className="text-gray-600">
-                    Gingerkare Custom Emporium<br />
+                    123Bots<br />
                     7860 Eddins Road<br />
                     Dothan, Alabama 36301
                   </p>
@@ -542,7 +542,7 @@ const PeptidesCustomerPortal = () => {
       {/* Footer */}
       <div className="mt-12 bg-gray-800 text-white py-6">
         <div className="max-w-4xl mx-auto px-6 text-center text-sm">
-          <p>© {new Date().getFullYear()} Gingerkare Custom Emporium. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} 123Bots. All rights reserved.</p>
           <p className="text-gray-400 mt-1">
             Secure payments powered by Stripe. Your information is protected.
           </p>

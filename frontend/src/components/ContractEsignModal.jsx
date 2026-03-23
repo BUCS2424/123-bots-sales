@@ -329,7 +329,7 @@ const ContractSigningModal = ({
       pawn: [
         "The Pledgor hereby pawns the above-described property to secure a loan.",
         "The Pledgor may redeem the pledged property by paying the full payoff amount on or before the due date.",
-        "If the Pledgor fails to redeem the property by the due date plus grace period, ownership transfers to Gingerkare Custom Emporium.",
+        "If the Pledgor fails to redeem the property by the due date plus grace period, ownership transfers to 123Bots.",
         "Interest accrues monthly on the outstanding principal balance.",
         "The Pledgor certifies they are the rightful owner of the pledged property.",
         "All transactions are subject to Alabama state regulations."
@@ -338,7 +338,7 @@ const ContractSigningModal = ({
         "Tenant agrees to pay rent monthly in advance.",
         "Tenant shall not store hazardous materials, illegal items, or perishables.",
         "Tenant is responsible for their own insurance on stored items.",
-        "Gingerkare Custom Emporium is not liable for loss, theft, or damage to stored items.",
+        "123Bots is not liable for loss, theft, or damage to stored items.",
         "Tenant must provide 30 days notice to vacate.",
         "Failure to pay rent may result in lien on stored property per Alabama law."
       ],
@@ -348,7 +348,7 @@ const ContractSigningModal = ({
         "Customer will be contacted if costs exceed estimate by more than 10%.",
         "Payment is due upon completion of services.",
         "Vehicles not picked up within 30 days may be subject to storage fees.",
-        "Gingerkare Custom Emporium is not liable for pre-existing conditions."
+        "123Bots is not liable for pre-existing conditions."
       ]
     };
 
@@ -378,7 +378,7 @@ const ContractSigningModal = ({
               <div ref={printRef}>
                 <div className="text-center mb-4">
                   <h2 className="text-xl font-bold" style={{ color: config.color }}>{config.title}</h2>
-                  <p className="text-sm text-gray-500">Gingerkare Custom Emporium | 7860 Eddins Road, Dothan, AL 36301</p>
+                  <p className="text-sm text-gray-500">123Bots | 7860 Eddins Road, Dothan, AL 36301</p>
                 </div>
                 
                 {renderContractContent()}

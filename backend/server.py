@@ -167,7 +167,7 @@ from mega_menu import router as mega_menu_router, public_router as mega_menu_pub
 set_mega_menu_db(db)
 
 # Create the main app without a prefix
-app = FastAPI(title="Gingerkare Custom Emporium API")
+app = FastAPI(title="123Bots API")
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
@@ -214,19 +214,19 @@ async def require_super_admin(current_user: TokenData = Depends(require_auth)) -
 # Basic routes
 @api_router.get("/")
 async def root():
-    return {"message": "GingerKare Custom Emporium API"}
+    return {"message": "123Bots API"}
 
 @api_router.get("/health")
 async def health_check():
     """Health check endpoint for deployment readiness"""
-    return {"status": "healthy", "service": "gingerkare-api"}
+    return {"status": "healthy", "service": "123Bots-api"}
 
 from fastapi.responses import Response
 
 @api_router.get("/sitemap.xml")
 async def dynamic_sitemap():
     """Generate dynamic sitemap with products and articles"""
-    base_url = "https://gingerkare.com"
+    base_url = "https://123bots.com"
     
     # Static pages
     static_pages = [
@@ -725,7 +725,7 @@ class SMTPSettings(BaseModel):
     smtp_username: str = ""
     smtp_password: str = ""
     from_email: str = ""
-    from_name: str = "Gingerkare"
+    from_name: str = "123Bots"
     use_tls: bool = True
 
 @api_router.get("/settings/smtp")
@@ -746,7 +746,7 @@ async def get_smtp_settings(current_user: TokenData = Depends(require_auth)):
         "smtp_username": settings.get("smtp_username", ""),
         "smtp_password_set": bool(settings.get("smtp_password")),
         "from_email": settings.get("from_email", ""),
-        "from_name": settings.get("from_name", "Gingerkare"),
+        "from_name": settings.get("from_name", "123Bots"),
         "use_tls": settings.get("use_tls", True),
         "is_configured": bool(settings.get("smtp_host"))
     }
@@ -797,7 +797,7 @@ async def test_smtp_settings(current_user: TokenData = Depends(require_auth)):
     
     success = await send_email(
         user["email"],
-        "Gingerkare SMTP Test",
+        "123Bots SMTP Test",
         "<h1>SMTP Configuration Successful!</h1><p>Your email settings are working correctly.</p>",
         "SMTP Configuration Successful! Your email settings are working correctly."
     )

@@ -15,13 +15,13 @@ const AdminBusinessSettings = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
-    business_name: 'Gingerkare Custom Emporium',
+    business_name: '123Bots',
     address: '',
     city: '',
     state: '',
     zip_code: '',
     phone: '(844) 589-PEPS (7377)',
-    email: 'support@gingerkare.com',
+    email: 'support@123bots.com',
     website: '',
     description: '',
     monday_hours: '9:00 AM - 6:00 PM',
@@ -172,7 +172,7 @@ const AdminBusinessSettings = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="mt-1"
-                  placeholder="support@gingerkare.com"
+                  placeholder="support@123bots.com"
                 />
               </div>
             </div>
@@ -184,7 +184,7 @@ const AdminBusinessSettings = () => {
                 value={formData.website}
                 onChange={handleChange}
                 className="mt-1"
-                placeholder="www.gingerkare.com"
+                placeholder="www.123bots.com"
               />
             </div>
           </CardContent>

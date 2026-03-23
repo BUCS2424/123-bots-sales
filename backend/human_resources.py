@@ -313,7 +313,7 @@ async def get_hr_settings():
     if not settings:
         # Return defaults
         return {
-            "business_name": "Gingerkare Custom Emporium",
+            "business_name": "123Bots",
             "business_address": "7860 Eddins Road",
             "business_city": "Dothan",
             "business_state": "AL",
@@ -1147,7 +1147,7 @@ class EmployeeManualResponse(EmployeeManualBase):
 
 class HRPortalSettingsBase(BaseModel):
     welcome_title: str = "Join Our Team"
-    welcome_subtitle: str = "Build your career with Gingerkare Custom Emporium"
+    welcome_subtitle: str = "Build your career with 123Bots"
     welcome_description: str = "We're always looking for talented individuals to join our growing team. Explore opportunities across our product catalog, storage facility, and RV repair center."
     hero_image_url: Optional[str] = None
     company_culture_text: Optional[str] = None

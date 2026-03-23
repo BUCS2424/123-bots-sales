@@ -30,14 +30,14 @@ export default function ResearchLibraryPage() {
 
   useEffect(() => {
     setSeoMetadata({
-      title: 'Custom Printing & Sublimation Tips | GingerKare',
+      title: 'Custom Printing & Sublimation Tips | 123Bots',
       description: 'Explore our collection of articles about custom printing, sublimation techniques, design tips, and product care guides.',
-      keywords: 'sublimation printing, custom t-shirts, design tips, product care, GingerKare',
+      keywords: 'sublimation printing, custom t-shirts, design tips, product care, 123Bots',
       canonicalPath: '/research',
       jsonLd: {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
-        name: 'GingerKare Design & Printing Tips',
+        name: '123Bots Design & Printing Tips',
         description: 'Browse articles about custom printing, sublimation, and product customization.',
       },
     });

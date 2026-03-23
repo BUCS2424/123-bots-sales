@@ -19,7 +19,7 @@ const TopBar = ({ businessInfo }) => {
     navigate('/');
   };
 
-  const emailDisplay = businessInfo?.email || 'info@gingerkare.com';
+  const emailDisplay = businessInfo?.email || 'info@123bots.com';
 
   return (
     <div className="bg-gradient-to-r from-[#2c1810] to-[#3a1f12] border-b border-[#ff8c42]/20 py-2.5 px-4">
@@ -35,7 +35,7 @@ const TopBar = ({ businessInfo }) => {
         {/* Center - Social */}
         <div className="hidden lg:flex items-center gap-6 text-slate-300">
           <a 
-            href="https://www.facebook.com/gingerkare.collectibles" 
+            href="https://www.facebook.com/123bots.collectibles" 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex items-center gap-2 hover:text-[#00bfff] transition-colors"

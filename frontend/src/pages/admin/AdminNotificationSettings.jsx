@@ -13,7 +13,7 @@ const AdminNotificationSettings = () => {
   const [emailSettings, setEmailSettings] = useState({
     enabled: true,
     fromEmail: 'noreply@alabamapawnstorage.com',
-    fromName: 'Gingerkare Custom Emporium',
+    fromName: '123Bots',
     newOrderNotify: true,
     lowStockNotify: true,
     newCustomerNotify: false,

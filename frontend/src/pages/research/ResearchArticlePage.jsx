@@ -51,7 +51,7 @@ export default function ResearchArticlePage() {
     if (!article) return;
 
     setSeoMetadata({
-      title: article.meta_title || `${article.title} | GingerKare`,
+      title: article.meta_title || `${article.title} | 123Bots`,
       description: article.meta_description || article.summary,
       keywords: article.meta_keywords || article.tags.join(', '),
       canonicalPath: `/research/${article.slug}`,
@@ -65,7 +65,7 @@ export default function ResearchArticlePage() {
         inLanguage: 'en',
         author: {
           '@type': 'Organization',
-          name: 'GingerKare Custom Emporium',
+          name: '123Bots',
         },
       },
     });

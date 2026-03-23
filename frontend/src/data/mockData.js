@@ -1,4 +1,4 @@
-// Mock data for Gingerkare Custom Emporium
+// Mock data for 123Bots
 
 export const storageUnits = [
   {

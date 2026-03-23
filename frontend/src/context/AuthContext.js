@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const FRONTEND_ORIGIN = typeof window !== 'undefined' ? window.location.origin : '';
-const API_BASE = (typeof window !== 'undefined' && window.location.hostname.endsWith('gingerkare.com'))
+const API_BASE = (typeof window !== 'undefined' && window.location.hostname.endsWith('123bots.com'))
   ? FRONTEND_ORIGIN
   : BACKEND_URL;
 const API = `${API_BASE}/api`;

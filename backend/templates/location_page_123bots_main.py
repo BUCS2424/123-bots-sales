@@ -33,9 +33,9 @@ def generate_location_page_html(
     city_count: int = 0,
     counties: list | None = None,
     cities: list | None = None,
-    base_url: str = "https://gingerkare.com",
+    base_url: str = "https://123bots.com",
     logo_url: str = "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png",
-    site_name: str = "GingerKare",
+    site_name: str = "123Bots",
     phone: str = "(844) 589-PEPS",
     hero_settings: dict | None = None,
     site_settings: dict | None = None,
@@ -66,26 +66,26 @@ def generate_location_page_html(
         location_slug = state_slug
         location_label = safe_location_name
         type_label = "State"
-        title = f"Premium Quality Custom Sublimation in {safe_location_name} | GingerKare"
+        title = f"Premium Quality Custom Sublimation in {safe_location_name} | 123Bots"
         hero_headline = f"Premium Quality Custom Sublimation<br/>in <span class='gold'>{safe_location_name}</span>"
     elif location_type == "county":
         location_slug = f"{_slugify(location_name.replace(' County', ''))}-{state_abbr.lower()}"
         location_label = f"{safe_location_name}, {safe_state_name}"
         type_label = "County"
-        title = f"Custom Sublimation in {safe_location_name}, {safe_state_name} | GingerKare"
+        title = f"Custom Sublimation in {safe_location_name}, {safe_state_name} | 123Bots"
         hero_headline = f"Custom Sublimation for<br/><span class='gold'>{safe_location_name}</span>"
     else:
         location_slug = f"{_slugify(location_name)}-{state_abbr.lower()}"
         location_label = f"{safe_location_name}, {state_abbr}"
         type_label = "City"
-        title = f"Custom Sublimation in {safe_location_name}, {state_abbr} | GingerKare"
+        title = f"Custom Sublimation in {safe_location_name}, {state_abbr} | 123Bots"
         hero_headline = f"Custom Sublimation for<br/><span class='gold'>{safe_location_name}</span>"
 
     description = (
-        f"GingerKare Custom Emporium delivers premium quality custom sublimation products to {location_label}. "
+        f"123Bots delivers premium quality custom sublimation products to {location_label}. "
         f"T-shirts, mugs, tumblers, canvas art, and more. Made with care, just for you."
     )
-    canonical_path = f"/locations/gingerkare-{location_slug}"
+    canonical_path = f"/locations/123Bots-{location_slug}"
     canonical_url = f"{base_url}{canonical_path}"
 
     json_ld_payload = {
@@ -96,7 +96,7 @@ def generate_location_page_html(
         "url": canonical_url,
         "publisher": {
             "@type": "Organization",
-            "name": "GingerKare",
+            "name": "123Bots",
             "url": base_url,
         },
     }
@@ -1490,13 +1490,13 @@ def generate_location_page_html(
     <div class="container">
       <div class="top-bar-inner">
         <div class="top-bar-left">
-          <a href="mailto:gingerkare44@yahoo.com" class="top-bar-item">
+          <a href="mailto:info@123bots.com" class="top-bar-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            <span>gingerkare44@yahoo.com</span>
+            <span>info@123bots.com</span>
           </a>
         </div>
         <div class="top-bar-center">
-          <a href="https://www.facebook.com/gingerkare.collectibles" target="_blank" rel="noopener noreferrer" class="top-bar-item">
+          <a href="https://www.facebook.com/123bots.collectibles" target="_blank" rel="noopener noreferrer" class="top-bar-item">
             <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
             <span>Follow Us</span>
           </a>
@@ -1704,7 +1704,7 @@ def generate_location_page_html(
       <div class="section-header">
         <div class="section-badge">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-          <span>GingerKare Tips</span>
+          <span>123Bots Tips</span>
         </div>
         <h2 class="section-title">Design Inspiration & Tips</h2>
         <p class="section-subtitle">Helpful guides and articles to help you create the perfect custom products.</p>
@@ -1728,7 +1728,7 @@ def generate_location_page_html(
         </div>
         <div class="category-card">
           <h3>Business & Marketing</h3>
-          <p>Tips for bulk orders, creating designs that sell, and growing your custom product business with GingerKare.</p>
+          <p>Tips for bulk orders, creating designs that sell, and growing your custom product business with 123Bots.</p>
           <a href="/research?category=Business+%26+Marketing" class="category-link">
             Read Articles
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -1754,7 +1754,7 @@ def generate_location_page_html(
       {location_nav_section}
       
       <div class="compliance-note">
-        <strong>Custom Made With Care:</strong> All GingerKare products are custom-made just for you. We take pride in delivering high-quality sublimation products to {location_label} and beyond!
+        <strong>Custom Made With Care:</strong> All 123Bots products are custom-made just for you. We take pride in delivering high-quality sublimation products to {location_label} and beyond!
       </div>
     </div>
   </section>
@@ -1769,7 +1769,7 @@ def generate_location_page_html(
             <span>Customer Reviews</span>
           </div>
           <h2 class="section-title">What Our <em>Customers</em> Say</h2>
-          <p class="section-subtitle">Real feedback from happy customers who love their custom GingerKare products.</p>
+          <p class="section-subtitle">Real feedback from happy customers who love their custom 123Bots products.</p>
         </div>
         <div class="testimonial-grid">
           <article class="testimonial-card">
@@ -1795,7 +1795,7 @@ def generate_location_page_html(
             </div>
             <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
             <h4>Perfect for our small business!</h4>
-            <p>GingerKare made custom mugs for our coffee shop. The sublimation quality is outstanding and customers love them!</p>
+            <p>123Bots made custom mugs for our coffee shop. The sublimation quality is outstanding and customers love them!</p>
             <div class="testimonial-footer">
               <span class="avatar">MR</span>
               <div class="testimonial-footer-info">
@@ -1846,7 +1846,7 @@ def generate_location_page_html(
     <div class="container">
       <div class="cta-inner">
         <h2 class="cta-title">Ready to Create Something Special?</h2>
-        <p class="cta-subtitle">Join thousands of happy customers who love their custom GingerKare products.</p>
+        <p class="cta-subtitle">Join thousands of happy customers who love their custom 123Bots products.</p>
         <div class="cta-buttons">
           <a href="/shop" class="btn btn-gold">
             Shop Now
@@ -1867,7 +1867,7 @@ def generate_location_page_html(
             <div class="footer-logo-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
             </div>
-            <span>GingerKare</span>
+            <span>123Bots</span>
           </div>
           <p>Custom sublimation products made with love. T-shirts, mugs, tumblers, canvas art, and more - personalized just for you!</p>
         </div>
@@ -1899,7 +1899,7 @@ def generate_location_page_html(
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2026 GingerKare Custom Emporium. All rights reserved.</p>
+        <p>&copy; 2026 123Bots. All rights reserved.</p>
       </div>
     </div>
   </footer>

@@ -34,7 +34,7 @@ const FAQPage = () => {
         },
         {
           q: 'Can I modify or cancel my order after placing it?',
-          a: 'Orders can be modified or cancelled within 2 hours of placement, provided production has not yet begun. Since our items are custom made, once production starts, orders cannot be changed. Please contact us immediately at support@gingerkare.com if you need to make changes.'
+          a: 'Orders can be modified or cancelled within 2 hours of placement, provided production has not yet begun. Since our items are custom made, once production starts, orders cannot be changed. Please contact us immediately at support@123bots.com if you need to make changes.'
         },
         {
           q: 'Do you offer bulk or wholesale pricing?',
@@ -142,7 +142,7 @@ const FAQPage = () => {
         },
         {
           q: 'How do I request a refund?',
-          a: 'Contact us at support@gingerkare.com with your order number and reason for the refund request. Refunds are processed within 5-7 business days after approval.'
+          a: 'Contact us at support@123bots.com with your order number and reason for the refund request. Refunds are processed within 5-7 business days after approval.'
         }
       ]
     },
@@ -154,7 +154,7 @@ const FAQPage = () => {
       questions: [
         {
           q: 'How can I contact customer support?',
-          a: 'You can reach us at support@gingerkare.com or through our Contact page. We typically respond within 24-48 hours during business days.'
+          a: 'You can reach us at support@123bots.com or through our Contact page. We typically respond within 24-48 hours during business days.'
         },
         {
           q: 'What are your business hours?',
@@ -176,8 +176,8 @@ const FAQPage = () => {
     
     setSeoMetadata({
       title: 'Frequently Asked Questions',
-      description: 'Find answers to common questions about GingerKare products, ordering, shipping, custom designs, and returns.',
-      keywords: 'FAQ, custom printing questions, ordering help, shipping info, GingerKare help',
+      description: 'Find answers to common questions about 123Bots products, ordering, shipping, custom designs, and returns.',
+      keywords: 'FAQ, custom printing questions, ordering help, shipping info, 123Bots help',
       canonicalPath: '/faq',
       ogType: 'website',
       jsonLd: generateFAQSchema(allFaqs),

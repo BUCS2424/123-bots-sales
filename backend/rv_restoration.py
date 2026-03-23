@@ -1035,12 +1035,12 @@ Date & Time: {event_dt.strftime('%B %d, %Y at %I:%M %p')}
 Service: {event_data.get('title', 'RV Service')}
 {f"RV: {event_data.get('rv_info')}" if event_data.get('rv_info') else ""}
 
-Location: Gingerkare Custom Emporium
+Location: 123Bots
 7860 Eddins Road, Dothan, AL 36301
 
 If you need to reschedule, please call us at (334) XXX-XXXX.
 
-Thank you for choosing Gingerkare Custom Emporium!
+Thank you for choosing 123Bots!
 """
     else:
         subject = f"Admin Reminder: {event_data.get('title', 'Scheduled Event')}"

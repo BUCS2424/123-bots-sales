@@ -20,7 +20,7 @@ const MaintenancePage = () => {
   }, []);
 
   const phoneDisplay = businessInfo?.phone || '(844) 589-PEPS (7377)';
-  const emailDisplay = businessInfo?.email || 'support@gingerkare.com';
+  const emailDisplay = businessInfo?.email || 'support@123bots.com';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0a1e] via-[#1a1030] to-[#0f0a1e] flex items-center justify-center p-6" data-testid="maintenance-page">
@@ -76,7 +76,7 @@ const MaintenancePage = () => {
 
         {/* Footer */}
         <p className="mt-12 text-xs text-slate-600">
-          © {new Date().getFullYear()} Gingerkare Custom Emporium. All rights reserved.
+          © {new Date().getFullYear()} 123Bots. All rights reserved.
         </p>
       </div>
     </div>

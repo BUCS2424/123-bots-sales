@@ -1,6 +1,6 @@
-export const DEFAULT_SITE_NAME = 'GingerKare Custom Emporium';
+export const DEFAULT_SITE_NAME = '123Bots';
 export const DEFAULT_LOGO_URL = 'https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png';
-export const DEFAULT_SUPPORT_EMAIL = 'info@gingerkare.com';
+export const DEFAULT_SUPPORT_EMAIL = 'info@123bots.com';
 
 export const buildSiteSettingsState = (payload = {}, loading = false) => ({
   siteName: payload.site_name || DEFAULT_SITE_NAME,

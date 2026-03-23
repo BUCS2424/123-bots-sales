@@ -32,7 +32,7 @@ async def get_smtp_settings():
         "username": settings.get("smtp_username", ""),
         "password": settings.get("smtp_password", ""),
         "from_email": settings.get("from_email", ""),
-        "from_name": settings.get("from_name", "Gingerkare"),
+        "from_name": settings.get("from_name", "123Bots"),
         "use_tls": settings.get("use_tls", True),
     }
 
@@ -94,7 +94,7 @@ async def send_email(to_email: str, subject: str, html_content: str, text_conten
 
 async def send_verification_email(to_email: str, verification_code: str, user_name: str = ""):
     """Send email verification email"""
-    subject = "Verify Your Gingerkare Account"
+    subject = "Verify Your 123Bots Account"
     
     html_content = f"""
     <!DOCTYPE html>
@@ -111,7 +111,7 @@ async def send_verification_email(to_email: str, verification_code: str, user_na
                         <!-- Header -->
                         <tr>
                             <td style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #4c1d95 100%); padding: 40px; text-align: center;">
-                                <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">Gingerkare</h1>
+                                <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">123Bots</h1>
                                 <p style="color: #c4b5fd; margin: 10px 0 0 0; font-size: 14px;">Custom Emporium</p>
                             </td>
                         </tr>
@@ -121,7 +121,7 @@ async def send_verification_email(to_email: str, verification_code: str, user_na
                                 <h2 style="color: #1e293b; margin: 0 0 20px 0; font-size: 24px;">Verify Your Email</h2>
                                 <p style="color: #64748b; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
                                     Hi{' ' + user_name if user_name else ''},<br><br>
-                                    Thank you for registering with Gingerkare. To complete your registration and access product pricing, please enter the verification code below:
+                                    Thank you for registering with 123Bots. To complete your registration and access product pricing, please enter the verification code below:
                                 </p>
                                 
                                 <!-- Verification Code Box -->
@@ -143,7 +143,7 @@ async def send_verification_email(to_email: str, verification_code: str, user_na
                                     FOR RESEARCH USE ONLY • NOT FOR HUMAN CONSUMPTION
                                 </p>
                                 <p style="color: #94a3b8; font-size: 12px; margin: 10px 0 0 0;">
-                                    © 2026 Gingerkare. All rights reserved.
+                                    © 2026 123Bots. All rights reserved.
                                 </p>
                             </td>
                         </tr>
@@ -156,11 +156,11 @@ async def send_verification_email(to_email: str, verification_code: str, user_na
     """
     
     text_content = f"""
-    Gingerkare - Verify Your Email
+    123Bots - Verify Your Email
     
     Hi{' ' + user_name if user_name else ''},
     
-    Thank you for registering with Gingerkare. To complete your registration, please enter this verification code:
+    Thank you for registering with 123Bots. To complete your registration, please enter this verification code:
     
     {verification_code}
     
@@ -169,7 +169,7 @@ async def send_verification_email(to_email: str, verification_code: str, user_na
     If you didn't create an account, you can safely ignore this email.
     
     FOR RESEARCH USE ONLY - NOT FOR HUMAN CONSUMPTION
-    © 2026 Gingerkare
+    © 2026 123Bots
     """
     
     return await send_email(to_email, subject, html_content, text_content)
@@ -177,7 +177,7 @@ async def send_verification_email(to_email: str, verification_code: str, user_na
 
 async def send_two_factor_email(to_email: str, verification_code: str, user_name: str = "", purpose: str = "login"):
     purpose_label = "sign in" if purpose == "login" else "enable two-step verification"
-    subject = "Your GingerKare security code"
+    subject = "Your 123Bots security code"
 
     html_content = f"""
     <!DOCTYPE html>
@@ -193,13 +193,13 @@ async def send_two_factor_email(to_email: str, verification_code: str, user_name
                     <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:18px;overflow:hidden;border:1px solid #ffd9bf;box-shadow:0 10px 30px rgba(44,24,16,0.08);">
                         <tr>
                             <td style="padding:32px 36px;background:linear-gradient(135deg,#2c1810 0%,#5c2f12 55%,#ff8c42 100%);text-align:left;">
-                                <p style="margin:0 0 8px 0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#ffd9bf;">GingerKare Custom Emporium</p>
+                                <p style="margin:0 0 8px 0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#ffd9bf;">123Bots</p>
                                 <h1 style="margin:0;font-size:28px;line-height:1.2;color:#ffffff;">Your security code is ready</h1>
                             </td>
                         </tr>
                         <tr>
                             <td style="padding:36px;">
-                                <p style="margin:0 0 16px 0;font-size:16px;line-height:1.7;color:#5c3b2a;">Hi{' ' + user_name if user_name else ''}, use the code below to {purpose_label} for your GingerKare account.</p>
+                                <p style="margin:0 0 16px 0;font-size:16px;line-height:1.7;color:#5c3b2a;">Hi{' ' + user_name if user_name else ''}, use the code below to {purpose_label} for your 123Bots account.</p>
                                 <div style="margin:28px 0;padding:24px;border-radius:16px;background:#fff2e8;border:2px dashed #ff8c42;text-align:center;">
                                     <p style="margin:0 0 10px 0;font-size:13px;color:#8b5a3c;text-transform:uppercase;letter-spacing:1.5px;">6-digit security code</p>
                                     <p style="margin:0;font-size:38px;font-weight:700;letter-spacing:10px;color:#c45508;font-family:monospace;">{verification_code}</p>
@@ -221,7 +221,7 @@ async def send_two_factor_email(to_email: str, verification_code: str, user_name
     """
 
     text_content = (
-        f"GingerKare Custom Emporium\n\n"
+        f"123Bots\n\n"
         f"Hi{' ' + user_name if user_name else ''},\n\n"
         f"Use this code to {purpose_label}:\n\n"
         f"{verification_code}\n\n"

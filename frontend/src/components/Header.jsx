@@ -56,7 +56,7 @@ const Header = () => {
   const siteSettings = useSiteSettings();
   const location = useLocation();
   const cartCount = getCartCount();
-  const supportEmail = siteSettings.supportEmail || 'info@gingerkare.com';
+  const supportEmail = siteSettings.supportEmail || 'info@123bots.com';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -107,7 +107,7 @@ const Header = () => {
           </div>
           <div className="flex items-center gap-4">
             <a 
-              href="https://www.facebook.com/gingerkare.collectibles" 
+              href="https://www.facebook.com/123bots.collectibles" 
               target="_blank" 
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-slate-300 hover:text-[#00bfff] transition-colors"

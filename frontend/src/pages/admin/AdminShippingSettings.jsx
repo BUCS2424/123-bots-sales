@@ -49,7 +49,7 @@ const AdminShippingSettings = () => {
     free_shipping_threshold: 100,
     free_shipping_service: 'USPS First Class',
     // Origin address
-    origin_name: 'Gingerkare Custom Emporium',
+    origin_name: '123Bots',
     origin_street1: '',
     origin_street2: '',
     origin_city: '',

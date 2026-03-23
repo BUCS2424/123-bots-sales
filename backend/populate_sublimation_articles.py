@@ -9,7 +9,7 @@ import random
 import uuid
 
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "gingerkare")
+DB_NAME = os.environ.get("DB_NAME", "123Bots")
 
 # Article categories
 CATEGORIES = [
@@ -934,7 +934,7 @@ async def populate_articles():
             "summary": article["summary"],
             "content": article["content"],
             "related_products": [],
-            "meta_title": article["title"] + " | GingerKare Custom Emporium",
+            "meta_title": article["title"] + " | 123Bots",
             "meta_description": article["summary"],
             "meta_keywords": ", ".join(article["tags"]),
             "created_at": created_date,

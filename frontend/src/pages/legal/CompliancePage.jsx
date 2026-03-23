@@ -30,7 +30,7 @@ const CompliancePage = () => {
               <div>
                 <h3 className="font-bold text-[#2c1810] text-lg">Made With Care, Just For You</h3>
                 <p className="text-gray-700 mt-2">
-                  At GingerKare Custom Emporium, every product is crafted with attention to detail and quality. 
+                  At 123Bots, every product is crafted with attention to detail and quality. 
                   We take pride in delivering unique, personalized items that exceed your expectations.
                 </p>
               </div>
@@ -40,7 +40,7 @@ const CompliancePage = () => {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Commitment to Quality</h2>
             <p className="text-gray-600 leading-relaxed">
-              GingerKare Custom Emporium is committed to delivering high-quality custom printed products that meet the highest standards. We maintain rigorous quality control processes and ethical business practices to ensure every item we create meets our customers' expectations.
+              123Bots is committed to delivering high-quality custom printed products that meet the highest standards. We maintain rigorous quality control processes and ethical business practices to ensure every item we create meets our customers' expectations.
             </p>
           </section>
 
@@ -50,7 +50,7 @@ const CompliancePage = () => {
               <h2 className="text-2xl font-bold text-gray-900">Quality Assurance</h2>
             </div>
             <p className="text-gray-600 leading-relaxed mb-4">
-              Every product created by GingerKare undergoes quality inspection to ensure:
+              Every product created by 123Bots undergoes quality inspection to ensure:
             </p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
               <li><strong>Print Quality:</strong> Vibrant colors, accurate designs, and crisp details on every item</li>
@@ -67,7 +67,7 @@ const CompliancePage = () => {
               <h2 className="text-2xl font-bold text-gray-900">Business Compliance</h2>
             </div>
             <p className="text-gray-600 leading-relaxed mb-4">
-              GingerKare operates in compliance with all applicable regulations:
+              123Bots operates in compliance with all applicable regulations:
             </p>
             
             <h3 className="text-lg font-semibold text-gray-800 mb-2 mt-6">Consumer Protection</h3>
@@ -89,7 +89,7 @@ const CompliancePage = () => {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Customer Responsibilities</h2>
             <p className="text-gray-600 leading-relaxed mb-4">
-              By ordering from GingerKare, customers agree to:
+              By ordering from 123Bots, customers agree to:
             </p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
               <li>Provide accurate information for orders and shipping</li>
@@ -117,7 +117,7 @@ const CompliancePage = () => {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Environmental Responsibility</h2>
             <p className="text-gray-600 leading-relaxed">
-              GingerKare is committed to reducing our environmental impact. We use eco-friendly packaging materials where possible and work with suppliers who share our commitment to sustainability.
+              123Bots is committed to reducing our environmental impact. We use eco-friendly packaging materials where possible and work with suppliers who share our commitment to sustainability.
             </p>
           </section>
 
@@ -127,8 +127,8 @@ const CompliancePage = () => {
               If you have questions about our quality standards or compliance practices, please contact us:
             </p>
             <div className="mt-4 p-4 bg-[#fff8f3] rounded-lg border border-[#ffe4d4]">
-              <p className="font-semibold text-[#2c1810]">GingerKare Custom Emporium</p>
-              <p className="text-[#ff8c42]">Email: support@gingerkare.com</p>
+              <p className="font-semibold text-[#2c1810]">123Bots</p>
+              <p className="text-[#ff8c42]">Email: support@123bots.com</p>
             </div>
             <p className="text-gray-600 leading-relaxed mt-4">
               We value your feedback and are committed to continuous improvement in everything we do.

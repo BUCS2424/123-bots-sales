@@ -1,7 +1,7 @@
 {
-  "short_name": "GingerKare",
-  "name": "GingerKare Custom Emporium - Custom Printables & Gifts",
-  "description": "Custom printables, unique gifts, and personalized treasures. T-shirts, mugs, tumblers, canvas art, and more. Made with love!",
+  "short_name": "123Bots",
+  "name": "123Bots - Automation Bots & Digital Solutions",
+  "description": "Your trusted source for automation bots and digital solutions. Streamline your workflow with cutting-edge bot technology!",
   "icons": [
     {
       "src": "favicon.png",
@@ -19,6 +19,6 @@
   "theme_color": "#ff8c42",
   "background_color": "#2c1810",
   "orientation": "portrait-primary",
-  "categories": ["shopping", "lifestyle", "personalization"],
+  "categories": ["shopping", "technology", "automation"],
   "lang": "en-US"
 }

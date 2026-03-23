@@ -155,7 +155,7 @@ const AdminPage = () => {
               />
               <div>
                 <h1 className="text-xl font-bold">Admin Dashboard</h1>
-                <p className="text-sm text-gray-300">Gingerkare Custom Emporium</p>
+                <p className="text-sm text-gray-300">123Bots</p>
               </div>
             </div>
             <div className="flex items-center gap-4">

@@ -231,7 +231,7 @@ async def get_robots(request: Request):
     """Serve robots.txt dynamically"""
     base_url = await _base_url(request)
 
-    content = f"""# Gingerkare Custom Emporium - robots.txt
+    content = f"""# 123Bots - robots.txt
 User-agent: *
 Allow: /
 Allow: /shop

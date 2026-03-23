@@ -125,7 +125,7 @@ class ShippingSettingsUpdate(BaseModel):
     free_shipping_service: str = "USPS First Class"  # Service for free shipping
     
     # Default origin address
-    origin_name: str = "Gingerkare Custom Emporium"
+    origin_name: str = "123Bots"
     origin_street1: str = "7860 Eddins Road"
     origin_street2: Optional[str] = None
     origin_city: str = "Dothan"
@@ -745,7 +745,7 @@ async def get_shipping_settings() -> Dict:
             "free_shipping_enabled": True,
             "free_shipping_threshold": 100.0,
             "free_shipping_service": "USPS First Class",
-            "origin_name": "Gingerkare Custom Emporium",
+            "origin_name": "123Bots",
             "origin_street1": "7860 Eddins Road",
             "origin_city": "Dothan",
             "origin_state": "AL",
@@ -943,7 +943,7 @@ async def get_checkout_rates(request: CheckoutRatesRequest):
     
     # Build from address from settings
     from_address = AddressModel(
-        name=settings.get("origin_name", "Gingerkare"),
+        name=settings.get("origin_name", "123Bots"),
         street1=settings.get("origin_street1", "") or "7860 Eddins Road",
         city=settings.get("origin_city", "") or "Dothan",
         state=settings.get("origin_state", "") or "AL",

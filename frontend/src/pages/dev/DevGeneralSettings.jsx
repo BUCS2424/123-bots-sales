@@ -13,7 +13,7 @@ const DevGeneralSettings = () => {
   
   const [settings, setSettings] = useState({
     adminEmail: 'mel@a2gdesigns.com',
-    supportEmail: 'support@gingerkare.com',
+    supportEmail: 'support@123bots.com',
     maintenanceMode: false,
     debugMode: false,
   });

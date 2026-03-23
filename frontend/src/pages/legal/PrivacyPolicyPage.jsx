@@ -7,8 +7,8 @@ const PrivacyPolicyPage = () => {
   useEffect(() => {
     setSeoMetadata({
       title: 'Privacy Policy',
-      description: 'GingerKare Custom Emporium Privacy Policy. Learn how we collect, use, and protect your personal information.',
-      keywords: 'privacy policy, data protection, GingerKare privacy',
+      description: '123Bots Privacy Policy. Learn how we collect, use, and protect your personal information.',
+      keywords: 'privacy policy, data protection, 123Bots privacy',
       canonicalPath: '/privacy-policy',
       noIndex: false,
     });
@@ -37,7 +37,7 @@ const PrivacyPolicyPage = () => {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Introduction</h2>
             <p className="text-gray-600 leading-relaxed">
-              GingerKare Custom Emporium ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and purchase our custom printed products. Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access the site.
+              123Bots ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and purchase our custom printed products. Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access the site.
             </p>
           </section>
 
@@ -125,8 +125,8 @@ const PrivacyPolicyPage = () => {
               If you have any questions about this Privacy Policy, please contact us at:
             </p>
             <div className="mt-4 p-4 bg-[#fff8f3] rounded-lg border border-[#ffe4d4]">
-              <p className="font-semibold text-[#2c1810]">GingerKare Custom Emporium</p>
-              <p className="text-[#ff8c42]">Email: support@gingerkare.com</p>
+              <p className="font-semibold text-[#2c1810]">123Bots</p>
+              <p className="text-[#ff8c42]">Email: support@123bots.com</p>
             </div>
           </section>
 

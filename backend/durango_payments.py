@@ -554,7 +554,7 @@ async def _create_paypal_order(order: dict, paypal_settings: dict, request: Requ
         "purchase_units": [
             {
                 "reference_id": order_number,
-                "description": f"Gingerkare order {order_number}",
+                "description": f"123Bots order {order_number}",
                 "amount": {
                     "currency_code": "USD",
                     "value": f"{order.get('total', 0):.2f}",
@@ -562,7 +562,7 @@ async def _create_paypal_order(order: dict, paypal_settings: dict, request: Requ
             }
         ],
         "application_context": {
-            "brand_name": "Gingerkare",
+            "brand_name": "123Bots",
             "shipping_preference": "NO_SHIPPING",
             "user_action": "PAY_NOW",
             "return_url": f"{origin}/order-confirmation?paypal=success&order={order_number}",
@@ -609,7 +609,7 @@ def _build_paypal_email_payment_link(order: dict, paypal_settings: dict) -> str:
     params = {
         "cmd": "_xclick",
         "business": paypal_email,
-        "item_name": f"Gingerkare Order {order.get('order_number')}",
+        "item_name": f"123Bots Order {order.get('order_number')}",
         "amount": f"{order.get('total', 0):.2f}",
         "currency_code": "USD",
         "custom": order.get("order_number"),
@@ -984,7 +984,7 @@ async def send_cashapp_venmo_payment_email(order: dict, payment_method: str, pay
     html_content = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #7c3aed 0%, #f59e0b 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
-            <h1 style="color: white; margin: 0; font-size: 24px;">Gingerkare</h1>
+            <h1 style="color: white; margin: 0; font-size: 24px;">123Bots</h1>
             <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0;">Payment Instructions</p>
         </div>
         
@@ -1036,7 +1036,7 @@ async def send_cashapp_venmo_payment_email(order: dict, payment_method: str, pay
         
         <div style="background: #1e1b4b; padding: 20px; text-align: center; border-radius: 0 0 12px 12px;">
             <p style="color: #a5b4fc; margin: 0; font-size: 12px;">FOR RESEARCH USE ONLY • NOT FOR HUMAN CONSUMPTION</p>
-            <p style="color: #64748b; margin: 10px 0 0; font-size: 11px;">© 2026 Gingerkare. All rights reserved.</p>
+            <p style="color: #64748b; margin: 10px 0 0; font-size: 11px;">© 2026 123Bots. All rights reserved.</p>
         </div>
     </div>
     """
@@ -1060,7 +1060,7 @@ async def send_paypal_payment_email(order: dict, paypal_email: str, payment_link
     html_content = f"""
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #0ea5e9 0%, #1d4ed8 100%); padding: 28px; text-align: center; border-radius: 12px 12px 0 0;">
-            <h1 style="color: white; margin: 0; font-size: 24px;">Gingerkare</h1>
+            <h1 style="color: white; margin: 0; font-size: 24px;">123Bots</h1>
             <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0;">Complete Your PayPal Payment</p>
         </div>
 

@@ -10,7 +10,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
-from templates.location_page_gingerkare_emporium import generate_location_page_html
+from templates.location_page_123bots_main import generate_location_page_html
 
 logger = logging.getLogger(__name__)
 

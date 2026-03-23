@@ -1,10 +1,10 @@
-// GingerKare SEO Utilities
+// 123Bots SEO Utilities
 // Comprehensive SEO management for all pages
 
-const SITE_NAME = 'GingerKare Custom Emporium';
-const SITE_URL = 'https://gingerkare.com';
+const SITE_NAME = '123Bots';
+const SITE_URL = 'https://123bots.com';
 const DEFAULT_IMAGE = 'https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png';
-const TWITTER_HANDLE = '@gingerkare';
+const TWITTER_HANDLE = '@123bots';
 
 // Helper to set or create meta tags
 const setOrCreateMeta = (selector, attributes, content) => {
@@ -117,21 +117,20 @@ export const generateOrganizationSchema = () => ({
   name: SITE_NAME,
   url: SITE_URL,
   logo: DEFAULT_IMAGE,
-  description: 'Custom printables, unique gifts, and personalized treasures. Made with love!',
+  description: 'Your trusted source for automation bots and digital solutions.',
   address: {
     '@type': 'PostalAddress',
-    addressLocality: 'Dothan',
-    addressRegion: 'AL',
     addressCountry: 'US',
   },
   contactPoint: {
     '@type': 'ContactPoint',
-    email: 'gingerkare44@yahoo.com',
+    email: 'info@123bots.com',
     contactType: 'customer service',
   },
   sameAs: [
-    'https://facebook.com/gingerkare',
-    'https://instagram.com/gingerkare',
+    'https://facebook.com/123bots',
+    'https://instagram.com/123bots',
+    'https://twitter.com/123bots',
   ],
 });
 
@@ -142,12 +141,12 @@ export const generateLocalBusinessSchema = (location = {}) => ({
   url: SITE_URL,
   logo: DEFAULT_IMAGE,
   image: DEFAULT_IMAGE,
-  description: 'Custom printables, unique gifts, and personalized treasures.',
+  description: 'Your trusted source for automation bots and digital solutions.',
   address: {
     '@type': 'PostalAddress',
     streetAddress: location.address || '',
-    addressLocality: location.city || 'Dothan',
-    addressRegion: location.state || 'AL',
+    addressLocality: location.city || '',
+    addressRegion: location.state || '',
     postalCode: location.zip || '',
     addressCountry: 'US',
   },
@@ -267,44 +266,44 @@ export const generateWebsiteSchema = () => ({
 // SEO presets for common pages
 export const SEO_PRESETS = {
   home: {
-    title: 'Custom Printables & Unique Gifts',
-    description: 'GingerKare Custom Emporium - Your destination for custom printables, unique gifts, and personalized treasures. T-shirts, mugs, tumblers, canvas art, and more!',
-    keywords: 'custom printables, personalized gifts, custom t-shirts, sublimation printing, custom mugs, tumblers, canvas art, GingerKare',
+    title: 'Automation Bots & Digital Solutions',
+    description: '123Bots - Your trusted source for automation bots and digital solutions. Streamline your workflow with our cutting-edge bot technology!',
+    keywords: 'automation bots, digital solutions, workflow automation, bot technology, 123Bots',
     canonicalPath: '/',
     ogType: 'website',
   },
   shop: {
-    title: 'Shop Custom Products',
-    description: 'Browse our collection of custom printables and personalized products. T-shirts, mugs, tumblers, canvas art, stickers, and more!',
-    keywords: 'custom products, personalized gifts, t-shirts, mugs, tumblers, canvas prints, sublimation',
+    title: 'Shop Products',
+    description: 'Browse our collection of products and solutions. Find the perfect automation tools for your needs!',
+    keywords: 'products, automation tools, digital solutions, bots',
     canonicalPath: '/shop',
     ogType: 'website',
   },
   research: {
-    title: 'Design Tips & Inspiration',
-    description: 'Explore our articles about sublimation printing, design tips, and custom product ideas. Learn how to create amazing personalized items!',
-    keywords: 'sublimation tips, design inspiration, custom printing guide, product care',
+    title: 'Resources & Guides',
+    description: 'Explore our articles about automation, bot technology, and digital solutions. Learn how to optimize your workflow!',
+    keywords: 'automation tips, bot guides, digital solutions, workflow optimization',
     canonicalPath: '/research',
     ogType: 'website',
   },
   about: {
     title: 'About Us',
-    description: 'Learn about GingerKare Custom Emporium - your trusted source for custom printables and personalized gifts. Made with love in Alabama!',
-    keywords: 'about GingerKare, custom printing company, Alabama business',
+    description: 'Learn about 123Bots - your trusted source for automation bots and digital solutions.',
+    keywords: 'about 123Bots, automation company, digital solutions',
     canonicalPath: '/about',
     ogType: 'website',
   },
   contact: {
     title: 'Contact Us',
-    description: 'Get in touch with GingerKare Custom Emporium. We\'re here to help with your custom product needs!',
-    keywords: 'contact GingerKare, custom order inquiry, customer support',
+    description: 'Get in touch with 123Bots. We\'re here to help with your automation needs!',
+    keywords: 'contact 123Bots, customer support, automation inquiry',
     canonicalPath: '/contact',
     ogType: 'website',
   },
   faq: {
     title: 'Frequently Asked Questions',
-    description: 'Find answers to common questions about GingerKare products, ordering, shipping, and custom designs.',
-    keywords: 'FAQ, custom printing questions, ordering help, shipping info',
+    description: 'Find answers to common questions about 123Bots products, services, and support.',
+    keywords: 'FAQ, automation questions, bot help, support info',
     canonicalPath: '/faq',
     ogType: 'website',
   },

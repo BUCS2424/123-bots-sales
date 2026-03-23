@@ -334,7 +334,7 @@ async def seed_reviews(count: int = 200):
         },
         {
             "title": "Trusted Supplier",
-            "content": "Our lab has ordered from Gingerkare for 2 years. The 99% purity guarantee isn't just marketing - every batch we've tested exceeds expectations. Outstanding vendor."
+            "content": "Our lab has ordered from 123Bots for 2 years. The 99% purity guarantee isn't just marketing - every batch we've tested exceeds expectations. Outstanding vendor."
         },
         {
             "title": "Research-Grade Excellence",
@@ -346,7 +346,7 @@ async def seed_reviews(count: int = 200):
         },
         {
             "title": "Highly Recommended",
-            "content": "We've recommended Gingerkare to four other labs in our network. The combination of purity, speed, and customer service is unmatched in this space."
+            "content": "We've recommended 123Bots to four other labs in our network. The combination of purity, speed, and customer service is unmatched in this space."
         },
         {
             "title": "Consistent Batch Quality",
@@ -366,7 +366,7 @@ async def seed_reviews(count: int = 200):
         },
         {
             "title": "Reliable Partner",
-            "content": "After trying several suppliers, Gingerkare has become our go-to source. Reliability and quality you can count on for serious research."
+            "content": "After trying several suppliers, 123Bots has become our go-to source. Reliability and quality you can count on for serious research."
         },
         {
             "title": "Great Value for Research",
@@ -394,11 +394,11 @@ async def seed_reviews(count: int = 200):
         },
         {
             "title": "Excellent for Academic Research",
-            "content": "As an academic researcher, budget constraints are real. Gingerkare offers research-grade quality at prices that work for university labs."
+            "content": "As an academic researcher, budget constraints are real. 123Bots offers research-grade quality at prices that work for university labs."
         },
         {
             "title": "Solved Our Sourcing Problems",
-            "content": "After inconsistent results with other suppliers, switching to Gingerkare solved our reproducibility issues. The difference is clear."
+            "content": "After inconsistent results with other suppliers, switching to 123Bots solved our reproducibility issues. The difference is clear."
         },
         {
             "title": "5 Stars Deserved",
@@ -406,7 +406,7 @@ async def seed_reviews(count: int = 200):
         },
         {
             "title": "Research Partner of Choice",
-            "content": "Gingerkare has become our research partner of choice. When results matter, you need a supplier you can trust completely."
+            "content": "123Bots has become our research partner of choice. When results matter, you need a supplier you can trust completely."
         },
         {
             "title": "Exceeded Expectations",
@@ -414,7 +414,7 @@ async def seed_reviews(count: int = 200):
         },
         {
             "title": "Biotech Approved",
-            "content": "Our biotech startup has strict vendor requirements. Gingerkare passed our quality audit with flying colors. Recommended for regulated research."
+            "content": "Our biotech startup has strict vendor requirements. 123Bots passed our quality audit with flying colors. Recommended for regulated research."
         },
         {
             "title": "Perfect for Screening Studies",
@@ -422,7 +422,7 @@ async def seed_reviews(count: int = 200):
         },
         {
             "title": "Graduate Research Essential",
-            "content": "As a PhD candidate, I need reliable reagents. Gingerkare has been essential for my dissertation research. Quality I can defend."
+            "content": "As a PhD candidate, I need reliable reagents. 123Bots has been essential for my dissertation research. Quality I can defend."
         }
     ]
     

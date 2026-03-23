@@ -209,7 +209,7 @@ const AdminAccountingDashboard = () => {
       const report = response.data;
       
       // Generate CSV content
-      let csv = 'Gingerkare Accounting Report\n';
+      let csv = '123Bots Accounting Report\n';
       csv += `Generated: ${new Date().toLocaleString()}\n`;
       csv += `Period: ${report.period.start} to ${report.period.end}\n\n`;
       

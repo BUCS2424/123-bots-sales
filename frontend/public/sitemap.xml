@@ -3,56 +3,56 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <!-- Main Pages -->
   <url>
-    <loc>https://gingerkare.com/</loc>
+    <loc>https://123bots.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://gingerkare.com/shop</loc>
+    <loc>https://123bots.com/shop</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://gingerkare.com/research</loc>
+    <loc>https://123bots.com/research</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Information Pages -->
   <url>
-    <loc>https://gingerkare.com/about</loc>
+    <loc>https://123bots.com/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gingerkare.com/contact</loc>
+    <loc>https://123bots.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gingerkare.com/faq</loc>
+    <loc>https://123bots.com/faq</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <!-- Legal Pages -->
   <url>
-    <loc>https://gingerkare.com/terms-conditions</loc>
+    <loc>https://123bots.com/terms-conditions</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://gingerkare.com/privacy-policy</loc>
+    <loc>https://123bots.com/privacy-policy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://gingerkare.com/shipping-returns</loc>
+    <loc>https://123bots.com/shipping-returns</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://gingerkare.com/accessibility</loc>
+    <loc>https://123bots.com/accessibility</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

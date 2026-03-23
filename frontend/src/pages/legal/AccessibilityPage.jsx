@@ -7,7 +7,7 @@ const AccessibilityPage = () => {
   useEffect(() => {
     setSeoMetadata({
       title: 'Accessibility Statement',
-      description: 'GingerKare Custom Emporium accessibility commitment. Learn about our efforts to make shopping accessible for everyone.',
+      description: '123Bots accessibility commitment. Learn about our efforts to make shopping accessible for everyone.',
       keywords: 'accessibility, WCAG, accessible shopping',
       canonicalPath: '/accessibility',
       noIndex: false,
@@ -37,7 +37,7 @@ const AccessibilityPage = () => {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Commitment</h2>
             <p className="text-gray-600 leading-relaxed">
-              GingerKare Custom Emporium is committed to ensuring digital accessibility for people with disabilities. We are continually improving the user experience for everyone and applying the relevant accessibility standards to ensure we provide equal access to all users.
+              123Bots is committed to ensuring digital accessibility for people with disabilities. We are continually improving the user experience for everyone and applying the relevant accessibility standards to ensure we provide equal access to all users.
             </p>
           </section>
 
@@ -47,14 +47,14 @@ const AccessibilityPage = () => {
               We aim to conform to the Web Content Accessibility Guidelines (WCAG) 2.1 Level AA standards. These guidelines explain how to make web content more accessible for people with disabilities and more user-friendly for everyone.
             </p>
             <p className="text-gray-600 leading-relaxed">
-              The guidelines have three levels of accessibility (A, AA, and AAA). We've chosen Level AA as our target for the GingerKare website.
+              The guidelines have three levels of accessibility (A, AA, and AAA). We've chosen Level AA as our target for the 123Bots website.
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Measures We Take</h2>
             <p className="text-gray-600 leading-relaxed mb-4">
-              GingerKare takes the following measures to ensure accessibility:
+              123Bots takes the following measures to ensure accessibility:
             </p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
               <li>Include accessibility as part of our development process</li>
@@ -107,11 +107,11 @@ const AccessibilityPage = () => {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Feedback</h2>
             <p className="text-gray-600 leading-relaxed">
-              We welcome your feedback on the accessibility of the GingerKare website. If you encounter any accessibility barriers or have suggestions for improvement, please contact us:
+              We welcome your feedback on the accessibility of the 123Bots website. If you encounter any accessibility barriers or have suggestions for improvement, please contact us:
             </p>
             <div className="mt-4 p-4 bg-[#fff8f3] rounded-lg border border-[#ffe4d4]">
-              <p className="font-semibold text-[#2c1810]">GingerKare Custom Emporium</p>
-              <p className="text-[#ff8c42]">Email: support@gingerkare.com</p>
+              <p className="font-semibold text-[#2c1810]">123Bots</p>
+              <p className="text-[#ff8c42]">Email: support@123bots.com</p>
             </div>
             <p className="text-gray-600 leading-relaxed mt-4">
               We try to respond to accessibility feedback within 2 business days and will work to resolve any issues as quickly as possible.

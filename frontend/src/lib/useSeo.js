@@ -78,7 +78,7 @@ export const useProductSeo = (product) => {
     
     setSeoMetadata({
       title: product.name,
-      description: product.description?.substring(0, 160) || `Shop ${product.name} at GingerKare Custom Emporium`,
+      description: product.description?.substring(0, 160) || `Shop ${product.name} at 123Bots`,
       keywords: [product.category, product.name, 'custom', 'personalized'].filter(Boolean).join(', '),
       canonicalPath: location.pathname,
       ogType: 'product',
@@ -92,7 +92,7 @@ export const useProductSeo = (product) => {
         sku: product.sku || product.id,
         brand: {
           '@type': 'Brand',
-          name: 'GingerKare',
+          name: '123Bots',
         },
         offers: {
           '@type': 'Offer',
@@ -130,11 +130,11 @@ export const useArticleSeo = (article) => {
         datePublished: article.published_date,
         author: {
           '@type': 'Organization',
-          name: 'GingerKare Custom Emporium',
+          name: '123Bots',
         },
         publisher: {
           '@type': 'Organization',
-          name: 'GingerKare Custom Emporium',
+          name: '123Bots',
         },
       },
     });
@@ -152,7 +152,7 @@ export const useCategorySeo = (category, products = []) => {
     
     setSeoMetadata({
       title: `${categoryName} - Custom Products`,
-      description: `Shop our ${categoryName.toLowerCase()} collection. Custom and personalized items at GingerKare Custom Emporium.`,
+      description: `Shop our ${categoryName.toLowerCase()} collection. Custom and personalized items at 123Bots.`,
       keywords: `${categoryName}, custom ${categoryName.toLowerCase()}, personalized`,
       canonicalPath: location.pathname,
       ogType: 'website',
@@ -160,7 +160,7 @@ export const useCategorySeo = (category, products = []) => {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
         name: `${categoryName} Collection`,
-        description: `Browse ${categoryName} at GingerKare`,
+        description: `Browse ${categoryName} at 123Bots`,
         numberOfItems: products.length,
       },
     });
@@ -179,14 +179,14 @@ export const useLocationSeo = (locationData) => {
     
     setSeoMetadata({
       title: `Custom Printables in ${locationLabel}`,
-      description: `GingerKare Custom Emporium delivers custom printables to ${locationLabel}. T-shirts, mugs, tumblers, canvas art, and more!`,
-      keywords: `custom printing ${locationLabel}, personalized gifts ${locationLabel}, GingerKare`,
-      canonicalPath: `/locations/gingerkare-${locationData.slug}`,
+      description: `123Bots delivers custom printables to ${locationLabel}. T-shirts, mugs, tumblers, canvas art, and more!`,
+      keywords: `custom printing ${locationLabel}, personalized gifts ${locationLabel}, 123Bots`,
+      canonicalPath: `/locations/123Bots-${locationData.slug}`,
       ogType: 'website',
       jsonLd: {
         '@context': 'https://schema.org',
         '@type': 'LocalBusiness',
-        name: 'GingerKare Custom Emporium',
+        name: '123Bots',
         description: `Custom printables and personalized gifts serving ${locationLabel}`,
         areaServed: locationLabel,
       },

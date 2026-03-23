@@ -49,14 +49,14 @@ const DevLocationPreview = () => {
 
   // Sample location data for preview
   const sampleLocation = {
-    name: 'GingerKare Custom Emporium',
+    name: '123Bots',
     tagline: 'Your Local Custom Printables Destination',
     address: '123 Main Street',
     city: 'Dothan',
     state: 'Alabama',
     zip: '36301',
     phone: '(334) 555-0123',
-    email: 'gingerkare44@yahoo.com',
+    email: 'info@123bots.com',
     hours: [
       { day: 'Monday - Friday', time: '9:00 AM - 6:00 PM' },
       { day: 'Saturday', time: '10:00 AM - 4:00 PM' },
@@ -250,7 +250,7 @@ const DevLocationPreview = () => {
         <footer className="py-8 px-6 border-t border-white/10">
           <div className="max-w-6xl mx-auto text-center">
             <p className="text-[#ffd4b8]/70 text-sm">
-              © {new Date().getFullYear()} GingerKare Custom Emporium. All rights reserved.
+              © {new Date().getFullYear()} 123Bots. All rights reserved.
             </p>
           </div>
         </footer>

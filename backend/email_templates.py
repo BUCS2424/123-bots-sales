@@ -16,17 +16,17 @@ def set_db(database):
     global db
     db = database
 
-# GingerKare Brand Colors
+# 123Bots Brand Colors
 # Primary: #ff8c42 (warm orange)
 # Secondary: #9370db (purple)
 # Dark: #2c1810 (warm brown)
 # Light text: #ffd4b8 (cream)
 
-# Default email templates - GingerKare Custom Emporium
+# Default email templates - 123Bots
 DEFAULT_TEMPLATES = {
     "order_confirmation": {
         "name": "Order Confirmation",
-        "subject": "Your GingerKare Order #{{order_number}} is Confirmed!",
+        "subject": "Your 123Bots Order #{{order_number}} is Confirmed!",
         "description": "Sent to customers after they place an order",
         "html_content": """<!DOCTYPE html>
 <html>
@@ -40,7 +40,7 @@ DEFAULT_TEMPLATES = {
     <!-- Header -->
     <tr>
       <td style="background: linear-gradient(135deg, #2c1810 0%, #3a1f12 100%); padding: 30px; text-align: center;">
-        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="GingerKare" style="height: 60px; margin-bottom: 10px;">
+        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="123Bots" style="height: 60px; margin-bottom: 10px;">
         <p style="color: #ffd4b8; margin: 10px 0 0 0; font-size: 14px;">Custom Emporium</p>
       </td>
     </tr>
@@ -99,7 +99,7 @@ DEFAULT_TEMPLATES = {
       <td style="background-color: #2c1810; padding: 30px; text-align: center;">
         <p style="color: #ff8c42; margin: 0 0 10px 0; font-size: 12px;">CUSTOM PRINTABLES • UNIQUE GIFTS • MADE WITH CARE</p>
         <p style="color: #ffd4b8; margin: 0; font-size: 12px;">
-          © {{current_year}} GingerKare Custom Emporium. All rights reserved.
+          © {{current_year}} 123Bots. All rights reserved.
         </p>
       </td>
     </tr>
@@ -110,7 +110,7 @@ DEFAULT_TEMPLATES = {
     },
     "shipping_confirmation": {
         "name": "Shipping Confirmation",
-        "subject": "Your GingerKare Order #{{order_number}} Has Shipped!",
+        "subject": "Your 123Bots Order #{{order_number}} Has Shipped!",
         "description": "Sent when an order ships with tracking info",
         "html_content": """<!DOCTYPE html>
 <html>
@@ -122,7 +122,7 @@ DEFAULT_TEMPLATES = {
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
     <tr>
       <td style="background: linear-gradient(135deg, #2c1810 0%, #3a1f12 100%); padding: 30px; text-align: center;">
-        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="GingerKare" style="height: 60px; margin-bottom: 10px;">
+        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="123Bots" style="height: 60px; margin-bottom: 10px;">
         <p style="color: #ffd4b8; margin: 10px 0 0 0; font-size: 14px;">Your Order is On Its Way!</p>
       </td>
     </tr>
@@ -156,7 +156,7 @@ DEFAULT_TEMPLATES = {
     <tr>
       <td style="background-color: #2c1810; padding: 30px; text-align: center;">
         <p style="color: #ff8c42; margin: 0 0 10px 0; font-size: 12px;">CUSTOM PRINTABLES • UNIQUE GIFTS • MADE WITH CARE</p>
-        <p style="color: #ffd4b8; margin: 0; font-size: 12px;">© {{current_year}} GingerKare Custom Emporium. All rights reserved.</p>
+        <p style="color: #ffd4b8; margin: 0; font-size: 12px;">© {{current_year}} 123Bots. All rights reserved.</p>
       </td>
     </tr>
   </table>
@@ -166,7 +166,7 @@ DEFAULT_TEMPLATES = {
     },
     "welcome_email": {
         "name": "Welcome Email",
-        "subject": "Welcome to GingerKare - Your Account is Ready!",
+        "subject": "Welcome to 123Bots - Your Account is Ready!",
         "description": "Sent to new users after registration",
         "html_content": """<!DOCTYPE html>
 <html>
@@ -178,13 +178,13 @@ DEFAULT_TEMPLATES = {
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
     <tr>
       <td style="background: linear-gradient(135deg, #2c1810 0%, #3a1f12 100%); padding: 30px; text-align: center;">
-        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="GingerKare" style="height: 60px; margin-bottom: 10px;">
+        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="123Bots" style="height: 60px; margin-bottom: 10px;">
         <p style="color: #ffd4b8; margin: 10px 0 0 0; font-size: 14px;">Custom Emporium</p>
       </td>
     </tr>
     <tr>
       <td style="padding: 40px 30px;">
-        <h2 style="color: #ff8c42; margin: 0 0 20px 0;">Welcome to GingerKare!</h2>
+        <h2 style="color: #ff8c42; margin: 0 0 20px 0;">Welcome to 123Bots!</h2>
         <p style="color: #333; line-height: 1.6;">Hi {{customer_name}},</p>
         <p style="color: #333; line-height: 1.6;">Thank you for creating an account with us. You now have access to:</p>
         
@@ -210,7 +210,7 @@ DEFAULT_TEMPLATES = {
     <tr>
       <td style="background-color: #2c1810; padding: 30px; text-align: center;">
         <p style="color: #ff8c42; margin: 0 0 10px 0; font-size: 12px;">WHATEVER YOUR PLEASURE, FIND YOUR TREASURE!</p>
-        <p style="color: #ffd4b8; margin: 0; font-size: 12px;">© {{current_year}} GingerKare Custom Emporium. All rights reserved.</p>
+        <p style="color: #ffd4b8; margin: 0; font-size: 12px;">© {{current_year}} 123Bots. All rights reserved.</p>
       </td>
     </tr>
   </table>
@@ -220,7 +220,7 @@ DEFAULT_TEMPLATES = {
     },
     "password_reset": {
         "name": "Password Reset",
-        "subject": "Reset Your GingerKare Password",
+        "subject": "Reset Your 123Bots Password",
         "description": "Sent when a user requests a password reset",
         "html_content": """<!DOCTYPE html>
 <html>
@@ -232,7 +232,7 @@ DEFAULT_TEMPLATES = {
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
     <tr>
       <td style="background: linear-gradient(135deg, #2c1810 0%, #3a1f12 100%); padding: 30px; text-align: center;">
-        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="GingerKare" style="height: 60px;">
+        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="123Bots" style="height: 60px;">
       </td>
     </tr>
     <tr>
@@ -256,7 +256,7 @@ DEFAULT_TEMPLATES = {
     </tr>
     <tr>
       <td style="background-color: #2c1810; padding: 30px; text-align: center;">
-        <p style="color: #ffd4b8; margin: 0; font-size: 12px;">© {{current_year}} GingerKare Custom Emporium. All rights reserved.</p>
+        <p style="color: #ffd4b8; margin: 0; font-size: 12px;">© {{current_year}} 123Bots. All rights reserved.</p>
       </td>
     </tr>
   </table>
@@ -266,7 +266,7 @@ DEFAULT_TEMPLATES = {
     },
     "order_status_update": {
         "name": "Order Status Update",
-        "subject": "Update on Your GingerKare Order #{{order_number}}",
+        "subject": "Update on Your 123Bots Order #{{order_number}}",
         "description": "Sent when order status changes",
         "html_content": """<!DOCTYPE html>
 <html>
@@ -278,7 +278,7 @@ DEFAULT_TEMPLATES = {
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
     <tr>
       <td style="background: linear-gradient(135deg, #2c1810 0%, #3a1f12 100%); padding: 30px; text-align: center;">
-        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="GingerKare" style="height: 60px;">
+        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="123Bots" style="height: 60px;">
       </td>
     </tr>
     <tr>
@@ -310,7 +310,7 @@ DEFAULT_TEMPLATES = {
     <tr>
       <td style="background-color: #2c1810; padding: 30px; text-align: center;">
         <p style="color: #ff8c42; margin: 0 0 10px 0; font-size: 12px;">CUSTOM PRINTABLES • UNIQUE GIFTS • MADE WITH CARE</p>
-        <p style="color: #ffd4b8; margin: 0; font-size: 12px;">© {{current_year}} GingerKare Custom Emporium. All rights reserved.</p>
+        <p style="color: #ffd4b8; margin: 0; font-size: 12px;">© {{current_year}} 123Bots. All rights reserved.</p>
       </td>
     </tr>
   </table>
@@ -320,7 +320,7 @@ DEFAULT_TEMPLATES = {
     },
     "abandoned_cart": {
         "name": "Abandoned Cart Reminder",
-        "subject": "You left something behind at GingerKare!",
+        "subject": "You left something behind at 123Bots!",
         "description": "Sent to remind customers about items left in cart",
         "html_content": """<!DOCTYPE html>
 <html>
@@ -332,7 +332,7 @@ DEFAULT_TEMPLATES = {
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
     <tr>
       <td style="background: linear-gradient(135deg, #2c1810 0%, #3a1f12 100%); padding: 30px; text-align: center;">
-        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="GingerKare" style="height: 60px; margin-bottom: 10px;">
+        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="123Bots" style="height: 60px; margin-bottom: 10px;">
         <p style="color: #ffd4b8; margin: 10px 0 0 0; font-size: 14px;">Custom Emporium</p>
       </td>
     </tr>
@@ -365,7 +365,7 @@ DEFAULT_TEMPLATES = {
     <tr>
       <td style="background-color: #2c1810; padding: 30px; text-align: center;">
         <p style="color: #ff8c42; margin: 0 0 10px 0; font-size: 12px;">WHATEVER YOUR PLEASURE, FIND YOUR TREASURE!</p>
-        <p style="color: #ffd4b8; margin: 0; font-size: 12px;">© {{current_year}} GingerKare Custom Emporium. All rights reserved.</p>
+        <p style="color: #ffd4b8; margin: 0; font-size: 12px;">© {{current_year}} 123Bots. All rights reserved.</p>
       </td>
     </tr>
   </table>
@@ -515,13 +515,13 @@ async def preview_email_template(template_id: str):
         </table>
         """,
         "shipping_address": "123 Creative Lane<br>Artisan City, AC 12345<br>United States",
-        "order_url": "https://gingerkare.com/orders/GK-123",
-        "cart_url": "https://gingerkare.com/checkout",
+        "order_url": "https://123bots.com/orders/GK-123",
+        "cart_url": "https://123bots.com/checkout",
         "carrier": "USPS Priority",
         "tracking_number": "9400111899223456789012",
         "tracking_url": "https://tools.usps.com/go/TrackConfirmAction?tLabels=9400111899223456789012",
-        "shop_url": "https://gingerkare.com/shop",
-        "reset_url": "https://gingerkare.com/reset-password?token=abc123",
+        "shop_url": "https://123bots.com/shop",
+        "reset_url": "https://123bots.com/reset-password?token=abc123",
         "new_status": "Processing",
         "current_year": str(datetime.now().year)
     }

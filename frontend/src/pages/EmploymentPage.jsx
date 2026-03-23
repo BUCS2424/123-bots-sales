@@ -99,7 +99,7 @@ const EmploymentPage = () => {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Employee Manual - Gingerkare Custom Emporium</title>
+            <title>Employee Manual - 123Bots</title>
             <style>
               body { font-family: Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; }
               h1 { color: #1e3a5f; border-bottom: 2px solid #c41e3a; padding-bottom: 10px; }
@@ -111,7 +111,7 @@ const EmploymentPage = () => {
           </head>
           <body>
             <div class="header">
-              <h1>Gingerkare Custom Emporium</h1>
+              <h1>123Bots</h1>
               <h2>Employee Manual</h2>
               <p class="version">Version ${employeeManual?.version || '1.0'} - Effective ${employeeManual?.effective_date || 'N/A'}</p>
             </div>
@@ -182,7 +182,7 @@ const EmploymentPage = () => {
             <div className="flex items-center gap-3 mb-4">
               <img
                 src="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png"
-                alt="Gingerkare Custom Emporium"
+                alt="123Bots"
                 className="h-12"
               />
             </div>
@@ -190,7 +190,7 @@ const EmploymentPage = () => {
               {portalSettings?.welcome_title || 'Join Our Team'}
             </h1>
             <p className="text-xl text-white/90 mb-6">
-              {portalSettings?.welcome_subtitle || 'Build your career with Gingerkare Custom Emporium'}
+              {portalSettings?.welcome_subtitle || 'Build your career with 123Bots'}
             </p>
             <p className="text-white/70 mb-8 max-w-2xl">
               {portalSettings?.welcome_description || 
@@ -451,7 +451,7 @@ const EmploymentPage = () => {
                 <CardTitle className="text-2xl">Why Work With Us?</CardTitle>
                 <CardDescription>
                   {portalSettings?.benefits_intro || 
-                    "At Gingerkare Custom Emporium, we believe in taking care of our team members. Here's what you can expect when you join us."}
+                    "At 123Bots, we believe in taking care of our team members. Here's what you can expect when you join us."}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -490,7 +490,7 @@ const EmploymentPage = () => {
               <CardHeader>
                 <CardTitle className="text-2xl">Frequently Asked Questions</CardTitle>
                 <CardDescription>
-                  Find answers to common questions about employment at Gingerkare Custom Emporium
+                  Find answers to common questions about employment at 123Bots
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -694,7 +694,7 @@ const EmploymentPage = () => {
             <div className="flex items-center gap-3">
               <img
                 src="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png"
-                alt="Gingerkare Custom Emporium"
+                alt="123Bots"
                 className="h-8"
               />
               <span className="text-sm text-gray-400">© {new Date().getFullYear()} All rights reserved.</span>

@@ -83,7 +83,7 @@ const AdminSettings = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-500">Store Name</p>
-                <p className="font-medium">{businessInfo?.business_name || 'Gingerkare Custom Emporium'}</p>
+                <p className="font-medium">{businessInfo?.business_name || '123Bots'}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Address</p>
@@ -95,7 +95,7 @@ const AdminSettings = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-500">Email</p>
-                <p className="font-medium">{businessInfo?.email || 'support@gingerkare.com'}</p>
+                <p className="font-medium">{businessInfo?.email || 'support@123bots.com'}</p>
               </div>
               {businessInfo?.website && (
                 <div>

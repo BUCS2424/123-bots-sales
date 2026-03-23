@@ -534,7 +534,7 @@ const OrderConfirmationPage = () => {
           className="p-4 bg-[#ff8c42]/10 border border-[#ff8c42]/30 rounded-xl mb-8"
         >
           <p className="font-semibold text-sm text-[#ff8c42] text-center">
-            Thank you for shopping with GingerKare Custom Emporium!
+            Thank you for shopping with 123Bots!
           </p>
         </motion.div>
 

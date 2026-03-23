@@ -90,8 +90,8 @@ const ProductDetailPage = () => {
     if (product) {
       setSeoMetadata({
         title: product.name,
-        description: product.description?.substring(0, 160) || `Shop ${product.name} at GingerKare Custom Emporium. Custom made with care!`,
-        keywords: [product.category, product.name, 'custom', 'personalized', 'GingerKare'].filter(Boolean).join(', '),
+        description: product.description?.substring(0, 160) || `Shop ${product.name} at 123Bots. Custom made with care!`,
+        keywords: [product.category, product.name, 'custom', 'personalized', '123Bots'].filter(Boolean).join(', '),
         canonicalPath: `/shop/${product.seo_url || seoPath}`,
         ogType: 'product',
         ogImage: product.images?.[0],

@@ -456,7 +456,7 @@ async def create_buy_contract(contract: BuyContractCreate):
                 "images": item.images,
                 "source": "buy_contract",
                 "source_contract": contract_number,
-                "location": "Gingerkare Custom Emporium",
+                "location": "123Bots",
                 "created_at": now,
                 "updated_at": now
             }
@@ -847,7 +847,7 @@ async def mark_contract_defaulted(contract_id: str):
             "images": item.get("images", []),
             "source": "forfeited_pawn",
             "source_contract": contract["contract_number"],
-            "location": "Gingerkare Custom Emporium",
+            "location": "123Bots",
             "created_at": now,
             "updated_at": now
         }

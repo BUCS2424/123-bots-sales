@@ -33,7 +33,7 @@ def generate_location_page_html(
     city_count: int = 0,
     counties: list | None = None,
     cities: list | None = None,
-    base_url: str = "https://gingerkare.com",
+    base_url: str = "https://123bots.com",
 ) -> str:
     counties = counties or []
     cities = cities or []

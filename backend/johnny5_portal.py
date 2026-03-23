@@ -1823,7 +1823,7 @@ async def get_connected_store_shipping_rates(
     )
 
     from_address = AddressModel(
-        name=settings.get("origin_name", "Gingerkare"),
+        name=settings.get("origin_name", "123Bots"),
         company=None,
         street1=settings.get("origin_street1", "7860 Eddins Road"),
         street2=settings.get("origin_street2"),
@@ -2310,7 +2310,7 @@ async def purchase_label(order_id: str, request: LabelPurchaseRequest):
     shipping_settings = await _db.shipping_settings.find_one({"type": "shipping"})
     
     # Use shipping settings if available, otherwise use defaults
-    origin_name = (shipping_settings or {}).get("origin_name", "Gingerkare Custom Emporium")
+    origin_name = (shipping_settings or {}).get("origin_name", "123Bots")
     origin_street1 = (shipping_settings or {}).get("origin_street1", "7860 Eddins Road")
     origin_city = (shipping_settings or {}).get("origin_city", "Dothan")
     origin_state = (shipping_settings or {}).get("origin_state", "AL")
@@ -2434,7 +2434,7 @@ async def get_order_invoice(order_id: str):
     # Get business settings
     business_settings = await _db.admin_settings.find_one({"type": "business"})
     business_info = {
-        "name": business_settings.get("business_name", "Gingerkare Custom Emporium") if business_settings else "Gingerkare Custom Emporium",
+        "name": business_settings.get("business_name", "123Bots") if business_settings else "123Bots",
         "logo_url": business_settings.get("logo_url", "") if business_settings else "",
         "address": business_settings.get("address", "") if business_settings else "",
         "city": business_settings.get("city", "") if business_settings else "",
@@ -2448,7 +2448,7 @@ async def get_order_invoice(order_id: str):
     # Get shipping origin settings
     shipping_settings = await _db.shipping_settings.find_one({"type": "shipping"})
     origin_address = {
-        "name": shipping_settings.get("origin_name", "Gingerkare Custom Emporium") if shipping_settings else "Gingerkare Custom Emporium",
+        "name": shipping_settings.get("origin_name", "123Bots") if shipping_settings else "123Bots",
         "street1": shipping_settings.get("origin_street1", "7860 Eddins Road") if shipping_settings else "7860 Eddins Road",
         "city": shipping_settings.get("origin_city", "Dothan") if shipping_settings else "Dothan",
         "state": shipping_settings.get("origin_state", "AL") if shipping_settings else "AL",

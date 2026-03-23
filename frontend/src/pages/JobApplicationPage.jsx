@@ -151,7 +151,7 @@ const JobApplicationPage = () => {
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Application Submitted!</h2>
             <p className="text-gray-600 mb-6">
-              Thank you for your interest in joining Gingerkare Custom Emporium. 
+              Thank you for your interest in joining 123Bots. 
               We have received your application and will review it shortly.
             </p>
             <p className="text-sm text-gray-500 mb-6">
@@ -178,11 +178,11 @@ const JobApplicationPage = () => {
         <div className="text-center mb-8 print:mb-4">
           <img
             src="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png"
-            alt="Gingerkare Custom Emporium"
+            alt="123Bots"
             className="h-16 mx-auto mb-4 print:h-12"
           />
           <h1 className="text-3xl font-bold text-gray-900 print:text-2xl">Employment Application</h1>
-          <p className="text-gray-600 mt-2">Gingerkare Custom Emporium • Dothan, Alabama</p>
+          <p className="text-gray-600 mt-2">123Bots • Dothan, Alabama</p>
         </div>
 
         {/* Print Button */}
@@ -714,7 +714,7 @@ const JobApplicationPage = () => {
 
         {/* Footer */}
         <div className="text-center mt-8 text-gray-500 text-sm print:hidden">
-          <p>Gingerkare Custom Emporium is an Equal Opportunity Employer</p>
+          <p>123Bots is an Equal Opportunity Employer</p>
           <p className="mt-2">
             <Link to="/" className="text-[#c41e3a] hover:underline">Return to Website</Link>
           </p>

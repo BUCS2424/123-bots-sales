@@ -100,7 +100,7 @@ const ComingSoonCover = ({ children }) => {
         <div className="mb-8">
           <img 
             src="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png" 
-            alt="GingerKare Custom Emporium" 
+            alt="123Bots" 
             className="h-20 mx-auto mb-6"
           />
         </div>
@@ -164,7 +164,7 @@ const ComingSoonCover = ({ children }) => {
 
         {/* Footer */}
         <p className="text-slate-500 text-sm mt-8">
-          GingerKare Custom Emporium &bull; Custom Prints &amp; Personalized Gifts
+          123Bots &bull; Custom Prints &amp; Personalized Gifts
         </p>
       </div>
 

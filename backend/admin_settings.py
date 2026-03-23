@@ -276,12 +276,12 @@ class PrintfulOAuthSettings(BaseModel):
 
 class SiteSettings(BaseModel):
     """Global site settings for logo, favicon, maintenance mode, etc."""
-    site_name: str = "GingerKare Custom Emporium"
-    site_url: str = "https://gingerkare.com"
+    site_name: str = "123Bots"
+    site_url: str = "https://123bots.com"
     logo_url: str = "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png"
     favicon_url: str = ""
     admin_email: str = ""
-    support_email: str = "info@gingerkare.com"
+    support_email: str = "info@123bots.com"
     maintenance_mode: bool = False
     debug_mode: bool = False
     require_account_for_checkout: bool = False
@@ -316,8 +316,8 @@ def _normalize_printful_callback_url(callback_url: Optional[str]) -> str:
 
 def _normalized_site_settings(settings: Optional[dict] = None) -> dict:
     default_logo = "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png"
-    default_site_name = "GingerKare Custom Emporium"
-    default_site_url = "https://gingerkare.com"
+    default_site_name = "123Bots"
+    default_site_url = "https://123bots.com"
     data = settings or {}
 
     raw_site_name = (data.get("site_name") or "").strip()
@@ -333,7 +333,7 @@ def _normalized_site_settings(settings: Optional[dict] = None) -> dict:
         "logo_url": raw_logo_url or default_logo,
         "favicon_url": (data.get("favicon_url") or "").strip(),
         "admin_email": (data.get("admin_email") or "").strip(),
-        "support_email": raw_support_email or "info@gingerkare.com",
+        "support_email": raw_support_email or "info@123bots.com",
         "maintenance_mode": bool(data.get("maintenance_mode", False)),
         "debug_mode": bool(data.get("debug_mode", False)),
         "require_account_for_checkout": bool(data.get("require_account_for_checkout", False)),
@@ -341,7 +341,7 @@ def _normalized_site_settings(settings: Optional[dict] = None) -> dict:
     }
 
 class BusinessSettings(BaseModel):
-    business_name: str = "Gingerkare Custom Emporium"
+    business_name: str = "123Bots"
     logo_url: str = ""  # URL to business logo for invoices/packing slips
     description: str = ""
     address: str = ""
@@ -349,7 +349,7 @@ class BusinessSettings(BaseModel):
     state: str = ""
     zip_code: str = ""
     phone: str = "(844) 589-7377"
-    email: str = "support@gingerkare.com"
+    email: str = "support@123bots.com"
     website: str = ""
     monday_hours: str = "9:00 AM - 6:00 PM"
     tuesday_hours: str = "9:00 AM - 6:00 PM"
@@ -1540,10 +1540,10 @@ async def get_public_business_settings(db=Depends(get_db)):
     # Return default values if no settings exist
     if not settings:
         return {
-            "business_name": "GingerKare Custom Emporium",
+            "business_name": "123Bots",
             "phone": "",
-            "email": "info@gingerkare.com",
-            "website": "https://gingerkare.com",
+            "email": "info@123bots.com",
+            "website": "https://123bots.com",
             "address": "",
             "city": "",
             "state": "",
@@ -1561,10 +1561,10 @@ async def get_public_business_settings(db=Depends(get_db)):
     
     # Return only public-safe fields
     return {
-        "business_name": settings.get("business_name", "GingerKare Custom Emporium"),
+        "business_name": settings.get("business_name", "123Bots"),
         "phone": settings.get("phone", ""),
-        "email": settings.get("email", "info@gingerkare.com"),
-        "website": settings.get("website", "https://gingerkare.com"),
+        "email": settings.get("email", "info@123bots.com"),
+        "website": settings.get("website", "https://123bots.com"),
         "address": settings.get("address", ""),
         "city": settings.get("city", ""),
         "state": settings.get("state", ""),

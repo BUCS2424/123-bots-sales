@@ -7,8 +7,8 @@ const ShippingReturnsPage = () => {
   useEffect(() => {
     setSeoMetadata({
       title: 'Shipping & Returns',
-      description: 'GingerKare shipping information, delivery times, and return policy. Free shipping on orders over $75!',
-      keywords: 'shipping info, delivery times, return policy, GingerKare shipping',
+      description: '123Bots shipping information, delivery times, and return policy. Free shipping on orders over $75!',
+      keywords: 'shipping info, delivery times, return policy, 123Bots shipping',
       canonicalPath: '/shipping-returns',
     });
   }, []);
@@ -177,7 +177,7 @@ const ShippingReturnsPage = () => {
             <section className="mb-8">
               <h3 className="text-xl font-semibold text-gray-800 mb-4">How to Request a Return</h3>
               <ol className="list-decimal list-inside text-gray-600 space-y-2 ml-4">
-                <li>Contact us at support@gingerkare.com with your order number</li>
+                <li>Contact us at support@123bots.com with your order number</li>
                 <li>Explain the reason for your return</li>
                 <li>Wait for RMA approval and return instructions</li>
                 <li>Ship the product back using the provided instructions</li>
@@ -207,8 +207,8 @@ const ShippingReturnsPage = () => {
               If you have any questions about shipping or returns, please don't hesitate to contact us:
             </p>
             <div className="mt-4 p-4 bg-[#fff8f3] rounded-lg border border-[#ffe4d4]">
-              <p className="font-semibold text-[#2c1810]">GingerKare Customer Support</p>
-              <p className="text-[#ff8c42]">Email: support@gingerkare.com</p>
+              <p className="font-semibold text-[#2c1810]">123Bots Customer Support</p>
+              <p className="text-[#ff8c42]">Email: support@123bots.com</p>
             </div>
           </section>
 

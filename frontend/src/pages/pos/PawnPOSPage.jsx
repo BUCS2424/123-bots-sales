@@ -55,7 +55,7 @@ const SuccessModal = ({ isOpen, onClose, receipt, customer, cart, paymentMethod 
       </head>
       <body>
         <div class="header">
-          <h1>GINGERKARE CUSTOM EMPORIUM</h1>
+          <h1>123Bots</h1>
           <p>7860 Eddins Road</p>
           <p>Dothan, Alabama 36301</p>
           <p>Tel: (334) 555-0123</p>

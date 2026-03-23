@@ -22,7 +22,7 @@ const DevEmailSettings = () => {
     smtp_username: '',
     smtp_password: '',
     from_email: '',
-    from_name: 'Gingerkare',
+    from_name: '123Bots',
     use_tls: true,
   });
   const [isConfigured, setIsConfigured] = useState(false);
@@ -44,7 +44,7 @@ const DevEmailSettings = () => {
         smtp_username: response.data.smtp_username || '',
         smtp_password: '', // Never returned from API
         from_email: response.data.from_email || '',
-        from_name: response.data.from_name || 'Gingerkare',
+        from_name: response.data.from_name || '123Bots',
         use_tls: response.data.use_tls ?? true,
       });
       setIsConfigured(response.data.is_configured || false);
@@ -190,7 +190,7 @@ const DevEmailSettings = () => {
             <div className="space-y-2">
               <Label>From Name</Label>
               <Input
-                placeholder="Gingerkare"
+                placeholder="123Bots"
                 value={settings.from_name}
                 onChange={(e) => setSettings({ ...settings, from_name: e.target.value })}
               />

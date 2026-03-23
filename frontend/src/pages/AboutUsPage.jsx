@@ -10,8 +10,8 @@ const AboutUsPage = () => {
   useEffect(() => {
     setSeoMetadata({
       title: 'About Us',
-      description: 'Learn about GingerKare Custom Emporium - your trusted source for custom printables and personalized gifts. Made with love in Alabama since 2020!',
-      keywords: 'about GingerKare, custom printing company, Alabama business, personalized gifts, sublimation printing',
+      description: 'Learn about 123Bots - your trusted source for custom printables and personalized gifts. Made with love in Alabama since 2020!',
+      keywords: 'about 123Bots, custom printing company, Alabama business, personalized gifts, sublimation printing',
       canonicalPath: '/about',
       ogType: 'website',
       jsonLd: generateOrganizationSchema(),
@@ -32,7 +32,7 @@ const AboutUsPage = () => {
     {
       icon: Users,
       title: 'Customer Focus',
-      description: 'You\'re not just a customer, you\'re part of the GingerKare family. We\'re here to help every step of the way.'
+      description: 'You\'re not just a customer, you\'re part of the 123Bots family. We\'re here to help every step of the way.'
     },
     {
       icon: Zap,
@@ -42,7 +42,7 @@ const AboutUsPage = () => {
   ];
 
   const milestones = [
-    { year: '2020', event: 'GingerKare Custom Emporium founded with a passion for creating unique personalized gifts' },
+    { year: '2020', event: '123Bots founded with a passion for creating unique personalized gifts' },
     { year: '2021', event: 'Expanded product line to include tumblers, mugs, and home goods' },
     { year: '2022', event: 'Launched Hawaiian and Cruise collections, served 1,000+ happy customers' },
     { year: '2023', event: 'Introduced same-day production on select items, expanded shipping nationwide' },
@@ -66,7 +66,7 @@ const AboutUsPage = () => {
                 <span className="text-[#ff8c42]">Find Your Treasure!</span>
               </h1>
               <p className="text-xl text-[#ffd4b8] leading-relaxed">
-                GingerKare Custom Emporium is dedicated to creating unique, personalized products 
+                123Bots is dedicated to creating unique, personalized products 
                 that celebrate life's special moments. From custom apparel to one-of-a-kind gifts, 
                 we make treasures just for you.
               </p>
@@ -95,7 +95,7 @@ const AboutUsPage = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
             <div className="space-y-4 text-gray-600 leading-relaxed">
               <p>
-                GingerKare Custom Emporium started with a simple idea: everyone deserves something 
+                123Bots started with a simple idea: everyone deserves something 
                 special that's uniquely theirs. What began as a passion project creating custom 
                 gifts for friends and family has grown into something we're truly proud of.
               </p>
@@ -106,7 +106,7 @@ const AboutUsPage = () => {
                 going through a tough time, we pour our hearts into every creation.
               </p>
               <p>
-                Today, GingerKare serves customers across the United States, helping them celebrate 
+                Today, 123Bots serves customers across the United States, helping them celebrate 
                 life's moments with unique, personalized products. From our Hawaiian collection to our 
                 Cancer Support merchandise, every design tells a story and spreads a little joy.
               </p>

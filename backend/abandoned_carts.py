@@ -170,7 +170,7 @@ async def send_recovery_email(cart: dict, coupon: dict, is_second_email: bool = 
         <!-- Header -->
         <tr>
             <td style="background: linear-gradient(135deg, #6e2ea8 0%, #1a0b2e 100%); padding: 30px; text-align: center;">
-                <h1 style="color: #f4e4bc; margin: 0; font-size: 28px;">Gingerkare</h1>
+                <h1 style="color: #f4e4bc; margin: 0; font-size: 28px;">123Bots</h1>
                 <p style="color: #d4c4a8; margin: 10px 0 0 0; font-size: 14px;">Custom Emporium</p>
             </td>
         </tr>
@@ -211,7 +211,7 @@ async def send_recovery_email(cart: dict, coupon: dict, is_second_email: bool = 
                 <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
                     <tr>
                         <td style="text-align: center;">
-                            <a href="https://gingerkare.com/checkout" style="display: inline-block; background: linear-gradient(135deg, #6e2ea8 0%, #b9893d 100%); color: #ffffff; text-decoration: none; padding: 18px 50px; border-radius: 8px; font-weight: bold; font-size: 16px;">
+                            <a href="https://123bots.com/checkout" style="display: inline-block; background: linear-gradient(135deg, #6e2ea8 0%, #b9893d 100%); color: #ffffff; text-decoration: none; padding: 18px 50px; border-radius: 8px; font-weight: bold; font-size: 16px;">
                                 Complete Your Order
                             </a>
                         </td>
@@ -229,7 +229,7 @@ async def send_recovery_email(cart: dict, coupon: dict, is_second_email: bool = 
             <td style="background-color: #1a0b2e; padding: 30px; text-align: center;">
                 <p style="color: #b9893d; margin: 0 0 10px 0; font-size: 12px;">FOR RESEARCH USE ONLY • NOT FOR HUMAN CONSUMPTION</p>
                 <p style="color: #888; margin: 0; font-size: 12px;">
-                    © {datetime.now().year} Gingerkare Custom Emporium. All rights reserved.
+                    © {datetime.now().year} 123Bots. All rights reserved.
                 </p>
             </td>
         </tr>
@@ -238,7 +238,7 @@ async def send_recovery_email(cart: dict, coupon: dict, is_second_email: bool = 
 </html>"""
     
     text_content = f"""
-Gingerkare - You Left Something Behind!
+123Bots - You Left Something Behind!
 
 Hi{' ' + cart.get('user_name', '') if cart.get('user_name') else ''},
 
@@ -247,12 +247,12 @@ We noticed you didn't complete your order. {urgency_text}
 Your exclusive discount code: {coupon['code']}
 Save {discount_text} on your order!
 
-Visit https://gingerkare.com/checkout to complete your purchase.
+Visit https://123bots.com/checkout to complete your purchase.
 
 This coupon expires in {settings['retention_days']} days and can only be used once.
 
 FOR RESEARCH USE ONLY - NOT FOR HUMAN CONSUMPTION
-© {datetime.now().year} Gingerkare
+© {datetime.now().year} 123Bots
 """
     
     try:

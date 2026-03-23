@@ -8,8 +8,8 @@ import { Badge } from '../../components/ui/badge';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from '../../hooks/use-toast';
 
-const isGingerkareDomain = typeof window !== 'undefined' && window.location.hostname.endsWith('gingerkare.com');
-const API = isGingerkareDomain ? `${window.location.origin}/api` : `${process.env.REACT_APP_BACKEND_URL}/api`;
+const is123BotsDomain = typeof window !== 'undefined' && window.location.hostname.endsWith('123bots.com');
+const API = is123BotsDomain ? `${window.location.origin}/api` : `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const emptyStatus = {
   app_configured: false,

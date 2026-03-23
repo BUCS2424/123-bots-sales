@@ -24,8 +24,8 @@ const DevGeneralSettings = () => {
   const faviconInputRef = useRef(null);
   
   // Use individual state for each field to prevent re-render issues
-  const [siteName, setSiteName] = useState('GingerKare Custom Emporium');
-  const [siteUrl, setSiteUrl] = useState('https://gingerkare.com');
+  const [siteName, setSiteName] = useState('123Bots');
+  const [siteUrl, setSiteUrl] = useState('https://123bots.com');
   const [logoUrl, setLogoUrl] = useState('');
   const [faviconUrl, setFaviconUrl] = useState('');
   const [adminEmail, setAdminEmail] = useState('');
@@ -42,8 +42,8 @@ const DevGeneralSettings = () => {
         });
         if (response.data) {
           const data = response.data;
-          setSiteName(data.site_name || 'GingerKare Custom Emporium');
-          setSiteUrl(data.site_url || 'https://gingerkare.com');
+          setSiteName(data.site_name || '123Bots');
+          setSiteUrl(data.site_url || 'https://123bots.com');
           setLogoUrl(data.logo_url || '');
           setFaviconUrl(data.favicon_url || '');
           setAdminEmail(data.admin_email || '');
@@ -259,7 +259,7 @@ const DevGeneralSettings = () => {
                   onChange={(e) => setSiteUrl(e.target.value)}
                   disabled={!isEditing}
                   className={`${inputClassName} mt-1`}
-                  placeholder="https://gingerkare.com"
+                  placeholder="https://123bots.com"
                   data-testid="site-url-input"
                 />
               </div>
@@ -431,7 +431,7 @@ const DevGeneralSettings = () => {
                   onChange={(e) => setAdminEmail(e.target.value)}
                   disabled={!isEditing}
                   className={`${inputClassName} mt-1`}
-                  placeholder="admin@gingerkare.com"
+                  placeholder="admin@123bots.com"
                   data-testid="admin-email-input"
                 />
               </div>
@@ -444,7 +444,7 @@ const DevGeneralSettings = () => {
                   onChange={(e) => setSupportEmail(e.target.value)}
                   disabled={!isEditing}
                   className={`${inputClassName} mt-1`}
-                  placeholder="support@gingerkare.com"
+                  placeholder="support@123bots.com"
                   data-testid="support-email-input"
                 />
               </div>

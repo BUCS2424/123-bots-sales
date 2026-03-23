@@ -30,12 +30,12 @@ const Footer = () => {
 
   // Default logo URL
   const logoUrl = siteSettings?.logo_url || "https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png";
-  const siteName = siteSettings?.site_name || "Gingerkare Custom Emporium";
+  const siteName = siteSettings?.site_name || "123Bots";
 
   // Format phone for tel: link
   const phoneLink = businessInfo?.phone?.replace(/\D/g, '') || '8445897377';
   const phoneDisplay = businessInfo?.phone || '(844) 589-PEPS (7377)';
-  const emailDisplay = businessInfo?.email || 'support@gingerkare.com';
+  const emailDisplay = businessInfo?.email || 'support@123bots.com';
   
   // Format address
   const getFormattedAddress = () => {
@@ -239,7 +239,7 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
             <p className="text-slate-300">
-              © {new Date().getFullYear()} Gingerkare Custom Emporium. All rights reserved.
+              © {new Date().getFullYear()} 123Bots. All rights reserved.
             </p>
             <div className="flex flex-wrap justify-center gap-6">
               <Link to="/privacy-policy" className="text-slate-300 hover:text-gold-300 transition-colors">
