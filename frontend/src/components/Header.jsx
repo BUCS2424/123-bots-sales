@@ -80,12 +80,22 @@ const Header = () => {
               <Phone className="w-4 h-4 mr-2" />
               (877) 702-2687
             </a>
-            <Link 
-              to="/123-bots-resources" 
-              className="text-gray-300 hover:text-white transition-colors"
-            >
-              Resources
-            </Link>
+            <div className="flex items-center space-x-4">
+              <Link 
+                to="/123-bots-resources" 
+                className="text-gray-300 hover:text-white transition-colors"
+              >
+                Resources
+              </Link>
+              <span className="text-gray-600">|</span>
+              <Link 
+                to="/login" 
+                className="text-gray-300 hover:text-white transition-colors"
+                data-testid="header-login-link"
+              >
+                Login
+              </Link>
+            </div>
           </div>
         </div>
 
