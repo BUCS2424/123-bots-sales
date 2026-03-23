@@ -40,6 +40,7 @@ const Header = () => {
         { label: 'EDUCATION', href: '/industries/education' },
       ],
     },
+    { label: 'SHOP', href: '/categories' },
     { label: 'PARTS', href: '/shop?category=parts' },
     { label: 'SUPPORT', href: '/contact' },
     {
@@ -81,9 +82,18 @@ const Header = () => {
               (877) 702-2687
             </a>
             <div className="flex items-center space-x-4">
+              <Link
+                to="/categories"
+                className="text-gray-300 hover:text-white transition-colors"
+                data-testid="header-shop-link"
+              >
+                Shop
+              </Link>
+              <span className="text-gray-600">|</span>
               <Link 
                 to="/123-bots-resources" 
                 className="text-gray-300 hover:text-white transition-colors"
+                data-testid="header-resources-link"
               >
                 Resources
               </Link>

@@ -47,6 +47,7 @@ import IndustryPage from './pages/IndustryPage';
 import ScheduleDemoPage from './pages/ScheduleDemoPage';
 import BuyLeasePage from './pages/BuyLeasePage';
 import ResourcesPage from './pages/ResourcesPage';
+import CategoryLandingPage from './pages/CategoryLandingPage';
 
 // Age Verification
 import AgeVerificationModal from './components/AgeVerificationModal';
@@ -216,6 +217,7 @@ const AppContent = () => {
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/shop" element={<ShopPage />} />
+                  <Route path="/categories" element={<CategoryLandingPage />} />
                   <Route path="/shop/:legacySlug" element={<LegacyProductSlugRedirectPage />} />
                   <Route path="/shop/:categorySlug/:productSlug" element={<ProductDetailPage />} />
                   <Route path="/product/:productId" element={<LegacyProductRedirectPage />} />
