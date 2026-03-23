@@ -66,26 +66,26 @@ def generate_location_page_html(
         location_slug = state_slug
         location_label = safe_location_name
         type_label = "State"
-        title = f"Premium Quality Custom Sublimation in {safe_location_name} | 123Bots"
-        hero_headline = f"Premium Quality Custom Sublimation<br/>in <span class='gold'>{safe_location_name}</span>"
+        title = f"Commercial Cleaning Robots in {safe_location_name} | 123Bots"
+        hero_headline = f"AI-Powered Cleaning Robots<br/>in <span class='gold'>{safe_location_name}</span>"
     elif location_type == "county":
         location_slug = f"{_slugify(location_name.replace(' County', ''))}-{state_abbr.lower()}"
         location_label = f"{safe_location_name}, {safe_state_name}"
         type_label = "County"
-        title = f"Custom Sublimation in {safe_location_name}, {safe_state_name} | 123Bots"
-        hero_headline = f"Custom Sublimation for<br/><span class='gold'>{safe_location_name}</span>"
+        title = f"Commercial Cleaning Robots in {safe_location_name}, {safe_state_name} | 123Bots"
+        hero_headline = f"Cleaning Robots for<br/><span class='gold'>{safe_location_name}</span>"
     else:
         location_slug = f"{_slugify(location_name)}-{state_abbr.lower()}"
         location_label = f"{safe_location_name}, {state_abbr}"
         type_label = "City"
-        title = f"Custom Sublimation in {safe_location_name}, {state_abbr} | 123Bots"
-        hero_headline = f"Custom Sublimation for<br/><span class='gold'>{safe_location_name}</span>"
+        title = f"Commercial Cleaning Robots in {safe_location_name}, {state_abbr} | 123Bots"
+        hero_headline = f"Cleaning Robots for<br/><span class='gold'>{safe_location_name}</span>"
 
     description = (
-        f"123Bots delivers premium quality custom sublimation products to {location_label}. "
-        f"T-shirts, mugs, tumblers, canvas art, and more. Made with care, just for you."
+        f"123Bots provides AI-powered commercial cleaning robots to {location_label}. "
+        f"Floor scrubbers, autonomous vacuums, and robotic cleaning solutions. Buy or lease today."
     )
-    canonical_path = f"/locations/123Bots-{location_slug}"
+    canonical_path = f"/locations/cleaning-robots-{location_slug}"
     canonical_url = f"{base_url}{canonical_path}"
 
     json_ld_payload = {
@@ -105,7 +105,7 @@ def generate_location_page_html(
     county_cards = "".join(
         [
             (
-                f'<a class="location-card" href="/locations/custom-sublimation-{_slugify(county.replace(" County", ""))}-{state_abbr.lower()}">'
+                f'<a class="location-card" href="/locations/cleaning-robots-{_slugify(county.replace(" County", ""))}-{state_abbr.lower()}">'
                 f'<div class="location-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M9 8h10M9 12h10M9 16h10M5 8v.01M5 12v.01M5 16v.01"/></svg></div>'
                 f'<div class="location-card-content"><span class="location-card-name">{escape(county)}</span><span class="location-card-type">County</span></div>'
                 f'<div class="location-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>'
@@ -118,7 +118,7 @@ def generate_location_page_html(
     city_cards = "".join(
         [
             (
-                f'<a class="location-card" href="/locations/custom-sublimation-{_slugify(city)}-{state_abbr.lower()}">'
+                f'<a class="location-card" href="/locations/cleaning-robots-{_slugify(city)}-{state_abbr.lower()}">'
                 f'<div class="location-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M13 21V3l6 3v15M9 9v.01M9 13v.01M9 17v.01M17 9v.01M17 13v.01M17 17v.01"/></svg></div>'
                 f'<div class="location-card-content"><span class="location-card-name">{escape(city)}</span><span class="location-card-type">City</span></div>'
                 f'<div class="location-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>'
@@ -129,7 +129,7 @@ def generate_location_page_html(
     )
 
     breadcrumb = (
-        f'<a href="/locations/custom-sublimation-{state_slug}">{safe_state_name}</a> <span class="sep">/</span> <span>{safe_location_name}</span>'
+        f'<a href="/locations/cleaning-robots-{state_slug}">{safe_state_name}</a> <span class="sep">/</span> <span>{safe_location_name}</span>'
         if location_type != "state"
         else f"<span>{safe_location_name}</span>"
     )
@@ -187,9 +187,9 @@ def generate_location_page_html(
         # City pages show a CTA to explore the catalog
         location_nav_section = '''
       <div style="text-align:center;padding:2rem 0;">
-        <p style="margin-bottom:1.5rem;color:var(--text-muted);font-size:1rem;">Explore our full catalog of custom sublimation products available for delivery.</p>
-        <a href="/shop" style="display:inline-flex;align-items:center;gap:0.5rem;background:linear-gradient(135deg,var(--purple-mid),var(--purple-light));color:white;padding:1rem 2rem;border-radius:0.5rem;text-decoration:none;font-weight:600;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(107,33,168,0.3)';" onmouseout="this.style.transform='none';this.style.boxShadow='none';">
-          Explore Our Custom Products
+        <p style="margin-bottom:1.5rem;color:var(--text-muted);font-size:1rem;">Explore our full catalog of commercial cleaning robots available for delivery or on-site demo.</p>
+        <a href="/products" style="display:inline-flex;align-items:center;gap:0.5rem;background:linear-gradient(135deg,var(--purple-mid),var(--purple-light));color:white;padding:1rem 2rem;border-radius:0.5rem;text-decoration:none;font-weight:600;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(107,33,168,0.3)';" onmouseout="this.style.transform='none';this.style.boxShadow='none';">
+          View Our Robots
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
       </div>
@@ -203,7 +203,7 @@ def generate_location_page_html(
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{escape(title)}</title>
   <meta name="description" content="{escape(description)}" />
-  <meta name="keywords" content="{site_name_setting}, custom products {escape(location_name)}, sublimation printing {escape(location_name)}, custom t-shirts, mugs, tumblers" />
+  <meta name="keywords" content="{site_name_setting}, commercial cleaning robots {escape(location_name)}, floor scrubbers {escape(location_name)}, autonomous cleaning, PUDU robots" />
   <meta name="robots" content="index,follow" />
   <meta property="og:title" content="{escape(title)}" />
   <meta property="og:description" content="{escape(description)}" />
@@ -1523,20 +1523,20 @@ def generate_location_page_html(
           <img src="{site_logo}" alt="{site_name_setting}" style="height: 44px; width: auto;">
         </a>
         <div class="nav-links">
-          <a href="/shop" class="nav-link">PRINTABLES <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
-          <a href="/shop?category=special" class="nav-link">SPECIAL</a>
-          <a href="/shop?category=collections" class="nav-link">COLLECTIONS <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
-          <a href="/shop?category=holidays" class="nav-link">HOLIDAYS</a>
+          <a href="/products" class="nav-link">PRODUCTS <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
+          <a href="/industries/retail-uses" class="nav-link">INDUSTRIES <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
+          <a href="/123-bots-resources" class="nav-link">RESOURCES</a>
+          <a href="/rent-or-buy-a-cleaning-bot" class="nav-link">BUY OR LEASE</a>
           <a href="/contact" class="nav-link">CONTACT</a>
         </div>
         <div class="nav-actions">
-          <a href="/shop" class="nav-icon" title="Search">
+          <a href="/products" class="nav-icon" title="Search">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           </a>
           <a href="/cart" class="nav-icon" title="Cart">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           </a>
-          <a href="/contact" class="nav-btn nav-btn-primary">Get a Quote</a>
+          <a href="/schedule-a-demo" class="nav-btn nav-btn-primary">Schedule a Demo</a>
         </div>
       </div>
     </div>
@@ -1560,14 +1560,14 @@ def generate_location_page_html(
           </div>
           <h1 class="hero-title">{hero_headline}</h1>
           <p class="hero-subtitle">
-            Transform your ideas into stunning custom products with our premium sublimation services. From <strong>personalized t-shirts and mugs</strong> to beautiful canvas art and tumblers — we bring your vision to life with vibrant, long-lasting prints. Now proudly serving {location_label}.
+            Transform your commercial cleaning operations with AI-powered autonomous robots. From <strong>floor scrubbers and vacuums</strong> to advanced robotic solutions — we deliver cutting-edge cleaning technology. Now proudly serving {location_label}.
           </p>
           <div class="hero-cta">
-            <a href="/shop" class="btn btn-gold">
-              Shop Now
+            <a href="/products" class="btn btn-gold">
+              View Robots
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </a>
-            <a href="/contact" class="btn btn-outline-white">Request Custom Design</a>
+            <a href="/schedule-a-demo" class="btn btn-outline-white">Schedule a Demo</a>
           </div>
           <div class="hero-features">
             <div class="hero-feature">
@@ -1575,8 +1575,8 @@ def generate_location_page_html(
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
               </div>
               <div class="hero-feature-text">
-                <h4>Custom Designs</h4>
-                <p>Your Vision, Our Creation</p>
+                <h4>AI-Powered</h4>
+                <p>Autonomous Navigation</p>
               </div>
             </div>
             <div class="hero-feature">
@@ -1584,8 +1584,8 @@ def generate_location_page_html(
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
               </div>
               <div class="hero-feature-text">
-                <h4>Premium Quality</h4>
-                <p>Vibrant & Long-Lasting</p>
+                <h4>Commercial Grade</h4>
+                <p>Built for Heavy Use</p>
               </div>
             </div>
             <div class="hero-feature">
@@ -1593,8 +1593,8 @@ def generate_location_page_html(
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
               </div>
               <div class="hero-feature-text">
-                <h4>Perfect Gifts</h4>
-                <p>For Every Occasion</p>
+                <h4>Buy or Lease</h4>
+                <p>Flexible Options</p>
               </div>
             </div>
           </div>
@@ -1619,16 +1619,16 @@ def generate_location_page_html(
     <div class="container">
       <div class="stats-grid stats-grid-3">
         <div class="stat-item">
-          <div class="stat-value">1000+</div>
-          <div class="stat-label">Custom Designs Created</div>
+          <div class="stat-value">70%</div>
+          <div class="stat-label">Labor Cost Reduction</div>
         </div>
         <div class="stat-item">
-          <div class="stat-value">50+</div>
-          <div class="stat-label">Product Categories</div>
+          <div class="stat-value">24/7</div>
+          <div class="stat-label">Autonomous Operation</div>
         </div>
         <div class="stat-item">
-          <div class="stat-value">100%</div>
-          <div class="stat-label">Satisfaction Guaranteed</div>
+          <div class="stat-value">5+</div>
+          <div class="stat-label">Robot Models Available</div>
         </div>
       </div>
     </div>
@@ -1640,59 +1640,59 @@ def generate_location_page_html(
       <div class="section-header">
         <div class="section-badge">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.54"/></svg>
-          <span>Shop by Category</span>
+          <span>Our Robot Lineup</span>
         </div>
-        <h2 class="section-title">Our Printable Collections</h2>
-        <p class="section-subtitle">Everything on our site can be customized to your needs. Your name, logo, or design - we make it happen!</p>
+        <h2 class="section-title">Commercial Cleaning Robots</h2>
+        <p class="section-subtitle">AI-powered autonomous cleaning solutions for every commercial space. Floor scrubbers, vacuums, and more.</p>
       </div>
       <div class="printables-grid">
-        <a href="/shop?category=coffee-mugs" class="printable-card">
-          <div class="printable-icon" style="background: linear-gradient(135deg, #f97316, #ea580c);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
+        <a href="/products/pudu-cc1-pro" class="printable-card">
+          <div class="printable-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
           </div>
-          <h3>Coffee Mugs</h3>
-          <p>Start your day with a custom mug</p>
-          <span class="printable-link">Shop Now <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+          <h3>PUDU CC1 PRO</h3>
+          <p>Advanced floor scrubber for large spaces</p>
+          <span class="printable-link">Learn More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
         </a>
-        <a href="/shop?category=t-shirts" class="printable-card">
-          <div class="printable-icon" style="background: linear-gradient(135deg, #0ea5e9, #0284c7);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>
+        <a href="/products/ab-kas" class="printable-card">
+          <div class="printable-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="4"/></svg>
           </div>
-          <h3>T-Shirts</h3>
-          <p>Wear your style proudly</p>
-          <span class="printable-link">Shop Now <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+          <h3>AVIDBOT KAS</h3>
+          <p>Heavy-duty commercial sweeper</p>
+          <span class="printable-link">Learn More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
         </a>
-        <a href="/shop?category=on-canvas" class="printable-card">
-          <div class="printable-icon" style="background: linear-gradient(135deg, #a855f7, #9333ea);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+        <a href="/products/pudu-sh1" class="printable-card">
+          <div class="printable-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
           </div>
-          <h3>Canvas Art</h3>
-          <p>Art that speaks to you</p>
-          <span class="printable-link">Shop Now <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+          <h3>PUDU SH1</h3>
+          <p>Compact scrubber for tight areas</p>
+          <span class="printable-link">Learn More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
         </a>
-        <a href="/shop?category=patches" class="printable-card">
-          <div class="printable-icon" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.5 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z"/><path d="M15 3v6h6"/></svg>
+        <a href="/products/pudu-mt1" class="printable-card">
+          <div class="printable-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
           </div>
-          <h3>Stickers & Patches</h3>
-          <p>Small but mighty designs</p>
-          <span class="printable-link">Shop Now <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+          <h3>PUDU MT1 MAX</h3>
+          <p>Multi-terrain autonomous cleaner</p>
+          <span class="printable-link">Learn More <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
         </a>
-        <a href="/shop?category=flags" class="printable-card">
-          <div class="printable-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        <a href="/schedule-a-demo" class="printable-card">
+          <div class="printable-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           </div>
-          <h3>Flags & Banners</h3>
-          <p>Make a statement</p>
-          <span class="printable-link">Shop Now <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+          <h3>Schedule a Demo</h3>
+          <p>See our robots in action</p>
+          <span class="printable-link">Book Now <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
         </a>
-        <a href="/shop?category=tumblers" class="printable-card">
-          <div class="printable-icon" style="background: linear-gradient(135deg, #14b8a6, #0d9488);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+        <a href="/rent-or-buy-a-cleaning-bot" class="printable-card">
+          <div class="printable-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           </div>
-          <h3>Tumblers</h3>
-          <p>Keep drinks at perfect temp</p>
-          <span class="printable-link">Shop Now <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+          <h3>Buy or Lease</h3>
+          <p>Flexible financing options</p>
+          <span class="printable-link">View Options <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
         </a>
       </div>
     </div>
@@ -1704,33 +1704,33 @@ def generate_location_page_html(
       <div class="section-header">
         <div class="section-badge">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-          <span>123Bots Tips</span>
+          <span>123Bots Resources</span>
         </div>
-        <h2 class="section-title">Design Inspiration & Tips</h2>
-        <p class="section-subtitle">Helpful guides and articles to help you create the perfect custom products.</p>
+        <h2 class="section-title">Guides & Industry Insights</h2>
+        <p class="section-subtitle">Helpful resources to understand commercial cleaning robots and maximize your ROI.</p>
       </div>
       <div class="categories-grid">
         <div class="category-card">
-          <h3>Sublimation Printing</h3>
-          <p>Learn about the magic of sublimation printing - from eco-friendly options to creating stickers and patches that stand out.</p>
-          <a href="/research?category=Sublimation+Printing" class="category-link">
-            Read Articles
+          <h3>Robot Technology</h3>
+          <p>Learn about AI navigation, LIDAR sensors, autonomous mapping, and the technology behind modern cleaning robots.</p>
+          <a href="/123-bots-resources" class="category-link">
+            Explore Resources
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
         </div>
         <div class="category-card">
-          <h3>Design Tips</h3>
-          <p>Master color management, create stunning all-over print designs, and learn the secrets to picture-perfect custom products.</p>
-          <a href="/research?category=Design+Tips" class="category-link">
-            Read Articles
+          <h3>Industry Solutions</h3>
+          <p>Discover how robots are transforming cleaning in retail, healthcare, warehouses, education, and hospitality.</p>
+          <a href="/industries/retail-uses" class="category-link">
+            View Industries
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
         </div>
         <div class="category-card">
-          <h3>Business & Marketing</h3>
-          <p>Tips for bulk orders, creating designs that sell, and growing your custom product business with 123Bots.</p>
-          <a href="/research?category=Business+%26+Marketing" class="category-link">
-            Read Articles
+          <h3>Buy vs Lease Guide</h3>
+          <p>Compare purchasing and leasing options to find the best fit for your budget and cleaning needs.</p>
+          <a href="/rent-or-buy-a-cleaning-bot" class="category-link">
+            Compare Options
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
         </div>
@@ -1748,13 +1748,13 @@ def generate_location_page_html(
           <span>Service Areas</span>
         </div>
         <h2 class="coverage-title">Explore {location_label}</h2>
-        <p class="coverage-subtitle">Select a county or city below to view location-specific custom printing services and coverage details.</p>
+        <p class="coverage-subtitle">Select a county or city below to view location-specific commercial cleaning robot services and coverage details.</p>
       </div>
       
       {location_nav_section}
       
       <div class="compliance-note">
-        <strong>Custom Made With Care:</strong> All 123Bots products are custom-made just for you. We take pride in delivering high-quality sublimation products to {location_label} and beyond!
+        <strong>Professional Service:</strong> 123Bots provides commercial cleaning robots with full support, training, and maintenance to {location_label} and surrounding areas!
       </div>
     </div>
   </section>
@@ -1769,7 +1769,7 @@ def generate_location_page_html(
             <span>Customer Reviews</span>
           </div>
           <h2 class="section-title">What Our <em>Customers</em> Say</h2>
-          <p class="section-subtitle">Real feedback from happy customers who love their custom 123Bots products.</p>
+          <p class="section-subtitle">Real feedback from facility managers who transformed their cleaning operations with 123Bots.</p>
         </div>
         <div class="testimonial-grid">
           <article class="testimonial-card">
@@ -1778,24 +1778,24 @@ def generate_location_page_html(
               <span class="source-tag">Google Review</span>
             </div>
             <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <h4>Amazing quality and fast delivery!</h4>
-            <p>The custom t-shirts I ordered for my family reunion turned out perfect. Colors were vibrant and the fabric is super comfortable.</p>
+            <h4>Transformed our cleaning operations!</h4>
+            <p>The PUDU CC1 PRO has cut our floor cleaning time by 70%. It runs autonomously overnight and our floors are spotless every morning.</p>
             <div class="testimonial-footer">
-              <span class="avatar">SJ</span>
+              <span class="avatar">JM</span>
               <div class="testimonial-footer-info">
-                <strong>Sarah J.</strong>
-                <span>Happy Customer</span>
+                <strong>John M.</strong>
+                <span>Facility Manager</span>
               </div>
             </div>
           </article>
           <article class="testimonial-card">
             <div class="testimonial-top">
               <span class="quote-icon">"</span>
-              <span class="source-tag">Facebook</span>
+              <span class="source-tag">LinkedIn</span>
             </div>
             <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <h4>Perfect for our small business!</h4>
-            <p>123Bots made custom mugs for our coffee shop. The sublimation quality is outstanding and customers love them!</p>
+            <h4>Best investment for our warehouse!</h4>
+            <p>123Bots made the whole process easy - from demo to installation. The robot pays for itself in labor savings.</p>
             <div class="testimonial-footer">
               <span class="avatar">MR</span>
               <div class="testimonial-footer-info">
@@ -1810,29 +1810,29 @@ def generate_location_page_html(
               <span class="source-tag">Google Review</span>
             </div>
             <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <h4>Great for gifts!</h4>
-            <p>I ordered custom canvas prints as Christmas gifts. The quality exceeded my expectations and everyone loved them!</p>
+            <h4>Excellent customer support!</h4>
+            <p>The 123Bots team provided excellent training and support. Our staff loves using the robot - it handles the heavy cleaning while they focus on details.</p>
             <div class="testimonial-footer">
               <span class="avatar">LT</span>
               <div class="testimonial-footer-info">
-                <strong>Linda T.</strong>
-                <span>Gift Shopper</span>
+                <strong>Lisa T.</strong>
+                <span>Operations Director</span>
               </div>
             </div>
           </article>
           <article class="testimonial-card">
             <div class="testimonial-top">
               <span class="quote-icon">"</span>
-              <span class="source-tag">Etsy Review</span>
+              <span class="source-tag">Industry Review</span>
             </div>
             <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-            <h4>Beautiful custom work!</h4>
-            <p>We loved the custom flags for our event. The colors were perfect and the quality exceeded expectations. Will order again!</p>
+            <h4>Great leasing options!</h4>
+            <p>The flexible leasing program made it possible for our school to get a commercial cleaning robot. Great for our budget and our floors!</p>
             <div class="testimonial-footer">
               <span class="avatar">TL</span>
               <div class="testimonial-footer-info">
-                <strong>T. Lewis</strong>
-                <span>Event Planner</span>
+                <strong>Tom L.</strong>
+                <span>School Administrator</span>
               </div>
             </div>
           </article>
@@ -1845,14 +1845,14 @@ def generate_location_page_html(
   <section class="cta">
     <div class="container">
       <div class="cta-inner">
-        <h2 class="cta-title">Ready to Create Something Special?</h2>
-        <p class="cta-subtitle">Join thousands of happy customers who love their custom 123Bots products.</p>
+        <h2 class="cta-title">Ready to Transform Your Cleaning Operations?</h2>
+        <p class="cta-subtitle">Join hundreds of facilities that have upgraded to AI-powered autonomous cleaning robots.</p>
         <div class="cta-buttons">
-          <a href="/shop" class="btn btn-gold">
-            Shop Now
+          <a href="/schedule-a-demo" class="btn btn-gold">
+            Schedule a Demo
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
-          <a href="/contact" class="btn btn-outline-purple">Contact Us</a>
+          <a href="/products" class="btn btn-outline-purple">View Robots</a>
         </div>
       </div>
     </div>
@@ -1865,41 +1865,41 @@ def generate_location_page_html(
         <div class="footer-brand">
           <div class="footer-logo">
             <div class="footer-logo-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
             </div>
             <span>123Bots</span>
           </div>
-          <p>Custom sublimation products made with love. T-shirts, mugs, tumblers, canvas art, and more - personalized just for you!</p>
+          <p>AI-powered commercial cleaning robots. Floor scrubbers, autonomous vacuums, and robotic cleaning solutions for your business.</p>
         </div>
         <div class="footer-col">
           <h4>Products</h4>
           <ul>
-            <li><a href="/shop">All Products</a></li>
-            <li><a href="/shop">Best Sellers</a></li>
-            <li><a href="/shop">New Arrivals</a></li>
-            <li><a href="/research">Design Tips</a></li>
+            <li><a href="/products">All Robots</a></li>
+            <li><a href="/products/pudu-cc1-pro">PUDU CC1 PRO</a></li>
+            <li><a href="/products/ab-kas">AVIDBOT KAS</a></li>
+            <li><a href="/rent-or-buy-a-cleaning-bot">Buy or Lease</a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h4>Support</h4>
+          <h4>Resources</h4>
           <ul>
+            <li><a href="/schedule-a-demo">Schedule a Demo</a></li>
+            <li><a href="/123-bots-resources">Resources</a></li>
+            <li><a href="/industries/retail-uses">Industries</a></li>
             <li><a href="/contact">Contact Us</a></li>
-            <li><a href="/about">About Us</a></li>
-            <li><a href="/faq">FAQs</a></li>
-            <li><a href="/shipping-returns">Shipping Info</a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h4>Legal</h4>
+          <h4>Company</h4>
           <ul>
+            <li><a href="/about">About Us</a></li>
             <li><a href="/privacy-policy">Privacy Policy</a></li>
             <li><a href="/terms-conditions">Terms of Service</a></li>
-            <li><a href="/shipping-returns">Refund Policy</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2026 123Bots. All rights reserved.</p>
+        <p>&copy; 2026 123Bots. All rights reserved. | (877) 702-2687</p>
       </div>
     </div>
   </footer>
