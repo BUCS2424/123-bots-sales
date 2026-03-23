@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const CHAT_ICON_URL = 'https://customer-assets.emergentagent.com/job_808bae03-b30d-4055-83be-4ec1ad35d078/artifacts/hogy414u_gk-favicon.png';
+const DEFAULT_CHAT_ICON_URL = '/images/robots/chatbot-icon.png';
 const STAFF_CHAT_INITIATED_SOUND_URL = 'https://customer-assets.emergentagent.com/job_808bae03-b30d-4055-83be-4ec1ad35d078/artifacts/lomxogl2_new-notification.mp3';
 const AI_DISPLAY_NAME = 'Betty';
 const CHAT_AUTO_POPUP_DELAY_MS = 30000;
@@ -71,6 +71,7 @@ export default function ChatWidget() {
   const [offlineLeadName, setOfflineLeadName] = useState('');
   const [offlineLeadEmail, setOfflineLeadEmail] = useState('');
   const [offlineLeadMessage, setOfflineLeadMessage] = useState('');
+  const [chatIconUrl, setChatIconUrl] = useState(DEFAULT_CHAT_ICON_URL);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -239,6 +240,21 @@ export default function ChatWidget() {
 
   useEffect(() => {
     fetchPublicChatAvailability();
+  }, []);
+
+  // Fetch chatbot icon from site settings
+  useEffect(() => {
+    const fetchChatbotIcon = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/settings/site`);
+        if (response.data?.chatbot_icon_url) {
+          setChatIconUrl(response.data.chatbot_icon_url);
+        }
+      } catch (error) {
+        // Keep default icon on error
+      }
+    };
+    fetchChatbotIcon();
   }, []);
 
   useEffect(() => {
@@ -630,7 +646,7 @@ export default function ChatWidget() {
   const getMessageIcon = (type) => {
     switch (type) {
       case 'ai':
-        return <img src={CHAT_ICON_URL} alt="123Bots Chat" className="w-5 h-5 rounded-full" />;
+        return <img src={chatIconUrl} alt="123Bots Chat" className="w-5 h-5 rounded-full" />;
       case 'agent':
         return <UserCheck className="w-5 h-5 text-green-500" />;
       case 'user':
@@ -649,7 +665,7 @@ export default function ChatWidget() {
         }`}
         data-testid="chat-widget-button"
       >
-        <img src={CHAT_ICON_URL} alt="123Bots Chat" className="w-full h-full object-cover" />
+        <img src={chatIconUrl} alt="123Bots Chat" className="w-full h-full object-cover" />
         {hasNewInvite ? (
           <span className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
             <span className="text-white text-xs font-bold">1</span>
@@ -673,7 +689,7 @@ export default function ChatWidget() {
       <div className="bg-gradient-to-r from-[#1a1625] to-[#2d2438] text-white p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-white">
-            <img src={CHAT_ICON_URL} alt="123Bots Chat" className="w-full h-full object-cover" />
+            <img src={chatIconUrl} alt="123Bots Chat" className="w-full h-full object-cover" />
           </div>
           <div>
             <h3 className="font-semibold">{headerTitle}</h3>
@@ -761,7 +777,7 @@ export default function ChatWidget() {
                   </>
                 ) : (
                   <>
-                    <img src={CHAT_ICON_URL} alt="123Bots Chat" className="w-16 h-16 mx-auto rounded-full mb-2 object-cover" />
+                    <img src={chatIconUrl} alt="123Bots Chat" className="w-16 h-16 mx-auto rounded-full mb-2 object-cover" />
                     <h4 className="font-semibold text-lg text-gray-900">Hi! I&apos;m {AI_DISPLAY_NAME}</h4>
                     <p className="text-sm text-gray-600">Your virtual assistant at 123Bots</p>
                   </>
@@ -971,7 +987,7 @@ export default function ChatWidget() {
                 {isLoading && aiEnabledForVisitors && (
                   <div className="flex gap-3">
                     <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center">
-                      <img src={CHAT_ICON_URL} alt="123Bots Chat" className="w-full h-full object-cover" />
+                      <img src={chatIconUrl} alt="123Bots Chat" className="w-full h-full object-cover" />
                     </div>
                     <div className="bg-gray-100 rounded-2xl rounded-bl-sm px-4 py-3">
                       <div className="flex gap-1">
