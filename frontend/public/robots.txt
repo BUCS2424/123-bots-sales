@@ -1,0 +1,24 @@
+# GingerKare Custom Emporium - robots.txt
+User-agent: *
+Allow: /
+Allow: /shop
+Allow: /research
+Allow: /locations/
+Allow: /about
+Allow: /contact
+Allow: /faq
+
+# Disallow admin and private areas
+Disallow: /admin
+Disallow: /dev
+Disallow: /cart
+Disallow: /checkout
+Disallow: /account
+Disallow: /user-portal
+Disallow: /api/
+
+# Crawl-delay for politeness
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://gingerkare.com/sitemap.xml

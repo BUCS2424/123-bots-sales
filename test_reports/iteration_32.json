@@ -1,0 +1,123 @@
+{
+  "summary": "Hero Media Settings feature tested and working after fix. Backend: 11/11 tests pass (100%). Frontend: Fixed missing Image import from lucide-react in DevSettingsLayout.jsx - all UI flows now working correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "bugs_fixed": [
+      {
+        "component": "DevSettingsLayout.jsx",
+        "issue": "Missing 'Image' import from lucide-react causing runtime error: 'Failed to construct Image: Please use the new operator'",
+        "fix": "Added 'Image' to lucide-react imports",
+        "file": "/app/frontend/src/pages/dev/DevSettingsLayout.jsx"
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_hero_media_settings.py",
+    "/app/test_reports/pytest/hero_media_settings_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Backend admin_settings.py: GET /api/admin-settings/hero-display returns hero_background_image_url and hero_video_url with defaults",
+    "Backend admin_settings.py: PUT /api/admin-settings/hero-display updates hero display settings in DB",
+    "Backend admin_settings.py: GET /api/settings/hero-display (public endpoint) returns hero settings without auth",
+    "Backend storage.py: POST /api/storage/upload accepts 'folder' form field - supports hero/background and hero/video",
+    "Frontend DevSettingsLayout.jsx: Hero Media menu item in Platform section with correct routing",
+    "Frontend DevHeroMediaSettings.jsx: Page has URL inputs + upload buttons for background and video",
+    "Frontend DevHeroMediaSettings.jsx: Upload calls /api/storage/upload with correct folder paths",
+    "Frontend HeroSection.jsx: Fetches hero settings from /api/settings/hero-display on mount",
+    "Frontend HeroSection.jsx: Applies hero_background_image_url and hero_video_url with defaults if not set"
+  ],
+  "updated_files": [
+    "/app/frontend/src/pages/dev/DevSettingsLayout.jsx",
+    "/app/backend/tests/test_hero_media_settings.py"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11 tests passed)",
+    "frontend": "100% (All UI flows working correctly after fix)"
+  },
+  "test_credentials": {
+    "super_admin": {
+      "email": "super@amino.com",
+      "password": "peptides"
+    }
+  },
+  "seed_data_creation": "Test data cleaned up after tests - hero settings restored to defaults",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Hero Media Settings feature is fully functional. Dev Settings nav contains Hero Media item. Route /dev/settings/hero-media renders correctly. Page has URL + upload controls for hero background (hero/background folder) and hero video (hero/video folder). Public GET /api/settings/hero-display returns hero media URLs. Homepage hero renders background image and video overlay correctly.",
+  "features_tested": {
+    "backend_hero_display_admin_get": "PASS - GET /api/admin-settings/hero-display",
+    "backend_hero_display_admin_put": "PASS - PUT /api/admin-settings/hero-display",
+    "backend_hero_display_public_get": "PASS - GET /api/settings/hero-display (no auth)",
+    "backend_storage_upload_hero_background": "PASS - POST /api/storage/upload with folder=hero/background",
+    "backend_storage_upload_hero_video": "PASS - POST /api/storage/upload with folder=hero/video",
+    "frontend_dev_settings_hero_menu": "PASS - Hero Media nav item in Dev Settings sidebar",
+    "frontend_hero_media_page_render": "PASS - /dev/settings/hero-media page renders correctly",
+    "frontend_hero_media_background_input": "PASS - Background URL input with data-testid",
+    "frontend_hero_media_video_input": "PASS - Video URL input with data-testid",
+    "frontend_hero_media_upload_buttons": "PASS - Upload buttons for background and video",
+    "frontend_hero_media_save_button": "PASS - Save Hero Media button present",
+    "frontend_homepage_hero_section": "PASS - Hero section renders with background and video",
+    "frontend_homepage_hero_video_overlay": "PASS - Video overlay plays butterfly animation"
+  },
+  "api_contracts_verified": {
+    "GET /api/admin-settings/hero-display": {
+      "auth": "Bearer token (admin)",
+      "response": {
+        "hero_background_image_url": "string (with default)",
+        "hero_video_url": "string (with default)",
+        "hero_card_image_url": "string",
+        "hero_card_title": "string",
+        "hero_card_subtitle": "string",
+        "hero_card_description": "string"
+      }
+    },
+    "PUT /api/admin-settings/hero-display": {
+      "auth": "Bearer token (admin)",
+      "request": {
+        "hero_background_image_url": "string",
+        "hero_video_url": "string",
+        "hero_card_image_url": "string",
+        "hero_card_title": "string",
+        "hero_card_subtitle": "string",
+        "hero_card_description": "string"
+      },
+      "response": {
+        "success": "boolean",
+        "message": "string"
+      }
+    },
+    "GET /api/settings/hero-display": {
+      "auth": "none (public)",
+      "response": "same as admin GET with defaults applied"
+    },
+    "POST /api/storage/upload": {
+      "auth": "Bearer token (admin)",
+      "request": "multipart/form-data with file and folder fields",
+      "response": {
+        "url": "string",
+        "key": "string",
+        "filename": "string",
+        "content_type": "string",
+        "size": "number"
+      }
+    }
+  },
+  "frontend_data_testids_verified": {
+    "dev_settings_nav": "data-testid='dev-settings-nav-dev-settings-hero-media'",
+    "hero_media_page": "data-testid='dev-hero-media-settings-page'",
+    "background_url_input": "data-testid='hero-media-background-url-input'",
+    "video_url_input": "data-testid='hero-media-video-url-input'",
+    "background_upload_button": "data-testid='hero-media-background-upload-button'",
+    "video_upload_button": "data-testid='hero-media-video-upload-button'",
+    "save_button": "data-testid='hero-media-save-button'",
+    "hero_section": "data-testid='hero-section'",
+    "hero_video_overlay": "data-testid='hero-video-overlay'"
+  }
+}

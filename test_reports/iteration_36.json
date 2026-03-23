@@ -1,0 +1,103 @@
+{
+  "summary": "Owner Chat Feature Flags testing complete. Backend: 11/11 tests passed (100%). Frontend: 11/11 UI tests passed (100%). All feature flags work correctly: owner_chat_enabled and owner_chat_ai_enabled toggles present in Dev Settings, API persistence verified, Live Chat sidebar menu gating, /admin/chat route blocking, AI Keys menu visibility gating, /admin/settings/ai-keys route blocking, and chat AI disabled message behavior.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_owner_chat_feature_flags.py",
+    "/app/test_reports/pytest/owner_chat_feature_flags_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Backend admin_settings.py: FeatureFlags model correctly defines owner_chat_enabled and owner_chat_ai_enabled with default False",
+    "Backend admin_settings.py: Public /api/settings/feature-flags endpoint returns both new flags",
+    "Backend chat_routes.py: require_admin_or_staff dependency checks owner_chat_enabled flag before allowing chat admin access",
+    "Backend chat_routes.py: POST /api/chat/message checks owner_chat_ai_enabled and returns disabled message when OFF",
+    "Frontend DevFeatureFlags.jsx: Both toggles correctly placed in Communications (owner_chat_enabled) and AI (owner_chat_ai_enabled) categories",
+    "Frontend AdminLayout.jsx: Live Chat menu conditionally rendered based on featureFlags.owner_chat_enabled",
+    "Frontend AdminLayout.jsx: /admin/chat route redirects to /admin/cart when owner_chat_enabled is OFF",
+    "Frontend AdminSettingsLayout.jsx: AI Keys menu item only shown when BOTH owner_chat_enabled AND owner_chat_ai_enabled are true",
+    "Frontend AdminSettingsLayout.jsx: /admin/settings/ai-keys redirects when either flag is OFF"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_owner_chat_feature_flags.py"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11 tests passed)",
+    "frontend": "100% (11/11 UI tests passed)"
+  },
+  "test_credentials": {
+    "super_admin": {
+      "email": "super@amino.com",
+      "password": "peptides"
+    },
+    "admin": {
+      "email": "test@emergent.dev",
+      "password": "TestAdmin123!"
+    }
+  },
+  "seed_data_creation": "No new seed data created - used existing admin credentials",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Owner Chat Feature Flags fully implemented and tested. Both toggles (owner_chat_enabled, owner_chat_ai_enabled) exist in Dev Settings > Feature Flags. When owner_chat_enabled is OFF: Live Chat menu hidden from admin sidebar, /admin/chat redirects to /admin/cart. When owner_chat_enabled is ON: Live Chat visible and /admin/chat accessible. When owner_chat_ai_enabled is OFF: Chat AI returns disabled message, AI Keys hidden from Admin Settings > System. When BOTH are ON: AI Keys visible and accessible at /admin/settings/ai-keys. All data-testids working: feature-flag-toggle-owner_chat_enabled, feature-flag-toggle-owner_chat_ai_enabled.",
+  "features_tested": {
+    "GET /api/admin-settings/feature-flags includes owner_chat_enabled": "PASS",
+    "GET /api/admin-settings/feature-flags includes owner_chat_ai_enabled": "PASS",
+    "PUT /api/admin-settings/feature-flags persists owner_chat_enabled": "PASS",
+    "PUT /api/admin-settings/feature-flags persists owner_chat_ai_enabled": "PASS",
+    "PUT /api/admin-settings/feature-flags persists both flags simultaneously": "PASS",
+    "GET /api/settings/feature-flags (public) returns both flags": "PASS",
+    "GET /api/chat/admin/dashboard blocked when owner_chat_enabled OFF": "PASS",
+    "GET /api/chat/admin/dashboard allowed when owner_chat_enabled ON": "PASS",
+    "GET /api/chat/admin/stats blocked when owner_chat_enabled OFF": "PASS",
+    "GET /api/chat/admin/stats allowed when owner_chat_enabled ON": "PASS",
+    "POST /api/chat/message returns disabled AI message when owner_chat_ai_enabled OFF": "PASS",
+    "Dev Feature Flags page shows owner_chat_enabled toggle": "PASS",
+    "Dev Feature Flags page shows owner_chat_ai_enabled toggle": "PASS",
+    "Admin sidebar hides Live Chat when owner_chat_enabled OFF": "PASS",
+    "Admin sidebar shows Live Chat when owner_chat_enabled ON": "PASS",
+    "/admin/chat redirects when owner_chat_enabled OFF": "PASS",
+    "/admin/chat accessible when owner_chat_enabled ON": "PASS",
+    "Admin Settings hides AI Keys when owner_chat_ai_enabled OFF": "PASS",
+    "Admin Settings shows AI Keys when BOTH flags ON": "PASS",
+    "/admin/settings/ai-keys redirects when either flag OFF": "PASS",
+    "/admin/settings/ai-keys accessible when BOTH flags ON": "PASS"
+  },
+  "api_contracts_verified": {
+    "GET /api/admin-settings/feature-flags": {
+      "auth": "Bearer token (admin/super_admin)",
+      "response": {
+        "owner_chat_enabled": "boolean (default false)",
+        "owner_chat_ai_enabled": "boolean (default false)",
+        "other_flags": "..."
+      }
+    },
+    "PUT /api/admin-settings/feature-flags": {
+      "auth": "Bearer token (admin/super_admin)",
+      "body": "FeatureFlags object including owner_chat_enabled and owner_chat_ai_enabled",
+      "response": {
+        "success": true,
+        "message": "Feature flags updated"
+      }
+    },
+    "GET /api/settings/feature-flags (public)": {
+      "auth": "None required",
+      "response": {
+        "owner_chat_enabled": "boolean",
+        "owner_chat_ai_enabled": "boolean",
+        "printful_enabled": "boolean",
+        "yoycol_enabled": "boolean"
+      }
+    }
+  },
+  "frontend_data_testids_verified": {
+    "owner_chat_enabled_toggle": "data-testid='feature-flag-toggle-owner_chat_enabled'",
+    "owner_chat_ai_enabled_toggle": "data-testid='feature-flag-toggle-owner_chat_ai_enabled'"
+  }
+}

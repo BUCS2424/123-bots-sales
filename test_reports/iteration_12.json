@@ -1,0 +1,90 @@
+{
+  "summary": "Wholesale Pricing Frontend Integration - All core features working correctly. Wholesale customers see proper badges, discounted prices, and savings info. Retail customers see regular prices without wholesale elements. Non-logged-in users see 'Register to see price'.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/test_reports/iteration_12.json"
+  ],
+  "action_items": [
+    "CONFIGURATION: demo@aminochain.com is currently set as wholesale customer but was intended as retail test account per review request. Update customer tier in admin panel if retail testing is needed with this account."
+  ],
+  "critical_code_review_comments": [
+    "Wholesale pricing integration correctly uses isWholesale flag from AuthContext",
+    "Product cards properly display WHOLESALE badges, crossed-out retail prices, and % OFF discount badges",
+    "Product detail page shows '25% Wholesale Discount' badge and 'You save $X.XX' message for wholesale customers",
+    "Wholesale banner properly shows custom discount percentage from customerTier context",
+    "API integration with /api/store/products/priced and /api/users/calculate-price working correctly",
+    "Non-authenticated users see 'Register to see price' as expected"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A - Frontend only testing",
+    "frontend": "100% - All wholesale pricing features verified"
+  },
+  "test_credentials": {
+    "Wholesale Customer (25% custom discount)": {
+      "email": "test@test.com",
+      "password": "wholesale123"
+    },
+    "Wholesale Customer (20% global discount)": {
+      "email": "demo@aminochain.com",
+      "password": "demo123"
+    },
+    "Retail Customer": {
+      "email": "super@amino.com",
+      "password": "peptides"
+    }
+  },
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Wholesale pricing is fully integrated into frontend. test@test.com has 25% custom discount, demo@aminochain.com has 20% global wholesale discount. Use super@amino.com for true retail customer testing.",
+  "tests_executed": {
+    "Non-Logged-In User View": {
+      "Shop page shows 'Register to see price'": "✅ PASS",
+      "No wholesale banner visible": "✅ PASS",
+      "No WHOLESALE badges visible": "✅ PASS"
+    },
+    "Wholesale Customer (test@test.com) Shop Page": {
+      "Wholesale Pricing Active banner visible": "✅ PASS",
+      "25% Custom Discount shown in banner": "✅ PASS",
+      "WHOLESALE badges on all product cards": "✅ PASS (35 badges)",
+      "Retail price crossed out": "✅ PASS (34 strikethroughs)",
+      "25% OFF discount badges visible": "✅ PASS (34 badges)"
+    },
+    "Wholesale Customer Product Detail Page": {
+      "Wholesale price displayed ($30.00)": "✅ PASS",
+      "Retail price crossed out ($40.00)": "✅ PASS",
+      "25% Wholesale Discount badge visible": "✅ PASS",
+      "You save $10.00 message visible": "✅ PASS"
+    },
+    "Retail Customer (super@amino.com) Shop Page": {
+      "No wholesale banner": "✅ PASS",
+      "No WHOLESALE badges": "✅ PASS",
+      "Regular prices displayed": "✅ PASS"
+    },
+    "Retail Customer Product Detail Page": {
+      "No Wholesale Discount badge": "✅ PASS",
+      "No wholesale savings message": "✅ PASS",
+      "Regular price displayed": "✅ PASS"
+    }
+  },
+  "verified_features": [
+    "Shop page shows 'Wholesale Pricing Active' banner for wholesale customers",
+    "Product cards show green 'WHOLESALE' badge for wholesale customers",
+    "Product cards display wholesale price with retail price crossed out",
+    "Product cards show '25% OFF' discount badge for wholesale customers",
+    "Product detail page shows wholesale price",
+    "Product detail page shows '25% Wholesale Discount' badge",
+    "Product detail page shows 'You save $X.XX' message",
+    "Retail customers see regular prices (no wholesale badges)",
+    "Non-logged-in users see 'Register to see price'"
+  ]
+}

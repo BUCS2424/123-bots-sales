@@ -1,0 +1,298 @@
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 270 33% 5%;
+    --foreground: 210 40% 98%;
+    --card: 270 45% 9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 270 45% 9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 272 57% 42%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 38 52% 48%;
+    --secondary-foreground: 270 33% 5%;
+    --muted: 270 30% 15%;
+    --muted-foreground: 215 16% 67%;
+    --accent: 38 52% 85%;
+    --accent-foreground: 270 33% 5%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 270 30% 20%;
+    --input: 270 30% 20%;
+    --ring: 272 57% 42%;
+    --radius: 0.5rem;
+  }
+  
+  /* Light theme for admin pages */
+  [data-theme="light"] {
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-void-base text-foreground font-body antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight;
+  }
+}
+
+/* Luxury scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f0518;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #6e2ea8, #b9893d);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #8b5cf6, #d6a85a);
+}
+
+/* Selection color - Gold accent */
+::selection {
+  background: rgba(185, 137, 61, 0.3);
+  color: #f4e4bc;
+}
+
+/* Glass morphism effects */
+.glass {
+  background: rgba(26, 11, 46, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-heavy {
+  background: rgba(15, 5, 24, 0.8);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-gold {
+  background: rgba(26, 11, 46, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(185, 137, 61, 0.3);
+}
+
+/* Luxury card hover effects */
+.luxury-card {
+  background: rgba(26, 11, 46, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.luxury-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(110, 46, 168, 0.1) 0%, rgba(185, 137, 61, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.luxury-card:hover {
+  border-color: rgba(185, 137, 61, 0.5);
+}
+
+.luxury-card:hover::before {
+  opacity: 1;
+}
+
+/* Glow effects - Purple & Gold */
+.glow-purple {
+  box-shadow: 0 0 40px -10px rgba(110, 46, 168, 0.5);
+}
+
+.glow-gold {
+  box-shadow: 0 0 30px -5px rgba(185, 137, 61, 0.4);
+}
+
+.glow-text-purple {
+  text-shadow: 0 0 30px rgba(110, 46, 168, 0.5);
+}
+
+.glow-text-gold {
+  text-shadow: 0 0 30px rgba(185, 137, 61, 0.5);
+}
+
+/* Gold text gradient */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #f4e4bc 0%, #b9893d 50%, #f4e4bc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Purple text gradient */
+.text-purple-gradient {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6e2ea8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Shimmer animation for buttons */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* Button hover glow */
+.btn-glow-purple:hover {
+  box-shadow: 0 8px 30px rgba(110, 46, 168, 0.5);
+}
+
+.btn-glow-gold:hover {
+  box-shadow: 0 8px 30px rgba(185, 137, 61, 0.5);
+}
+
+/* Subtle grid background */
+.grid-bg {
+  background-image: 
+    linear-gradient(rgba(110, 46, 168, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(110, 46, 168, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Hero gradient background */
+.hero-bg {
+  background: radial-gradient(circle at 50% 0%, #2d1b4e 0%, #0f0518 70%);
+}
+
+/* Research warning banner - Gold styled */
+.research-warning {
+  background: linear-gradient(90deg, rgba(185, 137, 61, 0.1), rgba(185, 137, 61, 0.05));
+  border: 1px solid rgba(185, 137, 61, 0.3);
+}
+
+/* Floating animation */
+.floating {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+}
+
+/* Fade in up animation */
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger children animation helper */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+
+/* Border gold accent */
+.border-gold-accent {
+  border-left: 2px solid #b9893d;
+}
+
+/* Research prose styling */
+.research-prose h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.75rem;
+  line-height: 1.2;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: #b9893d;
+}
+
+.research-prose h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  line-height: 1.35;
+  margin-top: 1.4rem;
+  margin-bottom: 0.5rem;
+  color: #a67c35;
+}
+
+.research-prose p {
+  font-size: 0.98rem;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+  color: #334155;
+}
+
+.research-prose ul {
+  list-style: disc;
+  padding-left: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.research-prose li {
+  margin-bottom: 0.5rem;
+  color: #334155;
+}
+
+/* Noise texture overlay */
+.noise-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+}

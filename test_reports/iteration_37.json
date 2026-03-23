@@ -1,0 +1,122 @@
+{
+  "summary": "Chat Live Rep & Offline Fallback feature testing complete. Backend: 13/13 tests passed (100%). Frontend: All key UI tests passed. Verified: public availability endpoint returns flags and online status, admin Live Rep switch works, AI disabled message returned when AI flag OFF, offline fallback lead creation with correct source/subject, AI tab hidden when AI disabled.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_chat_live_rep_offline_fallback.py",
+    "/app/test_reports/pytest/chat_live_rep_offline_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "ChatWidget.jsx: Correctly checks owner_chat_ai_enabled flag and hides AI toggle when false",
+    "ChatWidget.jsx: shouldShowOfflineLeadForm logic correctly shows offline form when AI disabled OR Live Rep selected AND no agents online",
+    "ChatWidget.jsx: submitOfflineLead posts to /api/leads/ with source=chat_offline and subject=Live Chat Offline Request",
+    "ChatWidget.jsx: Email validation present in frontend with pattern check",
+    "ChatWidget.jsx: Desktop notification triggered after offline lead submission",
+    "ChatDashboard.jsx: Live Rep Online/Offline switch present with data-testid",
+    "chat_routes.py: /api/chat/availability/public returns owner_chat_enabled, owner_chat_ai_enabled, any_online, online_agents",
+    "chat_routes.py: When owner_chat_ai_enabled=false, /api/chat/message returns 'AI chat is currently disabled' message",
+    "leads.py: POST /api/leads creates lead with status='opportunity' (Kanban Opportunity column)"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_chat_live_rep_offline_fallback.py"
+  ],
+  "success_rate": {
+    "backend": "100% (13/13 tests passed)",
+    "frontend": "100% (all key UI scenarios verified)"
+  },
+  "test_credentials": {
+    "admin": {
+      "email": "test@emergent.dev",
+      "password": "TestAdmin123!"
+    },
+    "super_admin": {
+      "email": "super@amino.com",
+      "password": "peptides"
+    }
+  },
+  "seed_data_creation": "No seed data created - used existing test credentials",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Chat Live Rep & Offline Fallback feature fully tested. When owner_chat_ai_enabled=false: AI tab hidden in widget, only Live Rep mode available. When no agents online (any_online=false): Offline fallback form shown with name/email(required)/message fields. Offline lead created with source=chat_offline, subject=Live Chat Offline Request, status=opportunity (Kanban Opportunity column). Admin Chat Dashboard has visible Live Rep Online/Offline switch (data-testid=chat-live-rep-online-switch). Desktop notification triggered on offline lead submit.",
+  "features_tested": {
+    "GET /api/chat/availability/public returns owner_chat_enabled": "PASS",
+    "GET /api/chat/availability/public returns owner_chat_ai_enabled": "PASS",
+    "GET /api/chat/availability/public returns any_online": "PASS",
+    "GET /api/chat/availability/public returns online_agents": "PASS",
+    "POST /api/chat/admin/set-availability?is_available=true": "PASS",
+    "POST /api/chat/admin/set-availability?is_available=false": "PASS",
+    "GET /api/chat/admin/availability": "PASS",
+    "POST /api/chat/message returns AI disabled message when flag OFF": "PASS",
+    "POST /api/leads creates lead with source=chat_offline": "PASS",
+    "POST /api/leads creates lead with subject=Live Chat Offline Request": "PASS",
+    "POST /api/leads creates lead with status=opportunity": "PASS",
+    "Offline lead appears in opportunity column (Kanban)": "PASS",
+    "Feature flags affect availability endpoint": "PASS",
+    "Widget shows AI/Live mode toggle when AI enabled": "PASS",
+    "Widget hides AI tab when owner_chat_ai_enabled=false": "PASS",
+    "Widget shows Live Rep Only banner when AI disabled": "PASS",
+    "Widget shows offline form when no agents online": "PASS",
+    "Offline form has name/email(required)/message fields": "PASS",
+    "Admin Chat Dashboard has Live Rep Online/Offline switch": "PASS",
+    "Switch label shows 'Live Rep Online' or 'Live Rep Offline'": "PASS"
+  },
+  "api_contracts_verified": {
+    "GET /api/chat/availability/public": {
+      "auth": "None required",
+      "response": {
+        "owner_chat_enabled": "boolean",
+        "owner_chat_ai_enabled": "boolean",
+        "any_online": "boolean",
+        "online_agents": "integer"
+      }
+    },
+    "POST /api/chat/admin/set-availability": {
+      "auth": "Bearer token (admin/staff)",
+      "query_params": "is_available=true|false",
+      "response": {
+        "message": "Availability updated",
+        "is_available": "boolean"
+      }
+    },
+    "POST /api/leads": {
+      "auth": "None required (public endpoint)",
+      "body": {
+        "name": "string",
+        "email": "string",
+        "phone": "string (optional)",
+        "subject": "Live Chat Offline Request",
+        "message": "string",
+        "source": "chat_offline"
+      },
+      "response": {
+        "success": true,
+        "message": "Lead created",
+        "lead_id": "string"
+      }
+    }
+  },
+  "frontend_data_testids_verified": {
+    "chat_widget_button": "data-testid='chat-widget-button'",
+    "chat_widget": "data-testid='chat-widget'",
+    "chat_entry_mode_toggle": "data-testid='chat-entry-mode-toggle'",
+    "chat_entry_ai_mode_button": "data-testid='chat-entry-ai-mode-button'",
+    "chat_entry_live_mode_button": "data-testid='chat-entry-live-mode-button'",
+    "chat_entry_live_only_banner": "data-testid='chat-entry-live-only-banner'",
+    "chat_live_rep_status_pill": "data-testid='chat-live-rep-status-pill'",
+    "chat_offline_lead_form": "data-testid='chat-offline-lead-form'",
+    "chat_offline_name_input": "data-testid='chat-offline-name-input'",
+    "chat_offline_email_input": "data-testid='chat-offline-email-input'",
+    "chat_offline_message_input": "data-testid='chat-offline-message-input'",
+    "chat_offline_submit_button": "data-testid='chat-offline-submit-button'",
+    "chat_live_rep_online_switch": "data-testid='chat-live-rep-online-switch'",
+    "chat_live_rep_online_label": "data-testid='chat-live-rep-online-label'"
+  }
+}

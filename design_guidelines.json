@@ -1,0 +1,149 @@
+{
+  "typography": {
+    "font_family": {
+      "heading": ["Cinzel", "serif"],
+      "body": ["Manrope", "sans-serif"],
+      "mono": ["JetBrains Mono", "monospace"]
+    },
+    "scale": {
+      "h1": "text-5xl md:text-7xl font-bold tracking-tight",
+      "h2": "text-4xl md:text-5xl font-semibold tracking-tight",
+      "h3": "text-2xl md:text-3xl font-medium",
+      "body": "text-base md:text-lg leading-relaxed text-slate-300"
+    },
+    "weights": {
+      "heading": "font-bold",
+      "body": "font-normal"
+    }
+  },
+  "colors": {
+    "primary": {
+      "DEFAULT": "#6e2ea8",
+      "foreground": "#ffffff",
+      "hover": "#582486"
+    },
+    "secondary": {
+      "DEFAULT": "#b9893d",
+      "foreground": "#0f0518",
+      "light": "#f4e4bc"
+    },
+    "background": {
+      "base": "#0f0518",
+      "surface": "#1a0b2e",
+      "card": "rgba(26, 11, 46, 0.6)"
+    },
+    "accent": {
+      "gold": "#b9893d",
+      "purple_glow": "rgba(110, 46, 168, 0.5)",
+      "gold_glow": "rgba(185, 137, 61, 0.4)"
+    },
+    "text": {
+      "primary": "#f8fafc",
+      "secondary": "#cbd5e1",
+      "muted": "#94a3b8",
+      "gold": "#f4e4bc"
+    }
+  },
+  "visual_enhancers": {
+    "shadows": {
+      "glow_purple": "0 0 40px -10px rgba(110, 46, 168, 0.5)",
+      "glow_gold": "0 0 30px -5px rgba(185, 137, 61, 0.3)",
+      "glass": "0 8px 32px 0 rgba(0, 0, 0, 0.37)"
+    },
+    "borders": {
+      "glass": "1px solid rgba(255, 255, 255, 0.08)",
+      "gold_subtle": "1px solid rgba(185, 137, 61, 0.3)",
+      "active": "1px solid #b9893d"
+    },
+    "glassmorphism": {
+      "base": "backdrop-blur-md bg-void-surface/60 border border-white/10",
+      "heavy": "backdrop-blur-xl bg-void-base/80 border border-white/5"
+    },
+    "gradients": {
+      "hero": "radial-gradient(circle at 50% 0%, #2d1b4e 0%, #0f0518 70%)",
+      "gold_text": "linear-gradient(to right, #f4e4bc, #b9893d, #f4e4bc)",
+      "card_hover": "linear-gradient(180deg, rgba(110, 46, 168, 0.1) 0%, rgba(185, 137, 61, 0.05) 100%)"
+    }
+  },
+  "components": {
+    "Button": {
+      "variants": {
+        "primary": "bg-primary text-white hover:bg-primary/90 shadow-glow-purple transition-all duration-300 rounded-none border-l-2 border-secondary",
+        "secondary": "bg-transparent border border-secondary text-secondary hover:bg-secondary/10 transition-all duration-300 rounded-none",
+        "ghost": "text-slate-300 hover:text-white hover:bg-white/5"
+      },
+      "defaultProps": {
+        "size": "lg",
+        "className": "uppercase tracking-widest font-heading text-sm font-bold"
+      }
+    },
+    "Card": {
+      "base": "bg-void-surface/40 backdrop-blur-md border border-white/5 hover:border-secondary/50 transition-colors duration-500 rounded-sm overflow-hidden group",
+      "content": "p-6 relative z-10",
+      "glow": "absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+    },
+    "Input": {
+      "base": "bg-void-base/50 border-b border-white/20 focus:border-secondary focus:ring-0 rounded-none px-4 py-3 text-white placeholder:text-slate-500 transition-colors"
+    }
+  },
+  "layout": {
+    "container": "container mx-auto px-4 md:px-8 max-w-7xl",
+    "section_spacing": "py-20 md:py-32",
+    "grid": {
+      "bento": "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6",
+      "products": "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+    }
+  },
+  "motion": {
+    "transitions": {
+      "default": "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+      "slow": "all 0.7s cubic-bezier(0.4, 0, 0.2, 1)"
+    },
+    "animations": {
+      "fade_in_up": {
+        "initial": { "opacity": 0, "y": 20 },
+        "animate": { "opacity": 1, "y": 0 },
+        "transition": { "duration": 0.5 }
+      },
+      "stagger_children": {
+        "animate": { "transition": { "staggerChildren": 0.1 } }
+      }
+    }
+  },
+  "image_urls": {
+    "hero_bg": "https://images.unsplash.com/photo-1743275062441-d392b5bd8fba?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODd8MHwxfHNlYXJjaHw0fHxsdXh1cnklMjBzY2llbnRpZmljJTIwcmVzZWFyY2glMjBsYWIlMjBhYnN0cmFjdCUyMHB1cnBsZSUyMGdvbGR8ZW58MHx8fHwxNzcyOTA3MzU2fDA&ixlib=rb-4.1.0&q=85",
+    "product_bg_abstract": "https://images.unsplash.com/photo-1743275062438-4502369061a3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBzY2llbnRpZmljJTIwcmVzZWFyY2glMjBsYWIlMjBhYnN0cmFjdCUyMHB1cnBsZSUyMGdvbGR8ZW58MHx8fHwxNzcyOTA3MzU2fDA&ixlib=rb-4.1.0&q=85",
+    "researcher_lab": "https://images.unsplash.com/photo-1552256028-2c58c3cbfa7a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzN8MHwxfHNlYXJjaHwyfHxzY2llbnRpc3QlMjByZXNlYXJjaGVyJTIwcHJvZmVzc2lvbmFsJTIwbGFiJTIwY29hdCUyMGx1eHVyeSUyMG1vZGVybnxlbnwwfHx8fDE3NzI5MDczNjB8MA&ixlib=rb-4.1.0&q=85",
+    "vial_close_up": "https://images.unsplash.com/photo-1758225502621-9102d2856dc8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxhbWJlciUyMGdsYXNzJTIwdmlhbCUyMGdvbGQlMjBjYXAlMjBsdXh1cnklMjBwYWNrYWdpbmclMjBjb3NtZXRpYyUyMHNlcnVtfGVufDB8fHx8MTc3MjkwNzM2OHww&ixlib=rb-4.1.0&q=85"
+  },
+  "instructions_to_main_agent": [
+    "Install 'Cinzel' font from Google Fonts.",
+    "Replace all cyan/blue colors with the new Purple/Gold palette.",
+    "Update tailwind.config.js to include the new 'void' (dark purple) and 'gold' colors.",
+    "Use 'Cinzel' for all H1, H2, H3 headings.",
+    "Use 'Manrope' for body text.",
+    "Refactor the 'FloatingNav' to use a glassmorphism effect with gold borders.",
+    "Update the 'HomePage' hero to use the 'hero_bg' image and center-aligned luxury typography.",
+    "Ensure 'FOR RESEARCH USE ONLY' banner is prominent but styled elegantly (e.g., Gold border, dark background).",
+    "Use 'Bento' grid layout for the features/benefits section.",
+    "Apply 'glow-purple' shadow to primary buttons on hover."
+  ],
+  "universal_guidelines": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur).",
+    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms.",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file. This disrupts the human natural reading flow of text.",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style.",
+    "NEVER: use AI assistant Emoji characters like 🤖 etc.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN.",
+    "Prioritize using pre-existing components from src/components/ui when applicable.",
+    "Components MUST use named exports (export const ComponentName = ...).",
+    "Pages MUST use default exports (export default function PageName() {...}).",
+    "Use sonner for toasts (located in /app/src/components/ui/sonner.tsx)."
+  ]
+}

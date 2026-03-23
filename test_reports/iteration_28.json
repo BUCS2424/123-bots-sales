@@ -1,0 +1,84 @@
+{
+  "summary": "Johnny 5 Products and CSV Export features tested successfully. All 17 backend API tests pass. Frontend UI verified - Products page loads correctly with stats, search/filters, and product list with expandable option rows. Export CSV button downloads CSV with all product options mapped.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "GET /api/johnny5/products?in_stock=true",
+        "issue": "Filter is applied to DB products.in_stock field but response recalculates in_stock from option_stock, causing potential mismatch between filter criteria and returned data",
+        "note": "Not a blocking issue - filter works for DB query, enriched data reflects option-level stock"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_johnny5_products_export.py",
+    "/app/test_reports/pytest/johnny5_products_export_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Backend johnny5_portal.py lines 1404-1512: list_johnny5_products endpoint properly returns products with option-level inventory breakdown",
+    "Backend johnny5_portal.py lines 1513-1624: export_live_products_csv endpoint generates CSV with all strength × package combinations",
+    "CSV fields match spec: product_id, sku, product_name, category, strength, package, price, cost_price, stock_quantity, in_stock, description, image_url, updated_at",
+    "Products with options correctly generate multiple rows (one per strength × package combination)",
+    "Frontend Johnny5Products.jsx has proper data-testid attributes for testing",
+    "handleExportCSV function correctly downloads CSV as blob with proper filename extraction"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_johnny5_products_export.py"
+  ],
+  "success_rate": {
+    "backend": "100% (17/17 tests passed)",
+    "frontend": "100% (All UI elements working correctly)"
+  },
+  "test_credentials": {
+    "admin": {
+      "email": "super@amino.com",
+      "password": "peptides"
+    }
+  },
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Johnny 5 Products page at /admin/johnny5/products is fully functional. Backend APIs: GET /api/johnny5/products (products list with option inventory) and GET /api/johnny5/products/export.csv (CSV export). Both require admin authentication. CSV contains 151 product option rows for 35 products.",
+  "features_tested": {
+    "products_list_api": "PASS - GET /api/johnny5/products returns products with options_breakdown",
+    "csv_export_api": "PASS - GET /api/johnny5/products/export.csv returns proper CSV",
+    "csv_content_type": "PASS - Response includes text/csv Content-Type",
+    "csv_content_disposition": "PASS - Response includes attachment filename header",
+    "csv_all_fields": "PASS - CSV has all 13 expected fields",
+    "csv_multiple_rows_per_product": "PASS - Products with options have separate rows per combination",
+    "api_auth_required": "PASS - Both endpoints return 401 without auth",
+    "search_filter": "PASS - Search by name/SKU/category works",
+    "category_filter": "PASS - Filter by category works",
+    "stock_filter": "PASS - Filter by in_stock works (DB-level)",
+    "pagination": "PASS - limit/skip pagination works",
+    "frontend_page_load": "PASS - Johnny 5 Products page loads correctly",
+    "frontend_stat_cards": "PASS - Total Products, In Stock, Out of Stock, Total Units cards visible",
+    "frontend_export_button": "PASS - Export CSV button triggers download",
+    "frontend_product_expansion": "PASS - Clicking product row shows option-level inventory table"
+  },
+  "api_contracts_verified": {
+    "GET /api/johnny5/products": {
+      "auth": "Bearer token (admin required)",
+      "params": "search, category, in_stock, limit, skip",
+      "response": {
+        "products": "array of enriched products with options_breakdown",
+        "total": "number",
+        "limit": "number",
+        "skip": "number",
+        "categories": "array of available categories"
+      }
+    },
+    "GET /api/johnny5/products/export.csv": {
+      "auth": "Bearer token (admin required)",
+      "response_type": "text/csv",
+      "csv_fields": ["product_id", "sku", "product_name", "category", "strength", "package", "price", "cost_price", "stock_quantity", "in_stock", "description", "image_url", "updated_at"],
+      "note": "Products with options have multiple rows (one per strength × package)"
+    }
+  }
+}

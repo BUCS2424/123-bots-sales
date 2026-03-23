@@ -1,0 +1,87 @@
+{
+  "summary": "Non-pawn scope removal verification completed. All tests pass. Legacy public routes redirect to home, admin landing shows only Pawn section, admin Storage/RV/HR routes redirect to /admin/pawn, admin settings legacy routes redirect to dashboard, backend cleanup marker exists, and core APIs (store, research) remain functional.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_non_pawn_scope_removal.py",
+    "/app/test_reports/pytest/non_pawn_scope_removal.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "App.js correctly redirects /storage/*, /rv-repair/*, /employment/*, /job-application/* to /",
+    "AdminLayout.jsx properly redirects /admin/storage/*, /admin/rv/*, /admin/hr/* to /admin/pawn",
+    "AdminSettingsLayout.jsx redirects legacy settings routes to /admin/settings/dashboard",
+    "AdminLandingPage.jsx only shows Pawn section card (Storage/RV/HR removed)",
+    "server.py contains cleanup_non_pawn_data() that runs on startup and empties NON_PAWN_COLLECTIONS",
+    "Cleanup marker 'non_pawn_scope_cleanup_v1' exists in admin_settings collection with completed=True"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_non_pawn_scope_removal.py"
+  ],
+  "success_rate": {
+    "backend": "100% - 11/11 tests passed",
+    "frontend": "100% - All UI redirect tests passed"
+  },
+  "test_credentials": "Admin: mel@a2gdesigns.com / BigDaddy2016!!",
+  "seed_data_creation": "N/A",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Non-pawn scope removal verified. Storage/RV/HR UI routes removed and redirect properly. Backend APIs for these features still exist but data collections are emptied. Core Pawn + Peptides + Research + Auth + Checkout features remain fully functional.",
+  "tests_executed": {
+    "backend_api_tests": {
+      "API Root": "✅ /api/ returns 200",
+      "Store Products": "✅ /api/store/products returns products array with 34 items",
+      "Store Categories": "✅ /api/store/categories returns categories array",
+      "Research Articles": "✅ /api/research/articles returns articles with proper structure",
+      "Admin Login": "✅ Login works with mel@a2gdesigns.com credentials",
+      "Auth Me": "✅ /api/auth/me returns current user info",
+      "Admin Dashboard": "✅ /api/admin/dashboard returns stats",
+      "Store Analytics": "✅ /api/store/analytics/stats returns data",
+      "Admin Settings Session": "✅ /api/admin-settings/session returns timeout settings"
+    },
+    "database_verification": {
+      "Cleanup Marker": "✅ non_pawn_scope_cleanup_v1 marker exists with completed=True",
+      "Collections Emptied": "✅ All 26 non-pawn collections confirmed emptied (0 documents)"
+    },
+    "public_route_redirects": {
+      "/storage": "✅ Redirects to / (homepage)",
+      "/rv-repair": "✅ Redirects to / (homepage)",
+      "/employment": "✅ Redirects to / (homepage)",
+      "/job-application": "✅ Redirects to / (homepage)"
+    },
+    "admin_route_redirects": {
+      "/admin/storage": "✅ Redirects to /admin/pawn",
+      "/admin/rv": "✅ Redirects to /admin/pawn",
+      "/admin/hr": "✅ Redirects to /admin/pawn"
+    },
+    "admin_settings_route_redirects": {
+      "/admin/settings/storage-units": "✅ Redirects to /admin/settings/dashboard",
+      "/admin/settings/storage-pricing": "✅ Redirects to /admin/settings/dashboard",
+      "/admin/settings/rv-services": "✅ Redirects to /admin/settings/dashboard",
+      "/admin/settings/rv-pricing": "✅ Redirects to /admin/settings/dashboard"
+    },
+    "admin_landing_page": {
+      "Pawn Section Visible": "✅ data-testid='admin-section-pawn' visible",
+      "Storage Section Removed": "✅ data-testid='admin-section-storage' NOT visible",
+      "RV Section Removed": "✅ data-testid='admin-section-rv' NOT visible",
+      "HR Section Removed": "✅ data-testid='admin-section-hr' NOT visible"
+    },
+    "admin_sidebar": {
+      "Storage Dashboard": "✅ NOT in sidebar (correct)",
+      "RV Dashboard": "✅ NOT in sidebar (correct)",
+      "HR Dashboard": "✅ NOT in sidebar (correct)",
+      "Pawn Menu Items": "✅ Still visible in sidebar"
+    },
+    "pawn_functionality": {
+      "Pawn Dashboard": "✅ /admin/pawn loads correctly",
+      "Admin Products": "✅ /admin/products loads correctly"
+    }
+  }
+}

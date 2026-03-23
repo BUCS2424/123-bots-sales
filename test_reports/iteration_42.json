@@ -1,0 +1,67 @@
+{
+  "summary": "Completed testing of Printful Order Eligibility and Submit endpoints on Admin Orders page. All new features working correctly - eligibility endpoint returns proper 404 'not connected' response, submit endpoint returns proper 404 error, UI correctly displays unresolved items card with error reason, and Send to Printful button is correctly hidden when order not eligible. No regression in orders table load/view flow.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "AdminOrders Order Detail Dialog",
+        "issue": "Order item selected_options displaying as 'undefined: undefined' instead of 'Size: Large • Color: Red'. The getDisplayOptionSummary function expects group_name/groupName and value_label/valueLabel but order items have name/value structure.",
+        "selector": "Order Items section in order detail dialog",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_printful_order_endpoints.py",
+    "/app/test_reports/pytest/printful_order_endpoints_results.xml"
+  ],
+  "action_items": [
+    "Consider updating getDisplayOptionSummary in /app/frontend/src/lib/productOptions.js to also handle selected_options with {name, value} structure in addition to {group_name, value_label}"
+  ],
+  "critical_code_review_comments": [
+    "AdminOrders.jsx: fetchPrintfulEligibility correctly catches errors and stores them in eligibility state with unresolved_items array",
+    "AdminOrders.jsx: canShowSendToPrintful correctly checks eligible OR already_submitted before showing button",
+    "AdminOrders.jsx: sendToPrintfulDisabled logic correctly prevents button click when loading or not eligible",
+    "AdminOrders.jsx: data-testid attributes properly added for dialog title, unresolved card, unresolved list, and send button",
+    "printful_integration.py: get_printful_order_eligibility correctly returns 404 with 'Printful account not connected' when no OAuth connection",
+    "printful_integration.py: submit_order_to_printful correctly returns 404 with clear error message when not connected",
+    "printful_integration.py: _build_printful_order_items properly identifies unresolved items with specific reasons"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_printful_order_endpoints.py"
+  ],
+  "success_rate": {
+    "backend": "100% (9/9 tests passed)",
+    "frontend": "100% (all features working as designed)"
+  },
+  "test_credentials": {
+    "admin": {
+      "email": "super@amino.com",
+      "password": "peptides"
+    },
+    "gate_password": "8487"
+  },
+  "seed_data_creation": "Used existing order APS-0CAF5B27 for testing",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Printful order endpoints tested when Printful OAuth not connected (expected state in preview env). When Printful IS connected, the eligibility endpoint should return eligible=true for orders with synced Printful products, and Send to Printful button should appear enabled. Submit endpoint should create order in Printful and update local order with printful.order_id.",
+  "features_tested": {
+    "GET /api/printful/orders/{order_id}/eligibility requires auth (401 without)": "PASS",
+    "GET /api/printful/orders/{order_id}/eligibility returns 404 when Printful not connected": "PASS",
+    "POST /api/printful/orders/{order_id}/submit requires auth (401 without)": "PASS",
+    "POST /api/printful/orders/{order_id}/submit returns 404 with clear error when not connected": "PASS",
+    "Admin Orders page loads without regression": "PASS",
+    "Orders table displays order data correctly": "PASS",
+    "Order detail dialog opens on View button click": "PASS",
+    "Dialog fetches Printful eligibility on open": "PASS",
+    "Unresolved items card appears with 'Printful account not connected' reason": "PASS",
+    "Send to Printful button NOT visible when not eligible": "PASS",
+    "GET /api/payments/orders returns order list (regression test)": "PASS",
+    "printful_enabled feature flag accessible": "PASS"
+  }
+}

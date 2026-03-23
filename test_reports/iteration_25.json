@@ -1,0 +1,99 @@
+{
+  "summary": "Johnny 5 Phase 2 Pricing & Stock Sheet - All backend APIs (19 tests) pass. Frontend admin page loads correctly with CSV upload/export, global markup settings, manual row CRUD, and stock table with red X + ETA + pre-order indicators. Connected store and local cart stock check endpoints validated.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_johnny5_pricing_stock.py",
+    "/app/test_reports/pytest/johnny5_pricing_stock_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Backend johnny5_portal.py: All pricing/stock endpoints properly implemented with auth checks",
+    "CSV import/export uses correct field format with sku,product_id,product_name,option_strength,option_package,price,cost_price,stock_quantity,in_stock,estimated_restock,allow_preorder",
+    "Global markup % correctly applied to connected_store_cost calculation",
+    "status_icon returns green_check or red_x based on in_stock && stock_quantity > 0",
+    "preorder_without_exact_restock_prompt correctly calculated when out of stock + allow_preorder + no estimated_restock",
+    "Frontend Johnny5PricingStock.jsx has all required data-testid attributes for testing",
+    "ProductDetailPage.jsx correctly displays red X, ETA, and pre-order indicators from option_stock",
+    "CheckoutPage.jsx calls /api/johnny5/local/stock/check and blocks insufficient stock, prompts for preorder"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_johnny5_pricing_stock.py"
+  ],
+  "success_rate": {
+    "backend": "100% (19/19 tests passed)",
+    "frontend": "100% (All UI elements found and functional)"
+  },
+  "test_credentials": {
+    "admin": {
+      "email": "super@amino.com",
+      "password": "peptides"
+    },
+    "connected_store_api_key": "j5_ad9d1fb5be6a4499a6f04740ec25c5a9"
+  },
+  "seed_data_creation": "Test rows created via CSV import: IMPORT-TEST-001, IMPORT-TEST-002 and manual rows: TEST-SKU-001, TEST-UPDATE-SKU, MARKUP-TEST-SKU, STATUS-GREEN-TEST, STATUS-RED-TEST, UI-TEST-SKU-001, UI-TEST-SKU-002",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Johnny 5 Phase 2 pricing/stock sheet is fully functional. Backend has all endpoints working: /api/johnny5/pricing-stock/settings (GET/PUT), /api/johnny5/pricing-stock/rows (GET/POST), /api/johnny5/pricing-stock/rows/{id} (PUT), /api/johnny5/pricing-stock/import.csv (POST), /api/johnny5/pricing-stock/export.csv (GET), /api/johnny5/integration/stock (GET), /api/johnny5/integration/stock/check (POST), /api/johnny5/local/stock/check (POST). Frontend admin page at /admin/johnny5/pricing-stock has CSV controls, global markup setting, manual row input, and data table with stock status indicators.",
+  "features_tested": {
+    "admin_pricing_stock_page": "PASS - Page loads at /admin/johnny5/pricing-stock with all controls",
+    "csv_import": "PASS - /api/johnny5/pricing-stock/import.csv accepts CSV with required fields, validates columns, overwrites existing data",
+    "csv_export": "PASS - /api/johnny5/pricing-stock/export.csv returns CSV with round-trip compatible format",
+    "manual_row_create": "PASS - /api/johnny5/pricing-stock/rows POST creates rows with sku/product_id key mapping",
+    "manual_row_update": "PASS - /api/johnny5/pricing-stock/rows/{id} PUT updates stock_quantity, in_stock, estimated_restock, allow_preorder, price, cost_price",
+    "global_markup_settings": "PASS - /api/johnny5/pricing-stock/settings GET/PUT manages global_markup_percent",
+    "connected_store_stock": "PASS - /api/johnny5/integration/stock returns products with status_icon, ETA, preorder flag, connected_store_cost",
+    "connected_store_stock_check": "PASS - /api/johnny5/integration/stock/check validates cart items against Johnny 5 inventory",
+    "local_cart_stock_check": "PASS - /api/johnny5/local/stock/check validates local storefront cart items",
+    "status_icon_display": "PASS - green_check for in_stock, red_x for out_of_stock",
+    "eta_display": "PASS - estimated_restock shown in ETA column and product detail",
+    "preorder_prompt": "PASS - preorder_without_exact_restock_prompt triggers confirmation dialog at checkout"
+  },
+  "api_contracts_verified": {
+    "GET /api/johnny5/pricing-stock/settings": {
+      "response": {"success": true, "settings": {"global_markup_percent": "number", "updated_at": "string"}}
+    },
+    "PUT /api/johnny5/pricing-stock/settings": {
+      "request": {"global_markup_percent": "number"},
+      "response": {"success": true, "settings": {"global_markup_percent": "number", "updated_at": "string"}}
+    },
+    "GET /api/johnny5/pricing-stock/rows": {
+      "response": {"success": true, "rows": "array", "total": "number", "global_markup_percent": "number"}
+    },
+    "POST /api/johnny5/pricing-stock/rows": {
+      "request": {"sku": "string|null", "product_id": "string|null", "product_name": "string", "option_strength": "string", "option_package": "string", "price": "number", "cost_price": "number", "stock_quantity": "number", "in_stock": "boolean", "estimated_restock": "string", "allow_preorder": "boolean"},
+      "response": {"success": true, "row": "object with id, row_key, connected_store_cost, status_icon"}
+    },
+    "PUT /api/johnny5/pricing-stock/rows/{id}": {
+      "request": {"stock_quantity": "number", "in_stock": "boolean", "estimated_restock": "string", "allow_preorder": "boolean", "price": "number", "cost_price": "number"},
+      "response": {"success": true, "row": "object"}
+    },
+    "GET /api/johnny5/pricing-stock/export.csv": {
+      "response": "text/csv with fields: sku,product_id,product_name,option_strength,option_package,price,cost_price,stock_quantity,in_stock,estimated_restock,allow_preorder"
+    },
+    "POST /api/johnny5/pricing-stock/import.csv": {
+      "request": "multipart/form-data with file field",
+      "response": {"success": true, "imported": "number", "errors": "array"}
+    },
+    "GET /api/johnny5/integration/stock": {
+      "headers": {"X-Store-API-Key": "required"},
+      "response": {"success": true, "store_id": "string", "count": "number", "products": "array with status_icon, ETA, preorder flag, connected_store_cost"}
+    },
+    "POST /api/johnny5/integration/stock/check": {
+      "headers": {"X-Store-API-Key": "required"},
+      "request": {"items": [{"sku": "string", "product_id": "string", "selected_strength": "string", "selected_package": "string", "quantity": "number"}]},
+      "response": {"success": true, "all_available": "boolean", "results": "array with status, status_icon, ETA, preorder_without_exact_restock_prompt"}
+    },
+    "POST /api/johnny5/local/stock/check": {
+      "request": {"items": [{"sku": "string", "product_id": "string", "selected_strength": "string", "selected_package": "string", "quantity": "number"}]},
+      "response": {"success": true, "all_available": "boolean", "results": "array with status, status_icon, ETA, preorder_without_exact_restock_prompt"}
+    }
+  }
+}

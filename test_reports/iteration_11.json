@@ -1,0 +1,157 @@
+{
+  "summary": "User Levels System for AMINO-CHAIN PEPTIDES - All tests passed. Backend: 36/36 tests (100%). Frontend: All UI flows verified. Staff management, customer tier management, wholesale settings, and price calculation APIs are fully functional.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_user_management.py",
+    "/app/test_reports/pytest/user_management_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Price calculation correctly applies customer-specific custom discount over global wholesale discount",
+    "Quantity tier discounts (5+: 25%, 10+: 30%, 25+: 35%) work correctly and override lower discounts",
+    "Minimum order amount check implemented in cart pricing",
+    "Staff roles (store_owner, sales, shipper) with proper permission matrix",
+    "Customer tier badges (Wholesale/Retail) and custom discount badges display correctly in UI",
+    "Soft delete implemented for staff members (is_deleted flag)",
+    "User management router properly registered in server.py at /api/users prefix"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_user_management.py"
+  ],
+  "success_rate": {
+    "backend": "100% - 36/36 tests passed",
+    "frontend": "100% - All UI flows verified"
+  },
+  "test_credentials": {
+    "Admin Login": {
+      "url": "/admin",
+      "email": "super@amino.com",
+      "password": "peptides"
+    }
+  },
+  "seed_data_creation": "Staff members John Sales and Jane Shipper already exist. Wholesale customers Test User (25% custom discount, $100 min) and Demo User (standard wholesale) already configured.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "User management system fully functional. Staff CRUD works with roles: store_owner, sales, shipper. Customer tier management allows marking customers as wholesale/retail with custom discount % and minimum order amounts. Global wholesale settings have 20% default discount and quantity tiers (5+: 25%, 10+: 30%, 25+: 35%). Price calculation API at /api/users/calculate-price returns correct tier-based pricing.",
+  "tests_executed": {
+    "backend_api_tests": {
+      "Staff Management": {
+        "GET /api/users/staff returns 200": "✅",
+        "Staff list contains expected fields": "✅",
+        "Staff roles are valid (store_owner, sales, shipper)": "✅",
+        "POST /api/users/staff creates new staff member": "✅",
+        "Created staff appears in list": "✅",
+        "PUT /api/users/staff/{id} updates staff": "✅",
+        "DELETE /api/users/staff/{id} soft deletes staff": "✅",
+        "Invalid role returns 400": "✅"
+      },
+      "Customer Tier Management": {
+        "GET /api/users/customers returns 200": "✅",
+        "Customer list has tier info": "✅",
+        "GET /api/users/customers/{id} returns details": "✅",
+        "Wholesale customer has custom 25% discount": "✅",
+        "Standard wholesale uses global 20% discount": "✅",
+        "Tier filter works correctly": "✅",
+        "Customer search works": "✅"
+      },
+      "Wholesale Settings": {
+        "GET /api/users/wholesale/settings returns 200": "✅",
+        "Settings has all required fields": "✅",
+        "Default discount is 20%": "✅",
+        "Quantity tiers configured (5+: 25%, 10+: 30%, 25+: 35%)": "✅",
+        "PUT /api/users/wholesale/settings updates settings": "✅"
+      },
+      "Price Calculation": {
+        "No customer_id returns retail price": "✅",
+        "Wholesale customer with 25% custom discount gets $30 (from $40)": "✅",
+        "Standard wholesale gets 20% global discount ($32)": "✅",
+        "5+ units applies 25% quantity tier": "✅",
+        "10+ units applies 30% quantity tier": "✅",
+        "25+ units applies 35% quantity tier": "✅",
+        "Non-existent product returns 404": "✅",
+        "Savings calculated correctly": "✅"
+      },
+      "Cart Pricing": {
+        "POST /api/users/calculate-cart calculates cart": "✅",
+        "Minimum order amount check works ($100 min, $30 order)": "✅"
+      },
+      "Product Wholesale Price": {
+        "GET /api/users/products/{id}/wholesale-price works": "✅",
+        "Non-existent product returns 404": "✅"
+      },
+      "Role Verification": {
+        "GET /api/users/verify-role returns customer tier": "✅",
+        "Non-existent user returns 404": "✅"
+      },
+      "Priced Products": {
+        "GET /api/store/products/priced returns retail prices": "✅",
+        "Wholesale customer sees discounted prices": "✅"
+      }
+    },
+    "frontend_ui_tests": {
+      "Admin Login": "✅ Login with super@amino.com works",
+      "User Management page loads": "✅ All 3 tabs visible (Staff Members, Customers, Wholesale Settings)",
+      "Staff Members Tab": {
+        "Staff list displays": "✅ Shows John Sales (Sales) and Jane Shipper (Shipper)",
+        "Role badges display correctly": "✅ Sales and Shipper roles with colored badges",
+        "Add Staff button present": "✅",
+        "Edit/Delete buttons work": "✅",
+        "Role permissions info card": "✅ Shows Store Owner, Sales, Shipper permissions"
+      },
+      "Customers Tab": {
+        "Customer list displays": "✅ Shows 8 customers (6 Retail, 2 Wholesale)",
+        "Wholesale badge displays": "✅ Green Wholesale badges visible",
+        "Custom discount badge": "✅ Shows '25% Custom' badge for Test User",
+        "Search input works": "✅",
+        "Tier filter dropdown works": "✅",
+        "Stats cards display": "✅ Total Customers, Retail, Wholesale, Revenue"
+      },
+      "Wholesale Settings Tab": {
+        "Default discount input": "✅ Shows 20%",
+        "Quantity tiers display": "✅ 5+ units: 25%, 10+ units: 30%, 25+ units: 35%",
+        "Add Tier form": "✅ Min Quantity and Discount % inputs with Add Tier button",
+        "Registration toggles": "✅ Self-Registration (off) and Admin Approval (on)",
+        "Save button": "✅ Save Wholesale Settings button present"
+      },
+      "Add Staff Dialog": {
+        "Opens on button click": "✅",
+        "Email input": "✅",
+        "Full Name input": "✅",
+        "Password input": "✅",
+        "Phone input": "✅",
+        "Role selector": "✅ Defaults to Sales - POS + Customer management",
+        "Create Staff Member button": "✅"
+      },
+      "Customer Settings Dialog": {
+        "Opens on customer click": "✅",
+        "Tier selection (Retail/Wholesale)": "✅ Wholesale selected with green highlight",
+        "Custom Discount % input": "✅ Shows 25",
+        "Minimum Order Amount input": "✅ Shows $100",
+        "Notes textarea": "✅ Shows 'VIP wholesale customer - research lab'",
+        "Customer Stats": "✅ Shows 0 orders, $0.00 spent",
+        "Save Changes button": "✅"
+      }
+    }
+  },
+  "verified_features": [
+    "Staff management - Create/Edit/Delete staff with different roles (store_owner, sales, shipper)",
+    "Customer tier management - Mark customer as wholesale/retail",
+    "Custom discount per customer (25% for Test User)",
+    "Minimum order amount per customer ($100 for Test User)",
+    "Global wholesale discount settings (20% default)",
+    "Quantity-based discount tiers (5+: 25%, 10+: 30%, 25+: 35%)",
+    "Price calculation API returns correct prices for retail vs wholesale customers",
+    "Quantity tier discounts apply correctly (override lower discounts)",
+    "Admin UI - Staff Members tab shows staff with roles and permissions",
+    "Admin UI - Customers tab shows customer tiers, custom discount badges, and tier filter",
+    "Admin UI - Wholesale Settings tab shows global discount, quantity tiers, registration settings"
+  ]
+}
