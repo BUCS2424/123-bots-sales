@@ -228,18 +228,18 @@ def generate_location_page_html(
 
   <style>
     :root {{
-      --purple-deep: #0f0419;
-      --purple-dark: #1d0432;
-      --purple-mid: #4b1d77;
-      --purple-light: #7a3db8;
-      --gold-light: #f4e4bc;
-      --gold-mid: #d6a85a;
-      --gold-dark: #b8923e;
-      --text-primary: #1a0a2e;
-      --text-secondary: #5f5475;
-      --bg-cream: #faf8f5;
-      --bg-purple-soft: #f8f2ff;
-      --border-light: #ead8ff;
+      --purple-deep: #0a1929;
+      --purple-dark: #0d2847;
+      --purple-mid: #2563eb;
+      --purple-light: #3b82f6;
+      --gold-light: #dcfce7;
+      --gold-mid: #22c55e;
+      --gold-dark: #16a34a;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --bg-cream: #f8fafc;
+      --bg-purple-soft: #eff6ff;
+      --border-light: #bfdbfe;
     }}
     
     * {{ box-sizing: border-box; margin: 0; padding: 0; }}
@@ -259,9 +259,9 @@ def generate_location_page_html(
     
     /* ===== TOP BAR ===== */
     .top-bar {{
-      background: linear-gradient(90deg, #2c1810 0%, #3a1f12 100%);
+      background: linear-gradient(90deg, #0a1929 0%, #0d2847 100%);
       padding: 10px 0;
-      border-bottom: 1px solid rgba(255, 140, 66, 0.2);
+      border-bottom: 1px solid rgba(34, 197, 94, 0.2);
     }}
     .top-bar-inner {{
       display: flex;
@@ -290,8 +290,8 @@ def generate_location_page_html(
       text-decoration: none;
       transition: color 0.2s;
     }}
-    .top-bar-item:hover {{ color: #ff8c42; }}
-    .top-bar-item svg {{ width: 16px; height: 16px; stroke: #ff8c42; }}
+    .top-bar-item:hover {{ color: #22c55e; }}
+    .top-bar-item svg {{ width: 16px; height: 16px; stroke: #22c55e; }}
     .top-bar-right {{
       display: flex;
       align-items: center;
@@ -307,10 +307,10 @@ def generate_location_page_html(
       font-weight: 500;
       transition: color 0.2s;
     }}
-    .top-bar-link:hover {{ color: #ff8c42; }}
+    .top-bar-link:hover {{ color: #22c55e; }}
     .top-bar-link svg {{ stroke: currentColor; }}
     .btn-register {{
-      background: linear-gradient(135deg, #ff8c42, #ff6b1a);
+      background: linear-gradient(135deg, #22c55e, #16a34a);
       color: white;
       padding: 6px 16px;
       border-radius: 9999px;
@@ -324,19 +324,19 @@ def generate_location_page_html(
       letter-spacing: 0.05em;
       transition: all 0.3s;
     }}
-    .btn-register:hover {{ box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3); transform: translateY(-1px); }}
+    .btn-register:hover {{ box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); transform: translateY(-1px); }}
     .btn-register svg {{ stroke: white; }}
     
     /* ===== NAVBAR ===== */
     .navbar {{
-      background: rgba(26, 15, 10, 0.95);
+      background: rgba(10, 25, 41, 0.95);
       backdrop-filter: blur(12px);
       padding: 12px 0;
       position: sticky;
       top: 0;
       z-index: 100;
-      border-bottom: 1px solid rgba(255, 140, 66, 0.2);
-      box-shadow: 0 4px 20px rgba(255, 140, 66, 0.1);
+      border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+      box-shadow: 0 4px 20px rgba(37, 99, 235, 0.1);
     }}
     .navbar-inner {{
       display: flex;
@@ -369,7 +369,7 @@ def generate_location_page_html(
       gap: 4px;
       padding: 10px 16px;
     }}
-    .nav-link:hover {{ color: #ff8c42; }}
+    .nav-link:hover {{ color: #22c55e; }}
     .nav-link svg {{ width: 14px; height: 14px; stroke: currentColor; }}
     .nav-link::after {{
       content: '';
@@ -397,24 +397,24 @@ def generate_location_page_html(
       transition: all 0.3s;
     }}
     .nav-btn-outline {{
-      color: #ff8c42;
-      border: 2px solid #ff8c42;
+      color: #22c55e;
+      border: 2px solid #22c55e;
       background: transparent;
     }}
-    .nav-btn-outline:hover {{ background: #ff8c42; color: white; }}
+    .nav-btn-outline:hover {{ background: #22c55e; color: white; }}
     .nav-btn-primary {{
-      background: linear-gradient(135deg, #ff8c42, #ff6b1a);
+      background: linear-gradient(135deg, #22c55e, #16a34a);
       color: white;
       border: none;
     }}
-    .nav-btn-primary:hover {{ box-shadow: 0 4px 16px rgba(255, 140, 66, 0.4); transform: translateY(-1px); }}
+    .nav-btn-primary:hover {{ box-shadow: 0 4px 16px rgba(34, 197, 94, 0.4); transform: translateY(-1px); }}
     .nav-icon {{
       color: #94a3b8;
       padding: 10px;
       transition: color 0.2s;
       border-radius: 8px;
     }}
-    .nav-icon:hover {{ color: #ff8c42; background: rgba(255, 255, 255, 0.05); }}
+    .nav-icon:hover {{ color: #22c55e; background: rgba(255, 255, 255, 0.05); }}
     .nav-actions {{
       display: flex;
       align-items: center;
@@ -454,16 +454,16 @@ def generate_location_page_html(
     .hero-overlay {{
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, rgba(44, 24, 16, 0.65), rgba(58, 31, 18, 0.55), rgba(26, 15, 10, 0.65));
+      background: linear-gradient(135deg, rgba(10, 25, 41, 0.65), rgba(13, 40, 71, 0.55), rgba(10, 25, 41, 0.65));
       z-index: 2;
     }}
     .hero::after {{
       content: '';
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 20% 20%, rgba(217, 168, 87, 0.2), transparent 40%),
-                  radial-gradient(circle at 80% 30%, rgba(122, 61, 184, 0.3), transparent 45%),
-                  radial-gradient(circle at 50% 80%, rgba(244, 228, 188, 0.15), transparent 40%);
+      background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.2), transparent 40%),
+                  radial-gradient(circle at 80% 30%, rgba(37, 99, 235, 0.3), transparent 45%),
+                  radial-gradient(circle at 50% 80%, rgba(191, 219, 254, 0.15), transparent 40%);
       z-index: 1;
     }}
     .hero-glow-1 {{
@@ -472,7 +472,7 @@ def generate_location_page_html(
       right: 15%;
       width: 400px;
       height: 400px;
-      background: rgba(244, 228, 188, 0.15);
+      background: rgba(191, 219, 254, 0.15);
       border-radius: 50%;
       filter: blur(120px);
     }}
@@ -482,7 +482,7 @@ def generate_location_page_html(
       left: 10%;
       width: 500px;
       height: 500px;
-      background: rgba(122, 61, 184, 0.2);
+      background: rgba(37, 99, 235, 0.2);
       border-radius: 50%;
       filter: blur(140px);
     }}
@@ -503,8 +503,8 @@ def generate_location_page_html(
       align-items: center;
       gap: 8px;
       padding: 10px 18px;
-      background: rgba(244, 228, 188, 0.12);
-      border: 1px solid rgba(244, 228, 188, 0.35);
+      background: rgba(191, 219, 254, 0.12);
+      border: 1px solid rgba(191, 219, 254, 0.35);
       border-radius: 50px;
       margin-bottom: 28px;
     }}
@@ -571,15 +571,15 @@ def generate_location_page_html(
     .btn-gold {{
       background: linear-gradient(135deg, var(--gold-light), var(--gold-mid));
       color: var(--purple-dark);
-      box-shadow: 0 8px 24px rgba(244, 228, 188, 0.3);
+      box-shadow: 0 8px 24px rgba(191, 219, 254, 0.3);
     }}
     .btn-gold:hover {{
-      box-shadow: 0 12px 32px rgba(244, 228, 188, 0.45);
+      box-shadow: 0 12px 32px rgba(191, 219, 254, 0.45);
       transform: translateY(-2px);
     }}
     .btn-outline-white {{
       background: rgba(255, 255, 255, 0.08);
-      border: 2px solid rgba(244, 228, 188, 0.4);
+      border: 2px solid rgba(191, 219, 254, 0.4);
       color: white;
     }}
     .btn-outline-white:hover {{
@@ -593,7 +593,7 @@ def generate_location_page_html(
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
       padding-top: 32px;
-      border-top: 1px solid rgba(244, 228, 188, 0.2);
+      border-top: 1px solid rgba(191, 219, 254, 0.2);
     }}
     .hero-feature {{
       display: flex;
@@ -604,7 +604,7 @@ def generate_location_page_html(
       width: 48px;
       height: 48px;
       background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(244, 228, 188, 0.25);
+      border: 1px solid rgba(191, 219, 254, 0.25);
       border-radius: 12px;
       display: flex;
       align-items: center;
@@ -625,7 +625,7 @@ def generate_location_page_html(
       max-width: 380px;
       border-radius: 24px;
       overflow: hidden;
-      border: 1px solid rgba(244, 228, 188, 0.3);
+      border: 1px solid rgba(191, 219, 254, 0.3);
       background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
       box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
     }}
@@ -689,10 +689,10 @@ def generate_location_page_html(
     
     /* ===== STATS STRIP ===== */
     .stats-strip {{
-      background: linear-gradient(90deg, #2c1810 0%, #3a1f12 50%, #2c1810 100%);
+      background: linear-gradient(90deg, #0a1929 0%, #0d2847 50%, #0a1929 100%);
       padding: 40px 0;
-      border-top: 1px solid rgba(255, 140, 66, 0.2);
-      border-bottom: 1px solid rgba(255, 140, 66, 0.2);
+      border-top: 1px solid rgba(34, 197, 94, 0.2);
+      border-bottom: 1px solid rgba(34, 197, 94, 0.2);
     }}
     .stats-grid {{
       display: grid;
@@ -707,14 +707,14 @@ def generate_location_page_html(
       padding: 40px 24px;
       background: rgba(255, 255, 255, 0.05);
       border-radius: 16px;
-      border: 1px solid rgba(255, 140, 66, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.15);
       backdrop-filter: blur(8px);
     }}
     .stat-value {{
       font-family: 'Cinzel', serif;
       font-size: 3rem;
       font-weight: 700;
-      color: #ff8c42;
+      color: #22c55e;
       margin-bottom: 8px;
     }}
     .stat-label {{
@@ -741,22 +741,22 @@ def generate_location_page_html(
       align-items: center;
       gap: 8px;
       padding: 10px 20px;
-      background: rgba(255, 140, 66, 0.15);
-      border: 1px solid #ff8c42;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid #22c55e;
       border-radius: 50px;
       margin-bottom: 20px;
     }}
-    .section-badge svg {{ width: 16px; height: 16px; stroke: #ff8c42; }}
+    .section-badge svg {{ width: 16px; height: 16px; stroke: #22c55e; }}
     .section-badge span {{
       font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: #ff8c42;
+      color: #22c55e;
     }}
     .section-title {{
       font-size: clamp(2rem, 4vw, 3rem);
-      color: #2c1810;
+      color: #0a1929;
       margin-bottom: 16px;
     }}
     .section-subtitle {{
@@ -782,8 +782,8 @@ def generate_location_page_html(
       transition: all 0.3s;
     }}
     .printable-card:hover {{
-      border-color: #ff8c42;
-      box-shadow: 0 16px 40px rgba(255, 140, 66, 0.15);
+      border-color: #22c55e;
+      box-shadow: 0 16px 40px rgba(34, 197, 94, 0.15);
       transform: translateY(-4px);
     }}
     .printable-icon {{
@@ -803,7 +803,7 @@ def generate_location_page_html(
     .printable-card h3 {{
       font-family: 'Cinzel', serif;
       font-size: 18px;
-      color: #2c1810;
+      color: #0a1929;
       margin-bottom: 8px;
     }}
     .printable-card p {{
@@ -817,7 +817,7 @@ def generate_location_page_html(
       gap: 6px;
       font-size: 14px;
       font-weight: 600;
-      color: #ff8c42;
+      color: #22c55e;
     }}
     
     .features-grid {{
@@ -1063,7 +1063,7 @@ def generate_location_page_html(
     .location-card-icon {{
       width: 44px;
       height: 44px;
-      background: linear-gradient(135deg, var(--bg-purple-soft), rgba(244, 228, 188, 0.3));
+      background: linear-gradient(135deg, var(--bg-purple-soft), rgba(191, 219, 254, 0.3));
       border-radius: 12px;
       display: flex;
       align-items: center;
@@ -1167,7 +1167,7 @@ def generate_location_page_html(
     .compliance-note {{
       margin-top: 48px;
       padding: 20px 28px;
-      background: linear-gradient(90deg, rgba(244, 228, 188, 0.3), rgba(244, 228, 188, 0.1));
+      background: linear-gradient(90deg, rgba(191, 219, 254, 0.3), rgba(191, 219, 254, 0.1));
       border: 1px solid var(--gold-mid);
       border-radius: 16px;
       font-size: 14px;
@@ -1188,7 +1188,7 @@ def generate_location_page_html(
       content: '';
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 30% 50%, rgba(244, 228, 188, 0.08), transparent 50%);
+      background: radial-gradient(circle at 30% 50%, rgba(191, 219, 254, 0.08), transparent 50%);
     }}
     .testimonials-inner {{
       position: relative;
@@ -1204,8 +1204,8 @@ def generate_location_page_html(
     }}
     .testimonials .section-subtitle {{ color: rgba(255, 255, 255, 0.75); }}
     .testimonials .section-badge {{
-      background: rgba(244, 228, 188, 0.12);
-      border-color: rgba(244, 228, 188, 0.4);
+      background: rgba(191, 219, 254, 0.12);
+      border-color: rgba(191, 219, 254, 0.4);
     }}
     .testimonials .section-badge span {{ color: var(--gold-light); }}
     .testimonials .section-badge svg {{ stroke: var(--gold-light); }}
@@ -1217,7 +1217,7 @@ def generate_location_page_html(
     }}
     .testimonial-card {{
       background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(244, 228, 188, 0.2);
+      border: 1px solid rgba(191, 219, 254, 0.2);
       border-radius: 20px;
       padding: 24px;
       display: flex;
@@ -1232,8 +1232,8 @@ def generate_location_page_html(
     .quote-icon {{
       width: 40px;
       height: 40px;
-      background: rgba(244, 228, 188, 0.12);
-      border: 1px solid rgba(244, 228, 188, 0.3);
+      background: rgba(191, 219, 254, 0.12);
+      border: 1px solid rgba(191, 219, 254, 0.3);
       border-radius: 10px;
       display: flex;
       align-items: center;
@@ -1244,8 +1244,8 @@ def generate_location_page_html(
     }}
     .source-tag {{
       padding: 5px 10px;
-      background: rgba(244, 228, 188, 0.1);
-      border: 1px solid rgba(244, 228, 188, 0.25);
+      background: rgba(191, 219, 254, 0.1);
+      border: 1px solid rgba(191, 219, 254, 0.25);
       border-radius: 6px;
       font-size: 11px;
       color: var(--gold-light);
