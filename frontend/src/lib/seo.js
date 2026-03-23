@@ -1,9 +1,9 @@
 // 123Bots SEO Utilities
 // Comprehensive SEO management for all pages
 
-const SITE_NAME = '123Bots';
+const SITE_NAME = '123 Bots';
 const SITE_URL = 'https://123bots.com';
-const DEFAULT_IMAGE = 'https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png';
+const DEFAULT_IMAGE = '/images/home/4-bots.jpg';
 const TWITTER_HANDLE = '@123bots';
 
 // Helper to set or create meta tags
@@ -105,7 +105,7 @@ export const setSeoMetadata = ({
     const script = document.createElement('script');
     script.type = 'application/ld+json';
     script.id = 'page-json-ld';
-    script.text = JSON.stringify(jsonLd);
+    script.text = JSON.stringify(Array.isArray(jsonLd) ? jsonLd : [jsonLd]);
     document.head.appendChild(script);
   }
 };
@@ -116,21 +116,24 @@ export const generateOrganizationSchema = () => ({
   '@type': 'Organization',
   name: SITE_NAME,
   url: SITE_URL,
-  logo: DEFAULT_IMAGE,
-  description: 'Your trusted source for automation bots and digital solutions.',
+  logo: `${SITE_URL}${DEFAULT_IMAGE}`,
+  description: 'Transform your commercial cleaning with AI-powered robotic solutions. We provide autonomous floor cleaning robots for businesses across the United States.',
+  telephone: '+1-877-702-2687',
   address: {
     '@type': 'PostalAddress',
     addressCountry: 'US',
   },
   contactPoint: {
     '@type': 'ContactPoint',
+    telephone: '+1-877-702-2687',
+    contactType: 'sales',
     email: 'info@123bots.com',
-    contactType: 'customer service',
   },
   sameAs: [
     'https://facebook.com/123bots',
-    'https://instagram.com/123bots',
     'https://twitter.com/123bots',
+    'https://linkedin.com/company/123bots',
+    'https://instagram.com/123bots',
   ],
 });
 
@@ -139,9 +142,10 @@ export const generateLocalBusinessSchema = (location = {}) => ({
   '@type': 'LocalBusiness',
   name: SITE_NAME,
   url: SITE_URL,
-  logo: DEFAULT_IMAGE,
-  image: DEFAULT_IMAGE,
-  description: 'Your trusted source for automation bots and digital solutions.',
+  logo: `${SITE_URL}${DEFAULT_IMAGE}`,
+  image: `${SITE_URL}${DEFAULT_IMAGE}`,
+  description: 'AI-powered commercial cleaning robots for businesses.',
+  telephone: '+1-877-702-2687',
   address: {
     '@type': 'PostalAddress',
     streetAddress: location.address || '',
@@ -159,17 +163,11 @@ export const generateLocalBusinessSchema = (location = {}) => ({
     {
       '@type': 'OpeningHoursSpecification',
       dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      opens: '09:00',
+      opens: '08:00',
       closes: '18:00',
     },
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: 'Saturday',
-      opens: '10:00',
-      closes: '16:00',
-    },
   ],
-  priceRange: '$$',
+  priceRange: '$$$',
 });
 
 export const generateProductSchema = (product) => ({
@@ -181,11 +179,11 @@ export const generateProductSchema = (product) => ({
   sku: product.sku || product.id,
   brand: {
     '@type': 'Brand',
-    name: SITE_NAME,
+    name: product.brand || 'PUDU',
   },
   offers: {
     '@type': 'Offer',
-    url: `${SITE_URL}/shop/${product.slug || product.id}`,
+    url: `${SITE_URL}/products/${product.slug || product.id}`,
     priceCurrency: 'USD',
     price: product.price,
     availability: product.in_stock !== false 
@@ -215,7 +213,7 @@ export const generateArticleSchema = (article) => ({
     name: SITE_NAME,
     logo: {
       '@type': 'ImageObject',
-      url: DEFAULT_IMAGE,
+      url: `${SITE_URL}${DEFAULT_IMAGE}`,
     },
   },
   mainEntityOfPage: {
@@ -266,45 +264,66 @@ export const generateWebsiteSchema = () => ({
 // SEO presets for common pages
 export const SEO_PRESETS = {
   home: {
-    title: 'Automation Bots & Digital Solutions',
-    description: '123Bots - Your trusted source for automation bots and digital solutions. Streamline your workflow with our cutting-edge bot technology!',
-    keywords: 'automation bots, digital solutions, workflow automation, bot technology, 123Bots',
+    title: 'Transform Your Commercial Cleaning with AI Robots',
+    description: 'Discover smart robotic floor cleaners perfect for your business. Save time and effort with autonomous AI cleaning robots from 123 Bots. Request a demo today!',
+    keywords: 'AI robots, commercial cleaning, robotic floor cleaners, autonomous cleaning, PUDU robots, floor scrubbers, 123Bots, commercial floor cleaning',
     canonicalPath: '/',
     ogType: 'website',
   },
+  products: {
+    title: 'Commercial Cleaning Robots',
+    description: 'Browse our collection of AI-powered commercial cleaning robots. PUDU CC1 PRO, AVIDBOT KAS, PUDU MT1 MAX, and more autonomous floor cleaning solutions.',
+    keywords: 'cleaning robots, PUDU CC1, AVIDBOT KAS, floor scrubbers, autonomous cleaning robots',
+    canonicalPath: '/products',
+    ogType: 'website',
+  },
   shop: {
-    title: 'Shop Products',
-    description: 'Browse our collection of products and solutions. Find the perfect automation tools for your needs!',
-    keywords: 'products, automation tools, digital solutions, bots',
+    title: 'Shop Robot Parts & Accessories',
+    description: 'Shop for robot parts, accessories, and cleaning supplies for your commercial cleaning robots.',
+    keywords: 'robot parts, cleaning robot accessories, PUDU parts, floor scrubber parts',
     canonicalPath: '/shop',
     ogType: 'website',
   },
-  research: {
-    title: 'Resources & Guides',
-    description: 'Explore our articles about automation, bot technology, and digital solutions. Learn how to optimize your workflow!',
-    keywords: 'automation tips, bot guides, digital solutions, workflow optimization',
-    canonicalPath: '/research',
+  demo: {
+    title: 'Schedule a Demo',
+    description: 'Schedule a free demo to see our AI cleaning robots in action at your facility. No obligation, just results.',
+    keywords: 'schedule demo, cleaning robot demo, free demo, robot demonstration',
+    canonicalPath: '/schedule-a-demo',
+    ogType: 'website',
+  },
+  buyLease: {
+    title: 'Buy or Lease Cleaning Robots',
+    description: 'Flexible buying and leasing options for commercial cleaning robots. Find the perfect plan for your business.',
+    keywords: 'buy cleaning robot, lease cleaning robot, robot financing, commercial robot lease',
+    canonicalPath: '/rent-or-buy-a-cleaning-bot',
     ogType: 'website',
   },
   about: {
     title: 'About Us',
-    description: 'Learn about 123Bots - your trusted source for automation bots and digital solutions.',
-    keywords: 'about 123Bots, automation company, digital solutions',
+    description: 'Learn about 123 Bots - your trusted partner for AI-powered commercial cleaning solutions across the United States.',
+    keywords: 'about 123 Bots, commercial cleaning company, robot cleaning solutions',
     canonicalPath: '/about',
     ogType: 'website',
   },
   contact: {
     title: 'Contact Us',
-    description: 'Get in touch with 123Bots. We\'re here to help with your automation needs!',
-    keywords: 'contact 123Bots, customer support, automation inquiry',
+    description: 'Get in touch with 123 Bots. We\'re here to help with your commercial cleaning robot needs. Call (877) 702-2687.',
+    keywords: 'contact 123 Bots, customer support, robot support, sales inquiry',
     canonicalPath: '/contact',
     ogType: 'website',
   },
   faq: {
     title: 'Frequently Asked Questions',
-    description: 'Find answers to common questions about 123Bots products, services, and support.',
-    keywords: 'FAQ, automation questions, bot help, support info',
+    description: 'Find answers to common questions about our commercial cleaning robots, pricing, support, and more.',
+    keywords: 'FAQ, robot questions, cleaning robot help, support',
     canonicalPath: '/faq',
+    ogType: 'website',
+  },
+  resources: {
+    title: 'Resources & Guides',
+    description: 'Explore guides, articles, and resources about autonomous cleaning technology and best practices.',
+    keywords: 'cleaning robot resources, guides, articles, best practices',
+    canonicalPath: '/123-bots-resources',
     ogType: 'website',
   },
 };

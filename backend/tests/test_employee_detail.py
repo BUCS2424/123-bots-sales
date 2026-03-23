@@ -6,7 +6,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dev-screensaver-mgmt.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://bots-ui-build.preview.emergentagent.com')
 API = f"{BASE_URL}/api"
 
 # Test employee ID provided

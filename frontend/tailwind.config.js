@@ -40,47 +40,65 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // AMINO-CHAIN Luxury Purple & Gold Colors
+        // 123Bots Color Scheme - Dark Tech Theme
+        bots: {
+          dark: '#050f17',      // Main dark background
+          darker: '#030a10',    // Deeper dark
+          surface: '#0a1929',   // Card surfaces
+          accent: '#1e3a5f',    // Accent blue
+          highlight: '#2563eb', // Bright blue highlight
+          text: '#ffffff',      // Primary text
+          muted: '#94a3b8',     // Muted text
+        },
+        // Keep legacy colors for backward compatibility
         void: {
-          base: '#0f0518',
-          surface: '#1a0b2e',
-          highlight: '#2d1b4e',
+          base: '#050f17',
+          surface: '#0a1929',
+          highlight: '#1e3a5f',
         },
         purple: {
-          DEFAULT: '#6e2ea8',
-          50: '#f5f0fa',
-          100: '#ebe0f5',
-          200: '#d7c1eb',
-          300: '#c3a2e1',
-          400: '#9f64cc',
-          500: '#6e2ea8',
-          600: '#582486',
-          700: '#421a64',
-          800: '#2c1142',
-          900: '#1a0b2e',
-          950: '#0f0518',
+          DEFAULT: '#2563eb',
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+          950: '#172554',
         },
         gold: {
-          DEFAULT: '#b9893d',
-          50: '#fefbf3',
-          100: '#fdf5e3',
-          200: '#f4e4bc',
-          300: '#e8ce8f',
-          400: '#d6a85a',
-          500: '#b9893d',
-          600: '#9a6f2f',
-          700: '#7a5624',
-          800: '#5a3f1b',
-          900: '#3a2912',
+          DEFAULT: '#f59e0b',
+          50: '#fffbeb',
+          100: '#fef3c7',
+          200: '#fde68a',
+          300: '#fcd34d',
+          400: '#fbbf24',
+          500: '#f59e0b',
+          600: '#d97706',
+          700: '#b45309',
+          800: '#92400e',
+          900: '#78350f',
         },
         neon: {
-          purple: '#8b5cf6',
-          gold: '#f4e4bc',
+          blue: '#3b82f6',
+          green: '#22c55e',
+          red: '#ef4444',
+        },
+        // Robot product accent colors
+        robot: {
+          cc1: '#3b82f6',     // Blue
+          kas: '#22c55e',     // Green
+          sh1: '#f59e0b',     // Orange
+          mt1: '#8b5cf6',     // Purple
         }
       },
       fontFamily: {
-        heading: ['Cinzel', 'serif'],
-        body: ['Manrope', 'sans-serif'],
+        heading: ['Inter', 'system-ui', 'sans-serif'],
+        body: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       borderRadius: {
@@ -98,12 +116,8 @@ module.exports = {
           to: { height: "0" },
         },
         "glow-pulse": {
-          "0%, 100%": { boxShadow: "0 0 20px rgba(110, 46, 168, 0.3)" },
-          "50%": { boxShadow: "0 0 40px rgba(110, 46, 168, 0.6)" },
-        },
-        "gold-pulse": {
-          "0%, 100%": { boxShadow: "0 0 20px rgba(185, 137, 61, 0.3)" },
-          "50%": { boxShadow: "0 0 40px rgba(185, 137, 61, 0.5)" },
+          "0%, 100%": { boxShadow: "0 0 20px rgba(37, 99, 235, 0.3)" },
+          "50%": { boxShadow: "0 0 40px rgba(37, 99, 235, 0.6)" },
         },
         "float": {
           "0%, 100%": { transform: "translateY(0px)" },
@@ -121,28 +135,37 @@ module.exports = {
           "0%": { opacity: "0", transform: "scale(0.95)" },
           "100%": { opacity: "1", transform: "scale(1)" },
         },
+        "bounce-slow": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-5px)" },
+        },
+        "pulse-ring": {
+          "0%": { transform: "scale(0.8)", opacity: "1" },
+          "100%": { transform: "scale(2)", opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "glow-pulse": "glow-pulse 2s ease-in-out infinite",
-        "gold-pulse": "gold-pulse 2s ease-in-out infinite",
         "float": "float 6s ease-in-out infinite",
         "shimmer": "shimmer 2s linear infinite",
         "fade-in-up": "fade-in-up 0.5s ease-out forwards",
         "scale-in": "scale-in 0.3s ease-out forwards",
+        "bounce-slow": "bounce-slow 2s ease-in-out infinite",
+        "pulse-ring": "pulse-ring 1.5s ease-out infinite",
       },
       boxShadow: {
-        'glow-purple': '0 0 40px -10px rgba(110, 46, 168, 0.5)',
-        'glow-gold': '0 0 30px -5px rgba(185, 137, 61, 0.3)',
+        'glow-blue': '0 0 40px -10px rgba(37, 99, 235, 0.5)',
+        'glow-green': '0 0 30px -5px rgba(34, 197, 94, 0.3)',
         'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
-        'luxury': '0 25px 50px -12px rgba(110, 46, 168, 0.25)',
+        'tech': '0 25px 50px -12px rgba(5, 15, 23, 0.8)',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'hero-gradient': 'radial-gradient(circle at 50% 0%, #2d1b4e 0%, #0f0518 70%)',
-        'gold-gradient': 'linear-gradient(135deg, #f4e4bc 0%, #b9893d 50%, #f4e4bc 100%)',
-        'purple-gradient': 'linear-gradient(135deg, #6e2ea8 0%, #8b5cf6 100%)',
+        'hero-gradient': 'radial-gradient(circle at 50% 0%, #1e3a5f 0%, #050f17 70%)',
+        'tech-gradient': 'linear-gradient(135deg, #050f17 0%, #0a1929 50%, #050f17 100%)',
+        'blue-gradient': 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
       },
     },
   },

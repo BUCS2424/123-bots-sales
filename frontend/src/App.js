@@ -40,6 +40,14 @@ import DevLocationPreview from './pages/dev/DevLocationPreview';
 // User Portal
 import UserPortal from './pages/UserPortal';
 
+// New 123Bots Pages
+import ProductsPage from './pages/ProductsPage';
+import RobotProductPage from './pages/RobotProductPage';
+import IndustryPage from './pages/IndustryPage';
+import ScheduleDemoPage from './pages/ScheduleDemoPage';
+import BuyLeasePage from './pages/BuyLeasePage';
+import ResourcesPage from './pages/ResourcesPage';
+
 // Age Verification
 import AgeVerificationModal from './components/AgeVerificationModal';
 
@@ -100,8 +108,7 @@ const PublicLayout = ({ children }) => {
 
   return (
     <>
-      {!hideNav && <FloatingNav />}
-      <main className="min-h-screen bg-slate-50">{children}</main>
+      <main className="min-h-screen bg-bots-dark">{children}</main>
       <ChatWidget />
     </>
   );
@@ -212,6 +219,12 @@ const AppContent = () => {
                   <Route path="/shop/:legacySlug" element={<LegacyProductSlugRedirectPage />} />
                   <Route path="/shop/:categorySlug/:productSlug" element={<ProductDetailPage />} />
                   <Route path="/product/:productId" element={<LegacyProductRedirectPage />} />
+                  <Route path="/products" element={<ProductsPage />} />
+                  <Route path="/products/:productSlug" element={<RobotProductPage />} />
+                  <Route path="/industries/:industrySlug" element={<IndustryPage />} />
+                  <Route path="/schedule-a-demo" element={<ScheduleDemoPage />} />
+                  <Route path="/rent-or-buy-a-cleaning-bot" element={<BuyLeasePage />} />
+                  <Route path="/123-bots-resources" element={<ResourcesPage />} />
                   <Route path="/contact" element={<ContactPage />} />
                   <Route path="/checkout" element={<CheckoutPage />} />
                   <Route path="/order-confirmation" element={<OrderConfirmationPage />} />

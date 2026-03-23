@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Sparkles, Gift, X, Lock, Eye, EyeOff } from 'lucide-react';
+import { Bot, Zap, X, Lock, Eye, EyeOff } from 'lucide-react';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 
 const SITE_PASSWORD = '8487';
@@ -78,7 +78,7 @@ const AgeVerificationModal = () => {
     }
   };
 
-  // Welcome Modal
+  // Welcome Modal - 123Bots Dark Tech Theme
   if (showWelcomeModal) {
     return (
       <div 
@@ -92,7 +92,7 @@ const AgeVerificationModal = () => {
         
         {/* Modal */}
         <div 
-          className={`relative bg-gradient-to-b from-[#2c1810] to-[#1a0f0a] rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden transform transition-all duration-300 ${
+          className={`relative bg-gradient-to-b from-[#0a1929] to-[#050f17] rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden transform transition-all duration-300 border border-blue-500/20 ${
             isExiting ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
           }`}
         >
@@ -105,19 +105,16 @@ const AgeVerificationModal = () => {
             <X className="w-6 h-6" />
           </button>
 
-          {/* Orange accent line */}
-          <div className="h-1 bg-gradient-to-r from-[#ff8c42] via-[#ff6b1a] to-[#ff8c42]" />
+          {/* Blue accent line */}
+          <div className="h-1 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-600" />
           
           {/* Content */}
           <div className="p-8">
-            {/* Logo */}
+            {/* Robot Icon */}
             <div className="flex justify-center mb-6">
-              <img 
-                src={siteSettings.logoUrl} 
-                alt={siteSettings.siteName} 
-                className="h-28 w-auto object-contain"
-                data-testid="welcome-modal-logo-image"
-              />
+              <div className="w-24 h-24 bg-blue-500/10 rounded-full flex items-center justify-center border border-blue-500/30">
+                <Bot className="w-12 h-12 text-blue-400" />
+              </div>
             </div>
             
             {/* Title */}
@@ -126,33 +123,33 @@ const AgeVerificationModal = () => {
             </h2>
             
             {/* Subtitle */}
-            <p className="text-center text-[#ffd4b8] mb-6">
-              Your destination for custom printables and unique gifts
+            <p className="text-center text-blue-200 mb-6">
+              Transform your commercial cleaning with AI-powered robots
             </p>
             
             {/* Features Box */}
-            <div className="bg-[#ff8c42]/10 border border-[#ff8c42]/30 rounded-lg p-4 mb-6">
+            <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mb-6">
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center gap-2 text-white">
-                  <Gift className="w-5 h-5 text-[#ff8c42]" />
-                  <span className="text-sm">Custom Gifts</span>
+                  <Bot className="w-5 h-5 text-blue-400" />
+                  <span className="text-sm">AI Cleaning Robots</span>
                 </div>
                 <div className="flex items-center gap-2 text-white">
-                  <Sparkles className="w-5 h-5 text-[#00bfff]" />
-                  <span className="text-sm">Premium Quality</span>
+                  <Zap className="w-5 h-5 text-green-400" />
+                  <span className="text-sm">Autonomous Tech</span>
                 </div>
               </div>
             </div>
             
             {/* Tagline */}
             <p className="text-center text-gray-400 text-sm mb-6">
-              Whatever your pleasure, here you'll find the perfect treasure!
+              Revolutionizing floor cleaning solutions for modern spaces
             </p>
             
             {/* Button */}
             <button
               onClick={handleEnterWelcome}
-              className="w-full py-4 bg-gradient-to-r from-[#ff8c42] to-[#ff6b1a] hover:from-[#ff9a5a] hover:to-[#ff8c42] text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-[#ff8c42]/30 hover:shadow-[#ff8c42]/50 transform hover:-translate-y-0.5"
+              className="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transform hover:-translate-y-0.5"
               data-testid="welcome-enter-btn"
             >
               Continue
@@ -160,10 +157,10 @@ const AgeVerificationModal = () => {
           </div>
           
           {/* Footer */}
-          <div className="bg-black/30 px-8 py-4 border-t border-[#ff8c42]/20">
+          <div className="bg-black/30 px-8 py-4 border-t border-blue-500/20">
             <p className="text-center text-xs text-gray-500">
-              {siteSettings.siteName}<br />
-              <span className="text-[#ff8c42]/70">Custom Printables • Unique Gifts • Made with ❤️</span>
+              123 Bots<br />
+              <span className="text-blue-400/70">Commercial Cleaning Robots • AI-Powered • (877) 702-2687</span>
             </p>
           </div>
         </div>
@@ -171,7 +168,7 @@ const AgeVerificationModal = () => {
     );
   }
 
-  // Coming Soon Password Modal
+  // Coming Soon Password Modal - 123Bots Dark Tech Theme
   if (showComingSoon) {
     return (
       <div 
@@ -185,46 +182,43 @@ const AgeVerificationModal = () => {
         
         {/* Modal */}
         <div 
-          className={`relative bg-gradient-to-b from-[#2c1810] to-[#1a0f0a] rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all duration-300 ${
+          className={`relative bg-gradient-to-b from-[#0a1929] to-[#050f17] rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all duration-300 border border-blue-500/20 ${
             isExiting ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
           }`}
         >
-          {/* Orange accent line */}
-          <div className="h-1 bg-gradient-to-r from-[#ff8c42] via-[#ff6b1a] to-[#ff8c42]" />
+          {/* Blue accent line */}
+          <div className="h-1 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-600" />
           
           {/* Content */}
           <div className="p-8">
-            {/* Logo */}
+            {/* Robot Icon */}
             <div className="flex justify-center mb-6">
-              <img 
-                src={siteSettings.logoUrl} 
-                alt={siteSettings.siteName} 
-                className="h-20 w-auto object-contain"
-                data-testid="coming-soon-logo-image"
-              />
+              <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center border border-blue-500/30">
+                <Bot className="w-10 h-10 text-blue-400" />
+              </div>
             </div>
             
             {/* Coming Soon Badge */}
             <div className="flex justify-center mb-4">
-              <span className="px-4 py-1.5 bg-[#ff8c42]/20 border border-[#ff8c42]/50 rounded-full text-[#ff8c42] text-sm font-semibold">
-                Coming Soon
+              <span className="px-4 py-1.5 bg-blue-500/20 border border-blue-500/50 rounded-full text-blue-400 text-sm font-semibold">
+                Preview Mode
               </span>
             </div>
             
             {/* Title */}
             <h2 className="text-2xl font-bold text-center text-white mb-2">
-              We're Almost Ready!
+              123 Bots Preview
             </h2>
             
             {/* Subtitle */}
-            <p className="text-center text-[#ffd4b8] mb-6">
-              Our store is currently under construction. Enter the password to preview the site.
+            <p className="text-center text-blue-200 mb-6">
+              Enter the password to access the site preview.
             </p>
             
             {/* Password Form */}
             <form onSubmit={handlePasswordSubmit} className="space-y-4">
               <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#ff8c42]">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400">
                   <Lock className="w-5 h-5" />
                 </div>
                 <input
@@ -235,7 +229,7 @@ const AgeVerificationModal = () => {
                     setError('');
                   }}
                   placeholder="Enter password"
-                  className="w-full pl-12 pr-12 py-4 bg-black/30 border border-[#ff8c42]/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#ff8c42] transition-colors"
+                  className="w-full pl-12 pr-12 py-4 bg-black/30 border border-blue-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
                   data-testid="coming-soon-password-input"
                 />
                 <button
@@ -255,7 +249,7 @@ const AgeVerificationModal = () => {
               
               <button
                 type="submit"
-                className="w-full py-4 bg-gradient-to-r from-[#ff8c42] to-[#ff6b1a] hover:from-[#ff9a5a] hover:to-[#ff8c42] text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-[#ff8c42]/30 hover:shadow-[#ff8c42]/50 transform hover:-translate-y-0.5"
+                className="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transform hover:-translate-y-0.5"
                 data-testid="coming-soon-submit-btn"
               >
                 Enter Site
@@ -264,10 +258,10 @@ const AgeVerificationModal = () => {
           </div>
           
           {/* Footer */}
-          <div className="bg-black/30 px-8 py-4 border-t border-[#ff8c42]/20">
+          <div className="bg-black/30 px-8 py-4 border-t border-blue-500/20">
             <p className="text-center text-xs text-gray-500">
-              Something special is on the way!<br />
-              <span className="text-[#ff8c42]/70">Stay tuned for our grand opening</span>
+              AI-Powered Commercial Cleaning<br />
+              <span className="text-blue-400/70">Schedule a Demo: (877) 702-2687</span>
             </p>
           </div>
         </div>

@@ -1,467 +1,655 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Coffee, Shirt, Frame, Sticker, Flag, Sparkles, Gift, Heart, Sun, Snowflake, ChevronRight, Star } from 'lucide-react';
-import HeroSection from '../components/HeroSection';
-import ProductCard from '../components/ProductCard';
-import ReviewsSection from '../components/ReviewsSection';
-import { useSiteSettings } from '../context/SiteSettingsContext';
-import axios from 'axios';
-import { setSeoMetadata, generateWebsiteSchema, generateOrganizationSchema } from '../lib/seo';
+import { ChevronDown, Phone, Play, CheckCircle, ArrowRight } from 'lucide-react';
+import { setSeoMetadata, generateOrganizationSchema, generateWebsiteSchema, SEO_PRESETS } from '../lib/seo';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api/store`;
+// Product data for the robots
+const PRODUCTS = [
+  {
+    id: 'cc1-pro',
+    name: 'CC1 PRO',
+    fullName: 'PUDU CC1 PRO',
+    image: '/images/bots/pringle-cc1-robot.png',
+    buttonImage: '/images/buttons/button-pudu-cc1-pro.png',
+    link: '/products/pudu-cc1-pro',
+    color: 'blue',
+  },
+  {
+    id: 'ab-kas',
+    name: 'AB KAS',
+    fullName: 'AVIDBOT KAS',
+    image: '/images/bots/avidbot-kas.png',
+    buttonImage: '/images/buttons/button-avidbot-kas.png',
+    link: '/products/ab-kas',
+    color: 'green',
+  },
+  {
+    id: 'sh1',
+    name: 'PUDU SH1',
+    fullName: 'PUDU SH1',
+    image: '/images/bots/robot-pudush.png',
+    buttonImage: '/images/buttons/button-pudu-sh1.png',
+    link: '/products/pudu-sh1',
+    color: 'orange',
+  },
+  {
+    id: 'mt1',
+    name: 'MT1 MAX',
+    fullName: 'PUDU MT1 MAX',
+    image: '/images/bots/nav_product_mt.webp',
+    buttonImage: '/images/buttons/button-pudu-mt1-max.png',
+    link: '/products/pudu-mt1',
+    color: 'purple',
+  },
+];
+
+// Industries served
+const INDUSTRIES = [
+  { name: 'Airports', icon: '/images/icons/industries/indus-airport.png' },
+  { name: 'Hotels', icon: '/images/icons/industries/indus-bed.png' },
+  { name: 'Restaurants', icon: '/images/icons/industries/indus-restaurant.png' },
+  { name: 'Janitorial Services', icon: '/images/icons/industries/indus-janitor.png' },
+  { name: 'Casinos', icon: '/images/icons/industries/indus-casino.png' },
+  { name: 'Assisted Living', icon: '/images/icons/industries/indus-wheelchair.png' },
+  { name: 'Gyms', icon: '/images/icons/industries/indus-gym.png' },
+  { name: 'Malls', icon: '/images/icons/industries/indus-mall.png' },
+  { name: 'Schools', icon: '/images/icons/industries/indus-school.png' },
+  { name: 'Office Buildings', icon: '/images/icons/industries/indus-office.png' },
+  { name: 'Hospitals & Healthcare', icon: '/images/icons/industries/indus-hospital.png' },
+  { name: 'Museums', icon: '/images/icons/industries/indus-museum.png' },
+];
+
+// Technology features
+const TECH_FEATURES = [
+  {
+    title: 'LiDAR and V-SLAM',
+    description: 'High-resolution LiDAR sensors and Visual Simultaneous Localization and Mapping (V-SLAM) create detailed, real-time 3D spatial maps of the environment.',
+  },
+  {
+    title: '360° Obstacle Avoidance',
+    description: 'Integrated cameras, ultrasonic, and infrared sensors provide complete situational awareness, enabling dynamic obstacle detection and safe collision avoidance.',
+  },
+  {
+    title: 'Dynamic Route Optimization',
+    description: 'Sophisticated AI route planning algorithms dynamically calculate the most efficient path, guaranteeing comprehensive coverage.',
+  },
+];
 
 const HomePage = () => {
-  const [featuredProducts, setFeaturedProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const siteSettings = useSiteSettings();
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   useEffect(() => {
+    // Set SEO metadata
     setSeoMetadata({
-      title: 'Custom Printables & Unique Gifts',
-      description: '123Bots - Your destination for custom printables, personalized gifts, and unique treasures. T-shirts, mugs, tumblers, canvas art and more!',
-      keywords: 'custom printables, personalized gifts, custom mugs, custom t-shirts, tumblers, canvas art, patches, stickers, 123Bots, sublimation printing',
-      canonicalPath: '/',
-      ogType: 'website',
-      jsonLd: [
-        generateWebsiteSchema(),
-        generateOrganizationSchema(),
-        {
-          '@context': 'https://schema.org',
-          '@type': 'WebPage',
-          name: '123Bots - Home',
-          description: 'Custom printables, personalized gifts, and unique treasures made just for you.',
-          isPartOf: {
-            '@type': 'WebSite',
-            name: '123Bots',
-            url: 'https://123bots.com',
-          },
-        },
-      ],
+      ...SEO_PRESETS.home,
+      title: 'Transform Your Commercial Cleaning with AI Robots | 123 Bots',
+      description: 'Discover smart robotic floor cleaners perfect for your business. Save time and effort with autonomous AI cleaning robots. Request a demo today!',
+      keywords: 'AI robots, commercial cleaning, robotic floor cleaners, autonomous cleaning, PUDU robots, floor scrubbers, 123Bots',
+      jsonLd: [generateOrganizationSchema(), generateWebsiteSchema()],
     });
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [productsRes, categoriesRes] = await Promise.all([
-          axios.get(`${API}/products`),
-          axios.get(`${API}/categories`)
-        ]);
-        setFeaturedProducts(productsRes.data.slice(0, 8));
-        setCategories(categoriesRes.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  // Printable categories for 123Bots
-  const printableCategories = [
-    { icon: Coffee, name: 'Coffee Mugs', description: 'Start your day with a custom mug', link: '/shop?category=coffee-mugs', color: 'from-amber-500 to-orange-600' },
-    { icon: Shirt, name: 'T-Shirts', description: 'Wear your style proudly', link: '/shop?category=t-shirts', color: 'from-blue-500 to-cyan-500' },
-    { icon: Frame, name: 'Canvas Art', description: 'Art that speaks to you', link: '/shop?category=on-canvas', color: 'from-purple-500 to-pink-500' },
-    { icon: Sticker, name: 'Stickers & Patches', description: 'Small but mighty designs', link: '/shop?category=patches', color: 'from-green-500 to-emerald-500' },
-    { icon: Flag, name: 'Flags & Banners', description: 'Make a statement', link: '/shop?category=flags', color: 'from-red-500 to-rose-500' },
-    { icon: Sparkles, name: 'Tumblers', description: 'Keep drinks at perfect temp', link: '/shop?category=tumblers', color: 'from-teal-500 to-cyan-500' },
-  ];
-
-  // Featured collections
-  const featuredCollections = [
-    {
-      title: 'Cancer Support Collection',
-      description: 'Featuring The Baltimore Cancer Support Group',
-      image: 'https://customer-assets.emergentagent.com/job_38142eca-d39f-438c-945a-8be7be193bd7/artifacts/vc5jlgk1_Cancer-Collection-2.jpg',
-      link: '/shop?category=cancer-support-group',
-      badge: 'Featured'
-    },
-    {
-      title: 'Custom Printing',
-      description: 'Customize print on any of our items',
-      image: 'https://customer-assets.emergentagent.com/job_38142eca-d39f-438c-945a-8be7be193bd7/artifacts/hiqzaimq_123Bots-custom-printables1.jpg',
-      link: '/shop',
-      badge: 'Popular'
-    },
-    {
-      title: 'Tumbler Collections',
-      description: 'Cool tumbler collections for every season',
-      image: 'https://customer-assets.emergentagent.com/job_38142eca-d39f-438c-945a-8be7be193bd7/artifacts/81gq8f92_0-2.jpg',
-      link: '/shop?category=tumblers',
-      badge: 'New'
-    },
-    {
-      title: 'Cruise Collection',
-      description: 'Find your cruise line apparel',
-      image: 'https://customer-assets.emergentagent.com/job_38142eca-d39f-438c-945a-8be7be193bd7/artifacts/nsagv9rj_Featured-Vision-of-the-Seas-4.jpg',
-      link: '/shop?category=vision-of-the-seas',
-      badge: 'Trending'
-    },
-    {
-      title: 'Hawaiian Collections',
-      description: 'Tropical vibes for every occasion',
-      image: 'https://customer-assets.emergentagent.com/job_38142eca-d39f-438c-945a-8be7be193bd7/artifacts/fc7lo8g2_Hawiian-Collection.jpg',
-      link: '/shop?category=hawaiian-prints',
-      badge: 'Summer',
-      imagePosition: 'top'
-    },
-  ];
-
-  // Special occasions
-  const specialOccasions = [
-    { icon: Gift, name: 'Birthday', link: '/special/birthday', color: 'bg-pink-500' },
-    { icon: Heart, name: 'Love', link: '/special/love', color: 'bg-red-500' },
-    { icon: Sun, name: 'Thank You', link: '/special/thank-you', color: 'bg-yellow-500' },
-    { icon: Star, name: 'Moms', link: '/special/moms', color: 'bg-purple-500' },
-  ];
+  const scrollToDemo = () => {
+    document.getElementById('schedule-demo')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
-    <div className="min-h-screen bg-[#faf5f0]" data-testid="home-page">
-      <HeroSection />
-
-      {/* Stats Strip */}
-      <section className="relative bg-gradient-to-r from-[#2c1810] via-[#4a2c1a] to-[#2c1810] py-8" data-testid="stats-strip">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            { value: '1000+', label: 'Custom Designs Created' },
-            { value: '50+', label: 'Product Categories' },
-            { value: '100%', label: 'Satisfaction Guaranteed' },
-          ].map((item, index) => (
-            <motion.div
-              key={item.label}
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.08 }}
-              className="rounded-2xl border border-[#ff8c42]/25 bg-white/10 px-5 py-4 text-center"
-              data-testid={`stat-item-${index}`}
-            >
-              <p className="font-heading text-3xl font-bold text-[#ff8c42]">{item.value}</p>
-              <p className="text-sm text-[#ffd4b8]">{item.label}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Printable Categories */}
-      <section className="relative py-24 bg-gradient-to-b from-[#faf5f0] via-white to-[#fff8f0]" data-testid="categories-section">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ff8c42]/15 border border-[#ff8c42] text-[#a55a2a] text-sm font-semibold tracking-wider mb-4">
-              <Sparkles className="w-4 h-4" />
-              SHOP BY CATEGORY
-            </span>
-            <h2 className="font-heading text-4xl md:text-5xl font-bold text-[#2c1810] mb-4" data-testid="categories-heading">
-              Our Printable Collections
-            </h2>
-            <p className="text-slate-600 text-lg max-w-2xl mx-auto">
-              Everything on our site can be customized to your needs. Your name, logo, or design - we make it happen!
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {printableCategories.map((category, index) => (
-              <motion.div
-                key={category.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Link
-                  to={category.link}
-                  className="group block p-6 bg-white border border-[#ff8c42]/20 rounded-2xl hover:border-[#ff8c42] hover:shadow-xl hover:shadow-[#ff8c42]/20 transition-all duration-300"
-                  data-testid={`category-${index}`}
-                >
-                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${category.color} flex items-center justify-center mb-5 group-hover:shadow-lg transition-all`}>
-                    <category.icon className="w-7 h-7 text-white" />
-                  </div>
-                  <h3 className="font-heading font-semibold text-[#2c1810] text-lg mb-2">
-                    {category.name}
-                  </h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">
-                    {category.description}
-                  </p>
-                  <div className="mt-4 flex items-center text-[#ff8c42] font-medium text-sm group-hover:translate-x-1 transition-transform">
-                    Shop Now <ArrowRight className="w-4 h-4 ml-1" />
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Collections Grid */}
-      <section className="relative py-24 overflow-hidden" data-testid="featured-collections">
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ 
-            backgroundImage: `url('https://customer-assets.emergentagent.com/job_38142eca-d39f-438c-945a-8be7be193bd7/artifacts/l9vhcory_vision-of-the-seas-solarium-pool-deck.jpg')`,
-          }}
-        />
-        {/* Cool teal/blue overlay with gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a2a3a]/85 via-[#1a4a5a]/80 to-[#2c1810]/90" />
-        {/* Decorative accent glow */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#00bfff]/10 blur-[120px] rounded-full pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-[#ff8c42]/10 blur-[100px] rounded-full pointer-events-none" />
+    <div className="min-h-screen bg-bots-dark">
+      <Header />
+      
+      {/* Hero Section with Video Background */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Video Background */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          poster="/images/home/4-bots.jpg"
+        >
+          <source src="/videos/cc1-pro.mp4" type="video/mp4" />
+        </video>
         
-        <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
+        {/* Dark Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-bots-dark/80 via-bots-dark/60 to-bots-dark" />
+        
+        {/* Hero Content */}
+        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+          <p className="text-blue-400 font-semibold mb-4 animate-fade-in-down">CHECK OUT OUR</p>
+          <Link 
+            to="/rent-or-buy-a-cleaning-bot"
+            className="inline-block px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold rounded-full text-xl hover:from-blue-500 hover:to-blue-400 transition-all transform hover:scale-105 shadow-lg shadow-blue-500/30 mb-6 animate-fade-in"
+            data-testid="hero-cta-button"
           >
-            <span className="inline-block px-4 py-2 rounded-full bg-[#00bfff]/20 border border-[#00bfff] text-[#00bfff] text-sm font-semibold tracking-wider mb-4">
-              FEATURED
-            </span>
-            <h2 className="font-heading text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
-              Things to Check Out!
-            </h2>
-            <p className="text-white/90 text-lg max-w-2xl mx-auto drop-shadow-md">
-              Whatever your pleasure, here you'll find the perfect treasure!
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredCollections.map((collection, index) => (
-              <motion.div
-                key={collection.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className={index === 0 ? 'md:col-span-2 lg:col-span-1' : ''}
-              >
-                <Link
-                  to={collection.link}
-                  className="group block relative overflow-hidden rounded-2xl h-72 border border-white/10 backdrop-blur-sm"
-                  data-testid={`collection-${index}`}
-                >
-                  <img
-                    src={collection.image}
-                    alt={collection.title}
-                    className={`absolute inset-0 w-full h-full group-hover:scale-110 transition-transform duration-500 ${collection.imageStyle === 'contain' ? 'object-contain bg-gray-100' : 'object-cover'}`}
-                    style={{ objectPosition: collection.imagePosition || 'center' }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                  <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 bg-[#ff8c42] text-white text-xs font-bold rounded-full">
-                      {collection.badge}
-                    </span>
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <h3 className="font-heading text-xl font-bold text-white mb-1 group-hover:text-[#ff8c42] transition-colors">
-                      {collection.title}
-                    </h3>
-                    <p className="text-white/80 text-sm">{collection.description}</p>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+            Buy or Lease Program
+          </Link>
+          <p className="text-blue-300 text-sm mb-8 animate-fade-in">or continue scrolling down</p>
+          
+          {/* Scroll Down Indicator */}
+          <div className="animate-bounce-slow">
+            <img 
+              src="/images/home/scroll-down.gif" 
+              alt="Scroll down" 
+              className="w-12 h-12 mx-auto opacity-70"
+            />
           </div>
         </div>
       </section>
 
-      {/* Special Occasions */}
-      <section className="relative py-20 bg-gradient-to-b from-[#fff8f0] to-white" data-testid="special-occasions">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="font-heading text-3xl md:text-4xl font-bold text-[#2c1810] mb-4">
-              Shop by Special Occasion
-            </h2>
-            <p className="text-slate-600">Find the perfect gift for every moment that matters</p>
-          </motion.div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {specialOccasions.map((occasion, index) => (
-              <motion.div
-                key={occasion.name}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Link
-                  to={occasion.link}
-                  className="group flex flex-col items-center p-6 bg-white rounded-2xl border border-slate-100 hover:border-[#ff8c42] hover:shadow-lg transition-all"
-                >
-                  <div className={`w-16 h-16 ${occasion.color} rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                    <occasion.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <span className="font-semibold text-[#2c1810] group-hover:text-[#ff8c42] transition-colors">
-                    {occasion.name}
-                  </span>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Products */}
-      <section className="relative py-24 bg-gradient-to-b from-white to-[#faf5f0]" data-testid="products-section">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="flex flex-col md:flex-row md:items-end justify-between mb-12"
-          >
-            <div>
-              <span className="inline-block px-4 py-2 rounded-full bg-[#ff8c42]/15 border border-[#ff8c42] text-[#a55a2a] text-sm font-semibold tracking-wider mb-4">
-                FEATURED ITEMS
-              </span>
-              <h2 className="font-heading text-4xl md:text-5xl font-bold text-[#2c1810]">
-                Some Featured Items
+      {/* AI Impact Section */}
+      <section className="py-20 bg-bots-dark">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Robot Animation */}
+            <div className="flex justify-center animate-fade-in-left">
+              <img 
+                src="/images/bots/screen2-robot-gif.gif" 
+                alt="AI Cleaning Robot" 
+                className="w-full max-w-md rounded-2xl shadow-2xl shadow-blue-500/20"
+              />
+            </div>
+            
+            {/* Content */}
+            <div className="text-center md:text-left animate-fade-in-right">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                HAVE YOU EVER WONDERED, HOW AI WOULD AFFECT YOUR BUSINESS...
               </h2>
+              <div className="space-y-4 text-lg">
+                <p className="text-red-400 font-semibold">
+                  Tasks Like, Sweeping, Mopping, Vacuuming, Delivery & Snow Removal...
+                </p>
+                <p className="text-red-400 font-semibold">
+                  We Will See More Autonomous Equipment Being Used In The Workplace.
+                </p>
+                <p className="text-white text-2xl font-bold mt-6">
+                  It's Not a Matter IF You Will Use This Equipment.... It's WHEN...
+                </p>
+              </div>
             </div>
-            <Link
-              to="/shop"
-              data-testid="view-all-products"
-              className="inline-flex items-center gap-2 text-[#ff8c42] hover:text-[#ff6b1a] font-semibold mt-4 md:mt-0 group"
-            >
-              View All Products
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </motion.div>
-
-          {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="aspect-[3/4] bg-slate-100 rounded-2xl animate-pulse" />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredProducts.map((product, index) => (
-                <ProductCard key={product.id} product={product} index={index} cardContext="homepage" />
-              ))}
-            </div>
-          )}
+          </div>
         </div>
       </section>
 
-      {/* Custom Design CTA */}
-      <section className="relative py-20 bg-gradient-to-r from-[#ff8c42] via-[#ff6b1a] to-[#ff8c42]" data-testid="custom-cta">
-        <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="font-heading text-3xl md:text-4xl font-bold text-white mb-4">
-              Just About Everything Can Be Customized!
-            </h2>
-            <p className="text-white/90 text-lg mb-8 max-w-2xl mx-auto">
-              If you see a product you'd like with your name, logo, or design, reach out to us! Design charges may apply, and we'll do our very best to get your design on our awesome gear.
+      {/* Products Showcase Section */}
+      <section className="py-20 bg-gradient-to-b from-bots-dark via-bots-surface to-bots-dark relative overflow-hidden">
+        {/* Background Video */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
+        >
+          <source src="/videos/123-bots-home-background.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-bots-dark/70" />
+        
+        <div className="relative z-10 max-w-7xl mx-auto px-4">
+          {/* Intro Text */}
+          <div className="text-center mb-16">
+            <p className="text-white text-lg max-w-4xl mx-auto leading-relaxed">
+              <span className="font-bold">Elevate Your Clean. Automate Your Scrubbing</span><br /><br />
+              Robotic floor scrubbers are redefining floor care. They deliver a deeper, more consistent clean, 
+              creating environments that are demonstrably cleaner, safer, and highly efficient. From hospitals 
+              to corporate campuses, these intelligent machines boost hygiene standards and guarantee significant 
+              operational savings.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/contact"
-                data-testid="cta-contact-btn"
-                className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-[#ff6b1a] font-heading font-bold uppercase tracking-wider rounded-full hover:shadow-xl transition-all"
+          </div>
+
+          {/* Products Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+            {PRODUCTS.map((product, index) => (
+              <Link 
+                key={product.id}
+                to={product.link}
+                className="group text-center animate-fade-in-up"
+                style={{ animationDelay: `${index * 100}ms` }}
+                data-testid={`product-card-${product.id}`}
               >
-                Request Custom Design
-                <ArrowRight className="w-5 h-5" />
+                <div className="relative mb-4">
+                  <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <img 
+                    src={product.image} 
+                    alt={product.fullName}
+                    className="w-full h-48 object-contain mx-auto transform group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+                <h3 className="text-white font-bold text-xl mb-2">{product.name}</h3>
+                <p className="text-blue-400 text-sm group-hover:text-blue-300 transition-colors">
+                  Click to see more...
+                </p>
               </Link>
-              <a
-                href="mailto:info@123bots.com"
-                className="inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-white text-white font-heading font-bold uppercase tracking-wider rounded-full hover:bg-white/10 transition-all"
+            ))}
+          </div>
+
+          {/* Product Buttons */}
+          <div className="flex flex-wrap justify-center gap-4">
+            {PRODUCTS.map((product) => (
+              <Link 
+                key={product.id}
+                to={product.link}
+                className="transform hover:scale-105 transition-transform"
               >
-                Email Us
-              </a>
-            </div>
-          </motion.div>
+                <img 
+                  src={product.buttonImage} 
+                  alt={product.fullName}
+                  className="h-12 md:h-16"
+                />
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Reviews Section */}
-      <ReviewsSection />
-
-      {/* Footer */}
-      <footer className="bg-gradient-to-b from-[#2c1810] to-[#1a0f0a] text-white py-16 pb-24" data-testid="footer">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-12 mb-12">
-            <div className="md:col-span-2">
-              <div className="flex items-center gap-2 mb-4">
-                <img
-                  src={siteSettings.logoUrl}
-                  alt={siteSettings.siteName}
-                  className="h-16 w-auto object-contain"
-                  data-testid="footer-logo-image"
-                />
-              </div>
-              <p className="text-[#ffd4b8] text-sm max-w-md mb-6">
-                Your destination for custom printables, personalized gifts, and unique treasures. Whatever your pleasure, here you'll find the perfect treasure!
+      {/* Revolutionizing Solutions Section */}
+      <section className="py-20 bg-bots-dark">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-white text-center mb-8">
+            Revolutionizing Floor Cleaning Solutions for Modern Spaces
+          </h2>
+          
+          <div className="grid md:grid-cols-2 gap-12 mt-12">
+            <div className="bg-bots-surface/50 p-8 rounded-2xl border border-blue-500/20">
+              <h3 className="text-2xl font-bold text-white mb-4">AUTONOMOUS FLOOR CLEANING SOLUTIONS</h3>
+              <p className="text-gray-300 leading-relaxed">
+                Floor care has evolved well beyond traditional manual mopping. Today, autonomous robotics 
+                are revolutionizing the industry, setting new standards for reliability and effectiveness 
+                in floor cleaning. These intelligent solutions provide faster, more consistent, and more 
+                hygienic results, all with minimal human intervention.
               </p>
-              <div className="flex gap-4">
-                <a href="https://www.facebook.com/123bots.collectibles" target="_blank" rel="noopener noreferrer" className="text-[#ffd4b8] hover:text-[#00bfff] transition-colors" data-testid="footer-social-facebook">Facebook</a>
-                <a href={`mailto:${siteSettings.supportEmail}`} className="text-[#ffd4b8] hover:text-[#ff8c42] transition-colors" data-testid="footer-social-email">Email</a>
-              </div>
             </div>
-
-            <div>
-              <h4 className="font-heading font-semibold mb-4 text-[#ff8c42]">Shop</h4>
-              <ul className="space-y-2">
-                <li><Link to="/shop" className="text-[#ffd4b8] hover:text-[#ff8c42] text-sm transition-colors">All Products</Link></li>
-                <li><Link to="/shop?category=coffee-mugs" className="text-[#ffd4b8] hover:text-[#ff8c42] text-sm transition-colors">Coffee Mugs</Link></li>
-                <li><Link to="/shop?category=t-shirts" className="text-[#ffd4b8] hover:text-[#ff8c42] text-sm transition-colors">T-Shirts</Link></li>
-                <li><Link to="/shop?category=tumblers" className="text-[#ffd4b8] hover:text-[#ff8c42] text-sm transition-colors">Tumblers</Link></li>
-                <li><Link to="/shop" className="text-[#ffd4b8] hover:text-[#ff8c42] text-sm transition-colors">Collections</Link></li>
-              </ul>
+            
+            <div className="bg-bots-surface/50 p-8 rounded-2xl border border-blue-500/20">
+              <h3 className="text-2xl font-bold text-white mb-4">Engineered for Commercial Excellence</h3>
+              <p className="text-gray-300 leading-relaxed">
+                Designed specifically for the needs of commercial settings, our autonomous solutions 
+                provide reliable, professional-grade results each time. Enhance the health, safety, 
+                and visual appeal of your entire facility with state-of-the-art autonomy, advanced 
+                robotics, and industry-leading software.
+              </p>
             </div>
-
-            <div>
-              <h4 className="font-heading font-semibold mb-4 text-[#ff8c42]">Support</h4>
-              <ul className="space-y-2">
-                <li><Link to="/contact" className="text-[#ffd4b8] hover:text-[#ff8c42] text-sm transition-colors">Contact Us</Link></li>
-                <li><Link to="/faq" className="text-[#ffd4b8] hover:text-[#ff8c42] text-sm transition-colors">FAQs</Link></li>
-                <li><Link to="/about" className="text-[#ffd4b8] hover:text-[#ff8c42] text-sm transition-colors">About Us</Link></li>
-                <li><Link to="/shipping-returns" className="text-[#ffd4b8] hover:text-[#ff8c42] text-sm transition-colors">Shipping & Returns</Link></li>
-                <li><Link to="/research" className="text-[#ffd4b8] hover:text-[#ff8c42] text-sm transition-colors">Research</Link></li>
-                <li><a href={`mailto:${siteSettings.supportEmail}`} className="text-[#ffd4b8] hover:text-[#ff8c42] text-sm transition-colors" data-testid="footer-support-email-link">{siteSettings.supportEmail}</a></li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Legal Links */}
-          <div className="pt-6 mb-8 border-t border-[#ff8c42]/20">
-            <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <Link to="/privacy-policy" className="text-[#ffd4b8] hover:text-[#ff8c42] transition-colors">Privacy Policy</Link>
-              <Link to="/terms-conditions" className="text-[#ffd4b8] hover:text-[#ff8c42] transition-colors">Terms & Conditions</Link>
-              <Link to="/accessibility" className="text-[#ffd4b8] hover:text-[#ff8c42] transition-colors">Accessibility</Link>
-              <Link to="/shipping-returns" className="text-[#ffd4b8] hover:text-[#ff8c42] transition-colors">Shipping & Returns</Link>
-            </div>
-          </div>
-
-          <div className="pt-6 border-t border-[#ff8c42]/20 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-[#ffd4b8] text-sm" data-testid="footer-copyright">
-              © 2026 {siteSettings.siteName}. All rights reserved.
-            </p>
-            <p className="text-[#ff8c42]/90 text-xs font-mono tracking-wider text-center">
-              CUSTOM PRINTABLES • UNIQUE GIFTS • MADE WITH ❤️
-            </p>
           </div>
         </div>
-      </footer>
+      </section>
+
+      {/* ROI & Market Growth Section */}
+      <section className="py-20 bg-gradient-to-r from-blue-900/30 to-bots-dark">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                Ready to Maximize Your Facility's ROI?
+              </h2>
+              <div className="bg-bots-surface/50 p-6 rounded-xl border border-blue-500/20 mb-6">
+                <h4 className="text-blue-400 font-bold mb-2">Market Growth</h4>
+                <p className="text-gray-300">
+                  The autonomous cleaning industry is experiencing rapid growth. Market research indicates 
+                  an annual increase exceeding 20%. An increasing number of enterprises are adapting their 
+                  operations to incorporate these solutions.
+                </p>
+              </div>
+              
+              <h3 className="text-2xl font-bold text-white mb-4">
+                LiDAR and AI: Redefining Cleaning in Healthcare
+              </h3>
+              <p className="text-gray-300 mb-6">
+                Modern robotic systems now utilize advanced Artificial Intelligence, sophisticated sensors, 
+                and intelligent technology. Innovations such as LiDAR and integrated camera systems allow 
+                these platforms to navigate complex layouts with exceptional precision.
+              </p>
+              
+              <ul className="space-y-3">
+                {['Deliver a Consistent Clean', 'Maximize Staff Efficiency', 'Validate ROI'].map((item) => (
+                  <li key={item} className="flex items-center text-white">
+                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            
+            <div className="flex justify-center">
+              <img 
+                src="/images/bots/pudu-cc1_pro.png" 
+                alt="PUDU CC1 Pro" 
+                className="w-full max-w-md animate-float"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Deployment CTA Banner */}
+      <section className="py-16 bg-gradient-to-r from-blue-600 to-blue-500">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">
+            We are on track to deploy over 30,000 robots across the U.S. Don't miss out—schedule your demo today!
+          </h2>
+          <button 
+            onClick={scrollToDemo}
+            className="px-8 py-4 bg-white text-blue-600 font-bold rounded-full text-lg hover:bg-gray-100 transition-colors shadow-lg"
+            data-testid="schedule-demo-cta"
+          >
+            Schedule Your Demo!
+          </button>
+        </div>
+      </section>
+
+      {/* Core Technologies Section */}
+      <section className="py-20 bg-bots-dark">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-4xl font-bold text-white text-center mb-12">
+            Core Technologies Behind Autonomous Cleaning
+          </h2>
+          
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <img 
+                src="/images/home/4-bots.jpg" 
+                alt="Four cleaning robots" 
+                className="w-full rounded-2xl shadow-2xl"
+              />
+            </div>
+            
+            <div className="space-y-6">
+              <p className="text-gray-300 text-lg">
+                Our Pudu robots are equipped with an advanced core of AI and High-Precision Perception Systems. 
+                Going beyond mere automation, this technology facilitates exceptional performance and safety.
+              </p>
+              
+              {TECH_FEATURES.map((feature, index) => (
+                <div key={index} className="bg-bots-surface/50 p-6 rounded-xl border border-blue-500/20">
+                  <h4 className="text-blue-400 font-bold mb-2">{feature.title}</h4>
+                  <p className="text-gray-300 text-sm">{feature.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Schedule Demo Form Section */}
+      <section id="schedule-demo" className="py-20 bg-gradient-to-b from-bots-dark to-bots-surface">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12">
+            <div>
+              <h2 className="text-4xl font-bold text-white mb-6">
+                Ready To Explore a New Way of Working?
+              </h2>
+              <p className="text-gray-300 text-lg mb-8">
+                Ready to see our robot live at your facility? Complete our quick 2-minute form to schedule 
+                your no-obligation demo. Our team will get in touch to show you the significant time and 
+                cost savings our solution can bring to your bottom line.
+              </p>
+            </div>
+            
+            <div className="bg-bots-surface p-8 rounded-2xl border border-blue-500/20">
+              <DemoRequestForm />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Industries Section */}
+      <section className="py-20 bg-bots-dark">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">
+            <span className="text-blue-400">INDUSTRIES</span> WE SERVE... AND MANY MORE...
+          </h2>
+          
+          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8">
+            {INDUSTRIES.map((industry, index) => (
+              <div 
+                key={industry.name}
+                className="text-center group animate-fade-in-up"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <div className="w-20 h-20 mx-auto mb-3 flex items-center justify-center bg-bots-surface/50 rounded-xl group-hover:bg-blue-500/20 transition-colors">
+                  <img 
+                    src={industry.icon} 
+                    alt={industry.name}
+                    className="w-12 h-12 object-contain"
+                  />
+                </div>
+                <p className="text-white text-sm font-medium">{industry.name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Service Areas Section */}
+      <section className="py-12 bg-bots-surface">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h3 className="text-2xl font-bold text-white mb-6">
+            <span className="text-blue-400">AVAILABLE</span> PRODUCT LINE
+          </h3>
+          <p className="text-gray-300 leading-relaxed">
+            Missouri | Iowa | Illinois | Indiana | Ohio | Kentucky | Tennessee | Arkansas | Kansas | Oklahoma | Texas | Louisiana | Mississippi
+          </p>
+          <p className="text-gray-300 leading-relaxed mt-2">
+            Alabama | Georgia | South Carolina | Florida | Puerto Rico | Virgin Islands
+          </p>
+        </div>
+      </section>
+
+      <Footer />
     </div>
+  );
+};
+
+// Demo Request Form Component
+const DemoRequestForm = () => {
+  const [formData, setFormData] = useState({
+    organization: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    product: '',
+    contactMethod: 'both',
+    notes: '',
+    agreedToTerms: false,
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+      const response = await fetch(`${backendUrl}/api/leads/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          phone: formData.phone,
+          subject: `Demo Request - ${formData.organization}`,
+          message: `Organization: ${formData.organization}\nProduct Interest: ${formData.product}\nContact Method: ${formData.contactMethod}\nAdditional Notes: ${formData.notes}`,
+          source: 'demo_request',
+        }),
+      });
+      
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({
+          organization: '',
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          product: '',
+          contactMethod: 'both',
+          notes: '',
+          agreedToTerms: false,
+        });
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (submitStatus === 'success') {
+    return (
+      <div className="text-center py-8">
+        <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+        <h3 className="text-2xl font-bold text-white mb-2">Thank You!</h3>
+        <p className="text-gray-300">We'll be in touch shortly to schedule your demo.</p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4" data-testid="demo-request-form">
+      <input
+        type="text"
+        placeholder="Organization*"
+        required
+        value={formData.organization}
+        onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
+        className="w-full px-4 py-3 bg-bots-dark border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+        data-testid="demo-form-organization"
+      />
+      
+      <div className="grid grid-cols-2 gap-4">
+        <input
+          type="text"
+          placeholder="First Name*"
+          required
+          value={formData.firstName}
+          onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+          className="w-full px-4 py-3 bg-bots-dark border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+          data-testid="demo-form-firstname"
+        />
+        <input
+          type="text"
+          placeholder="Last Name*"
+          required
+          value={formData.lastName}
+          onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+          className="w-full px-4 py-3 bg-bots-dark border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+          data-testid="demo-form-lastname"
+        />
+      </div>
+      
+      <select
+        required
+        value={formData.product}
+        onChange={(e) => setFormData({ ...formData, product: e.target.value })}
+        className="w-full px-4 py-3 bg-bots-dark border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+        data-testid="demo-form-product"
+      >
+        <option value="">What product are you interested in?*</option>
+        <option value="PUDU CC1">PUDU CC1</option>
+        <option value="PUDU SH1">PUDU SH1</option>
+        <option value="PUDU MT1">PUDU MT1</option>
+        <option value="AVIDBOT KAS">AVIDBOT KAS</option>
+      </select>
+      
+      <div className="flex flex-wrap gap-4">
+        <label className="flex items-center text-white cursor-pointer">
+          <input
+            type="radio"
+            name="contactMethod"
+            value="phone"
+            checked={formData.contactMethod === 'phone'}
+            onChange={(e) => setFormData({ ...formData, contactMethod: e.target.value })}
+            className="mr-2"
+          />
+          Phone
+        </label>
+        <label className="flex items-center text-white cursor-pointer">
+          <input
+            type="radio"
+            name="contactMethod"
+            value="email"
+            checked={formData.contactMethod === 'email'}
+            onChange={(e) => setFormData({ ...formData, contactMethod: e.target.value })}
+            className="mr-2"
+          />
+          Email
+        </label>
+        <label className="flex items-center text-white cursor-pointer">
+          <input
+            type="radio"
+            name="contactMethod"
+            value="both"
+            checked={formData.contactMethod === 'both'}
+            onChange={(e) => setFormData({ ...formData, contactMethod: e.target.value })}
+            className="mr-2"
+          />
+          Both
+        </label>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <input
+          type="email"
+          placeholder="Email*"
+          required
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          className="w-full px-4 py-3 bg-bots-dark border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+          data-testid="demo-form-email"
+        />
+        <input
+          type="tel"
+          placeholder="Phone*"
+          required
+          value={formData.phone}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          className="w-full px-4 py-3 bg-bots-dark border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+          data-testid="demo-form-phone"
+        />
+      </div>
+      
+      <textarea
+        placeholder="Enter any additional notes or more information"
+        value={formData.notes}
+        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+        rows={3}
+        className="w-full px-4 py-3 bg-bots-dark border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none resize-none"
+        data-testid="demo-form-notes"
+      />
+      
+      <label className="flex items-start text-gray-300 text-sm cursor-pointer">
+        <input
+          type="checkbox"
+          required
+          checked={formData.agreedToTerms}
+          onChange={(e) => setFormData({ ...formData, agreedToTerms: e.target.checked })}
+          className="mr-3 mt-1"
+          data-testid="demo-form-terms"
+        />
+        <span>
+          I agree to terms & conditions provided by 123 Bots. By providing my phone number, 
+          I agree to receive text messages from the business.
+        </span>
+      </label>
+      
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full py-4 bg-green-500 text-black font-bold rounded-full hover:bg-green-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        data-testid="demo-form-submit"
+      >
+        {isSubmitting ? 'Submitting...' : 'SCHEDULE MY CALL'}
+      </button>
+      
+      {submitStatus === 'error' && (
+        <p className="text-red-400 text-center">Something went wrong. Please try again.</p>
+      )}
+    </form>
   );
 };
 

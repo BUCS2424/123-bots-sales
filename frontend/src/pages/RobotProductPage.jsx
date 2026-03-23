@@ -1,0 +1,326 @@
+import React, { useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { CheckCircle, ArrowRight, Phone } from 'lucide-react';
+import { setSeoMetadata, generateProductSchema } from '../lib/seo';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+
+// Robot product data
+const ROBOT_PRODUCTS = {
+  'pudu-cc1-pro': {
+    name: 'PUDU CC1 PRO',
+    tagline: 'Professional Commercial Floor Scrubber',
+    description: 'The PUDU CC1 PRO is an advanced autonomous floor scrubber designed for commercial spaces. With state-of-the-art LiDAR navigation and AI-powered obstacle avoidance, it delivers consistent, professional-grade cleaning results.',
+    image: '/images/bots/pringle-cc1-robot.png',
+    features: [
+      'Advanced LiDAR Navigation',
+      '360° Obstacle Detection',
+      'Auto Docking & Charging',
+      '6+ Hour Battery Life',
+      'Cloud-Connected Monitoring',
+      'Multi-Surface Cleaning',
+      'Real-time Status Updates',
+      'Easy Maintenance',
+    ],
+    specs: {
+      'Cleaning Width': '550mm',
+      'Water Tank': '40L Clean / 45L Recovery',
+      'Battery': '24V Lithium-Ion',
+      'Runtime': '6+ hours',
+      'Noise Level': '< 65 dB',
+      'Navigation': 'LiDAR + V-SLAM',
+    },
+    useCases: ['Hospitals', 'Shopping Malls', 'Airports', 'Corporate Offices', 'Hotels'],
+  },
+  'ab-kas': {
+    name: 'AVIDBOT KAS',
+    tagline: 'Industrial-Grade Autonomous Scrubber',
+    description: 'Built for the most demanding commercial environments, the AVIDBOT KAS combines robust construction with intelligent automation. Perfect for warehouses, manufacturing facilities, and high-traffic areas.',
+    image: '/images/bots/avidbot-kas.png',
+    features: [
+      'Heavy-Duty Construction',
+      'Large Capacity Tanks',
+      'Smart Mapping Technology',
+      'Multi-Surface Compatibility',
+      'Industrial-Grade Motors',
+      'Extended Runtime',
+      'Remote Management',
+      'Predictive Maintenance',
+    ],
+    specs: {
+      'Cleaning Width': '660mm',
+      'Water Tank': '60L Clean / 65L Recovery',
+      'Battery': '36V Lithium-Ion',
+      'Runtime': '8+ hours',
+      'Noise Level': '< 70 dB',
+      'Navigation': 'SLAM + AI',
+    },
+    useCases: ['Warehouses', 'Manufacturing', 'Distribution Centers', 'Airports', 'Convention Centers'],
+  },
+  'pudu-sh1': {
+    name: 'PUDU SH1',
+    tagline: 'Compact Sweeping Solution',
+    description: 'The PUDU SH1 is perfect for smaller spaces and daily maintenance routines. Its compact design allows it to navigate tight spaces while delivering thorough cleaning performance.',
+    image: '/images/bots/robot-pudush.png',
+    features: [
+      'Compact Design',
+      'Quiet Operation',
+      'Easy Setup & Use',
+      'Cloud Connected',
+      'Automatic Scheduling',
+      'Obstacle Avoidance',
+      'Multi-Zone Cleaning',
+      'Low Maintenance',
+    ],
+    specs: {
+      'Cleaning Width': '450mm',
+      'Dust Bin': '3L',
+      'Battery': '24V Lithium-Ion',
+      'Runtime': '4+ hours',
+      'Noise Level': '< 55 dB',
+      'Navigation': 'LiDAR',
+    },
+    useCases: ['Retail Stores', 'Restaurants', 'Small Offices', 'Gyms', 'Clinics'],
+  },
+  'pudu-mt1': {
+    name: 'PUDU MT1 MAX',
+    tagline: 'Maximum Coverage Floor Cleaner',
+    description: 'Maximum cleaning power for maximum results. The MT1 MAX is designed for large facilities that require extensive coverage and consistent cleaning quality.',
+    image: '/images/bots/nav_product_mt.webp',
+    features: [
+      'Extended Range Coverage',
+      'High Capacity Tanks',
+      'Fast Charging',
+      'Real-time Monitoring',
+      'Adaptive Cleaning',
+      'Edge Detection',
+      'Report Generation',
+      'Fleet Management',
+    ],
+    specs: {
+      'Cleaning Width': '700mm',
+      'Water Tank': '80L Clean / 85L Recovery',
+      'Battery': '48V Lithium-Ion',
+      'Runtime': '10+ hours',
+      'Noise Level': '< 68 dB',
+      'Navigation': 'LiDAR + Vision',
+    },
+    useCases: ['Large Warehouses', 'Shopping Centers', 'Airports', 'Universities', 'Stadiums'],
+  },
+  'pudu-cc1-docking-station': {
+    name: 'CC1 DOCKING STATION',
+    tagline: 'Automated Charging & Maintenance',
+    description: 'The CC1 Docking Station is the perfect companion for your CC1 robots. It provides automated charging, water refill, and waste disposal for truly autonomous operation.',
+    image: '/images/bots/pudu-cc1_pro.png',
+    features: [
+      'Auto Charging',
+      'Water Refill System',
+      'Waste Disposal',
+      'Status Monitoring',
+      'Multi-Robot Support',
+      'Compact Footprint',
+      'Easy Installation',
+      '24/7 Operation Ready',
+    ],
+    specs: {
+      'Compatible With': 'PUDU CC1 Series',
+      'Charging Time': '< 3 hours',
+      'Water Capacity': '100L',
+      'Waste Tank': '50L',
+      'Power': '220V AC',
+      'Dimensions': '1200 x 800 x 1000mm',
+    },
+    useCases: ['24/7 Operations', 'Multi-Shift Facilities', 'Large Commercial Spaces'],
+  },
+};
+
+const RobotProductPage = () => {
+  const { productSlug } = useParams();
+  const product = ROBOT_PRODUCTS[productSlug];
+
+  useEffect(() => {
+    if (product) {
+      setSeoMetadata({
+        title: `${product.name} | Commercial Cleaning Robot | 123 Bots`,
+        description: product.description,
+        keywords: `${product.name}, commercial cleaning robot, autonomous floor cleaner, 123 Bots`,
+        canonicalPath: `/products/${productSlug}`,
+        jsonLd: generateProductSchema({
+          name: product.name,
+          description: product.description,
+          images: [product.image],
+          slug: productSlug,
+        }),
+      });
+    }
+  }, [product, productSlug]);
+
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-bots-dark flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-white mb-4">Product Not Found</h1>
+          <Link to="/products" className="text-blue-400 hover:underline">
+            View All Products
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-bots-dark">
+      <Header />
+
+      {/* Hero Section */}
+      <section className="pt-32 pb-16 bg-gradient-to-b from-bots-surface to-bots-dark">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Product Image */}
+            <div className="flex justify-center">
+              <img
+                src={product.image}
+                alt={product.name}
+                className="max-w-full h-auto max-h-96 object-contain animate-float"
+              />
+            </div>
+
+            {/* Product Info */}
+            <div>
+              <p className="text-blue-400 font-semibold mb-2">{product.tagline}</p>
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">{product.name}</h1>
+              <p className="text-gray-300 text-lg mb-8">{product.description}</p>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link
+                  to="/schedule-a-demo"
+                  className="px-8 py-4 bg-blue-600 text-white font-bold rounded-full text-center hover:bg-blue-500 transition-colors"
+                  data-testid="product-cta-demo"
+                >
+                  Schedule a Demo
+                </Link>
+                <a
+                  href="tel:8777022687"
+                  className="px-8 py-4 bg-bots-surface border border-gray-700 text-white font-bold rounded-full text-center hover:bg-bots-accent transition-colors flex items-center justify-center"
+                >
+                  <Phone className="w-5 h-5 mr-2" />
+                  Call (877) 702-2687
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 bg-bots-dark">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-white text-center mb-12">Key Features</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {product.features.map((feature, index) => (
+              <div
+                key={feature}
+                className="bg-bots-surface/50 p-6 rounded-xl border border-gray-800 animate-fade-in-up"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <CheckCircle className="w-8 h-8 text-green-500 mb-4" />
+                <p className="text-white font-medium">{feature}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Specifications Section */}
+      <section className="py-20 bg-bots-surface">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-white text-center mb-12">Specifications</h2>
+          <div className="max-w-2xl mx-auto bg-bots-dark rounded-2xl p-8">
+            <dl className="space-y-4">
+              {Object.entries(product.specs).map(([key, value]) => (
+                <div key={key} className="flex justify-between py-3 border-b border-gray-800">
+                  <dt className="text-gray-400">{key}</dt>
+                  <dd className="text-white font-medium">{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      {/* Use Cases Section */}
+      <section className="py-20 bg-bots-dark">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-white text-center mb-12">Ideal For</h2>
+          <div className="flex flex-wrap justify-center gap-4">
+            {product.useCases.map((useCase) => (
+              <span
+                key={useCase}
+                className="px-6 py-3 bg-blue-500/20 border border-blue-500/30 rounded-full text-white"
+              >
+                {useCase}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16 bg-gradient-to-r from-blue-600 to-blue-500">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-white mb-6">
+            Ready to Transform Your Cleaning Operations?
+          </h2>
+          <p className="text-white/80 text-lg mb-8">
+            See the {product.name} in action at your facility.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              to="/schedule-a-demo"
+              className="px-8 py-4 bg-white text-blue-600 font-bold rounded-full hover:bg-gray-100 transition-colors"
+            >
+              Schedule a Demo
+            </Link>
+            <Link
+              to="/rent-or-buy-a-cleaning-bot"
+              className="px-8 py-4 bg-green-500 text-black font-bold rounded-full hover:bg-green-400 transition-colors"
+            >
+              Buy or Lease Options
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Related Products */}
+      <section className="py-20 bg-bots-dark">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-white text-center mb-12">Other Products</h2>
+          <div className="grid md:grid-cols-4 gap-6">
+            {Object.entries(ROBOT_PRODUCTS)
+              .filter(([slug]) => slug !== productSlug)
+              .slice(0, 4)
+              .map(([slug, prod]) => (
+                <Link
+                  key={slug}
+                  to={`/products/${slug}`}
+                  className="bg-bots-surface/50 p-6 rounded-xl border border-gray-800 hover:border-blue-500/50 transition-colors group"
+                >
+                  <img
+                    src={prod.image}
+                    alt={prod.name}
+                    className="h-32 mx-auto object-contain mb-4 group-hover:scale-105 transition-transform"
+                  />
+                  <h3 className="text-white font-bold text-center">{prod.name}</h3>
+                  <p className="text-gray-400 text-sm text-center mt-2">{prod.tagline}</p>
+                </Link>
+              ))}
+          </div>
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default RobotProductPage;
