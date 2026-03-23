@@ -264,7 +264,7 @@ const PaymentSettings = () => {
 
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
               <div className="flex items-start gap-3">
-                <Shield className="w-5 h-5 text-[#6e2ea8] flex-shrink-0 mt-0.5" />
+                <Shield className="w-5 h-5 text-[rgb(37, 99, 235)] flex-shrink-0 mt-0.5" />
                 <div className="text-sm text-blue-700">
                   <p className="font-medium mb-1">PCI Compliant</p>
                   <p>Collect.js tokenizes card data in secure iframes. Sensitive card information never touches your server.</p>

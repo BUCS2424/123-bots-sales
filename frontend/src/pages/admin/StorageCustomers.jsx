@@ -102,7 +102,7 @@ const StorageCustomers = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -113,12 +113,12 @@ const StorageCustomers = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <Users className="w-7 h-7 text-[#6e2ea8]" />
+            <Users className="w-7 h-7 text-[rgb(37, 99, 235)]" />
             Storage Customers
           </h1>
           <p className="text-gray-500 mt-1">Manage your storage unit customers</p>
         </div>
-        <Button className="bg-[#6e2ea8] hover:bg-[#a01830]">
+        <Button className="bg-[rgb(37, 99, 235)] hover:bg-[#a01830]">
           <Plus className="w-4 h-4 mr-2" /> Add Customer
         </Button>
       </div>
@@ -129,7 +129,7 @@ const StorageCustomers = () => {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
-                <Users className="w-5 h-5 text-[#6e2ea8]" />
+                <Users className="w-5 h-5 text-[rgb(37, 99, 235)]" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-gray-900">{totalCustomers}</p>
@@ -269,7 +269,7 @@ const StorageCustomers = () => {
                       >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-[#6e2ea8] to-[#e63950] rounded-full flex items-center justify-center text-white font-medium shadow">
+                            <div className="w-10 h-10 bg-gradient-to-br from-[rgb(37, 99, 235)] to-[#e63950] rounded-full flex items-center justify-center text-white font-medium shadow">
                               {customer.name?.charAt(0).toUpperCase() || '?'}
                             </div>
                             <div>

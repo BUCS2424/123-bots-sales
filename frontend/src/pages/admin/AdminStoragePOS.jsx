@@ -128,7 +128,7 @@ const AdminStoragePOS = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
-        <Loader2 className="w-12 h-12 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-12 h-12 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -136,7 +136,7 @@ const AdminStoragePOS = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
-      <div className="bg-[#6e2ea8] text-white p-4">
+      <div className="bg-[rgb(37, 99, 235)] text-white p-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/admin/storage" className="p-2 hover:bg-white/10 rounded-lg">
@@ -168,15 +168,15 @@ const AdminStoragePOS = () => {
               { num: 4, label: 'Complete' }
             ].map((s, i) => (
               <React.Fragment key={s.num}>
-                <div className={`flex items-center gap-2 ${step >= s.num ? 'text-[#6e2ea8]' : 'text-gray-400'}`}>
+                <div className={`flex items-center gap-2 ${step >= s.num ? 'text-[rgb(37, 99, 235)]' : 'text-gray-400'}`}>
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                    step >= s.num ? 'bg-[#6e2ea8] text-white' : 'bg-gray-200'
+                    step >= s.num ? 'bg-[rgb(37, 99, 235)] text-white' : 'bg-gray-200'
                   }`}>
                     {step > s.num ? <CheckCircle className="w-5 h-5" /> : s.num}
                   </div>
                   <span className="font-medium hidden sm:inline">{s.label}</span>
                 </div>
-                {i < 3 && <div className={`w-12 h-1 ${step > s.num ? 'bg-[#6e2ea8]' : 'bg-gray-200'}`} />}
+                {i < 3 && <div className={`w-12 h-1 ${step > s.num ? 'bg-[rgb(37, 99, 235)]' : 'bg-gray-200'}`} />}
               </React.Fragment>
             ))}
           </div>
@@ -195,12 +195,12 @@ const AdminStoragePOS = () => {
                   key={size.id} 
                   className={`cursor-pointer transition-all ${
                     size.available_units > 0 
-                      ? 'hover:shadow-xl hover:border-[#6e2ea8]' 
+                      ? 'hover:shadow-xl hover:border-[rgb(37, 99, 235)]' 
                       : 'opacity-50 cursor-not-allowed'
                   }`}
                   onClick={() => handleSelectSize(size)}
                 >
-                  <CardHeader className="bg-gradient-to-r from-[#6e2ea8] to-[#2d5a8f] text-white">
+                  <CardHeader className="bg-gradient-to-r from-[rgb(37, 99, 235)] to-[#2d5a8f] text-white">
                     <CardTitle className="text-3xl">{size.name}</CardTitle>
                     <p className="text-white/80">{size.square_feet} sq ft</p>
                   </CardHeader>
@@ -348,7 +348,7 @@ const AdminStoragePOS = () => {
                       <Button type="button" variant="outline" onClick={() => setStep(1)}>
                         Back
                       </Button>
-                      <Button type="submit" className="flex-1 bg-[#6e2ea8]">
+                      <Button type="submit" className="flex-1 bg-[rgb(37, 99, 235)]">
                         Continue to Review
                       </Button>
                     </div>
@@ -360,7 +360,7 @@ const AdminStoragePOS = () => {
             {/* Order Summary Sidebar */}
             <div>
               <Card className="sticky top-4">
-                <CardHeader className="bg-[#6e2ea8] text-white">
+                <CardHeader className="bg-[rgb(37, 99, 235)] text-white">
                   <CardTitle>Order Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="pt-4 space-y-4">
@@ -378,7 +378,7 @@ const AdminStoragePOS = () => {
                         onClick={() => setBillingType('monthly')}
                         className={`p-3 rounded-lg border-2 transition-all ${
                           billingType === 'monthly' 
-                            ? 'border-[#6e2ea8] bg-red-50' 
+                            ? 'border-[rgb(37, 99, 235)] bg-red-50' 
                             : 'border-gray-200 hover:border-gray-300'
                         }`}
                       >
@@ -390,7 +390,7 @@ const AdminStoragePOS = () => {
                         onClick={() => setBillingType('yearly')}
                         className={`p-3 rounded-lg border-2 transition-all ${
                           billingType === 'yearly' 
-                            ? 'border-[#6e2ea8] bg-red-50' 
+                            ? 'border-[rgb(37, 99, 235)] bg-red-50' 
                             : 'border-gray-200 hover:border-gray-300'
                         }`}
                       >
@@ -404,7 +404,7 @@ const AdminStoragePOS = () => {
                   <div className="border-t pt-4">
                     <div className="flex justify-between items-center">
                       <span className="font-medium">Total Due Today</span>
-                      <span className="text-2xl font-bold text-[#6e2ea8]">${getPrice().toFixed(2)}</span>
+                      <span className="text-2xl font-bold text-[rgb(37, 99, 235)]">${getPrice().toFixed(2)}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -430,7 +430,7 @@ const AdminStoragePOS = () => {
                       <p className="text-gray-500">{selectedSize?.square_feet} sq ft • {billingType}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-3xl font-bold text-[#6e2ea8]">${getPrice().toFixed(2)}</p>
+                      <p className="text-3xl font-bold text-[rgb(37, 99, 235)]">${getPrice().toFixed(2)}</p>
                       <p className="text-sm text-gray-500">/{billingType === 'yearly' ? 'year' : 'month'}</p>
                     </div>
                   </div>
@@ -447,7 +447,7 @@ const AdminStoragePOS = () => {
 
                 {/* Payment Notice */}
                 <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-[#6e2ea8] mt-0.5" />
+                  <AlertCircle className="w-5 h-5 text-[rgb(37, 99, 235)] mt-0.5" />
                   <div>
                     <p className="font-medium text-blue-900">In-Person Payment</p>
                     <p className="text-sm text-blue-700">
@@ -460,7 +460,7 @@ const AdminStoragePOS = () => {
                 <div className="flex gap-3">
                   <Button variant="outline" onClick={() => setStep(2)}>Back</Button>
                   <Button 
-                    className="flex-1 bg-[#6e2ea8] text-lg py-6"
+                    className="flex-1 bg-[rgb(37, 99, 235)] text-lg py-6"
                     onClick={handleProcessPayment}
                     disabled={processing}
                   >
@@ -500,7 +500,7 @@ const AdminStoragePOS = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Access Code</span>
-                  <span className="text-3xl font-mono font-bold text-[#6e2ea8]">{completedRental.access_code}</span>
+                  <span className="text-3xl font-mono font-bold text-[rgb(37, 99, 235)]">{completedRental.access_code}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Amount Paid</span>
@@ -519,7 +519,7 @@ const AdminStoragePOS = () => {
                 <Button variant="outline" onClick={() => navigate('/admin/storage')} className="flex-1">
                   Back to Dashboard
                 </Button>
-                <Button className="flex-1 bg-[#6e2ea8]" onClick={handleNewRental}>
+                <Button className="flex-1 bg-[rgb(37, 99, 235)]" onClick={handleNewRental}>
                   New Rental
                 </Button>
               </div>

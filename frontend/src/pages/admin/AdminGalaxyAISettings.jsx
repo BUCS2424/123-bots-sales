@@ -78,7 +78,7 @@ const AdminGalaxyAISettings = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -97,7 +97,7 @@ const AdminGalaxyAISettings = () => {
         <Button 
           onClick={saveSettings} 
           disabled={saving}
-          className="bg-[#6e2ea8] hover:bg-[#a01830]"
+          className="bg-[rgb(37, 99, 235)] hover:bg-[#a01830]"
           data-testid="save-galaxy-settings-btn"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}

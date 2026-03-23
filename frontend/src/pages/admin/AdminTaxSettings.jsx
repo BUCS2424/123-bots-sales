@@ -134,7 +134,7 @@ const AdminTaxSettings = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
         <span className="ml-2 text-gray-500">Loading tax settings...</span>
       </div>
     );
@@ -146,7 +146,7 @@ const AdminTaxSettings = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <Receipt className="w-7 h-7 text-[#6e2ea8]" />
+            <Receipt className="w-7 h-7 text-[rgb(37, 99, 235)]" />
             Tax Settings
           </h1>
           <p className="text-gray-500 mt-1">Configure tax rates and rules for your business</p>
@@ -156,7 +156,7 @@ const AdminTaxSettings = () => {
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          <Button onClick={handleSave} disabled={saving} className="bg-[#6e2ea8] hover:bg-[#5a2590]">
+          <Button onClick={handleSave} disabled={saving} className="bg-[rgb(37, 99, 235)] hover:bg-[#5a2590]">
             {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
             Save Changes
           </Button>
@@ -185,7 +185,7 @@ const AdminTaxSettings = () => {
 
             <div className="p-4 bg-gray-50 rounded-lg text-center">
               <p className="text-sm text-gray-500 mb-1">Combined Tax Rate</p>
-              <p className="text-4xl font-bold text-[#6e2ea8]" data-testid="combined-tax-rate">
+              <p className="text-4xl font-bold text-[rgb(37, 99, 235)]" data-testid="combined-tax-rate">
                 {taxEnabled ? totalRate : '0.00'}%
               </p>
               <p className="text-xs text-gray-500 mt-2">

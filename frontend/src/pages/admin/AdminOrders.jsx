@@ -289,7 +289,7 @@ const AdminOrders = () => {
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin w-8 h-8 border-4 border-[#6e2ea8] border-t-transparent rounded-full" />
+              <div className="animate-spin w-8 h-8 border-4 border-[rgb(37, 99, 235)] border-t-transparent rounded-full" />
             </div>
           ) : filteredOrders.length > 0 ? (
             <div className="overflow-x-auto">
@@ -348,14 +348,14 @@ const AdminOrders = () => {
                             <Switch
                               checked={order.is_recurring || false}
                               onCheckedChange={(checked) => handleToggleRecurring(order, checked)}
-                              className="data-[state=checked]:bg-[#6e2ea8]"
+                              className="data-[state=checked]:bg-[rgb(37, 99, 235)]"
                             />
                             {order.is_recurring && (
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
                                 onClick={() => handleSendRecurringInvoice(order)}
-                                className="text-[#6e2ea8] hover:text-[#5a2590] hover:bg-purple-50 p-1"
+                                className="text-[rgb(37, 99, 235)] hover:text-[#5a2590] hover:bg-purple-50 p-1"
                                 title="Send recurring invoice"
                               >
                                 <Send className="w-4 h-4" />
@@ -400,7 +400,7 @@ const AdminOrders = () => {
                   type="button"
                   onClick={() => handleSendToPrintful(selectedOrder)}
                   disabled={sendToPrintfulDisabled}
-                  className="bg-[#6e2ea8] hover:bg-[#5a238a]"
+                  className="bg-[rgb(37, 99, 235)] hover:bg-[#5a238a]"
                   data-testid="admin-order-send-to-printful-button"
                 >
                   {sendingPrintfulOrderId === selectedOrder?.id ? (

@@ -57,7 +57,7 @@ const AdminStoragePricingSettings = () => {
         <Button 
           onClick={saveSettings} 
           disabled={saving}
-          className="bg-[#6e2ea8] hover:bg-[#a01830]"
+          className="bg-[rgb(37, 99, 235)] hover:bg-[#a01830]"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
           Save Pricing
@@ -74,7 +74,7 @@ const AdminStoragePricingSettings = () => {
           <div className="space-y-4">
             {unitPrices.map((unit) => (
               <div key={unit.id} className="flex items-center gap-4 p-4 border rounded-lg">
-                <div className="w-24 font-bold text-lg text-[#6e2ea8]">{unit.size}</div>
+                <div className="w-24 font-bold text-lg text-[rgb(37, 99, 235)]">{unit.size}</div>
                 <div className="flex-1">
                   <p className="text-sm text-gray-500">{unit.description}</p>
                 </div>

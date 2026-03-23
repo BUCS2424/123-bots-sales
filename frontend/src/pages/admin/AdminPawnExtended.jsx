@@ -368,7 +368,7 @@ const AdminPeptidesExtended = ({ initialTab = 'loans' }) => {
                     Payday Loan
                   </Button>
                   <Button 
-                    className="bg-[#6e2ea8] hover:bg-[#5a2589]"
+                    className="bg-[rgb(37, 99, 235)] hover:bg-[rgb(29, 78, 216)]"
                     onClick={() => { resetTitleForm(); setIsTitleDialogOpen(true); }}
                   >
                     <Car className="w-4 h-4 mr-2" />
@@ -1019,7 +1019,7 @@ const AdminPeptidesExtended = ({ initialTab = 'loans' }) => {
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setIsTitleDialogOpen(false)}>Cancel</Button>
-              <Button type="submit" className="bg-[#6e2ea8] hover:bg-[#5a2589]" disabled={!selectedCustomer}>
+              <Button type="submit" className="bg-[rgb(37, 99, 235)] hover:bg-[rgb(29, 78, 216)]" disabled={!selectedCustomer}>
                 Create Title Loan
               </Button>
             </DialogFooter>

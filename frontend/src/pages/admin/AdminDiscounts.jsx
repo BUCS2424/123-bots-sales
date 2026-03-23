@@ -122,7 +122,7 @@ const AdminDiscounts = () => {
           </Link>
           <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
             <DialogTrigger asChild>
-              <Button className="bg-[#6e2ea8] hover:bg-[#5a2589]">
+              <Button className="bg-[rgb(37, 99, 235)] hover:bg-[rgb(29, 78, 216)]">
                 <Plus className="w-4 h-4 mr-2" /> Create Discount
               </Button>
             </DialogTrigger>
@@ -216,7 +216,7 @@ const AdminDiscounts = () => {
                 <Button type="button" variant="outline" onClick={() => { setIsDialogOpen(false); resetForm(); }}>
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-[#6e2ea8] hover:bg-[#a01830]">
+                <Button type="submit" className="bg-[rgb(37, 99, 235)] hover:bg-[#a01830]">
                   Create Discount
                 </Button>
               </div>
@@ -242,7 +242,7 @@ const AdminDiscounts = () => {
           <div className="grid gap-4">
             {loading ? (
               <div className="flex items-center justify-center py-12">
-                <div className="animate-spin w-8 h-8 border-4 border-[#6e2ea8] border-t-transparent rounded-full" />
+                <div className="animate-spin w-8 h-8 border-4 border-[rgb(37, 99, 235)] border-t-transparent rounded-full" />
               </div>
             ) : discounts.length > 0 ? (
               discounts.map((discount) => (
@@ -250,8 +250,8 @@ const AdminDiscounts = () => {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-[#6e2ea8]/10 rounded-lg flex items-center justify-center">
-                          <Tag className="w-6 h-6 text-[#6e2ea8]" />
+                        <div className="w-12 h-12 bg-[rgb(37, 99, 235)]/10 rounded-lg flex items-center justify-center">
+                          <Tag className="w-6 h-6 text-[rgb(37, 99, 235)]" />
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
@@ -265,7 +265,7 @@ const AdminDiscounts = () => {
                       </div>
                       <div className="flex items-center gap-6">
                         <div className="text-center">
-                          <p className="text-2xl font-bold text-[#6e2ea8]">
+                          <p className="text-2xl font-bold text-[rgb(37, 99, 235)]">
                             {discount.discount_type === 'percentage' ? `${discount.value}%` : `$${discount.value}`}
                           </p>
                           <p className="text-xs text-gray-500">Discount</p>

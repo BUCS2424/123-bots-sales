@@ -163,7 +163,7 @@ const AdminKnowledgeBase = () => {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <CardTitle className="flex items-center gap-2" data-testid="knowledgebase-title">
-                <BookOpen className="w-5 h-5 text-[#6e2ea8]" /> Backend Knowledgebase
+                <BookOpen className="w-5 h-5 text-[rgb(37, 99, 235)]" /> Backend Knowledgebase
               </CardTitle>
               <CardDescription data-testid="knowledgebase-description">
                 Search operational guides for store owners and employees. Content visibility follows user role access.
@@ -175,7 +175,7 @@ const AdminKnowledgeBase = () => {
                 <Button variant="outline" onClick={reseedKnowledgebase} data-testid="knowledgebase-reseed-button">
                   Reseed Docs
                 </Button>
-                <Button className="bg-[#6e2ea8] hover:bg-[#552483]" onClick={openCreateEditor} data-testid="knowledgebase-add-article-button">
+                <Button className="bg-[rgb(37, 99, 235)] hover:bg-[#552483]" onClick={openCreateEditor} data-testid="knowledgebase-add-article-button">
                   <Plus className="w-4 h-4 mr-2" /> Add Article
                 </Button>
               </div>
@@ -339,7 +339,7 @@ const AdminKnowledgeBase = () => {
 
               <div className="flex justify-end gap-2 pt-2">
                 <Button variant="outline" onClick={closeEditor} data-testid="knowledgebase-editor-cancel-button">Cancel</Button>
-                <Button onClick={saveArticle} className="bg-[#6e2ea8] hover:bg-[#552483]" disabled={saving} data-testid="knowledgebase-editor-save-button">
+                <Button onClick={saveArticle} className="bg-[rgb(37, 99, 235)] hover:bg-[#552483]" disabled={saving} data-testid="knowledgebase-editor-save-button">
                   <Save className="w-4 h-4 mr-2" /> {saving ? 'Saving...' : 'Save Article'}
                 </Button>
               </div>

@@ -91,7 +91,7 @@ const AdminGiftCards = () => {
           <h1 className="text-2xl font-bold text-gray-900">Gift Cards</h1>
           <p className="text-gray-500 mt-1">Manage store gift cards and vouchers</p>
         </div>
-        <Button className="bg-[#6e2ea8] hover:bg-[#a3172e]" data-testid="create-gift-card-btn">
+        <Button className="bg-[rgb(37, 99, 235)] hover:bg-[#a3172e]" data-testid="create-gift-card-btn">
           <Plus className="w-4 h-4 mr-2" />
           Create Gift Card
         </Button>
@@ -129,7 +129,7 @@ const AdminGiftCards = () => {
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
-                <Gift className="w-5 h-5 text-[#6e2ea8]" />
+                <Gift className="w-5 h-5 text-[rgb(37, 99, 235)]" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Outstanding</p>

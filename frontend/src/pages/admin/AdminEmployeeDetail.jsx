@@ -174,7 +174,7 @@ const AdminEmployeeDetail = ({ employeeId: propId }) => {
               </Button>
             </>
           ) : (
-            <Button onClick={startEditing} className="bg-[#6e2ea8] hover:bg-[#5a2589]" data-testid="edit-employee-btn">
+            <Button onClick={startEditing} className="bg-[rgb(37, 99, 235)] hover:bg-[rgb(29, 78, 216)]" data-testid="edit-employee-btn">
               <Edit className="w-4 h-4 mr-2" />
               Edit Employee
             </Button>
@@ -206,7 +206,7 @@ const AdminEmployeeDetail = ({ employeeId: propId }) => {
           {/* Personal Information */}
           <Card data-testid="personal-info-card">
             <CardContent className="p-6">
-              <CardSectionHeader icon={<User className="w-5 h-5 text-[#6e2ea8]" />} bg="bg-blue-100" title="Personal Information" />
+              <CardSectionHeader icon={<User className="w-5 h-5 text-[rgb(37, 99, 235)]" />} bg="bg-blue-100" title="Personal Information" />
               {editing ? (
                 <div className="grid grid-cols-2 gap-4">
                   <EditField label="First Name" value={form.first_name} onChange={v => set('first_name', v)} />
@@ -228,7 +228,7 @@ const AdminEmployeeDetail = ({ employeeId: propId }) => {
           {/* Contact Information */}
           <Card data-testid="contact-info-card">
             <CardContent className="p-6">
-              <CardSectionHeader icon={<Mail className="w-5 h-5 text-[#6e2ea8]" />} bg="bg-blue-100" title="Contact Information" />
+              <CardSectionHeader icon={<Mail className="w-5 h-5 text-[rgb(37, 99, 235)]" />} bg="bg-blue-100" title="Contact Information" />
               {editing ? (
                 <div className="space-y-3">
                   <EditField label="Email" value={form.email} onChange={v => set('email', v)} type="email" />
@@ -290,7 +290,7 @@ const AdminEmployeeDetail = ({ employeeId: propId }) => {
           {/* Job Information */}
           <Card data-testid="job-info-card">
             <CardContent className="p-6">
-              <CardSectionHeader icon={<Briefcase className="w-5 h-5 text-[#6e2ea8]" />} bg="bg-blue-100" title="Job Information" />
+              <CardSectionHeader icon={<Briefcase className="w-5 h-5 text-[rgb(37, 99, 235)]" />} bg="bg-blue-100" title="Job Information" />
               {editing ? (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -355,7 +355,7 @@ const AdminEmployeeDetail = ({ employeeId: propId }) => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-indigo-100 rounded-lg"><TrendingUp className="w-5 h-5 text-[#6e2ea8]" /></div>
+                  <div className="p-2 bg-indigo-100 rounded-lg"><TrendingUp className="w-5 h-5 text-[rgb(37, 99, 235)]" /></div>
                   <h3 className="text-base font-semibold text-gray-900">Performance</h3>
                 </div>
                 <div className="flex items-center gap-1">
@@ -483,7 +483,7 @@ const IconRow = ({ icon, label, value }) => (
 );
 
 const TabPill = ({ children, active }) => (
-  <span className={`px-3 py-1 text-xs font-medium rounded-full cursor-pointer transition-colors ${active ? 'bg-[#6e2ea8] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+  <span className={`px-3 py-1 text-xs font-medium rounded-full cursor-pointer transition-colors ${active ? 'bg-[rgb(37, 99, 235)] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
     {children}
   </span>
 );

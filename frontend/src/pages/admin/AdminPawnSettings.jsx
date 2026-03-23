@@ -179,7 +179,7 @@ const AdminPeptidesSettings = () => {
                 {warehouseSettings.aisles[warehouseSettings.aisles.length - 1] || 'D'}-{warehouseSettings.shelves_per_aisle}-{String(warehouseSettings.bins_per_shelf).padStart(2, '0')}
               </code>
             </div>
-            <p className="text-xs text-[#6e2ea8] mt-2">
+            <p className="text-xs text-[rgb(37, 99, 235)] mt-2">
               Total locations: {warehouseSettings.aisles.length * warehouseSettings.shelves_per_aisle * warehouseSettings.bins_per_shelf}
             </p>
           </div>
@@ -187,7 +187,7 @@ const AdminPeptidesSettings = () => {
           <Button
             onClick={saveWarehouseSettings}
             disabled={saving}
-            className="bg-[#6e2ea8] hover:bg-[#a01830]"
+            className="bg-[rgb(37, 99, 235)] hover:bg-[#a01830]"
             data-testid="save-generate-locations-button"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}

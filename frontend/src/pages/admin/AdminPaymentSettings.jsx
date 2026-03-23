@@ -73,7 +73,7 @@ const PaymentCard = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-sm text-gray-500 hover:text-[#6e2ea8] flex items-center gap-1"
+                className="text-sm text-gray-500 hover:text-[rgb(37, 99, 235)] flex items-center gap-1"
               >
                 <ExternalLink className="w-4 h-4" />
                 Docs
@@ -84,7 +84,7 @@ const PaymentCard = ({
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
                 isExpanded 
                   ? 'bg-gray-200 text-gray-700 hover:bg-gray-300' 
-                  : 'bg-[#6e2ea8] text-white hover:bg-[#a01830]'
+                  : 'bg-[rgb(37, 99, 235)] text-white hover:bg-[#a01830]'
               }`}
             >
               {isExpanded ? (
@@ -127,7 +127,7 @@ const PaymentCard = ({
                 <button
                   onClick={onSave}
                   disabled={saving}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#6e2ea8] hover:bg-[#a01830] text-white font-semibold rounded-lg transition-all disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-[rgb(37, 99, 235)] hover:bg-[#a01830] text-white font-semibold rounded-lg transition-all disabled:opacity-50"
                 >
                   {saving ? (
                     <>
@@ -405,13 +405,13 @@ const AdminPaymentSettings = () => {
     }
   };
 
-  const inputClasses = "w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#6e2ea8]/30 focus:border-[#6e2ea8] transition-all font-mono text-sm";
+  const inputClasses = "w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-[rgb(37, 99, 235)]/30 focus:border-[rgb(37, 99, 235)] transition-all font-mono text-sm";
   const labelClasses = "block text-sm font-medium text-gray-700 mb-2";
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -421,7 +421,7 @@ const AdminPaymentSettings = () => {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-          <CreditCard className="w-7 h-7 text-[#6e2ea8]" />
+          <CreditCard className="w-7 h-7 text-[rgb(37, 99, 235)]" />
           Payment Settings
         </h1>
         <p className="text-gray-500 mt-1">Configure payment gateways for accepting online payments</p>
@@ -448,7 +448,7 @@ const AdminPaymentSettings = () => {
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
-              <Key className="w-5 h-5 text-[#6e2ea8]" />
+              <Key className="w-5 h-5 text-[rgb(37, 99, 235)]" />
               <h3 className="font-semibold text-gray-900">API Credentials</h3>
             </div>
             
@@ -497,7 +497,7 @@ const AdminPaymentSettings = () => {
 
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
-              <Shield className="w-5 h-5 text-[#6e2ea8]" />
+              <Shield className="w-5 h-5 text-[rgb(37, 99, 235)]" />
               <h3 className="font-semibold text-gray-900">Collect.js Tokenization</h3>
             </div>
             
@@ -514,10 +514,10 @@ const AdminPaymentSettings = () => {
 
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-start gap-3">
-                <Shield className="w-5 h-5 text-[#6e2ea8] flex-shrink-0 mt-0.5" />
+                <Shield className="w-5 h-5 text-[rgb(37, 99, 235)] flex-shrink-0 mt-0.5" />
                 <div className="text-sm text-blue-700">
                   <p className="font-medium">PCI Compliant</p>
-                  <p className="text-[#6e2ea8]">Card data tokenized in secure iframes.</p>
+                  <p className="text-[rgb(37, 99, 235)]">Card data tokenized in secure iframes.</p>
                 </div>
               </div>
             </div>
@@ -941,7 +941,7 @@ const AdminPaymentSettings = () => {
           {/* Venmo */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-[#6e2ea8] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-[rgb(37, 99, 235)] flex items-center justify-center">
                 <span className="text-white font-bold text-sm">V</span>
               </div>
               <h3 className="font-semibold text-gray-900">Venmo</h3>
@@ -950,7 +950,7 @@ const AdminPaymentSettings = () => {
             <div>
               <label className={labelClasses}>Venmo ID (@username)</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6e2ea8] font-bold">@</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[rgb(37, 99, 235)] font-bold">@</span>
                 <input
                   type="text"
                   value={cashAppSettings.venmo_id}

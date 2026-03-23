@@ -1192,7 +1192,7 @@ const AdminProductEditor = ({ productId: propProductId }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin w-8 h-8 border-4 border-[#6e2ea8] border-t-transparent rounded-full"></div>
+        <div className="animate-spin w-8 h-8 border-4 border-[rgb(37, 99, 235)] border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -1222,7 +1222,7 @@ const AdminProductEditor = ({ productId: propProductId }) => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
             </a>
-            <div className="w-10 h-10 bg-[#6e2ea8] rounded-full flex items-center justify-center text-white font-medium">
+            <div className="w-10 h-10 bg-[rgb(37, 99, 235)] rounded-full flex items-center justify-center text-white font-medium">
               CG
             </div>
           </div>
@@ -1397,7 +1397,7 @@ const AdminProductEditor = ({ productId: propProductId }) => {
                       <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                         <p className="text-sm text-blue-800">
                           <strong>Tip:</strong> Images are stored locally. For permanent cloud storage,{' '}
-                          <a href="/admin/settings/storage" className="text-[#6e2ea8] hover:underline font-medium">
+                          <a href="/admin/settings/storage" className="text-[rgb(37, 99, 235)] hover:underline font-medium">
                             configure iDrive E2
                           </a>.
                         </p>
@@ -1688,8 +1688,8 @@ const AdminProductEditor = ({ productId: propProductId }) => {
                                         }}
                                         className={`px-3 py-1 rounded-full text-sm border transition-colors ${
                                           isSelected
-                                            ? 'bg-[#6e2ea8] text-white border-[#6e2ea8]'
-                                            : 'bg-white text-gray-700 border-gray-300 hover:border-[#6e2ea8]'
+                                            ? 'bg-[rgb(37, 99, 235)] text-white border-[rgb(37, 99, 235)]'
+                                            : 'bg-white text-gray-700 border-gray-300 hover:border-[rgb(37, 99, 235)]'
                                         }`}
                                       >
                                         {option.label}

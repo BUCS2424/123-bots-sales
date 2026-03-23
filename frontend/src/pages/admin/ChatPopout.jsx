@@ -118,7 +118,7 @@ const ChatPopout = () => {
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-50">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }

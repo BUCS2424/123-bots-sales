@@ -385,7 +385,7 @@ const AdminAccountingDashboard = () => {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-[#6e2ea8]">Gross Revenue</p>
+                <p className="text-sm font-medium text-[rgb(37, 99, 235)]">Gross Revenue</p>
                 <p className="text-3xl font-bold text-gray-900 print:text-2xl">{formatCurrency(stats?.revenue?.gross)}</p>
                 {stats?.revenue?.refunds > 0 && (
                   <p className="text-sm text-red-500 mt-1">- {formatCurrency(stats?.revenue?.refunds)} refunds</p>
@@ -393,7 +393,7 @@ const AdminAccountingDashboard = () => {
                 <p className="text-lg font-semibold text-blue-700 mt-1">Net: {formatCurrency(stats?.revenue?.net)}</p>
               </div>
               <div className="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center">
-                <DollarSign className="w-7 h-7 text-[#6e2ea8]" />
+                <DollarSign className="w-7 h-7 text-[rgb(37, 99, 235)]" />
               </div>
             </div>
           </CardContent>
@@ -501,7 +501,7 @@ const AdminAccountingDashboard = () => {
                     /* Display Mode */
                     <>
                       <p className="text-sm font-medium text-purple-600">{commissionSettings.percentage}% Commission</p>
-                      <p className="text-3xl font-bold text-[#6e2ea8] print:text-2xl">
+                      <p className="text-3xl font-bold text-[rgb(37, 99, 235)] print:text-2xl">
                         {formatCurrency((stats?.profit?.gross || 0) * (commissionSettings.percentage / 100))}
                       </p>
                       <div className="flex items-center gap-2 mt-1">
@@ -514,7 +514,7 @@ const AdminAccountingDashboard = () => {
                 </div>
                 {!isEditingCommission && (
                   <div className="w-14 h-14 rounded-2xl bg-purple-100 flex items-center justify-center">
-                    <PiggyBank className="w-7 h-7 text-[#6e2ea8]" />
+                    <PiggyBank className="w-7 h-7 text-[rgb(37, 99, 235)]" />
                   </div>
                 )}
               </div>
@@ -529,7 +529,7 @@ const AdminAccountingDashboard = () => {
           <div className="flex flex-wrap items-center justify-center gap-4 text-center">
             <div>
               <p className="text-xs text-gray-500">Revenue</p>
-              <p className="text-xl font-bold text-[#6e2ea8]">{formatCurrency(stats?.revenue?.net)}</p>
+              <p className="text-xl font-bold text-[rgb(37, 99, 235)]">{formatCurrency(stats?.revenue?.net)}</p>
             </div>
             <span className="text-2xl text-gray-400">−</span>
             <div>
@@ -574,7 +574,7 @@ const AdminAccountingDashboard = () => {
         <Card>
           <CardContent className="pt-4 pb-4">
             <div className="flex items-center gap-3">
-              <Users className="w-8 h-8 text-[#6e2ea8]" />
+              <Users className="w-8 h-8 text-[rgb(37, 99, 235)]" />
               <div>
                 <p className="text-xs text-gray-500">Customers</p>
                 <p className="text-xl font-bold">{stats?.customers?.total || 0}</p>
@@ -664,7 +664,7 @@ const AdminAccountingDashboard = () => {
                 <div key={method} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded-full ${
-                      method === 'card' ? 'bg-[#6e2ea8]' :
+                      method === 'card' ? 'bg-[rgb(37, 99, 235)]' :
                       method === 'cashapp' ? 'bg-green-500' :
                       method === 'venmo' ? 'bg-purple-500' :
                       'bg-gray-400'
@@ -701,7 +701,7 @@ const AdminAccountingDashboard = () => {
       <Card className="print:break-before-page">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-[#6e2ea8]" />
+            <BarChart3 className="w-5 h-5 text-[rgb(37, 99, 235)]" />
             Daily Revenue & Profit
           </CardTitle>
           <CardDescription>Revenue (blue) and Profit (green) breakdown by day</CardDescription>
@@ -717,7 +717,7 @@ const AdminAccountingDashboard = () => {
                   <div className="flex-1 flex gap-1">
                     {/* Revenue bar */}
                     <div 
-                      className="h-6 bg-[#6e2ea8] rounded-l transition-all"
+                      className="h-6 bg-[rgb(37, 99, 235)] rounded-l transition-all"
                       style={{ width: `${(day.revenue / maxRevenue) * 100}%` }}
                       title={`Revenue: ${formatCurrency(day.revenue)}`}
                     />
@@ -729,7 +729,7 @@ const AdminAccountingDashboard = () => {
                     />
                   </div>
                   <div className="w-32 text-right text-sm shrink-0">
-                    <span className="text-[#6e2ea8] font-medium">{formatCurrency(day.revenue)}</span>
+                    <span className="text-[rgb(37, 99, 235)] font-medium">{formatCurrency(day.revenue)}</span>
                     <span className="text-gray-400 mx-1">/</span>
                     <span className="text-green-600 font-medium">{formatCurrency(day.profit)}</span>
                   </div>
@@ -744,7 +744,7 @@ const AdminAccountingDashboard = () => {
           )}
           <div className="flex items-center justify-center gap-6 mt-4 pt-4 border-t">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-[#6e2ea8] rounded" />
+              <div className="w-4 h-4 bg-[rgb(37, 99, 235)] rounded" />
               <span className="text-sm text-gray-600">Revenue</span>
             </div>
             <div className="flex items-center gap-2">
@@ -787,7 +787,7 @@ const AdminAccountingDashboard = () => {
                         </div>
                       </td>
                       <td className="text-right py-3 px-2 font-mono">{product.units_sold}</td>
-                      <td className="text-right py-3 px-2 font-mono text-[#6e2ea8]">{formatCurrency(product.revenue)}</td>
+                      <td className="text-right py-3 px-2 font-mono text-[rgb(37, 99, 235)]">{formatCurrency(product.revenue)}</td>
                       <td className="text-right py-3 px-2 font-mono text-orange-600">{formatCurrency(product.cost)}</td>
                       <td className="text-right py-3 px-2 font-mono text-green-600">{formatCurrency(product.profit)}</td>
                       <td className="text-right py-3 px-2">
@@ -802,7 +802,7 @@ const AdminAccountingDashboard = () => {
                   <tr className="bg-gray-50 font-semibold">
                     <td className="py-3 px-2">Total</td>
                     <td className="text-right py-3 px-2 font-mono">{productsData.reduce((sum, p) => sum + p.units_sold, 0)}</td>
-                    <td className="text-right py-3 px-2 font-mono text-[#6e2ea8]">{formatCurrency(productsData.reduce((sum, p) => sum + p.revenue, 0))}</td>
+                    <td className="text-right py-3 px-2 font-mono text-[rgb(37, 99, 235)]">{formatCurrency(productsData.reduce((sum, p) => sum + p.revenue, 0))}</td>
                     <td className="text-right py-3 px-2 font-mono text-orange-600">{formatCurrency(productsData.reduce((sum, p) => sum + p.cost, 0))}</td>
                     <td className="text-right py-3 px-2 font-mono text-green-600">{formatCurrency(productsData.reduce((sum, p) => sum + p.profit, 0))}</td>
                     <td className="text-right py-3 px-2">-</td>

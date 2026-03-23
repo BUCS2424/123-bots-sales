@@ -502,7 +502,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -513,14 +513,14 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <Truck className="w-8 h-8 text-[#6e2ea8]" />
+            <Truck className="w-8 h-8 text-[rgb(37, 99, 235)]" />
             RV Restoration Center
           </h1>
           <p className="text-gray-500">Manage repairs, estimates, jobs & invoices</p>
         </div>
         
         <div className="flex gap-3">
-          <Button className="bg-[#6e2ea8] hover:bg-[#162d4a]" onClick={() => setIsJobDialogOpen(true)} data-testid="new-job-btn">
+          <Button className="bg-[rgb(37, 99, 235)] hover:bg-[#162d4a]" onClick={() => setIsJobDialogOpen(true)} data-testid="new-job-btn">
             <Plus className="w-4 h-4 mr-2" />
             New Job
           </Button>
@@ -541,7 +541,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
                 <p className="text-2xl font-bold">{stats.activeJobs}</p>
               </div>
               <div className="p-2 bg-blue-100 rounded-full">
-                <Wrench className="w-5 h-5 text-[#6e2ea8]" />
+                <Wrench className="w-5 h-5 text-[rgb(37, 99, 235)]" />
               </div>
             </div>
           </CardContent>
@@ -628,7 +628,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
                 {jobs.slice(0, 5).map(job => (
                   <div key={job.id} className="flex items-center justify-between py-3 border-b last:border-0">
                     <div>
-                      <p className="font-medium text-[#6e2ea8]">{job.job_number}</p>
+                      <p className="font-medium text-[rgb(37, 99, 235)]">{job.job_number}</p>
                       <p className="text-sm text-gray-500">{job.customer?.name} - {job.rv?.make} {job.rv?.model}</p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -650,7 +650,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
                 {estimates.slice(0, 5).map(estimate => (
                   <div key={estimate.id} className="flex items-center justify-between py-3 border-b last:border-0">
                     <div>
-                      <p className="font-medium text-[#6e2ea8]">{estimate.estimate_number}</p>
+                      <p className="font-medium text-[rgb(37, 99, 235)]">{estimate.estimate_number}</p>
                       <p className="text-sm text-gray-500">{estimate.customer?.name}</p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -675,7 +675,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
                 {getEventsForDay(new Date()).length > 0 ? (
                   getEventsForDay(new Date()).map(event => (
                     <div key={event.id} className="flex items-center gap-3 py-2 border-b last:border-0">
-                      <div className="w-1 h-10 rounded" style={{ backgroundColor: event.color || '#6e2ea8' }}></div>
+                      <div className="w-1 h-10 rounded" style={{ backgroundColor: event.color || 'rgb(37, 99, 235)' }}></div>
                       <div className="flex-1">
                         <p className="font-medium">{event.title}</p>
                         <p className="text-sm text-gray-500">
@@ -724,7 +724,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle>All Jobs</CardTitle>
-                <Button className="bg-[#6e2ea8]" onClick={() => setIsJobDialogOpen(true)}>
+                <Button className="bg-[rgb(37, 99, 235)]" onClick={() => setIsJobDialogOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" /> New Job
                 </Button>
               </div>
@@ -746,7 +746,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
                 <TableBody>
                   {jobs.map(job => (
                     <TableRow key={job.id}>
-                      <TableCell className="font-medium text-[#6e2ea8]">{job.job_number}</TableCell>
+                      <TableCell className="font-medium text-[rgb(37, 99, 235)]">{job.job_number}</TableCell>
                       <TableCell>
                         <div>
                           <p>{job.customer?.name}</p>
@@ -828,7 +828,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle>All Estimates</CardTitle>
-                <Button className="bg-[#6e2ea8]" onClick={() => setIsEstimateDialogOpen(true)}>
+                <Button className="bg-[rgb(37, 99, 235)]" onClick={() => setIsEstimateDialogOpen(true)}>
                   <Calculator className="w-4 h-4 mr-2" /> New Estimate
                 </Button>
               </div>
@@ -849,7 +849,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
                 <TableBody>
                   {estimates.map(estimate => (
                     <TableRow key={estimate.id}>
-                      <TableCell className="font-medium text-[#6e2ea8]">{estimate.estimate_number}</TableCell>
+                      <TableCell className="font-medium text-[rgb(37, 99, 235)]">{estimate.estimate_number}</TableCell>
                       <TableCell>
                         <div>
                           <p>{estimate.customer?.name}</p>
@@ -922,7 +922,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
                 <TableBody>
                   {invoices.map(invoice => (
                     <TableRow key={invoice.id}>
-                      <TableCell className="font-medium text-[#6e2ea8]">{invoice.invoice_number}</TableCell>
+                      <TableCell className="font-medium text-[rgb(37, 99, 235)]">{invoice.invoice_number}</TableCell>
                       <TableCell>{invoice.job_number}</TableCell>
                       <TableCell>{invoice.customer?.name}</TableCell>
                       <TableCell>{getStatusBadge(invoice.status)}</TableCell>
@@ -981,7 +981,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
                   <Button
                     variant={calendarView === 'week' ? 'default' : 'outline'}
                     onClick={() => setCalendarView('week')}
-                    className={calendarView === 'week' ? 'bg-[#6e2ea8]' : ''}
+                    className={calendarView === 'week' ? 'bg-[rgb(37, 99, 235)]' : ''}
                   >
                     Week
                   </Button>
@@ -999,7 +999,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
                         {day.toLocaleDateString('en-US', { weekday: 'short' })}
                       </p>
                       <p className={`text-lg font-semibold ${
-                        day.toDateString() === new Date().toDateString() ? 'text-[#6e2ea8]' : ''
+                        day.toDateString() === new Date().toDateString() ? 'text-[rgb(37, 99, 235)]' : ''
                       }`}>
                         {day.getDate()}
                       </p>
@@ -1019,7 +1019,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
                           <div
                             key={event.id}
                             className="mb-2 p-2 rounded text-sm text-white cursor-pointer"
-                            style={{ backgroundColor: event.color || '#6e2ea8' }}
+                            style={{ backgroundColor: event.color || 'rgb(37, 99, 235)' }}
                           >
                             <p className="font-medium truncate">{event.title}</p>
                             <p className="text-xs opacity-80">
@@ -1045,7 +1045,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
                   <CardTitle>Parts & Inventory</CardTitle>
                   <CardDescription>Track parts and supplies for RV repairs</CardDescription>
                 </div>
-                <Button className="bg-[#6e2ea8]" onClick={() => setIsInventoryDialogOpen(true)}>
+                <Button className="bg-[rgb(37, 99, 235)]" onClick={() => setIsInventoryDialogOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" /> Add Item
                 </Button>
               </div>
@@ -1119,7 +1119,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
                   <CardTitle>Service Catalog</CardTitle>
                   <CardDescription>Pre-defined services for quick estimate creation</CardDescription>
                 </div>
-                <Button className="bg-[#6e2ea8]" onClick={() => setIsServiceDialogOpen(true)}>
+                <Button className="bg-[rgb(37, 99, 235)]" onClick={() => setIsServiceDialogOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" /> Add Service
                 </Button>
               </div>
@@ -1127,7 +1127,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {serviceCatalog.map(service => (
-                  <Card key={service.id} className="border hover:border-[#6e2ea8] transition-colors">
+                  <Card key={service.id} className="border hover:border-[rgb(37, 99, 235)] transition-colors">
                     <CardContent className="p-4">
                       <div className="flex justify-between items-start mb-2">
                         <h4 className="font-medium">{service.name}</h4>
@@ -1139,7 +1139,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
                       <div className="text-sm space-y-1">
                         <p>Labor: {service.default_labor_hours}h @ ${service.default_labor_rate}/hr</p>
                         <p>Parts: ${service.default_parts_cost}</p>
-                        <p className="font-medium text-[#6e2ea8]">
+                        <p className="font-medium text-[rgb(37, 99, 235)]">
                           Total: ${((service.default_labor_hours * service.default_labor_rate) + service.default_parts_cost).toFixed(2)}
                         </p>
                       </div>
@@ -1361,7 +1361,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
 
             {/* Right Column - Totals */}
             <div className="space-y-4">
-              <Card className="sticky top-0 bg-[#6e2ea8] text-white">
+              <Card className="sticky top-0 bg-[rgb(37, 99, 235)] text-white">
                 <CardHeader>
                   <CardTitle className="text-lg">Estimate Summary</CardTitle>
                 </CardHeader>
@@ -1402,12 +1402,12 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
 
                   <div className="pt-4 space-y-2">
                     {isEstimateDialogOpen && (
-                      <Button className="w-full bg-white text-[#6e2ea8] hover:bg-gray-100" onClick={handleCreateEstimate}>
+                      <Button className="w-full bg-white text-[rgb(37, 99, 235)] hover:bg-gray-100" onClick={handleCreateEstimate}>
                         <Save className="w-4 h-4 mr-2" /> Save Estimate
                       </Button>
                     )}
                     {isJobDialogOpen && (
-                      <Button className="w-full bg-white text-[#6e2ea8] hover:bg-gray-100" onClick={handleCreateJob}>
+                      <Button className="w-full bg-white text-[rgb(37, 99, 235)] hover:bg-gray-100" onClick={handleCreateJob}>
                         <Save className="w-4 h-4 mr-2" /> Create Job
                       </Button>
                     )}
@@ -1463,7 +1463,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsScheduleDialogOpen(false)}>Cancel</Button>
-            <Button className="bg-[#6e2ea8]" onClick={handleScheduleJob}>
+            <Button className="bg-[rgb(37, 99, 235)]" onClick={handleScheduleJob}>
               <CalendarIcon className="w-4 h-4 mr-2" /> Schedule
             </Button>
           </DialogFooter>
@@ -1526,7 +1526,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsInventoryDialogOpen(false)}>Cancel</Button>
-            <Button className="bg-[#6e2ea8]" onClick={handleAddInventory}>Add Item</Button>
+            <Button className="bg-[rgb(37, 99, 235)]" onClick={handleAddInventory}>Add Item</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1569,7 +1569,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsServiceDialogOpen(false)}>Cancel</Button>
-            <Button className="bg-[#6e2ea8]" onClick={handleAddToCatalog}>Add to Catalog</Button>
+            <Button className="bg-[rgb(37, 99, 235)]" onClick={handleAddToCatalog}>Add to Catalog</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

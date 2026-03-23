@@ -59,7 +59,7 @@ const AdminRVPricingSettings = () => {
         <Button 
           onClick={saveSettings} 
           disabled={saving}
-          className="bg-[#6e2ea8] hover:bg-[#a01830]"
+          className="bg-[rgb(37, 99, 235)] hover:bg-[#a01830]"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
           Save Pricing

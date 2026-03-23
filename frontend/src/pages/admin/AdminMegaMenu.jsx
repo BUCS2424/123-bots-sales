@@ -300,7 +300,7 @@ const AdminMegaMenu = () => {
     return (
       <div key={item.id} data-testid={`menu-item-${item.id}`}>
         <div
-          className={`flex items-center gap-2 p-3 bg-white border border-gray-200 rounded-lg mb-2 hover:border-[#6e2ea8]/50 transition-colors`}
+          className={`flex items-center gap-2 p-3 bg-white border border-gray-200 rounded-lg mb-2 hover:border-[rgb(37, 99, 235)]/50 transition-colors`}
           style={{ marginLeft: `${depth * 24}px` }}
         >
           <GripVertical className="w-4 h-4 text-gray-400 cursor-grab flex-shrink-0" />
@@ -331,7 +331,7 @@ const AdminMegaMenu = () => {
               {item.badge_text && (
                 <span
                   className="px-2 py-0.5 text-xs text-white rounded"
-                  style={{ backgroundColor: item.badge_color || '#6e2ea8' }}
+                  style={{ backgroundColor: item.badge_color || 'rgb(37, 99, 235)' }}
                 >
                   {item.badge_text}
                 </span>
@@ -407,7 +407,7 @@ const AdminMegaMenu = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin w-8 h-8 border-4 border-[#6e2ea8] border-t-transparent rounded-full"></div>
+        <div className="animate-spin w-8 h-8 border-4 border-[rgb(37, 99, 235)] border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -424,7 +424,7 @@ const AdminMegaMenu = () => {
         </div>
         <Button
           onClick={() => openAddModal()}
-          className="bg-[#6e2ea8] hover:bg-[#5a2589] text-white"
+          className="bg-[rgb(37, 99, 235)] hover:bg-[rgb(29, 78, 216)] text-white"
           data-testid="add-menu-item-btn"
         >
           <Plus className="w-4 h-4 mr-2" />
@@ -444,7 +444,7 @@ const AdminMegaMenu = () => {
             <Button
               onClick={() => openAddModal()}
               variant="outline"
-              className="border-[#6e2ea8] text-[#6e2ea8]"
+              className="border-[rgb(37, 99, 235)] text-[rgb(37, 99, 235)]"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Menu Item
@@ -518,7 +518,7 @@ const AdminMegaMenu = () => {
                     onClick={() => handleLinkTypeChange(type.value)}
                     className={`flex items-center gap-2 p-3 rounded-lg border-2 transition-colors ${
                       formData.link_type === type.value
-                        ? 'border-[#6e2ea8] bg-[#6e2ea8]/5'
+                        ? 'border-[rgb(37, 99, 235)] bg-[rgb(37, 99, 235)]/5'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -689,7 +689,7 @@ const AdminMegaMenu = () => {
                     <Search className="w-4 h-4 text-gray-500" />
                     <span className="font-medium text-gray-700">SEO Settings</span>
                   </div>
-                  <span className="text-sm text-[#6e2ea8]">
+                  <span className="text-sm text-[rgb(37, 99, 235)]">
                     {showSeoFields ? 'Hide SEO Fields' : 'Show SEO Fields'}
                   </span>
                 </button>
@@ -859,7 +859,7 @@ const AdminMegaMenu = () => {
               </Button>
               <Button
                 type="submit"
-                className="bg-[#6e2ea8] hover:bg-[#5a2589] text-white"
+                className="bg-[rgb(37, 99, 235)] hover:bg-[rgb(29, 78, 216)] text-white"
                 data-testid="save-menu-item-btn"
               >
                 <Save className="w-4 h-4 mr-2" />

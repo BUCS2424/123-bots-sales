@@ -60,12 +60,12 @@ const AdminNotificationSettings = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <Bell className="w-7 h-7 text-[#6e2ea8]" />
+            <Bell className="w-7 h-7 text-[rgb(37, 99, 235)]" />
             Notification Settings
           </h1>
           <p className="text-gray-500 mt-1">Configure email and SMS notifications</p>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="bg-[#6e2ea8] hover:bg-[#a01830]">
+        <Button onClick={handleSave} disabled={saving} className="bg-[rgb(37, 99, 235)] hover:bg-[#a01830]">
           {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
           Save Changes
         </Button>
@@ -285,7 +285,7 @@ const AdminNotificationSettings = () => {
                         }}
                         className={`px-3 py-1 text-xs rounded-full transition-all ${
                           recipient.types.includes(type)
-                            ? 'bg-[#6e2ea8] text-white'
+                            ? 'bg-[rgb(37, 99, 235)] text-white'
                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                         }`}
                       >

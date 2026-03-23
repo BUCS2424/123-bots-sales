@@ -120,7 +120,7 @@ const AdminStorageSettings = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin w-8 h-8 border-4 border-[#6e2ea8] border-t-transparent rounded-full"></div>
+        <div className="animate-spin w-8 h-8 border-4 border-[rgb(37, 99, 235)] border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -343,7 +343,7 @@ const AdminStorageSettings = () => {
             <Button
               onClick={handleSave}
               disabled={saving}
-              className="bg-[#6e2ea8] hover:bg-[#a01830]"
+              className="bg-[rgb(37, 99, 235)] hover:bg-[#a01830]"
               data-testid="save-settings-btn"
             >
               {saving ? (

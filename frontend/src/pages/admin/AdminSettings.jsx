@@ -61,7 +61,7 @@ const AdminSettings = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -117,7 +117,7 @@ const AdminSettings = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-[#6e2ea8] rounded-full flex items-center justify-center text-white text-2xl font-bold">
+              <div className="w-16 h-16 bg-[rgb(37, 99, 235)] rounded-full flex items-center justify-center text-white text-2xl font-bold">
                 {user?.name?.charAt(0).toUpperCase()}
               </div>
               <div>

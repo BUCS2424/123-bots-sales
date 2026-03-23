@@ -498,7 +498,7 @@ const AdminHumanResources = ({ initialTab = 'employees' }) => {
           <CardContent className="p-4">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-blue-100 rounded-xl">
-                <CalendarDays className="w-6 h-6 text-[#6e2ea8]" />
+                <CalendarDays className="w-6 h-6 text-[rgb(37, 99, 235)]" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Time Off Pending</p>
@@ -785,7 +785,7 @@ const AdminHumanResources = ({ initialTab = 'employees' }) => {
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-medium text-[#6e2ea8] hover:underline">{employee.first_name} {employee.last_name}</p>
+                            <p className="font-medium text-[rgb(37, 99, 235)] hover:underline">{employee.first_name} {employee.last_name}</p>
                             <p className="text-sm text-gray-500">{employee.employment_type?.replace('_', ' ')}</p>
                           </div>
                         </div>

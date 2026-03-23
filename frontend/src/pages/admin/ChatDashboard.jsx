@@ -306,7 +306,7 @@ export default function ChatDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -345,9 +345,9 @@ export default function ChatDashboard() {
       {/* Stats */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-          <Card className="border-[#6e2ea8]/30 bg-[#6e2ea8]/5">
+          <Card className="border-[rgb(37, 99, 235)]/30 bg-[rgb(37, 99, 235)]/5">
             <CardContent className="pt-4 text-center">
-              <div className="text-3xl font-bold text-[#6e2ea8]">{visitors.length}</div>
+              <div className="text-3xl font-bold text-[rgb(37, 99, 235)]">{visitors.length}</div>
               <p className="text-xs text-muted-foreground">Visitors Online</p>
             </CardContent>
           </Card>
@@ -394,10 +394,10 @@ export default function ChatDashboard() {
         {/* Chat List */}
         <div className="lg:col-span-1 space-y-4">
           {/* Live Visitors */}
-          <Card className="border-[#6e2ea8]/30">
+          <Card className="border-[rgb(37, 99, 235)]/30">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center gap-2">
-                <Globe className="w-5 h-5 text-[#6e2ea8]" />
+                <Globe className="w-5 h-5 text-[rgb(37, 99, 235)]" />
                 Live Visitors ({visitors.length})
               </CardTitle>
               <CardDescription>Click to start a proactive chat</CardDescription>
@@ -409,7 +409,7 @@ export default function ChatDashboard() {
                 visitors.map(visitor => (
                   <div
                     key={visitor.visitor_id}
-                    className="p-3 bg-gradient-to-r from-[#6e2ea8]/5 to-transparent rounded-lg border border-[#6e2ea8]/20 hover:border-[#6e2ea8]/40 transition-colors"
+                    className="p-3 bg-gradient-to-r from-[rgb(37, 99, 235)]/5 to-transparent rounded-lg border border-[rgb(37, 99, 235)]/20 hover:border-[rgb(37, 99, 235)]/40 transition-colors"
                   >
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
@@ -426,7 +426,7 @@ export default function ChatDashboard() {
                       <Button 
                         size="sm" 
                         variant="outline"
-                        className="h-7 text-xs border-[#6e2ea8] text-[#6e2ea8] hover:bg-[#6e2ea8] hover:text-white"
+                        className="h-7 text-xs border-[rgb(37, 99, 235)] text-[rgb(37, 99, 235)] hover:bg-[rgb(37, 99, 235)] hover:text-white"
                         onClick={() => initiateChat(visitor.visitor_id)}
                         disabled={initiatingChat === visitor.visitor_id}
                       >
@@ -493,7 +493,7 @@ export default function ChatDashboard() {
                   <div
                     key={chat.id}
                     className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                      selectedChat?.id === chat.id ? 'border-[#6e2ea8] bg-[#6e2ea8]/5' : 'hover:border-gray-300'
+                      selectedChat?.id === chat.id ? 'border-[rgb(37, 99, 235)] bg-[rgb(37, 99, 235)]/5' : 'hover:border-gray-300'
                     }`}
                     onClick={() => fetchChatDetails(chat.id)}
                   >

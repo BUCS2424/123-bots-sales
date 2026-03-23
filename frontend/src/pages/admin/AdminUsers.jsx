@@ -144,7 +144,7 @@ const AdminUsers = () => {
       case 'super_admin':
         return <Badge className="bg-purple-600"><Shield className="w-3 h-3 mr-1" />Super Admin</Badge>;
       case 'admin':
-        return <Badge className="bg-[#6e2ea8]"><UserCheck className="w-3 h-3 mr-1" />Admin</Badge>;
+        return <Badge className="bg-[rgb(37, 99, 235)]"><UserCheck className="w-3 h-3 mr-1" />Admin</Badge>;
       default:
         return <Badge variant="secondary"><User className="w-3 h-3 mr-1" />User</Badge>;
     }
@@ -158,7 +158,7 @@ const AdminUsers = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -169,7 +169,7 @@ const AdminUsers = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <Users className="w-8 h-8 text-[#6e2ea8]" />
+            <Users className="w-8 h-8 text-[rgb(37, 99, 235)]" />
             User Management
           </h1>
           <p className="text-gray-500">Manage admin and staff accounts</p>
@@ -177,7 +177,7 @@ const AdminUsers = () => {
         
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-[#6e2ea8] hover:bg-[#a01830]" data-testid="create-user-btn">
+            <Button className="bg-[rgb(37, 99, 235)] hover:bg-[#a01830]" data-testid="create-user-btn">
               <Plus className="w-4 h-4 mr-2" />
               Create User
             </Button>
@@ -239,7 +239,7 @@ const AdminUsers = () => {
                 <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-[#6e2ea8] hover:bg-[#a01830]" data-testid="submit-create-user">
+                <Button type="submit" className="bg-[rgb(37, 99, 235)] hover:bg-[#a01830]" data-testid="submit-create-user">
                   Create User
                 </Button>
               </DialogFooter>
@@ -253,8 +253,8 @@ const AdminUsers = () => {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-[#6e2ea8]/10 rounded-xl">
-                <Users className="w-6 h-6 text-[#6e2ea8]" />
+              <div className="p-3 bg-[rgb(37, 99, 235)]/10 rounded-xl">
+                <Users className="w-6 h-6 text-[rgb(37, 99, 235)]" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Total Users</p>
@@ -280,7 +280,7 @@ const AdminUsers = () => {
           <CardContent className="p-4">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-blue-100 rounded-xl">
-                <UserCheck className="w-6 h-6 text-[#6e2ea8]" />
+                <UserCheck className="w-6 h-6 text-[rgb(37, 99, 235)]" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Admins</p>
@@ -327,7 +327,7 @@ const AdminUsers = () => {
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar className="h-9 w-9">
-                        <AvatarFallback className="bg-[#6e2ea8] text-white text-sm">
+                        <AvatarFallback className="bg-[rgb(37, 99, 235)] text-white text-sm">
                           {user.name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
@@ -438,7 +438,7 @@ const AdminUsers = () => {
               <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" className="bg-[#6e2ea8] hover:bg-[#a01830]">
+              <Button type="submit" className="bg-[rgb(37, 99, 235)] hover:bg-[#a01830]">
                 Save Changes
               </Button>
             </DialogFooter>

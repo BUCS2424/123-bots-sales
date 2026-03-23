@@ -94,7 +94,7 @@ const AdminLeadsSettings = () => {
   const setN = (key, val) => setNational(prev => ({ ...prev, [key]: val }));
 
   if (loading) {
-    return <div className="flex items-center justify-center h-64"><Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" /></div>;
+    return <div className="flex items-center justify-center h-64"><Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" /></div>;
   }
 
   return (
@@ -102,12 +102,12 @@ const AdminLeadsSettings = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <Shield className="w-7 h-7 text-[#6e2ea8]" />
+            <Shield className="w-7 h-7 text-[rgb(37, 99, 235)]" />
             LEADS Reporting
           </h1>
           <p className="text-gray-500 text-sm">Configure local and national transaction reporting</p>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="bg-[#6e2ea8] hover:bg-[#5a2589]" data-testid="save-leads-btn">
+        <Button onClick={handleSave} disabled={saving} className="bg-[rgb(37, 99, 235)] hover:bg-[rgb(29, 78, 216)]" data-testid="save-leads-btn">
           {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
           Save Settings
         </Button>
@@ -126,7 +126,7 @@ const AdminLeadsSettings = () => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg"><MapPin className="w-5 h-5 text-[#6e2ea8]" /></div>
+              <div className="p-2 bg-blue-100 rounded-lg"><MapPin className="w-5 h-5 text-[rgb(37, 99, 235)]" /></div>
               <div>
                 <CardTitle className="text-lg">Alabama LEADS</CardTitle>
                 <CardDescription>Law Enforcement Automated Data System — State of Alabama</CardDescription>
@@ -180,7 +180,7 @@ const AdminLeadsSettings = () => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-indigo-100 rounded-lg"><Globe className="w-5 h-5 text-[#6e2ea8]" /></div>
+              <div className="p-2 bg-indigo-100 rounded-lg"><Globe className="w-5 h-5 text-[rgb(37, 99, 235)]" /></div>
               <div>
                 <CardTitle className="text-lg">LeadsOnline</CardTitle>
                 <CardDescription>National pawn reporting platform — leadsonline.com</CardDescription>

@@ -303,7 +303,7 @@ const StorageRentalsDashboard = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -327,7 +327,7 @@ const StorageRentalsDashboard = () => {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
-                <Users className="w-5 h-5 text-[#6e2ea8]" />
+                <Users className="w-5 h-5 text-[rgb(37, 99, 235)]" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-gray-900">{rentals.length}</p>

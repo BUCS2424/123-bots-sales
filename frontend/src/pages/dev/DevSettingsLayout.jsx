@@ -126,7 +126,7 @@ const DevSettingsLayout = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin w-8 h-8 border-4 border-[#6e2ea8] border-t-transparent rounded-full"></div>
+        <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -147,7 +147,7 @@ const DevSettingsLayout = () => {
         {/* Header */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-[#6e2ea8] to-[#b9893d] rounded-lg">
+            <div className="p-2 bg-gradient-to-br from-blue-600 to-green-500 rounded-lg">
               <Code className="w-5 h-5 text-white" />
             </div>
             <span className="font-bold text-gray-900">DEV TOOLS</span>
@@ -175,11 +175,11 @@ const DevSettingsLayout = () => {
                       data-testid={`dev-settings-nav-${item.path.replace(/\//g, '-').replace(/^-+/, '')}`}
                       className={`flex items-start gap-3 px-3 py-3 rounded-lg transition-all ${
                         isActive(item.path)
-                          ? 'bg-[#6e2ea8] text-white'
+                          ? 'bg-blue-600 text-white'
                           : 'text-gray-700 hover:bg-gray-100'
                       }`}
                     >
-                      <item.icon className={`w-5 h-5 mt-0.5 ${isActive(item.path) ? 'text-white' : 'text-gray-500'}`} />
+                      <item.icon className={`w-5 h-5 mt-0.5 ${isActive(item.path) ? 'text-white' : 'text-blue-600'}`} />
                       <div>
                         <p className="font-medium text-sm">{item.label}</p>
                         <p className={`text-xs ${isActive(item.path) ? 'text-white/70' : 'text-gray-500'}`}>
@@ -213,7 +213,7 @@ const DevSettingsLayout = () => {
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
           <div className="flex items-center gap-4">
             <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              <Settings className="w-6 h-6 text-[#6e2ea8]" />
+              <Settings className="w-6 h-6 text-blue-600" />
               Dev Settings
             </h1>
             <span className="text-gray-400">|</span>
@@ -227,7 +227,7 @@ const DevSettingsLayout = () => {
               <RefreshCw className="w-4 h-4" />
               Refresh
             </button>
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-100 text-yellow-800 rounded-lg">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-800 rounded-lg">
               <Lock className="w-4 h-4" />
               <span className="text-sm font-medium">Super Admin Only</span>
             </div>
@@ -247,7 +247,7 @@ const DevSettingsLayout = () => {
                   className="flex items-center gap-2 p-1.5 hover:bg-gray-100 rounded-lg"
                   data-testid="dev-settings-profile-dropdown"
                 >
-                  <div className="w-8 h-8 bg-[#6e2ea8] rounded-full flex items-center justify-center text-white text-sm font-medium">
+                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
                     {user?.name?.charAt(0).toUpperCase()}
                   </div>
                   <ChevronDown className="w-4 h-4 text-gray-500" />

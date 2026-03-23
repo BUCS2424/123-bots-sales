@@ -162,7 +162,7 @@ const AdminEmailTemplates = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
         <span className="ml-2 text-gray-500">Loading email templates...</span>
       </div>
     );
@@ -174,7 +174,7 @@ const AdminEmailTemplates = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <Mail className="w-7 h-7 text-[#6e2ea8]" />
+            <Mail className="w-7 h-7 text-[rgb(37, 99, 235)]" />
             System Email Templates
           </h1>
           <p className="text-gray-500 mt-1">Customize the emails sent to your customers</p>
@@ -201,11 +201,11 @@ const AdminEmailTemplates = () => {
                     key={template.id}
                     onClick={() => selectTemplate(template)}
                     className={`w-full flex items-center gap-3 p-4 text-left hover:bg-gray-50 transition-colors ${
-                      selectedTemplate?.id === template.id ? 'bg-purple-50 border-l-4 border-[#6e2ea8]' : ''
+                      selectedTemplate?.id === template.id ? 'bg-purple-50 border-l-4 border-[rgb(37, 99, 235)]' : ''
                     }`}
                     data-testid={`template-btn-${template.id}`}
                   >
-                    <div className={`p-2 rounded-lg ${selectedTemplate?.id === template.id ? 'bg-[#6e2ea8] text-white' : 'bg-gray-100 text-gray-600'}`}>
+                    <div className={`p-2 rounded-lg ${selectedTemplate?.id === template.id ? 'bg-[rgb(37, 99, 235)] text-white' : 'bg-gray-100 text-gray-600'}`}>
                       <IconComponent className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -247,7 +247,7 @@ const AdminEmailTemplates = () => {
                       Reset
                     </Button>
                   )}
-                  <Button onClick={handleSave} disabled={saving} className="bg-[#6e2ea8] hover:bg-[#5a2590]">
+                  <Button onClick={handleSave} disabled={saving} className="bg-[rgb(37, 99, 235)] hover:bg-[#5a2590]">
                     {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                     Save Changes
                   </Button>
@@ -321,7 +321,7 @@ const AdminEmailTemplates = () => {
                       <textarea
                         value={editedContent}
                         onChange={(e) => setEditedContent(e.target.value)}
-                        className="w-full h-[500px] p-4 font-mono text-sm bg-gray-900 text-green-400 rounded-lg border focus:ring-2 focus:ring-[#6e2ea8] focus:border-transparent"
+                        className="w-full h-[500px] p-4 font-mono text-sm bg-gray-900 text-green-400 rounded-lg border focus:ring-2 focus:ring-[rgb(37, 99, 235)] focus:border-transparent"
                         placeholder="Enter HTML content..."
                         spellCheck={false}
                       />
@@ -341,13 +341,13 @@ const AdminEmailTemplates = () => {
                           {selectedTemplate.variables.map((variable) => (
                             <div
                               key={variable}
-                              className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border hover:border-[#6e2ea8] transition-colors cursor-pointer group"
+                              className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border hover:border-[rgb(37, 99, 235)] transition-colors cursor-pointer group"
                               onClick={() => {
                                 navigator.clipboard.writeText(`{{${variable}}}`);
                                 toast({ title: 'Copied!', description: `{{${variable}}} copied to clipboard` });
                               }}
                             >
-                              <code className="text-sm text-[#6e2ea8] font-mono">{`{{${variable}}}`}</code>
+                              <code className="text-sm text-[rgb(37, 99, 235)] font-mono">{`{{${variable}}}`}</code>
                               <CheckCircle className="w-4 h-4 text-gray-400 group-hover:text-green-500 ml-auto" />
                             </div>
                           ))}

@@ -231,7 +231,7 @@ const AdminLeadsKanban = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -244,7 +244,7 @@ const AdminLeadsKanban = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <Users className="w-8 h-8 text-[#6e2ea8]" />
+            <Users className="w-8 h-8 text-[rgb(37, 99, 235)]" />
             Leads Kanban
           </h1>
           <p className="text-gray-500">{totalLeads} total leads from contact forms</p>
@@ -274,7 +274,7 @@ const AdminLeadsKanban = () => {
               key={column.id}
               className={`rounded-xl border-2 transition-all ${
                 isDropTarget 
-                  ? 'border-[#6e2ea8] bg-purple-50 shadow-lg' 
+                  ? 'border-[rgb(37, 99, 235)] bg-purple-50 shadow-lg' 
                   : 'border-gray-200 bg-gray-50'
               }`}
               onDragOver={(e) => handleDragOver(e, column.id)}
@@ -359,7 +359,7 @@ const AdminLeadsKanban = () => {
                             <Mail className="w-3.5 h-3.5 flex-shrink-0" />
                             <a 
                               href={`mailto:${lead.email}`}
-                              className="truncate hover:text-[#6e2ea8] hover:underline"
+                              className="truncate hover:text-[rgb(37, 99, 235)] hover:underline"
                             >
                               {lead.email}
                             </a>
@@ -369,7 +369,7 @@ const AdminLeadsKanban = () => {
                               <Phone className="w-3.5 h-3.5 flex-shrink-0" />
                               <a 
                                 href={`tel:${lead.phone}`}
-                                className="hover:text-[#6e2ea8] hover:underline"
+                                className="hover:text-[rgb(37, 99, 235)] hover:underline"
                               >
                                 {lead.phone}
                               </a>
@@ -485,7 +485,7 @@ const AdminLeadsKanban = () => {
                 <Button 
                   onClick={handleSaveEdit} 
                   disabled={saving}
-                  className="bg-[#6e2ea8] hover:bg-[#5a2589]"
+                  className="bg-[rgb(37, 99, 235)] hover:bg-[rgb(29, 78, 216)]"
                   data-testid="save-edit-btn"
                 >
                   {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}

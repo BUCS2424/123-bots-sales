@@ -196,7 +196,7 @@ const StorageSizeModal = ({ isOpen, onClose, size, onSave }) => {
           <div className="grid grid-cols-3 gap-4">
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div className="flex items-center gap-2">
-                <Thermometer className="w-4 h-4 text-[#6e2ea8]" />
+                <Thermometer className="w-4 h-4 text-[rgb(37, 99, 235)]" />
                 <span className="text-sm">Climate Controlled</span>
               </div>
               <Switch
@@ -260,7 +260,7 @@ const StorageSizeModal = ({ isOpen, onClose, size, onSave }) => {
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
               Cancel
             </Button>
-            <Button type="submit" className="flex-1 bg-[#6e2ea8]" disabled={saving}>
+            <Button type="submit" className="flex-1 bg-[rgb(37, 99, 235)]" disabled={saving}>
               {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
               {size ? 'Update Size' : 'Create Size'}
             </Button>
@@ -309,7 +309,7 @@ const RentalDetailsModal = ({ isOpen, onClose, rental, sizes }) => {
             </div>
             <div>
               <p className="text-sm text-gray-500">Access Code</p>
-              <p className="font-mono text-lg font-bold text-[#6e2ea8]">{rental.access_code}</p>
+              <p className="font-mono text-lg font-bold text-[rgb(37, 99, 235)]">{rental.access_code}</p>
             </div>
           </div>
 
@@ -449,7 +449,7 @@ const AdminStorage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -460,19 +460,19 @@ const AdminStorage = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <Warehouse className="w-8 h-8 text-[#6e2ea8]" />
+            <Warehouse className="w-8 h-8 text-[rgb(37, 99, 235)]" />
             Storage Management
           </h1>
           <p className="text-gray-500">Manage storage units, sizes, and rentals</p>
         </div>
         <div className="flex gap-3">
           <Link to="/admin/storage/pos">
-            <Button className="bg-[#6e2ea8]">
+            <Button className="bg-[rgb(37, 99, 235)]">
               <CreditCard className="w-4 h-4 mr-2" />
               Open POS
             </Button>
           </Link>
-          <Button className="bg-[#6e2ea8]" onClick={() => { setSelectedSize(null); setShowSizeModal(true); }}>
+          <Button className="bg-[rgb(37, 99, 235)]" onClick={() => { setSelectedSize(null); setShowSizeModal(true); }}>
             <Plus className="w-4 h-4 mr-2" />
             Add Size
           </Button>
@@ -485,7 +485,7 @@ const AdminStorage = () => {
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
-                <Package className="w-5 h-5 text-[#6e2ea8]" />
+                <Package className="w-5 h-5 text-[rgb(37, 99, 235)]" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Total Units</p>
@@ -544,7 +544,7 @@ const AdminStorage = () => {
           </div>
           <div className="w-full bg-gray-200 rounded-full h-3">
             <div 
-              className="bg-gradient-to-r from-[#6e2ea8] to-[#e63950] h-3 rounded-full transition-all"
+              className="bg-gradient-to-r from-[rgb(37, 99, 235)] to-[#e63950] h-3 rounded-full transition-all"
               style={{ width: `${stats?.occupancy_rate || 0}%` }}
             />
           </div>
@@ -556,7 +556,7 @@ const AdminStorage = () => {
         <button
           onClick={() => setActiveTab('overview')}
           className={`px-4 py-2 font-medium transition-colors ${
-            activeTab === 'overview' ? 'border-b-2 border-[#6e2ea8] text-[#6e2ea8]' : 'text-gray-500'
+            activeTab === 'overview' ? 'border-b-2 border-[rgb(37, 99, 235)] text-[rgb(37, 99, 235)]' : 'text-gray-500'
           }`}
         >
           Unit Sizes
@@ -564,7 +564,7 @@ const AdminStorage = () => {
         <button
           onClick={() => setActiveTab('rentals')}
           className={`px-4 py-2 font-medium transition-colors ${
-            activeTab === 'rentals' ? 'border-b-2 border-[#6e2ea8] text-[#6e2ea8]' : 'text-gray-500'
+            activeTab === 'rentals' ? 'border-b-2 border-[rgb(37, 99, 235)] text-[rgb(37, 99, 235)]' : 'text-gray-500'
           }`}
         >
           Rentals ({rentals.length})
@@ -580,7 +580,7 @@ const AdminStorage = () => {
                 <Warehouse className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No storage sizes yet</h3>
                 <p className="text-gray-500 mb-4">Create your first storage unit size to get started</p>
-                <Button onClick={() => { setSelectedSize(null); setShowSizeModal(true); }} className="bg-[#6e2ea8]">
+                <Button onClick={() => { setSelectedSize(null); setShowSizeModal(true); }} className="bg-[rgb(37, 99, 235)]">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Storage Size
                 </Button>
@@ -589,7 +589,7 @@ const AdminStorage = () => {
           ) : (
             sizes.map((size) => (
               <Card key={size.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <CardHeader className="bg-gradient-to-r from-[#6e2ea8] to-[#2d5a8f] text-white">
+                <CardHeader className="bg-gradient-to-r from-[rgb(37, 99, 235)] to-[#2d5a8f] text-white">
                   <div className="flex justify-between items-start">
                     <div>
                       <CardTitle className="text-2xl">{size.name}</CardTitle>

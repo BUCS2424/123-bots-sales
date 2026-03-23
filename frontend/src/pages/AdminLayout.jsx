@@ -433,10 +433,10 @@ const AdminLayout = () => {
 
   // Section colors and titles
   const sectionConfig = {
-    pawn: { title: 'Cart Dashboard', color: 'from-amber-500 to-amber-600', icon: Store },
-    storage: { title: 'STORAGE', color: 'from-[#6e2ea8] to-[#8b3db8]', icon: Warehouse },
-    rv: { title: 'RV CENTER', color: 'from-[#6e2ea8] to-[#8b3db8]', icon: Truck },
-    hr: { title: 'HUMAN RESOURCES', color: 'from-purple-600 to-purple-700', icon: Briefcase },
+    pawn: { title: 'Cart Dashboard', color: 'from-blue-600 to-blue-700', icon: Store },
+    storage: { title: 'STORAGE', color: 'from-blue-600 to-blue-700', icon: Warehouse },
+    rv: { title: 'RV CENTER', color: 'from-blue-600 to-blue-700', icon: Truck },
+    hr: { title: 'HUMAN RESOURCES', color: 'from-blue-600 to-blue-700', icon: Briefcase },
   };
 
   const toggleSection = (sectionId) => {
@@ -518,7 +518,7 @@ const AdminLayout = () => {
       if (!featureFlagsLoaded) {
         return (
           <div className="flex items-center justify-center min-h-[300px]" data-testid="chat-feature-flags-loading">
-            <div className="animate-spin w-8 h-8 border-4 border-[#6e2ea8] border-t-transparent rounded-full"></div>
+            <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full"></div>
           </div>
         );
       }
@@ -589,7 +589,7 @@ const AdminLayout = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="animate-spin w-8 h-8 border-4 border-[#6e2ea8] border-t-transparent rounded-full"></div>
+        <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -641,10 +641,10 @@ const AdminLayout = () => {
           <p className="text-gray-600 mb-4">
             You've been inactive. The screen will go to sleep in:
           </p>
-          <div className="text-5xl font-bold text-[#6e2ea8] mb-6">{remainingSeconds}s</div>
+          <div className="text-5xl font-bold text-blue-600 mb-6">{remainingSeconds}s</div>
           <Button 
             onClick={dismissWarning}
-            className="w-full bg-gradient-to-r from-[#6e2ea8] to-[#b9893d] hover:opacity-90 text-white"
+            className="w-full bg-gradient-to-r from-blue-600 to-green-500 hover:opacity-90 text-white"
             data-testid="stay-active-button"
           >
             Stay Active
@@ -663,11 +663,11 @@ const AdminLayout = () => {
       <InactivityWarningModal />
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 bg-gradient-to-b from-[#1a1625] to-[#2d2438] text-white transition-all duration-300 hidden lg:flex flex-col ${
+      <aside className={`fixed inset-y-0 left-0 z-50 bg-gradient-to-b from-[#0a1929] to-[#0d2847] text-white transition-all duration-300 hidden lg:flex flex-col ${
         sidebarOpen ? 'w-64' : 'w-20'
       }`}>
         {/* Section Header */}
-        <div className={`h-16 flex items-center justify-between px-4 border-b border-white/10 bg-gradient-to-r from-[#6e2ea8] to-[#8b3db8] flex-shrink-0`}>
+        <div className={`h-16 flex items-center justify-between px-4 border-b border-white/10 bg-gradient-to-r from-blue-600 to-green-500 flex-shrink-0`}>
           {sidebarOpen ? (
             <div className="flex items-center gap-2">
               {React.createElement(sectionConfig[currentSection].icon, { className: "w-6 h-6" })}
@@ -687,7 +687,7 @@ const AdminLayout = () => {
         {/* Navigation */}
         <nav className="p-4 space-y-1 overflow-y-auto flex-1 pb-4">
           {menuSections.map((section) => {
-            const activeColor = 'bg-gradient-to-r from-[#6e2ea8] to-[#8b3db8]';
+            const activeColor = 'bg-gradient-to-r from-blue-600 to-green-500';
             return (
             <div key={section.id}>
               {section.type === 'single' ? (
@@ -695,7 +695,7 @@ const AdminLayout = () => {
                   to={section.path}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                     isActive(section.path)
-                      ? `${activeColor} text-white shadow-lg shadow-[#6e2ea8]/30`
+                      ? `${activeColor} text-white shadow-lg shadow-blue-500/30`
                       : 'text-gray-300 hover:bg-white/10 hover:text-white'
                   }`}
                 >
@@ -704,7 +704,7 @@ const AdminLayout = () => {
                     <>
                       <span className="flex-1">{section.label}</span>
                       {section.badge > 0 && (
-                        <Badge className="bg-[#b9893d] text-white text-xs">{section.badge}</Badge>
+                        <Badge className="bg-green-500 text-white text-xs">{section.badge}</Badge>
                       )}
                     </>
                   )}
@@ -730,7 +730,7 @@ const AdminLayout = () => {
                     )}
                   </button>
                   {sidebarOpen && expandedSections.includes(section.id) && (
-                    <div className="mt-1 ml-4 pl-4 border-l border-[#6e2ea8]/40 space-y-1">
+                    <div className="mt-1 ml-4 pl-4 border-l border-blue-500/40 space-y-1">
                       {section.children.map((child) => (
                         child.external ? (
                           <a
@@ -751,7 +751,7 @@ const AdminLayout = () => {
                             data-testid={`admin-sidebar-link-${child.path.replace(/\//g, '-').replace(/^-+/, '')}`}
                             className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm ${
                               isActive(child.path)
-                                ? 'bg-[#6e2ea8] text-white'
+                                ? 'bg-blue-600 text-white'
                                 : 'text-gray-400 hover:bg-white/10 hover:text-white'
                             }`}
                           >
@@ -775,14 +775,14 @@ const AdminLayout = () => {
         {/* Bottom Menu Items (Live Chat & Knowledgebase) */}
         <div className="px-4 pb-2 space-y-1 border-t border-white/10 pt-3">
           {bottomMenuItems.map((item) => {
-            const activeColor = 'bg-gradient-to-r from-[#6e2ea8] to-[#8b3db8]';
+            const activeColor = 'bg-gradient-to-r from-blue-600 to-green-500';
             return (
               <Link
                 key={item.id}
                 to={item.path}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                   isActive(item.path)
-                    ? `${activeColor} text-white shadow-lg shadow-[#6e2ea8]/30`
+                    ? `${activeColor} text-white shadow-lg shadow-blue-500/30`
                     : 'text-gray-300 hover:bg-white/10 hover:text-white'
                 }`}
               >
@@ -797,7 +797,7 @@ const AdminLayout = () => {
         <div className="p-4 border-t border-white/10 flex-shrink-0">
           {sidebarOpen ? (
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#6e2ea8] to-[#b9893d] rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-green-500 rounded-full flex items-center justify-center">
                 {user?.name?.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
@@ -806,7 +806,7 @@ const AdminLayout = () => {
               </div>
             </div>
           ) : (
-            <div className="w-10 h-10 bg-gradient-to-br from-[#6e2ea8] to-[#b9893d] rounded-full flex items-center justify-center mx-auto">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-green-500 rounded-full flex items-center justify-center mx-auto">
               {user?.name?.charAt(0).toUpperCase()}
             </div>
           )}
@@ -817,8 +817,8 @@ const AdminLayout = () => {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="fixed inset-0 bg-black/50" onClick={() => setMobileMenuOpen(false)} />
-          <aside className="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-[#1a1625] to-[#2d2438] text-white z-50 flex flex-col">
-            <div className="h-16 flex items-center justify-between px-4 border-b border-white/10 bg-gradient-to-r from-[#6e2ea8] to-[#8b3db8]">
+          <aside className="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-[#0a1929] to-[#0d2847] text-white z-50 flex flex-col">
+            <div className="h-16 flex items-center justify-between px-4 border-b border-white/10 bg-gradient-to-r from-blue-600 to-green-500">
               <img
                 src="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png"
                 alt="APS"
@@ -837,14 +837,14 @@ const AdminLayout = () => {
                       onClick={() => setMobileMenuOpen(false)}
                       className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                         isActive(section.path)
-                          ? 'bg-[#6e2ea8] text-white'
+                          ? 'bg-blue-600 text-white'
                           : 'text-gray-300 hover:bg-white/10 hover:text-white'
                       }`}
                     >
                       <section.icon className="w-5 h-5 flex-shrink-0" />
                       <span className="flex-1">{section.label}</span>
                       {section.badge > 0 && (
-                        <Badge className="bg-red-500 text-white text-xs">{section.badge}</Badge>
+                        <Badge className="bg-green-500 text-white text-xs">{section.badge}</Badge>
                       )}
                     </Link>
                   ) : (
@@ -887,14 +887,14 @@ const AdminLayout = () => {
                                 onClick={() => setMobileMenuOpen(false)}
                                 className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm ${
                                   isActive(child.path)
-                                    ? 'bg-[#6e2ea8] text-white'
+                                    ? 'bg-blue-600 text-white'
                                     : 'text-gray-400 hover:bg-white/10 hover:text-white'
                                 }`}
                               >
                                 <child.icon className="w-4 h-4 flex-shrink-0" />
                                 <span className="flex-1">{child.label}</span>
                                 {child.badge > 0 && (
-                                  <Badge className="bg-[#b9893d] text-white text-xs px-1.5">{child.badge}</Badge>
+                                  <Badge className="bg-green-500 text-white text-xs px-1.5">{child.badge}</Badge>
                                 )}
                               </Link>
                             )
@@ -915,7 +915,7 @@ const AdminLayout = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                     isActive(item.path)
-                      ? 'bg-[#6e2ea8] text-white'
+                      ? 'bg-blue-600 text-white'
                       : 'text-gray-300 hover:bg-white/10 hover:text-white'
                   }`}
                 >
@@ -927,7 +927,7 @@ const AdminLayout = () => {
             {/* Mobile User Info */}
             <div className="p-4 border-t border-white/10">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-[#6e2ea8] to-[#b9893d] rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-green-500 rounded-full flex items-center justify-center">
                   {user?.name?.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -973,7 +973,7 @@ const AdminLayout = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2 p-1.5 hover:bg-gray-100 rounded-lg" data-testid="profile-dropdown">
-                  <div className="w-8 h-8 bg-gradient-to-br from-[#6e2ea8] to-[#b9893d] rounded-full flex items-center justify-center text-white text-sm font-medium">
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-green-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
                     {user?.name?.charAt(0).toUpperCase()}
                   </div>
                   <ChevronDown className="w-4 h-4 text-gray-500" />
@@ -986,7 +986,7 @@ const AdminLayout = () => {
                 </div>
                 {user?.role === 'super_admin' && (
                   <DropdownMenuItem asChild>
-                    <Link to="/dev/settings" className="flex items-center gap-2 cursor-pointer text-[#6e2ea8]">
+                    <Link to="/dev/settings" className="flex items-center gap-2 cursor-pointer text-blue-600">
                       <Code className="w-4 h-4" />
                       Dev Settings
                     </Link>

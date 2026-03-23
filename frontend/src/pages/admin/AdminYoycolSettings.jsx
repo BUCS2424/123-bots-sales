@@ -147,7 +147,7 @@ const AdminYoycolSettings = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64" data-testid="yoycol-settings-loading">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -221,7 +221,7 @@ const AdminYoycolSettings = () => {
             <Button
               onClick={onSave}
               disabled={saving}
-              className="bg-[#6e2ea8] hover:bg-[#5a238a]"
+              className="bg-[rgb(37, 99, 235)] hover:bg-[#5a238a]"
               data-testid="yoycol-save-credentials-button"
             >
               {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />} Save Credentials

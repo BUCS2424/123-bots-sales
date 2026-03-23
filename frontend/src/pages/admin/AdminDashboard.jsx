@@ -126,11 +126,11 @@ const AdminDashboard = () => {
                 <p className="text-2xl font-bold text-gray-900">{stats?.total_orders || 0}</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <ShoppingCart className="w-6 h-6 text-[#6e2ea8]" />
+                <ShoppingCart className="w-6 h-6 text-[rgb(37, 99, 235)]" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm">
-              <span className="text-[#6e2ea8] flex items-center">
+              <span className="text-[rgb(37, 99, 235)] flex items-center">
                 <Clock className="w-4 h-4 mr-1" />
                 {stats?.pending_orders || 0} pending
               </span>

@@ -325,7 +325,7 @@ const AdminBannerSettings = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -336,7 +336,7 @@ const AdminBannerSettings = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <Image className="w-8 h-8 text-[#6e2ea8]" />
+            <Image className="w-8 h-8 text-[rgb(37, 99, 235)]" />
             Banner & Display Settings
           </h1>
           <p className="text-gray-500">Manage hero section and homepage banners</p>
@@ -468,7 +468,7 @@ const AdminBannerSettings = () => {
             <Button 
               onClick={saveSettings} 
               disabled={saving}
-              className="bg-[#6e2ea8] hover:bg-[#a01830]"
+              className="bg-[rgb(37, 99, 235)] hover:bg-[#a01830]"
               data-testid="save-banner-settings-btn"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
@@ -614,7 +614,7 @@ const AdminBannerSettings = () => {
 
           <Button 
             onClick={addBanner} 
-            className="w-full bg-[#6e2ea8] hover:bg-[#152d4a]"
+            className="w-full bg-[rgb(37, 99, 235)] hover:bg-[#152d4a]"
             disabled={!newBanner.image_url || settings.banners.length >= 5}
             data-testid="add-banner-btn"
           >
@@ -688,7 +688,7 @@ const AdminBannerSettings = () => {
                         href={banner.link_url} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-xs text-[#6e2ea8] hover:underline flex items-center gap-1"
+                        className="text-xs text-[rgb(37, 99, 235)] hover:underline flex items-center gap-1"
                       >
                         <ExternalLink className="w-3 h-3" />
                         {banner.link_url}

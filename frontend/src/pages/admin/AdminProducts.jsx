@@ -352,7 +352,7 @@ const AdminProducts = () => {
 
           <Button
             onClick={handleAddProduct}
-            className="bg-[#6e2ea8] hover:bg-[#552483] text-white"
+            className="bg-[rgb(37, 99, 235)] hover:bg-[#552483] text-white"
             data-testid="add-product-btn"
           >
             <Plus className="w-4 h-4 mr-2" /> Add New Product
@@ -487,7 +487,7 @@ const AdminProducts = () => {
             </Button>
 
             <p className="text-sm text-gray-500" data-testid="products-viewing-count">
-              VIEWING ALL PRODUCTS <button className="text-[#6e2ea8] hover:underline ml-1" onClick={handleRefresh} data-testid="refresh-products-btn">{refreshing ? 'REFRESHING...' : 'REFRESH'}</button>
+              VIEWING ALL PRODUCTS <button className="text-[rgb(37, 99, 235)] hover:underline ml-1" onClick={handleRefresh} data-testid="refresh-products-btn">{refreshing ? 'REFRESHING...' : 'REFRESH'}</button>
             </p>
           </div>
         </CardContent>
@@ -498,7 +498,7 @@ const AdminProducts = () => {
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin w-8 h-8 border-4 border-[#6e2ea8] border-t-transparent rounded-full" />
+              <div className="animate-spin w-8 h-8 border-4 border-[rgb(37, 99, 235)] border-t-transparent rounded-full" />
             </div>
           ) : filteredProducts.length > 0 ? (
             <div className="divide-y" data-testid="admin-products-list">
@@ -610,7 +610,7 @@ const AdminProducts = () => {
               <p className="text-gray-500">No products found</p>
               <Button 
                 onClick={handleAddProduct}
-                className="mt-4 bg-[#6e2ea8] hover:bg-[#a01830]"
+                className="mt-4 bg-[rgb(37, 99, 235)] hover:bg-[#a01830]"
                 data-testid="add-first-product-btn"
               >
                 <Plus className="w-4 h-4 mr-2" /> Add Your First Product

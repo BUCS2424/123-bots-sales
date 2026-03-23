@@ -122,7 +122,7 @@ const AdminCustomers = () => {
         <Button
           onClick={handleCreateTestCustomer}
           disabled={creatingTestCustomer}
-          className="bg-[#6e2ea8] hover:bg-[#5c2591] text-white"
+          className="bg-[rgb(37, 99, 235)] hover:bg-[#5c2591] text-white"
           data-testid="create-test-customer-button"
         >
           <UserPlus className="w-4 h-4 mr-2" />
@@ -139,7 +139,7 @@ const AdminCustomers = () => {
                 <p className="text-sm text-gray-500">Total Customers</p>
                 <p className="text-2xl font-bold">{customers.length}</p>
               </div>
-              <Users className="w-10 h-10 text-[#6e2ea8]/20" />
+              <Users className="w-10 h-10 text-[rgb(37, 99, 235)]/20" />
             </div>
           </CardContent>
         </Card>
@@ -152,7 +152,7 @@ const AdminCustomers = () => {
                   ${customers.reduce((sum, c) => sum + (c.total_spent || 0), 0).toLocaleString()}
                 </p>
               </div>
-              <DollarSign className="w-10 h-10 text-[#6e2ea8]/20" />
+              <DollarSign className="w-10 h-10 text-[rgb(37, 99, 235)]/20" />
             </div>
           </CardContent>
         </Card>
@@ -165,7 +165,7 @@ const AdminCustomers = () => {
                   {customers.reduce((sum, c) => sum + (c.total_orders || 0), 0)}
                 </p>
               </div>
-              <ShoppingBag className="w-10 h-10 text-[#6e2ea8]/20" />
+              <ShoppingBag className="w-10 h-10 text-[rgb(37, 99, 235)]/20" />
             </div>
           </CardContent>
         </Card>
@@ -191,7 +191,7 @@ const AdminCustomers = () => {
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin w-8 h-8 border-4 border-[#6e2ea8] border-t-transparent rounded-full" />
+              <div className="animate-spin w-8 h-8 border-4 border-[rgb(37, 99, 235)] border-t-transparent rounded-full" />
             </div>
           ) : filteredCustomers.length > 0 ? (
             <div className="overflow-x-auto">
@@ -211,7 +211,7 @@ const AdminCustomers = () => {
                     <tr key={customer.id} className="border-b hover:bg-gray-50">
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-[#6e2ea8] rounded-full flex items-center justify-center text-white font-medium">
+                          <div className="w-10 h-10 bg-[rgb(37, 99, 235)] rounded-full flex items-center justify-center text-white font-medium">
                             {customer.name?.charAt(0).toUpperCase()}
                           </div>
                           <span className="font-medium">{customer.name}</span>

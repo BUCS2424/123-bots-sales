@@ -202,7 +202,7 @@ const StorageCustomerDetail = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -229,7 +229,7 @@ const StorageCustomerDetail = () => {
             <ArrowLeft className="w-4 h-4 mr-1" /> Back
           </Button>
           <div className="flex items-center gap-3">
-            <div className="w-14 h-14 bg-gradient-to-br from-[#6e2ea8] to-[#e63950] rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg">
+            <div className="w-14 h-14 bg-gradient-to-br from-[rgb(37, 99, 235)] to-[#e63950] rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg">
               {customer.name?.charAt(0).toUpperCase()}
             </div>
             <div>
@@ -305,7 +305,7 @@ const StorageCustomerDetail = () => {
                       className="h-8"
                     />
                   ) : (
-                    <a href={`mailto:${customer.email}`} className="text-[#6e2ea8] hover:underline">{customer.email}</a>
+                    <a href={`mailto:${customer.email}`} className="text-[rgb(37, 99, 235)] hover:underline">{customer.email}</a>
                   )}
 
                   <span className="text-gray-500 font-medium">Phone</span>
@@ -387,7 +387,7 @@ const StorageCustomerDetail = () => {
                     <Button variant="outline" className="flex-1" onClick={() => { setEditMode(false); setFormData(customer); }}>
                       Cancel
                     </Button>
-                    <Button className="flex-1 bg-[#6e2ea8] hover:bg-[#a01830]" onClick={handleSave}>
+                    <Button className="flex-1 bg-[rgb(37, 99, 235)] hover:bg-[#a01830]" onClick={handleSave}>
                       Save Changes
                     </Button>
                   </div>
@@ -446,7 +446,7 @@ const StorageCustomerDetail = () => {
                           {pastRentals.slice(0, 3).map((rental) => (
                             <tr key={rental.id} className="border-t">
                               <td className="py-2">
-                                <span className="text-[#6e2ea8]">#{rental.unit_name || rental.unit_id?.slice(-4)}</span>
+                                <span className="text-[rgb(37, 99, 235)]">#{rental.unit_name || rental.unit_id?.slice(-4)}</span>
                               </td>
                               <td className="py-2 text-gray-600">
                                 {rental.end_date ? new Date(rental.end_date).toLocaleDateString() : '—'}
@@ -474,7 +474,7 @@ const StorageCustomerDetail = () => {
                     <Button 
                       variant="link" 
                       size="sm" 
-                      className="text-[#6e2ea8]"
+                      className="text-[rgb(37, 99, 235)]"
                       onClick={() => setShowPastRentals(!showPastRentals)}
                     >
                       {showPastRentals ? 'Hide' : 'Show'} Past Rentals
@@ -493,7 +493,7 @@ const StorageCustomerDetail = () => {
                         <div className="flex items-center justify-between p-3 bg-gray-50">
                           <div className="flex items-center gap-2">
                             <ChevronDown className="w-4 h-4 text-gray-400" />
-                            <span className="text-[#6e2ea8] font-medium">#{rental.unit_name || rental.unit_id?.slice(-4)}</span>
+                            <span className="text-[rgb(37, 99, 235)] font-medium">#{rental.unit_name || rental.unit_id?.slice(-4)}</span>
                             <span className="text-gray-600">• {rental.size || '10x10x10'} • Self-Storage Unit</span>
                           </div>
                           <Button variant="outline" size="sm">Edit Rental</Button>
@@ -593,7 +593,7 @@ const StorageCustomerDetail = () => {
               </p>
 
               {/* Upload Section */}
-              <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center hover:border-[#6e2ea8] transition-colors">
+              <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center hover:border-[rgb(37, 99, 235)] transition-colors">
                 <input
                   ref={dlFileInputRef}
                   type="file"
@@ -608,7 +608,7 @@ const StorageCustomerDetail = () => {
                 
                 {uploadingDL ? (
                   <div className="py-4">
-                    <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8] mx-auto mb-2" />
+                    <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)] mx-auto mb-2" />
                     <p className="text-gray-500">Uploading image...</p>
                   </div>
                 ) : (
@@ -618,7 +618,7 @@ const StorageCustomerDetail = () => {
                     <Button 
                       variant="outline" 
                       onClick={() => dlFileInputRef.current?.click()}
-                      className="border-[#6e2ea8] text-[#6e2ea8] hover:bg-[#6e2ea8] hover:text-white"
+                      className="border-[rgb(37, 99, 235)] text-[rgb(37, 99, 235)] hover:bg-[rgb(37, 99, 235)] hover:text-white"
                     >
                       <Camera className="w-4 h-4 mr-2" /> Choose Image
                     </Button>
@@ -731,7 +731,7 @@ const StorageCustomerDetail = () => {
                   }))
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-4 pb-4 border-b last:border-0">
-                    <div className="w-2 h-2 bg-[#6e2ea8] rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-[rgb(37, 99, 235)] rounded-full mt-2"></div>
                     <div className="flex-1">
                       <p className="font-medium text-gray-900">{item.action}</p>
                       <p className="text-sm text-gray-500">{item.date} by {item.user}</p>

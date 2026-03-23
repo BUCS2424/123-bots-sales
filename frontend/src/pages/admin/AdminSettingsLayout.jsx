@@ -147,7 +147,7 @@ const AdminSettingsLayout = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin w-8 h-8 border-4 border-[#6e2ea8] border-t-transparent rounded-full"></div>
+        <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -174,10 +174,10 @@ const AdminSettingsLayout = () => {
       {/* Sidebar */}
       <aside className="w-72 bg-white border-r border-gray-200 flex flex-col">
         {/* Header */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200 bg-gradient-to-r from-[#6e2ea8] to-[#e63950]">
+        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200 bg-gradient-to-r from-[#0a1929] to-[#0d2847]">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/20 rounded-lg">
-              <Settings className="w-5 h-5 text-white" />
+            <div className="p-2 bg-green-500/20 rounded-lg">
+              <Settings className="w-5 h-5 text-green-400" />
             </div>
             <span className="font-bold text-white">ADMIN SETTINGS</span>
           </div>
@@ -186,13 +186,15 @@ const AdminSettingsLayout = () => {
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto p-4">
           {menuSections.map((section) => {
-            // Define colors for specific sections
+            // Define colors for specific sections - blue/green theme
             const sectionColors = {
-              pawn: { bg: 'bg-amber-500', text: 'text-amber-600', hover: 'hover:bg-amber-50', activeBg: 'bg-amber-500' },
-              storage: { bg: 'bg-[#6e2ea8]', text: 'text-[#6e2ea8]', hover: 'hover:bg-red-50', activeBg: 'bg-[#6e2ea8]' },
-              rv: { bg: 'bg-emerald-600', text: 'text-emerald-600', hover: 'hover:bg-emerald-50', activeBg: 'bg-emerald-600' },
+              overview: { bg: 'bg-blue-600', text: 'text-blue-600', hover: 'hover:bg-blue-50', activeBg: 'bg-blue-600', border: '#2563eb' },
+              business: { bg: 'bg-green-600', text: 'text-green-600', hover: 'hover:bg-green-50', activeBg: 'bg-green-600', border: '#16a34a' },
+              pawn: { bg: 'bg-teal-600', text: 'text-teal-600', hover: 'hover:bg-teal-50', activeBg: 'bg-teal-600', border: '#0d9488' },
+              website: { bg: 'bg-cyan-600', text: 'text-cyan-600', hover: 'hover:bg-cyan-50', activeBg: 'bg-cyan-600', border: '#0891b2' },
+              system: { bg: 'bg-slate-600', text: 'text-slate-600', hover: 'hover:bg-slate-50', activeBg: 'bg-slate-600', border: '#475569' },
             };
-            const colors = sectionColors[section.id] || { bg: 'bg-[#6e2ea8]', text: 'text-gray-500', hover: 'hover:bg-gray-100', activeBg: 'bg-[#6e2ea8]' };
+            const colors = sectionColors[section.id] || { bg: 'bg-blue-600', text: 'text-gray-500', hover: 'hover:bg-gray-100', activeBg: 'bg-blue-600', border: '#2563eb' };
             
             return (
             <div key={section.id} className="mb-4">
@@ -209,7 +211,7 @@ const AdminSettingsLayout = () => {
               </button>
               
               {expandedSections.includes(section.id) && (
-                <div className="mt-2 space-y-1 ml-2 border-l-2 pl-2" style={{ borderColor: sectionColors[section.id]?.bg ? (section.id === 'pawn' ? '#f59e0b' : section.id === 'storage' ? '#6e2ea8' : section.id === 'rv' ? '#059669' : '#e5e7eb') : '#e5e7eb' }}>
+                <div className="mt-2 space-y-1 ml-2 border-l-2 pl-2" style={{ borderColor: colors.border }}>
                   {section.children.map((item) => (
                     <Link
                       key={item.path}
@@ -272,7 +274,7 @@ const AdminSettingsLayout = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2 p-1.5 hover:bg-gray-100 rounded-lg" data-testid="profile-dropdown">
-                  <div className="w-8 h-8 bg-[#6e2ea8] rounded-full flex items-center justify-center text-white text-sm font-medium">
+                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
                     {user?.name?.charAt(0).toUpperCase()}
                   </div>
                   <ChevronDown className="w-4 h-4 text-gray-500" />
@@ -285,7 +287,7 @@ const AdminSettingsLayout = () => {
                 </div>
                 {user?.role === 'super_admin' && (
                   <DropdownMenuItem asChild>
-                    <Link to="/dev/settings" className="flex items-center gap-2 cursor-pointer text-purple-600">
+                    <Link to="/dev/settings" className="flex items-center gap-2 cursor-pointer text-blue-600">
                       <Code className="w-4 h-4" />
                       Dev Settings
                     </Link>

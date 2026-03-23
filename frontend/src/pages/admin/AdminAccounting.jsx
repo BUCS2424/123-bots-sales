@@ -76,7 +76,7 @@ const AdminAccounting = ({ initialTab = 'daily' }) => {
   if (loading && !daily) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -86,7 +86,7 @@ const AdminAccounting = ({ initialTab = 'daily' }) => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <BarChart3 className="w-7 h-7 text-[#6e2ea8]" />
+            <BarChart3 className="w-7 h-7 text-[rgb(37, 99, 235)]" />
             Accounting
           </h1>
           <p className="text-gray-500 text-sm">Alabama Retail &amp; Storage Financial Reports</p>
@@ -234,7 +234,7 @@ const AdminAccounting = ({ initialTab = 'daily' }) => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      <ProgressBar label="Active" count={kpis.active_contracts} total={kpis.total_contracts} color="bg-[#6e2ea8]" />
+                      <ProgressBar label="Active" count={kpis.active_contracts} total={kpis.total_contracts} color="bg-[rgb(37, 99, 235)]" />
                       <ProgressBar label="Paid / Redeemed" count={kpis.paid_contracts} total={kpis.total_contracts} color="bg-green-500" />
                       <ProgressBar label="Defaulted" count={kpis.defaulted_contracts} total={kpis.total_contracts} color="bg-red-500" />
                     </div>
@@ -444,7 +444,7 @@ const DateNav = ({ label, onPrev, onNext, testId }) => (
 );
 
 const colorMap = {
-  blue: { bg: 'bg-blue-100', text: 'text-[#6e2ea8]' },
+  blue: { bg: 'bg-blue-100', text: 'text-[rgb(37, 99, 235)]' },
   green: { bg: 'bg-green-100', text: 'text-green-600' },
   red: { bg: 'bg-red-100', text: 'text-red-600' },
   purple: { bg: 'bg-purple-100', text: 'text-purple-600' },

@@ -90,7 +90,7 @@ const AdminBusinessSettings = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -101,12 +101,12 @@ const AdminBusinessSettings = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <Building2 className="w-7 h-7 text-[#6e2ea8]" />
+            <Building2 className="w-7 h-7 text-[rgb(37, 99, 235)]" />
             Business Information
           </h1>
           <p className="text-gray-500 mt-1">Manage your business details - changes apply site-wide</p>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="bg-[#6e2ea8] hover:bg-[#5a2490]">
+        <Button onClick={handleSave} disabled={saving} className="bg-[rgb(37, 99, 235)] hover:bg-[#5a2490]">
           {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
           Save Changes
         </Button>
@@ -117,7 +117,7 @@ const AdminBusinessSettings = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-[#6e2ea8]" />
+              <Building2 className="w-5 h-5 text-[rgb(37, 99, 235)]" />
               Basic Information
             </CardTitle>
             <CardDescription>Your business name and contact details</CardDescription>
@@ -194,7 +194,7 @@ const AdminBusinessSettings = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-[#6e2ea8]" />
+              <MapPin className="w-5 h-5 text-[rgb(37, 99, 235)]" />
               Location
             </CardTitle>
             <CardDescription>Business address information</CardDescription>
@@ -250,7 +250,7 @@ const AdminBusinessSettings = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <Clock className="w-5 h-5 text-[#6e2ea8]" />
+              <Clock className="w-5 h-5 text-[rgb(37, 99, 235)]" />
               Business Hours
             </CardTitle>
             <CardDescription>Set your operating hours</CardDescription>
@@ -283,7 +283,7 @@ const AdminBusinessSettings = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <Eye className="w-5 h-5 text-[#6e2ea8]" />
+              <Eye className="w-5 h-5 text-[rgb(37, 99, 235)]" />
               Display Settings
             </CardTitle>
             <CardDescription>Control what information is shown publicly</CardDescription>

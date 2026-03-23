@@ -133,7 +133,7 @@ const AdminEditProfile = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <User className="w-8 h-8 text-[#6e2ea8]" />
+            <User className="w-8 h-8 text-[rgb(37, 99, 235)]" />
             Edit Profile
           </h1>
           <p className="text-gray-500">Update your personal information and password</p>
@@ -146,11 +146,11 @@ const AdminEditProfile = () => {
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <div className="relative">
               <Avatar className="w-24 h-24">
-                <AvatarFallback className="bg-[#6e2ea8] text-white text-3xl">
+                <AvatarFallback className="bg-[rgb(37, 99, 235)] text-white text-3xl">
                   {user?.name?.charAt(0).toUpperCase() || 'U'}
                 </AvatarFallback>
               </Avatar>
-              <button className="absolute bottom-0 right-0 p-2 bg-[#6e2ea8] text-white rounded-full hover:bg-[#a01830] transition-colors">
+              <button className="absolute bottom-0 right-0 p-2 bg-[rgb(37, 99, 235)] text-white rounded-full hover:bg-[#a01830] transition-colors">
                 <Camera className="w-4 h-4" />
               </button>
             </div>
@@ -219,7 +219,7 @@ const AdminEditProfile = () => {
             <Button 
               type="submit" 
               disabled={saving}
-              className="bg-[#6e2ea8] hover:bg-[#a01830]"
+              className="bg-[rgb(37, 99, 235)] hover:bg-[#a01830]"
               data-testid="save-profile-btn"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
@@ -309,7 +309,7 @@ const AdminEditProfile = () => {
               type="submit" 
               disabled={saving || !profile.current_password || !profile.new_password}
               variant="outline"
-              className="border-[#6e2ea8] text-[#6e2ea8] hover:bg-[#6e2ea8] hover:text-white"
+              className="border-[rgb(37, 99, 235)] text-[rgb(37, 99, 235)] hover:bg-[rgb(37, 99, 235)] hover:text-white"
               data-testid="change-password-btn"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Lock className="w-4 h-4 mr-2" />}

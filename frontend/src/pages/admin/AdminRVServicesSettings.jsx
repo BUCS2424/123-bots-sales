@@ -52,7 +52,7 @@ const AdminRVServicesSettings = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <Wrench className="w-8 h-8 text-[#6e2ea8]" />
+            <Wrench className="w-8 h-8 text-[rgb(37, 99, 235)]" />
             RV Services
           </h1>
           <p className="text-gray-500">Configure available repair and restoration services</p>
@@ -60,7 +60,7 @@ const AdminRVServicesSettings = () => {
         <Button 
           onClick={saveSettings} 
           disabled={saving}
-          className="bg-[#6e2ea8] hover:bg-[#a01830]"
+          className="bg-[rgb(37, 99, 235)] hover:bg-[#a01830]"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
           Save Services

@@ -151,7 +151,7 @@ const AdminSettingsDashboard = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64" data-testid="admin-settings-dashboard-loading">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -161,7 +161,7 @@ const AdminSettingsDashboard = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-            <BarChart3 className="w-8 h-8 text-[#6e2ea8]" />
+            <BarChart3 className="w-8 h-8 text-[rgb(37, 99, 235)]" />
             Admin Settings Dashboard
           </h1>
           <p className="text-gray-500">Catalog operations overview</p>
@@ -172,7 +172,7 @@ const AdminSettingsDashboard = () => {
         </div>
       </div>
 
-      <Card className="bg-gradient-to-r from-[#6e2ea8] to-[#2d5a8f] text-white">
+      <Card className="bg-gradient-to-r from-[rgb(37, 99, 235)] to-[#2d5a8f] text-white">
         <CardContent className="py-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
             <div>
@@ -201,7 +201,7 @@ const AdminSettingsDashboard = () => {
       <Card data-testid="session-settings-card">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
-            <Timer className="w-5 h-5 text-[#6e2ea8]" />
+            <Timer className="w-5 h-5 text-[rgb(37, 99, 235)]" />
             Session Settings
           </CardTitle>
           <CardDescription>Configure admin inactivity behavior</CardDescription>
@@ -259,13 +259,13 @@ const AdminSettingsDashboard = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link to="/admin/products/new">
               <Button variant="outline" className="w-full h-auto py-4 flex flex-col gap-2" data-testid="quick-action-add-product">
-                <Package className="w-6 h-6 text-[#6e2ea8]" />
+                <Package className="w-6 h-6 text-[rgb(37, 99, 235)]" />
                 <span>Add Product</span>
               </Button>
             </Link>
             <Link to="/admin/cart/pos">
               <Button variant="outline" className="w-full h-auto py-4 flex flex-col gap-2" data-testid="quick-action-open-pos">
-                <CreditCard className="w-6 h-6 text-[#6e2ea8]" />
+                <CreditCard className="w-6 h-6 text-[rgb(37, 99, 235)]" />
                 <span>Open POS</span>
               </Button>
             </Link>
@@ -293,7 +293,7 @@ const AdminSettingsDashboard = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <Link to="/admin/settings" className="block">
-              <div className="p-4 border rounded-lg hover:border-[#6e2ea8] hover:bg-red-50 transition-all">
+              <div className="p-4 border rounded-lg hover:border-[rgb(37, 99, 235)] hover:bg-red-50 transition-all">
                 <h3 className="font-medium flex items-center gap-2">
                   <Users className="w-5 h-5 text-gray-600" />
                   Profile Settings
@@ -303,7 +303,7 @@ const AdminSettingsDashboard = () => {
             </Link>
 
             <Link to="/admin/settings/storage" className="block">
-              <div className="p-4 border rounded-lg hover:border-[#6e2ea8] hover:bg-red-50 transition-all">
+              <div className="p-4 border rounded-lg hover:border-[rgb(37, 99, 235)] hover:bg-red-50 transition-all">
                 <h3 className="font-medium flex items-center gap-2">
                   <Warehouse className="w-5 h-5 text-gray-600" />
                   Cloud Storage
@@ -313,7 +313,7 @@ const AdminSettingsDashboard = () => {
             </Link>
 
             <Link to="/admin/settings/payments" className="block">
-              <div className="p-4 border rounded-lg hover:border-[#6e2ea8] hover:bg-red-50 transition-all">
+              <div className="p-4 border rounded-lg hover:border-[rgb(37, 99, 235)] hover:bg-red-50 transition-all">
                 <h3 className="font-medium flex items-center gap-2">
                   <CreditCard className="w-5 h-5 text-gray-600" />
                   Payment Settings

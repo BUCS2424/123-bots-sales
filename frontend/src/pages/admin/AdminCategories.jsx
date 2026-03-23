@@ -441,7 +441,7 @@ const AdminCategories = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64" data-testid="categories-loading-state">
-        <div className="animate-spin w-8 h-8 border-4 border-[#6e2ea8] border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-4 border-[rgb(37, 99, 235)] border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -449,7 +449,7 @@ const AdminCategories = () => {
   return (
     <div className="space-y-4" data-testid="admin-categories-page">
       <div className="flex flex-wrap items-center gap-3">
-        <Button onClick={handleAddRootCategory} className="bg-[#6e2ea8] hover:bg-[#552483]" data-testid="add-root-category-button">
+        <Button onClick={handleAddRootCategory} className="bg-[rgb(37, 99, 235)] hover:bg-[#552483]" data-testid="add-root-category-button">
           <Plus className="w-4 h-4 mr-2" /> Add Root Category
         </Button>
         <Button variant="outline" onClick={handleAddSubcategory} data-testid="add-subcategory-button">
@@ -464,7 +464,7 @@ const AdminCategories = () => {
         <Card data-testid="categories-tree-panel">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <FolderTree className="w-5 h-5 text-[#6e2ea8]" /> Categories
+              <FolderTree className="w-5 h-5 text-[rgb(37, 99, 235)]" /> Categories
             </CardTitle>
             <CardDescription>Drag and drop items to sort</CardDescription>
 
@@ -480,9 +480,9 @@ const AdminCategories = () => {
             </div>
 
             <div className="flex items-center gap-2 text-xs pt-1">
-              <button className="text-[#6e2ea8] hover:underline" onClick={handleCollapseAll} data-testid="collapse-all-categories-button">Collapse All</button>
+              <button className="text-[rgb(37, 99, 235)] hover:underline" onClick={handleCollapseAll} data-testid="collapse-all-categories-button">Collapse All</button>
               <span className="text-gray-300">|</span>
-              <button className="text-[#6e2ea8] hover:underline" onClick={handleExpandAll} data-testid="expand-all-categories-button">Expand All</button>
+              <button className="text-[rgb(37, 99, 235)] hover:underline" onClick={handleExpandAll} data-testid="expand-all-categories-button">Expand All</button>
             </div>
           </CardHeader>
 
@@ -498,21 +498,21 @@ const AdminCategories = () => {
             <CardTitle data-testid="category-editor-title">{pageTitle}</CardTitle>
             <div className="flex items-center gap-4 border-b pt-1" data-testid="category-editor-tabs">
               <button
-                className={`pb-2 text-sm border-b-2 ${activeTab === 'general' ? 'border-[#6e2ea8] text-[#6e2ea8] font-semibold' : 'border-transparent text-gray-500'}`}
+                className={`pb-2 text-sm border-b-2 ${activeTab === 'general' ? 'border-[rgb(37, 99, 235)] text-[rgb(37, 99, 235)] font-semibold' : 'border-transparent text-gray-500'}`}
                 onClick={() => setActiveTab('general')}
                 data-testid="category-tab-general-button"
               >
                 General
               </button>
               <button
-                className={`pb-2 text-sm border-b-2 ${activeTab === 'products' ? 'border-[#6e2ea8] text-[#6e2ea8] font-semibold' : 'border-transparent text-gray-500'}`}
+                className={`pb-2 text-sm border-b-2 ${activeTab === 'products' ? 'border-[rgb(37, 99, 235)] text-[rgb(37, 99, 235)] font-semibold' : 'border-transparent text-gray-500'}`}
                 onClick={() => setActiveTab('products')}
                 data-testid="category-tab-products-button"
               >
                 Category products
               </button>
               <button
-                className={`pb-2 text-sm border-b-2 ${activeTab === 'seo' ? 'border-[#6e2ea8] text-[#6e2ea8] font-semibold' : 'border-transparent text-gray-500'}`}
+                className={`pb-2 text-sm border-b-2 ${activeTab === 'seo' ? 'border-[rgb(37, 99, 235)] text-[rgb(37, 99, 235)] font-semibold' : 'border-transparent text-gray-500'}`}
                 onClick={() => setActiveTab('seo')}
                 data-testid="category-tab-seo-button"
               >
@@ -617,7 +617,7 @@ const AdminCategories = () => {
                 </div>
 
                 <div className="flex justify-end">
-                  <Button onClick={handleSaveCategory} disabled={saving} className="bg-[#6e2ea8] hover:bg-[#552483]" data-testid="save-category-button">
+                  <Button onClick={handleSaveCategory} disabled={saving} className="bg-[rgb(37, 99, 235)] hover:bg-[#552483]" data-testid="save-category-button">
                     {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                     {editorMode === 'new' ? 'Create Category' : 'Save Category'}
                   </Button>
@@ -663,7 +663,7 @@ const AdminCategories = () => {
                   />
                 </div>
                 <div className="flex justify-end">
-                  <Button onClick={handleSaveCategory} disabled={saving} className="bg-[#6e2ea8] hover:bg-[#552483]" data-testid="save-category-seo-button">
+                  <Button onClick={handleSaveCategory} disabled={saving} className="bg-[rgb(37, 99, 235)] hover:bg-[#552483]" data-testid="save-category-seo-button">
                     {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                     Save SEO
                   </Button>

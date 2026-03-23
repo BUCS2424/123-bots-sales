@@ -194,7 +194,7 @@ const AdminAbandonedCarts = () => {
           <Button
             onClick={handleProcessCarts}
             disabled={processing}
-            className="bg-[#6e2ea8] hover:bg-[#5a2589]"
+            className="bg-[rgb(37, 99, 235)] hover:bg-[rgb(29, 78, 216)]"
             data-testid="process-carts-btn"
           >
             {processing ? (
@@ -700,7 +700,7 @@ const AdminAbandonedCarts = () => {
                 <Button variant="outline" onClick={() => setShowSettings(false)}>
                   Cancel
                 </Button>
-                <Button onClick={handleSaveSettings} className="bg-[#6e2ea8] hover:bg-[#5a2589]">
+                <Button onClick={handleSaveSettings} className="bg-[rgb(37, 99, 235)] hover:bg-[rgb(29, 78, 216)]">
                   Save Settings
                 </Button>
               </div>

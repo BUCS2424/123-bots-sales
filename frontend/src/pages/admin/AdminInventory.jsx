@@ -127,7 +127,7 @@ const AdminInventory = () => {
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin w-8 h-8 border-4 border-[#6e2ea8] border-t-transparent rounded-full" />
+              <div className="animate-spin w-8 h-8 border-4 border-[rgb(37, 99, 235)] border-t-transparent rounded-full" />
             </div>
           ) : filteredInventory.length > 0 ? (
             <div className="overflow-x-auto">

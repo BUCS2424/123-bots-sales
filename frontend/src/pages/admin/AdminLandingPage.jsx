@@ -110,7 +110,7 @@ const AdminLandingPage = () => {
       {/* Screensaver Overlay */}
       {showScreensaver && <AdminScreensaver onDismiss={handleDismissScreensaver} />}
 
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-[#6e2ea8] to-gray-900 flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-[rgb(37, 99, 235)] to-gray-900 flex flex-col">
         {/* Header */}
         <header className="p-6 flex items-center justify-between">
           <div className="flex items-center gap-4">

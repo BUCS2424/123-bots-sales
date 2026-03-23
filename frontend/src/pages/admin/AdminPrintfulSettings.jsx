@@ -195,7 +195,7 @@ const AdminPrintfulSettings = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64" data-testid="printful-settings-loading">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6e2ea8]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[rgb(37, 99, 235)]" />
       </div>
     );
   }
@@ -312,7 +312,7 @@ const AdminPrintfulSettings = () => {
             <Button
               onClick={handleConnect}
               disabled={connecting || !status.app_configured}
-              className="bg-[#6e2ea8] hover:bg-[#5a238a]"
+              className="bg-[rgb(37, 99, 235)] hover:bg-[#5a238a]"
               data-testid="printful-connect-button"
             >
               {connecting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Link2 className="w-4 h-4 mr-2" />}
