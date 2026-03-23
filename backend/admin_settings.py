@@ -280,6 +280,7 @@ class SiteSettings(BaseModel):
     site_url: str = "https://123bots.com"
     logo_url: str = "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png"
     favicon_url: str = ""
+    chatbot_icon_url: str = ""
     admin_email: str = ""
     support_email: str = "info@123bots.com"
     maintenance_mode: bool = False
@@ -332,6 +333,7 @@ def _normalized_site_settings(settings: Optional[dict] = None) -> dict:
         "site_url": raw_site_url or default_site_url,
         "logo_url": raw_logo_url or default_logo,
         "favicon_url": (data.get("favicon_url") or "").strip(),
+        "chatbot_icon_url": (data.get("chatbot_icon_url") or "").strip(),
         "admin_email": (data.get("admin_email") or "").strip(),
         "support_email": raw_support_email or "info@123bots.com",
         "maintenance_mode": bool(data.get("maintenance_mode", False)),

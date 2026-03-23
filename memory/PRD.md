@@ -39,6 +39,7 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 - [x] **CartDrawer** - Restyled with dark theme (blue accents, dark surfaces)
 - [x] **CheckoutPage** - Full restyle with dark theme (blue/green progress, dark forms)
 - [x] **Coming Soon Password Gate** - Connected to feature flags with admin-configurable on/off toggle and custom password
+- [x] **Chatbot Icon Upload** - Added to Site Information section in dev settings with drag & drop upload
 
 ### Testing Status
 - Frontend Testing: PASS (100% success rate)
