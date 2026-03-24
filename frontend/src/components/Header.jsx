@@ -48,8 +48,8 @@ const Header = () => {
       label: 'PRODUCTS',
       href: '/products',
       items: [
-        { label: 'PUDU CC1 (PRO)', href: '/products/pudu-cc1-pro' },
         { label: 'AVIDBOT KAS', href: '/products/ab-kas' },
+        { label: 'PUDU CC1 (PRO)', href: '/products/pudu-cc1-pro' },
         { label: 'PUDU MT1 MAX', href: '/products/pudu-mt1' },
         { label: 'PUDU SH1', href: '/products/pudu-sh1' },
         { label: 'CC1 DOCKING STATION', href: '/products/pudu-cc1-docking-station' },
