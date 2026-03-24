@@ -168,14 +168,14 @@ export default function CategoryLandingPage() {
                   <div className="flex items-center gap-3">
                     <Link
                       to={getProductInfoLink(category)}
-                      className="inline-flex items-center justify-center h-11 px-5 bg-[#2f3440] text-white text-[26px] font-medium"
+                      className="inline-flex items-center justify-center h-11 px-5 bg-[#2f3440] text-white text-[22px] font-medium"
                       data-testid={`category-product-info-button-${category.id}`}
                     >
                       Products Info
                     </Link>
                     <Link
                       to={getShopLink(category)}
-                      className="inline-flex items-center justify-center h-11 px-6 bg-[#3f6df2] text-white text-[28px] font-medium"
+                      className="inline-flex items-center justify-center h-11 px-6 bg-[#3f6df2] text-white text-[22px] font-medium"
                       data-testid={`category-shop-button-${category.id}`}
                     >
                       Shop
