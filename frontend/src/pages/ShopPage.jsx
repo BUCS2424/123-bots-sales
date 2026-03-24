@@ -11,6 +11,7 @@ import { toast } from '../hooks/use-toast';
 import { setSeoMetadata } from '../lib/seo';
 import { getDefaultProductInventory, getDefaultProductPrice } from '../lib/productOptions';
 import axios from 'axios';
+import Header from '../components/Header';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api/store`;
@@ -147,6 +148,8 @@ const ShopPage = () => {
 
   return (
     <div className="min-h-screen bg-bots-dark pt-28 pb-32" data-testid="shop-page">
+      <Header />
+
       {/* Wholesale Banner */}
       {isAuthenticated && isWholesale && (
         <motion.div
