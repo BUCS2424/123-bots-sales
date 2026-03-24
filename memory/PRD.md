@@ -42,6 +42,9 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 - [x] **Chatbot Icon Upload** - Added to Site Information section in dev settings with drag & drop upload
 - [x] **Header Shop Navigation** - Added `Shop` link in top bar and main navigation
 - [x] **Category Landing Page** - Created `/categories` with 5 category rows, Product Info + Shop CTAs, SEO metadata, and full route wiring
+- [x] **Location Slug Prefix Control** - Added configurable `Location URL Prefix` field in Dev Location Generator (`/api/dev/location-slug-settings` + UI save flow)
+- [x] **Location Route Compatibility Fix** - Location resolver now supports configurable prefix plus legacy aliases to prevent 404 regressions
+- [x] **Location Template Prefix Wiring** - Canonical URL and internal county/city/state links now use dynamic prefix from settings
 
 ### Testing Status
 - Frontend Testing: PASS (100% success rate)
@@ -107,3 +110,4 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 - [ ] Remove unused components (FloatingNav.jsx)
 - [ ] Upload assets to iDrive E2 bucket (currently in local public folder)
 - [ ] Add Healthcare industry page
+- [ ] Optional: expose `/sitemap-locations.xml` root-level alias (currently available at `/api/sitemap-locations.xml`)
