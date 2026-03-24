@@ -42,7 +42,6 @@ const Header = () => {
         { label: 'EDUCATION', href: '/industries/education' },
       ],
     },
-    { label: 'SHOP', href: '/shop' },
     { label: 'PARTS', href: '/shop/products?category=parts' },
     { label: 'SUPPORT', href: '/contact' },
     {
