@@ -23,6 +23,13 @@ _db = None
 US_LOCATIONS_PATH = Path("/app/backend/us_locations_data.json")
 OUTPUT_DIR = Path("/app/frontend/public/locations")
 FILENAME_PREFIX = "custom-sublimation"
+LOCATION_PREFIX_ALIASES = (
+    FILENAME_PREFIX,
+    "commercial-cleaning-robots",
+    "cleaning-robots",
+    "123bots",
+    "peptide-research-supply",
+)
 
 STATE_ABBR_MAP = {
     "alabama": "AL", "alaska": "AK", "arizona": "AZ", "arkansas": "AR", "california": "CA",
@@ -70,6 +77,26 @@ def _load_us_locations() -> dict:
 
 def _build_filename(location_slug: str) -> str:
     return f"{FILENAME_PREFIX}-{location_slug}"
+
+
+def _normalize_location_request(filename: str) -> Optional[str]:
+    normalized = filename.strip().lower()
+    if not normalized:
+        return None
+
+    if normalized.endswith(".html"):
+        normalized = normalized[:-5]
+
+    if "." in normalized:
+        return None
+
+    for prefix in LOCATION_PREFIX_ALIASES:
+        prefix_token = f"{prefix.lower()}-"
+        if normalized.startswith(prefix_token):
+            slug = normalized[len(prefix_token):]
+            return slug or None
+
+    return normalized
 
 
 async def _save_generated_page(location_name: str, location_slug: str, location_type: str, parent_state: str, file_path: Path):
@@ -148,17 +175,27 @@ async def location_preview():
 
 @public_router.get("/{filename}")
 async def serve_generated_page(filename: str):
-    if "." in filename:
+    raw_filename = filename.strip()
+    if not raw_filename:
         raise HTTPException(status_code=404, detail="Page not found")
 
-    file_path = OUTPUT_DIR / filename
-    if file_path.exists():
-        return HTMLResponse(content=file_path.read_text(encoding="utf-8"))
+    normalized_filename = raw_filename.lower()
+    file_candidates = [
+        OUTPUT_DIR / raw_filename,
+        OUTPUT_DIR / normalized_filename,
+    ]
 
-    if not filename.startswith(f"{FILENAME_PREFIX}-"):
+    if normalized_filename.endswith(".html"):
+        file_candidates.append(OUTPUT_DIR / normalized_filename[:-5])
+
+    for file_path in file_candidates:
+        if file_path.exists():
+            return HTMLResponse(content=file_path.read_text(encoding="utf-8"))
+
+    location_slug = _normalize_location_request(raw_filename)
+    if not location_slug:
         raise HTTPException(status_code=404, detail="Page not found")
 
-    location_slug = filename.replace(f"{FILENAME_PREFIX}-", "")
     data = _load_us_locations()
     hero_settings = await _get_hero_settings()
     site_settings = await _get_site_settings()

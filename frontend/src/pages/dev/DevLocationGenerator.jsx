@@ -359,7 +359,7 @@ const DevLocationGenerator = () => {
 
             <div className="border-t px-6 py-4 flex items-center justify-between gap-4">
               <a
-                href={`/locations/custom-sublimation-${stateData.slug}`}
+                href={`/locations/commercial-cleaning-robots-${stateData.slug}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-[#6e2ea8] hover:underline inline-flex items-center gap-1"
