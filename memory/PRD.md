@@ -45,6 +45,7 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 - [x] **Location Slug Prefix Control** - Added configurable `Location URL Prefix` field in Dev Location Generator (`/api/dev/location-slug-settings` + UI save flow)
 - [x] **Location Route Compatibility Fix** - Location resolver now supports configurable prefix plus legacy aliases to prevent 404 regressions
 - [x] **Location Template Prefix Wiring** - Canonical URL and internal county/city/state links now use dynamic prefix from settings
+- [x] **Location Butterfly Background Removal** - Removed legacy butterfly background/image fallbacks from location page rendering and template defaults
 
 ### Testing Status
 - Frontend Testing: PASS (100% success rate)

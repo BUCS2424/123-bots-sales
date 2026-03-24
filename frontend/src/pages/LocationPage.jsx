@@ -4,8 +4,8 @@ import axios from 'axios';
 import ChatWidget from '../components/ChatWidget';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const BACKGROUND_IMAGE = 'https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png';
-const HERO_VIDEO_DEFAULT = '/videos/butterfly_alpha.webm';
+const BACKGROUND_IMAGE = '/images/home/4-bots.jpg';
+const HERO_VIDEO_DEFAULT = '/videos/123-bots-home-background.mp4';
 const LOCATION_PREFIXES = [
   'commercial-cleaning-robots-',
   'cleaning-robots-',
@@ -49,6 +49,19 @@ const getVideoMimeType = (videoUrl) => {
   return 'video/webm';
 };
 
+const sanitizeLocationAssetUrl = (assetUrl, fallback) => {
+  const normalized = (assetUrl || '').toLowerCase();
+  if (
+    !normalized ||
+    normalized.includes('butterfly') ||
+    normalized.includes('gingerkare-emporuim') ||
+    normalized.includes('dk8ihy2p')
+  ) {
+    return fallback;
+  }
+  return assetUrl;
+};
+
 const LocationPage = () => {
   const { slug } = useParams();
   const [html, setHtml] = useState('');
@@ -67,8 +80,8 @@ const LocationPage = () => {
         if (response.data) {
           setHeroSettings(prev => ({
             ...prev,
-            hero_background_image_url: response.data.hero_background_image_url || BACKGROUND_IMAGE,
-            hero_video_url: response.data.hero_video_url || HERO_VIDEO_DEFAULT,
+            hero_background_image_url: sanitizeLocationAssetUrl(response.data.hero_background_image_url, BACKGROUND_IMAGE),
+            hero_video_url: sanitizeLocationAssetUrl(response.data.hero_video_url, HERO_VIDEO_DEFAULT),
           }));
         }
       } catch (error) {

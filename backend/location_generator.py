@@ -23,6 +23,10 @@ _db = None
 US_LOCATIONS_PATH = Path("/app/backend/us_locations_data.json")
 OUTPUT_DIR = Path("/app/frontend/public/locations")
 DEFAULT_LOCATION_PREFIX = "commercial-cleaning-robots"
+LEGACY_BUTTERFLY_IMAGE_URL = "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png"
+LEGACY_BUTTERFLY_VIDEO_URL = "/videos/butterfly_alpha.webm"
+LOCATION_FALLBACK_IMAGE_URL = "/images/home/4-bots.jpg"
+LOCATION_FALLBACK_VIDEO_URL = "/videos/123-bots-home-background.mp4"
 LOCATION_PREFIX_ALIASES = (
     DEFAULT_LOCATION_PREFIX,
     "commercial-cleaning-robots",
@@ -99,6 +103,33 @@ def _known_location_prefixes(active_prefix: str) -> tuple[str, ...]:
 
 def _build_filename(location_slug: str, prefix: str) -> str:
     return f"{prefix}-{location_slug}"
+
+
+def _remove_butterfly_assets(html: str) -> str:
+    if not html:
+        return html
+
+    cleaned = html.replace(LEGACY_BUTTERFLY_IMAGE_URL, LOCATION_FALLBACK_IMAGE_URL)
+    cleaned = cleaned.replace(LEGACY_BUTTERFLY_VIDEO_URL, LOCATION_FALLBACK_VIDEO_URL)
+    cleaned = re.sub(
+        r"https?://[^\"'\s)]+gingerkare-emporuim-and-collectibles\.png",
+        LOCATION_FALLBACK_IMAGE_URL,
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+    cleaned = re.sub(
+        r"https?://[^\"'\s)]*butterfly[^\"'\s)]*\.(?:png|jpg|jpeg|webp)",
+        LOCATION_FALLBACK_IMAGE_URL,
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+    cleaned = re.sub(
+        r"/videos/[^\"'\s)]*butterfly[^\"'\s)]*\.(?:webm|mp4|mov)",
+        LOCATION_FALLBACK_VIDEO_URL,
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+    return cleaned
 
 
 def _parse_location_request(filename: str, active_prefix: str) -> tuple[Optional[str], Optional[str]]:
@@ -288,7 +319,8 @@ async def serve_generated_page(filename: str):
 
     for file_path in deduped_candidates:
         if file_path.exists():
-            return HTMLResponse(content=file_path.read_text(encoding="utf-8"))
+            html = file_path.read_text(encoding="utf-8")
+            return HTMLResponse(content=_remove_butterfly_assets(html))
 
     if not location_slug:
         raise HTTPException(status_code=404, detail="Page not found")

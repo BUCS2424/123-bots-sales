@@ -52,7 +52,18 @@ def generate_location_page_html(
     site_name_setting = site_settings.get("site_name") or site_name
     
     # Get hero image URLs from settings
-    hero_bg_image = hero_settings.get("hero_background_image_url", "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png")
+    raw_hero_bg_image = hero_settings.get("hero_background_image_url", "")
+    normalized_hero_bg_image = raw_hero_bg_image.lower() if raw_hero_bg_image else ""
+    hero_bg_image = (
+        raw_hero_bg_image
+        if (
+            raw_hero_bg_image
+            and "butterfly" not in normalized_hero_bg_image
+            and "gingerkare-emporuim" not in normalized_hero_bg_image
+            and "dk8ihy2p" not in normalized_hero_bg_image
+        )
+        else "/images/home/4-bots.jpg"
+    )
     hero_card_image = hero_settings.get("hero_card_image_url", "")
     hero_video_url = "https://customer-assets.emergentagent.com/job_62e47598-ad36-4ef0-a5ae-6e9fba5248f0/artifacts/gicykru3_123-bots-home-background.mp4"
     hero_card_title = hero_settings.get("hero_card_title", "CUSTOM EMPORIUM")
