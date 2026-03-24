@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Search, Grid, LayoutList, X, ChevronDown, BadgePercent, Bot, ShoppingCart } from 'lucide-react';
-import ProductCard from '../components/ProductCard';
 import LeftMenuAccordion from '../components/LeftMenuAccordion';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -27,7 +26,7 @@ const ShopPage = () => {
   const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
   const { isAuthenticated, user, isWholesale, customerTier } = useAuth();
-  const { left_menu_enabled } = useSiteFeatureFlags();
+  const { left_menu_enabled, require_account_for_checkout } = useSiteFeatureFlags();
 
   // Set SEO metadata based on category
   useEffect(() => {
@@ -100,6 +99,7 @@ const ShopPage = () => {
             has_options: p.has_options,
             custom_fields_data: p.custom_fields_data,
             customer_type: p.customer_type || 'retail',
+            seo_url: p.seo_url || null,
           };
         });
         
@@ -145,6 +145,8 @@ const ShopPage = () => {
     { value: 'price-high', label: 'Price: High to Low' },
     { value: 'name', label: 'Name: A-Z' },
   ];
+
+  const getProductHref = (product) => (product.seo_url ? `/shop/${product.seo_url}` : `/product/${product.id}`);
 
   return (
     <div className="min-h-screen bg-bots-dark pt-28 pb-32" data-testid="shop-page">
@@ -348,11 +350,47 @@ const ShopPage = () => {
                     : 'grid-cols-1'
                 }`}
               >
-                <AnimatePresence mode="popLayout">
-                  {filteredProducts.map((product, index) => (
-                    <ProductCard key={product.id} product={product} index={index} />
-                  ))}
-                </AnimatePresence>
+                {filteredProducts.map((product, index) => (
+                  <motion.article
+                    key={product.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.04 }}
+                    className="group"
+                    data-testid={`shop-minimal-product-card-${product.id}`}
+                  >
+                    <Link
+                      to={getProductHref(product)}
+                      className="block w-full aspect-square bg-transparent"
+                      data-testid={`shop-minimal-product-image-link-${product.id}`}
+                    >
+                      <img
+                        src={product.image || '/images/robots/pudu-cc1-pro.png'}
+                        alt={product.name}
+                        className="w-full h-full object-contain"
+                        data-testid={`shop-minimal-product-image-${product.id}`}
+                      />
+                    </Link>
+
+                    <Link
+                      to={getProductHref(product)}
+                      className="block mt-4 text-[16px] leading-[1.2] font-medium text-white hover:text-blue-300 transition-colors line-clamp-2"
+                      data-testid={`shop-minimal-product-title-link-${product.id}`}
+                    >
+                      {product.name}
+                    </Link>
+
+                    <Link
+                      to={getProductHref(product)}
+                      className="block mt-2 text-[15px] font-medium text-white hover:text-blue-300 transition-colors"
+                      data-testid={`shop-minimal-product-price-link-${product.id}`}
+                    >
+                      {isAuthenticated || !require_account_for_checkout
+                        ? `$${Number(product.price || 0).toFixed(2)}`
+                        : 'Login to view'}
+                    </Link>
+                  </motion.article>
+                ))}
               </motion.div>
             )}
           </div>
