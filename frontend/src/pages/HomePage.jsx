@@ -425,13 +425,13 @@ const HomePage = () => {
       <section className="py-12 bg-bots-surface">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h3 className="text-2xl font-bold text-white mb-6">
-            <span className="text-blue-400">AVAILABLE</span> PRODUCT LINE
+            <span className="text-blue-400">AVAILABLE STATES</span> WE SERVE
           </h3>
           <p className="text-gray-300 leading-relaxed">
-            Missouri | Iowa | Illinois | Indiana | Ohio | Kentucky | Tennessee | Arkansas | Kansas | Oklahoma | Texas | Louisiana | Mississippi
+            Missouri | Iowa | Illinois | Indiana | Ohio | Kentucky | Tennessee | Arkansas | Kansas | Oklahoma
           </p>
           <p className="text-gray-300 leading-relaxed mt-2">
-            Alabama | Georgia | South Carolina | Florida | Puerto Rico | Virgin Islands
+            Texas | Louisiana | Mississippi | Alabama | Georgia | South Carolina | Florida | Puerto Rico | Virgin Islands
           </p>
         </div>
       </section>
