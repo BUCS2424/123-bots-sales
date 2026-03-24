@@ -115,6 +115,8 @@ class CategoryBase(BaseModel):
     name: str
     description: Optional[str] = None
     image: Optional[str] = None
+    product_info_url: Optional[str] = None
+    shop_target_url: Optional[str] = None
     parent_id: Optional[str] = None
     sort_order: int = 0
     is_enabled: bool = True

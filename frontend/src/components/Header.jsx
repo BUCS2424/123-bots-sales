@@ -40,8 +40,8 @@ const Header = () => {
         { label: 'EDUCATION', href: '/industries/education' },
       ],
     },
-    { label: 'SHOP', href: '/categories' },
-    { label: 'PARTS', href: '/shop?category=parts' },
+    { label: 'SHOP', href: '/shop' },
+    { label: 'PARTS', href: '/shop/products?category=parts' },
     { label: 'SUPPORT', href: '/contact' },
     {
       label: 'PRODUCTS',
@@ -83,7 +83,7 @@ const Header = () => {
             </a>
             <div className="flex items-center space-x-4">
               <Link
-                to="/categories"
+                to="/shop"
                 className="text-gray-300 hover:text-white transition-colors"
                 data-testid="header-shop-link"
               >

@@ -29,6 +29,8 @@ const defaultForm = {
   name: '',
   description: '',
   image: '',
+  product_info_url: '',
+  shop_target_url: '',
   parent_id: null,
   sort_order: 0,
   is_enabled: true,
@@ -70,6 +72,8 @@ const AdminCategories = () => {
       seo_title: category.seo_title || '',
       seo_description: category.seo_description || '',
       seo_url: category.seo_url || '',
+      product_info_url: category.product_info_url || '',
+      shop_target_url: category.shop_target_url || '',
       custom_fields: category.custom_fields || []
     }));
   };
@@ -367,6 +371,8 @@ const AdminCategories = () => {
       seo_title: formData.seo_title,
       seo_description: formData.seo_description,
       seo_url: formData.seo_url,
+      product_info_url: formData.product_info_url,
+      shop_target_url: formData.shop_target_url,
       custom_fields: formData.custom_fields || []
     };
 
@@ -614,6 +620,29 @@ const AdminCategories = () => {
                     onChange={(event) => setFormData((prev) => ({ ...prev, description: event.target.value }))}
                     data-testid="category-description-input"
                   />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-testid="category-cta-links-grid">
+                  <div>
+                    <Label htmlFor="category-product-info-url-input" className="mb-1 block">Product Info Button URL</Label>
+                    <Input
+                      id="category-product-info-url-input"
+                      value={formData.product_info_url || ''}
+                      onChange={(event) => setFormData((prev) => ({ ...prev, product_info_url: event.target.value }))}
+                      placeholder="/products/pudu-cc1-pro"
+                      data-testid="category-product-info-url-input"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="category-shop-target-url-input" className="mb-1 block">Shop Button URL Override</Label>
+                    <Input
+                      id="category-shop-target-url-input"
+                      value={formData.shop_target_url || ''}
+                      onChange={(event) => setFormData((prev) => ({ ...prev, shop_target_url: event.target.value }))}
+                      placeholder="Optional: /shop/products?category=parts"
+                      data-testid="category-shop-target-url-input"
+                    />
+                  </div>
                 </div>
 
                 <div className="flex justify-end">

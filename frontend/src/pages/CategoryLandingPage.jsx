@@ -1,138 +1,196 @@
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowRight, ShoppingBag } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { setSeoMetadata } from '../lib/seo';
+import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-const CATEGORY_ROWS = [
-  {
-    id: 'autonomous-floor-scrubbers',
-    name: 'Autonomous Floor Scrubbers',
-    description: 'Reliable everyday cleaning for retail, schools, and healthcare spaces.',
-    image: '/images/bots/pringle-cc1-robot.png',
-    infoLink: '/products/pudu-cc1-pro',
-    shopLink: '/shop',
-  },
-  {
-    id: 'industrial-cleaning-robots',
-    name: 'Industrial Cleaning Robots',
-    description: 'Heavy-duty robotic cleaning built for warehouses and high-traffic facilities.',
-    image: '/images/bots/avidbot-kas.png',
-    infoLink: '/products/ab-kas',
-    shopLink: '/shop',
-  },
-  {
-    id: 'compact-sweeping-robots',
-    name: 'Compact Sweeping Robots',
-    description: 'Agile and compact automation for narrow aisles and smaller commercial sites.',
-    image: '/images/bots/robot-pudush.png',
-    infoLink: '/products/pudu-sh1',
-    shopLink: '/shop',
-  },
-  {
-    id: 'large-area-cleaning-robots',
-    name: 'Large-Area Cleaning Robots',
-    description: 'Maximum area coverage and runtime for larger venues and campuses.',
-    image: '/images/bots/nav_product_mt.webp',
-    infoLink: '/products/pudu-mt1',
-    shopLink: '/shop',
-  },
-  {
-    id: 'docking-and-accessories',
-    name: 'Docking & Accessories',
-    description: 'Keep your fleet running with charging, refill, and maintenance accessories.',
-    image: '/images/bots/pudu-cc1_pro.png',
-    infoLink: '/products/pudu-cc1-docking-station',
-    shopLink: '/shop?category=parts',
-  },
-];
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api/store`;
+
+const slugify = (value = '') =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+
+const normalizeCategory = (category) => ({
+  ...category,
+  parent_id: category.parent_id || null,
+  product_info_url: category.product_info_url || '',
+  shop_target_url: category.shop_target_url || '',
+  seo_url: category.seo_url || slugify(category.name || ''),
+});
 
 export default function CategoryLandingPage() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const parentId = searchParams.get('parent') || null;
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${API}/categories`);
+        const enabledCategories = (response.data || [])
+          .filter((category) => category.is_enabled !== false)
+          .map(normalizeCategory);
+        setCategories(enabledCategories);
+      } catch (error) {
+        setCategories([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const childrenByParent = useMemo(() => {
+    const grouped = {};
+    categories.forEach((category) => {
+      const key = category.parent_id || 'root';
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(category);
+    });
+
+    Object.keys(grouped).forEach((key) => {
+      grouped[key].sort((a, b) => {
+        if ((a.sort_order ?? 0) !== (b.sort_order ?? 0)) return (a.sort_order ?? 0) - (b.sort_order ?? 0);
+        return (a.name || '').localeCompare(b.name || '');
+      });
+    });
+
+    return grouped;
+  }, [categories]);
+
+  const currentParent = useMemo(
+    () => categories.find((category) => category.id === parentId) || null,
+    [categories, parentId]
+  );
+
+  const activeCategories = useMemo(() => {
+    const key = parentId || 'root';
+    return childrenByParent[key] || [];
+  }, [childrenByParent, parentId]);
+
+  useEffect(() => {
+    if (!loading && parentId && currentParent && activeCategories.length === 0) {
+      const categorySlug = currentParent.seo_url || slugify(currentParent.name || '');
+      navigate(`/shop/products?category=${encodeURIComponent(categorySlug)}`, { replace: true });
+    }
+  }, [loading, parentId, currentParent, activeCategories.length, navigate]);
+
   useEffect(() => {
     setSeoMetadata({
       title: 'Shop by Category | 123 Bots',
-      description:
-        'Explore 123 Bots robot categories and quickly jump to product details or shop inventory.',
-      keywords:
-        'robot categories, commercial cleaning robots, autonomous scrubbers, 123 bots shop',
-      canonicalPath: '/categories',
+      description: 'Browse categories, subcategories, and products in the 123 Bots shop.',
+      keywords: 'shop categories, subcategories, product catalog, 123 bots',
+      canonicalPath: '/shop',
       ogType: 'website',
     });
   }, []);
 
+  const getProductInfoLink = (category) => {
+    if (category.product_info_url) return category.product_info_url;
+    return '/products';
+  };
+
+  const getShopLink = (category) => {
+    if (category.shop_target_url) return category.shop_target_url;
+
+    const childCategories = childrenByParent[category.id] || [];
+    if (childCategories.length > 0) {
+      return `/shop?parent=${category.id}`;
+    }
+
+    return `/shop/products?category=${encodeURIComponent(category.seo_url || slugify(category.name || ''))}`;
+  };
+
+  const goBackHref = currentParent?.parent_id ? `/shop?parent=${currentParent.parent_id}` : '/shop';
+
   return (
-    <div className="min-h-screen bg-bots-dark" data-testid="category-landing-page">
+    <div className="min-h-screen bg-[#f1f1f1]" data-testid="category-landing-page">
       <Header />
 
-      <section className="pt-32 pb-16 px-4" data-testid="category-landing-hero">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-500/40 bg-blue-500/10 text-blue-300 text-sm font-semibold tracking-wide">
-            <ShoppingBag className="w-4 h-4" />
-            SHOP COLLECTIONS
-          </p>
-          <h1
-            className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-bold text-white"
-            data-testid="category-landing-title"
-          >
-            Find the Right Robot Category for Your Facility
-          </h1>
-          <p
-            className="mt-4 text-sm sm:text-base md:text-lg text-gray-300 max-w-3xl mx-auto"
-            data-testid="category-landing-subtitle"
-          >
-            Compare cleaning robot categories, review product details, and jump directly into shopping.
-          </p>
-        </div>
-      </section>
+      <section className="pt-32 pb-20 px-4" data-testid="category-landing-main-section">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between gap-3 mb-8">
+            <h1 className="text-4xl sm:text-5xl font-semibold text-[#2e2f34]" data-testid="category-landing-title">
+              {currentParent ? currentParent.name : 'Shop Categories'}
+            </h1>
+            {currentParent && (
+              <Link
+                to={goBackHref}
+                className="text-sm px-4 py-2 rounded border border-[#d6d6d6] bg-white text-[#2e2f34] hover:bg-[#f8f8f8]"
+                data-testid="category-back-link"
+              >
+                Back
+              </Link>
+            )}
+          </div>
 
-      <section className="pb-24 px-4" data-testid="category-landing-list-section">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {CATEGORY_ROWS.map((category, index) => (
-            <article
-              key={category.id}
-              className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center rounded-3xl border border-gray-700 bg-gradient-to-r from-bots-surface to-bots-dark/80 p-6 lg:p-8 animate-fade-in-up"
-              style={{ animationDelay: `${index * 90}ms` }}
-              data-testid={`category-row-${category.id}`}
-            >
-              <div className="lg:col-span-4" data-testid={`category-info-${category.id}`}>
-                <h2 className="text-2xl md:text-3xl font-bold text-white">{category.name}</h2>
-                <p className="mt-3 text-gray-300 text-sm sm:text-base">{category.description}</p>
-              </div>
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" data-testid="category-grid-loading">
+              {[...Array(4)].map((_, index) => (
+                <div key={index} className="h-[460px] rounded border border-[#dedede] bg-white animate-pulse" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" data-testid="category-grid">
+              {activeCategories.map((category) => (
+                <article
+                  key={category.id}
+                  className="bg-white rounded border border-[#e1e1e1] p-5 min-h-[460px] flex flex-col"
+                  data-testid={`category-card-${category.id}`}
+                >
+                  <div className="w-full border border-[#ececec] rounded bg-white h-[280px] flex items-center justify-center overflow-hidden">
+                    <img
+                      src={category.image || '/images/home/4-bots.jpg'}
+                      alt={category.name}
+                      className="w-full h-full object-contain"
+                      data-testid={`category-card-image-${category.id}`}
+                    />
+                  </div>
 
-              <div className="lg:col-span-4">
-                <div
-                  className="w-full aspect-[16/9] rounded-2xl bg-bots-dark/70 border border-gray-700 flex items-center justify-center p-4"
-                  data-testid={`category-image-wrap-${category.id}`}
-                >
-                  <img
-                    src={category.image}
-                    alt={category.name}
-                    className="w-full h-full object-contain"
-                    data-testid={`category-image-${category.id}`}
-                  />
-                </div>
-              </div>
+                  <h2 className="text-[46px] leading-none mt-5 mb-2 font-medium text-[#3a3d44]" data-testid={`category-card-name-${category.id}`}>
+                    {category.name}
+                  </h2>
 
-              <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3 lg:items-end">
-                <Link
-                  to={category.infoLink}
-                  className="inline-flex justify-center items-center gap-2 w-full sm:w-auto lg:w-56 px-6 py-3 rounded-full border border-blue-500/50 bg-blue-500/15 text-blue-200 font-semibold hover:bg-blue-500/25 transition-colors"
-                  data-testid={`category-info-button-${category.id}`}
-                >
-                  Product Info
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-                <Link
-                  to={category.shopLink}
-                  className="inline-flex justify-center items-center w-full sm:w-auto lg:w-56 px-6 py-3 rounded-full bg-green-500 text-black font-semibold hover:bg-green-400 transition-colors"
-                  data-testid={`category-shop-button-${category.id}`}
-                >
-                  Shop
-                </Link>
-              </div>
-            </article>
-          ))}
+                  <p className="text-sm text-[#6c6f77] mb-5 flex-1" data-testid={`category-card-description-${category.id}`}>
+                    {category.description || 'Explore this category.'}
+                  </p>
+
+                  <div className="flex items-center gap-3">
+                    <Link
+                      to={getProductInfoLink(category)}
+                      className="inline-flex items-center justify-center h-11 px-5 bg-[#2f3440] text-white text-[26px] font-medium"
+                      data-testid={`category-product-info-button-${category.id}`}
+                    >
+                      Products Info
+                    </Link>
+                    <Link
+                      to={getShopLink(category)}
+                      className="inline-flex items-center justify-center h-11 px-6 bg-[#3f6df2] text-white text-[28px] font-medium"
+                      data-testid={`category-shop-button-${category.id}`}
+                    >
+                      Shop
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+
+          {!loading && activeCategories.length === 0 && (
+            <div className="rounded border border-[#dfdfdf] bg-white p-8 text-center text-[#575b63]" data-testid="category-grid-empty">
+              No categories found.
+            </div>
+          )}
         </div>
       </section>
 

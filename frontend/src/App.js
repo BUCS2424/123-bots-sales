@@ -216,8 +216,9 @@ const AppContent = () => {
               <PublicLayout>
                 <Routes>
                   <Route path="/" element={<HomePage />} />
-                  <Route path="/shop" element={<ShopPage />} />
+                  <Route path="/shop" element={<CategoryLandingPage />} />
                   <Route path="/categories" element={<CategoryLandingPage />} />
+                  <Route path="/shop/products" element={<ShopPage />} />
                   <Route path="/shop/:legacySlug" element={<LegacyProductSlugRedirectPage />} />
                   <Route path="/shop/:categorySlug/:productSlug" element={<ProductDetailPage />} />
                   <Route path="/product/:productId" element={<LegacyProductRedirectPage />} />
