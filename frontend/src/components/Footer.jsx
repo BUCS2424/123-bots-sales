@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Facebook, Twitter, Linkedin, Instagram, ArrowUp } from 'lucide-react';
+import { Phone, Mail, ArrowUp } from 'lucide-react';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 
 const Footer = () => {
@@ -47,13 +47,6 @@ const Footer = () => {
     ],
   };
 
-  const socialLinks = [
-    { icon: Facebook, href: 'https://facebook.com/123bots', label: 'Facebook' },
-    { icon: Twitter, href: 'https://twitter.com/123bots', label: 'Twitter' },
-    { icon: Linkedin, href: 'https://linkedin.com/company/123bots', label: 'LinkedIn' },
-    { icon: Instagram, href: 'https://instagram.com/123bots', label: 'Instagram' },
-  ];
-
   return (
     <footer className="bg-bots-darker border-t border-gray-800" data-testid="main-footer">
       {/* Main Footer Content */}
@@ -88,22 +81,6 @@ const Footer = () => {
                 <Mail className="w-4 h-4 mr-2" />
                 {supportEmail || 'info@123bots.com'}
               </a>
-            </div>
-
-            {/* Social Links */}
-            <div className="flex space-x-3 mt-4">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-8 h-8 bg-bots-surface rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-blue-500/20 transition-colors"
-                  aria-label={social.label}
-                >
-                  <social.icon className="w-4 h-4" />
-                </a>
-              ))}
             </div>
           </div>
 
