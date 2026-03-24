@@ -320,7 +320,16 @@ async def serve_generated_page(filename: str):
     for file_path in deduped_candidates:
         if file_path.exists():
             html = file_path.read_text(encoding="utf-8")
-            return HTMLResponse(content=_remove_butterfly_assets(html))
+            cleaned_html = _remove_butterfly_assets(html)
+
+            # Backward-compatibility: older generated county files may have empty city grids.
+            # If detected, fall through to dynamic regeneration below so county pages show cities.
+            has_county_city_heading = "Cities Near" in cleaned_html
+            has_city_cards = 'location-card-type">City<' in cleaned_html
+            if has_county_city_heading and not has_city_cards:
+                break
+
+            return HTMLResponse(content=cleaned_html)
 
     if not location_slug:
         raise HTTPException(status_code=404, detail="Page not found")
@@ -537,6 +546,8 @@ async def generate_state_pages(state_slug: str, request: Optional[GenerateStateR
                     state_slug=state_slug,
                     county_count=len(counties),
                     city_count=len(cities),
+                    counties=[],
+                    cities=cities[:50],
                     hero_settings=hero_settings,
                     site_settings=site_settings,
                     location_url_prefix=location_prefix,
@@ -836,7 +847,7 @@ async def regenerate_all_pages():
                     county_count=len(counties),
                     city_count=len(cities),
                     counties=counties[:30] if location_type == "state" else None,
-                    cities=cities[:100] if location_type == "state" else None,
+                    cities=(cities[:100] if location_type == "state" else cities[:50] if location_type == "county" else None),
                     hero_settings=hero_settings,
                     site_settings=site_settings,
                     location_url_prefix=_sanitize_location_prefix(page.get("location_prefix") or default_location_prefix),
