@@ -155,6 +155,16 @@ const LoginPage = () => {
       </div>
 
       {/* Main content */}
+      <a
+        href="https://www.facebook.com/123bots"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="absolute top-4 right-4 z-20 text-blue-200 hover:text-green-300 transition-colors text-sm font-medium"
+        data-testid="login-facebook-link"
+      >
+        Facebook
+      </a>
+
       <div className="relative min-h-screen flex items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

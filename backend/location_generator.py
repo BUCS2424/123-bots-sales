@@ -27,6 +27,8 @@ LEGACY_BUTTERFLY_IMAGE_URL = "https://customer-assets.emergentagent.com/job_cart
 LEGACY_BUTTERFLY_VIDEO_URL = "/videos/butterfly_alpha.webm"
 LOCATION_FALLBACK_IMAGE_URL = "/images/home/4-bots.jpg"
 LOCATION_FALLBACK_VIDEO_URL = "/videos/123-bots-home-background.mp4"
+FACEBOOK_PAGE_URL = "https://www.facebook.com/123bots"
+LEGACY_FACEBOOK_PAGE_URL = "https://www.facebook.com/123bots.collectibles"
 LOCATION_PREFIX_ALIASES = (
     DEFAULT_LOCATION_PREFIX,
     "commercial-cleaning-robots",
@@ -130,6 +132,28 @@ def _remove_butterfly_assets(html: str) -> str:
         flags=re.IGNORECASE,
     )
     return cleaned
+
+
+def _ensure_facebook_link(html: str) -> str:
+    if not html:
+        return html
+
+    updated = html.replace(LEGACY_FACEBOOK_PAGE_URL, FACEBOOK_PAGE_URL)
+    updated = updated.replace(">Follow Us<", ">Facebook<")
+
+    if "facebook.com/123bots" in updated:
+        return updated
+
+    insertion = (
+        '<div class="top-bar-center">'
+        '<a href="https://www.facebook.com/123bots" target="_blank" rel="noopener noreferrer" class="top-bar-item">'
+        '<span>Facebook</span>'
+        '</a>'
+    )
+    if '<div class="top-bar-center">' in updated:
+        return updated.replace('<div class="top-bar-center">', insertion, 1)
+
+    return updated
 
 
 def _parse_location_request(filename: str, active_prefix: str) -> tuple[Optional[str], Optional[str]]:
@@ -320,7 +344,7 @@ async def serve_generated_page(filename: str):
     for file_path in deduped_candidates:
         if file_path.exists():
             html = file_path.read_text(encoding="utf-8")
-            cleaned_html = _remove_butterfly_assets(html)
+            cleaned_html = _ensure_facebook_link(_remove_butterfly_assets(html))
 
             # Backward-compatibility: older generated county files may have empty city grids.
             # If detected, fall through to dynamic regeneration below so county pages show cities.

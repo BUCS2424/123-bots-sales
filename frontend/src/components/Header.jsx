@@ -99,6 +99,16 @@ const Header = () => {
                 Resources
               </Link>
               <span className="text-gray-600">|</span>
+              <a
+                href="https://www.facebook.com/123bots"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-300 hover:text-white transition-colors"
+                data-testid="header-facebook-link"
+              >
+                Facebook
+              </a>
+              <span className="text-gray-600">|</span>
               <Link 
                 to="/login" 
                 className="text-gray-300 hover:text-white transition-colors"
