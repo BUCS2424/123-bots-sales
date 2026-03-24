@@ -6,6 +6,40 @@ import ChatWidget from '../components/ChatWidget';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const BACKGROUND_IMAGE = 'https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png';
 const HERO_VIDEO_DEFAULT = '/videos/butterfly_alpha.webm';
+const LOCATION_PREFIXES = [
+  'commercial-cleaning-robots-',
+  'cleaning-robots-',
+  'custom-sublimation-',
+  '123bots-',
+  'peptide-research-supply-',
+];
+
+const buildSlugCandidates = (slugValue) => {
+  const incomingSlug = (slugValue || '').trim().toLowerCase();
+  if (!incomingSlug) return [];
+
+  const normalizedSlug = incomingSlug.endsWith('.html')
+    ? incomingSlug.slice(0, -5)
+    : incomingSlug;
+
+  let locationCore = normalizedSlug;
+  for (const prefix of LOCATION_PREFIXES) {
+    if (normalizedSlug.startsWith(prefix)) {
+      locationCore = normalizedSlug.slice(prefix.length);
+      break;
+    }
+  }
+
+  const candidates = [
+    normalizedSlug,
+    `commercial-cleaning-robots-${locationCore}`,
+    `cleaning-robots-${locationCore}`,
+    `custom-sublimation-${locationCore}`,
+    `123bots-${locationCore}`,
+  ];
+
+  return [...new Set(candidates.filter(Boolean))];
+};
 
 const getVideoMimeType = (videoUrl) => {
   const normalized = (videoUrl || '').toLowerCase();
@@ -54,11 +88,29 @@ const LocationPage = () => {
     const fetchLocationPage = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(
-          `${BACKEND_URL}/api/locations/${slug}`,
-          { responseType: 'text' }
-        );
-        setHtml(response.data);
+        const slugCandidates = buildSlugCandidates(slug);
+        let pageHtml = null;
+
+        for (const slugCandidate of slugCandidates) {
+          try {
+            const response = await axios.get(
+              `${BACKEND_URL}/api/locations/${slugCandidate}`,
+              { responseType: 'text' }
+            );
+            pageHtml = response.data;
+            break;
+          } catch (candidateError) {
+            if (candidateError?.response?.status && candidateError.response.status !== 404) {
+              throw candidateError;
+            }
+          }
+        }
+
+        if (!pageHtml) {
+          throw new Error('Location page not found');
+        }
+
+        setHtml(pageHtml);
         setError(null);
       } catch (err) {
         console.error('Error fetching location page:', err);
