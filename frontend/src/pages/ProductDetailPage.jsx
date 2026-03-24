@@ -19,6 +19,7 @@ import {
   getSelectedOptionEntries,
 } from '../lib/productOptions';
 import axios from 'axios';
+import Header from '../components/Header';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -236,6 +237,7 @@ const ProductDetailPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 pt-32 pb-32">
+        <Header />
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12">
             <div className="aspect-square bg-slate-100 rounded-2xl animate-pulse" />
@@ -254,6 +256,7 @@ const ProductDetailPage = () => {
   if (!product) {
     return (
       <div className="min-h-screen bg-slate-50 pt-32 pb-32 flex items-center justify-center">
+        <Header />
         <div className="text-center">
           <h2 className="font-heading text-2xl text-slate-800 mb-4">Product not found</h2>
           <Link to="/shop" className="text-cyan-600 hover:text-cyan-700">
@@ -268,6 +271,7 @@ const ProductDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 pt-32 pb-32" data-testid="product-detail-page">
+      <Header />
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Breadcrumb */}
         <motion.div
