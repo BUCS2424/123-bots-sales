@@ -171,7 +171,7 @@ export default function CategoryLandingPage() {
                       className="inline-flex items-center justify-center h-11 px-4 bg-[#2f3440] text-white text-[18px] font-medium whitespace-nowrap"
                       data-testid={`category-product-info-button-${category.id}`}
                     >
-                      Products Info
+                      Product Info
                     </Link>
                     <Link
                       to={getShopLink(category)}
