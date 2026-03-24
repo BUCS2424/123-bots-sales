@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 sitemap_generator_router = APIRouter(prefix="/sitemap-generator", tags=["SEO"])
 
 _db = None
+DEFAULT_LOCATION_PREFIX = "commercial-cleaning-robots"
 
 
 def _request_base_url(request: Request) -> str:
@@ -101,6 +102,12 @@ def _slugify(value: str) -> str:
     text = re.sub(r"\s+", "-", text)
     text = re.sub(r"-+", "-", text)
     return text.strip("-")
+
+
+def _sanitize_location_prefix(prefix_value):
+    raw = (prefix_value or "").strip().lower()
+    cleaned = "-".join(part for part in raw.split("-") if part)
+    return cleaned or DEFAULT_LOCATION_PREFIX
 
 
 @sitemap_generator_router.get("/stats")
@@ -260,7 +267,7 @@ async def generate_sitemap(request: Request, config: SitemapConfig = None):
             try:
                 locations_cursor = _db.generated_pages.find(
                     {},
-                    {"location_slug": 1, "location_type": 1, "generated_at": 1}
+                    {"location_slug": 1, "location_type": 1, "generated_at": 1, "location_prefix": 1}
                 )
                 
                 async for loc in locations_cursor:
@@ -269,8 +276,9 @@ async def generate_sitemap(request: Request, config: SitemapConfig = None):
                     priority = "0.6" if loc_type == "state" else "0.5" if loc_type == "county" else "0.4"
                     
                     if slug:
+                        location_prefix = _sanitize_location_prefix(loc.get("location_prefix"))
                         urls.append({
-                            "loc": f"{base_url}/locations/custom-sublimation-{slug}",
+                            "loc": f"{base_url}/locations/{location_prefix}-{slug}",
                             "lastmod": _format_date(loc.get("generated_at")),
                             "changefreq": "monthly",
                             "priority": priority,

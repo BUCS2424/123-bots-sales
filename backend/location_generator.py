@@ -22,11 +22,12 @@ _db = None
 
 US_LOCATIONS_PATH = Path("/app/backend/us_locations_data.json")
 OUTPUT_DIR = Path("/app/frontend/public/locations")
-FILENAME_PREFIX = "custom-sublimation"
+DEFAULT_LOCATION_PREFIX = "commercial-cleaning-robots"
 LOCATION_PREFIX_ALIASES = (
-    FILENAME_PREFIX,
+    DEFAULT_LOCATION_PREFIX,
     "commercial-cleaning-robots",
     "cleaning-robots",
+    "custom-sublimation",
     "123bots",
     "peptide-research-supply",
 )
@@ -48,6 +49,10 @@ STATE_ABBR_MAP = {
 class GenerateStateRequest(BaseModel):
     include_counties: bool = True
     include_cities: bool = True
+
+
+class LocationSlugSettingsRequest(BaseModel):
+    location_slug_prefix: str
 
 
 def set_database(database):
@@ -75,31 +80,55 @@ def _load_us_locations() -> dict:
         return {}
 
 
-def _build_filename(location_slug: str) -> str:
-    return f"{FILENAME_PREFIX}-{location_slug}"
+def _sanitize_location_prefix(prefix: Optional[str]) -> str:
+    sanitized = _slugify(prefix or "")
+    if not sanitized:
+        return DEFAULT_LOCATION_PREFIX
+    return sanitized
 
 
-def _normalize_location_request(filename: str) -> Optional[str]:
+def _known_location_prefixes(active_prefix: str) -> tuple[str, ...]:
+    ordered = [active_prefix, *LOCATION_PREFIX_ALIASES]
+    unique_prefixes = []
+    for prefix in ordered:
+        normalized = _sanitize_location_prefix(prefix)
+        if normalized not in unique_prefixes:
+            unique_prefixes.append(normalized)
+    return tuple(unique_prefixes)
+
+
+def _build_filename(location_slug: str, prefix: str) -> str:
+    return f"{prefix}-{location_slug}"
+
+
+def _parse_location_request(filename: str, active_prefix: str) -> tuple[Optional[str], Optional[str]]:
     normalized = filename.strip().lower()
     if not normalized:
-        return None
+        return None, None
 
     if normalized.endswith(".html"):
         normalized = normalized[:-5]
 
     if "." in normalized:
-        return None
+        return None, None
 
-    for prefix in LOCATION_PREFIX_ALIASES:
+    for prefix in _known_location_prefixes(active_prefix):
         prefix_token = f"{prefix.lower()}-"
         if normalized.startswith(prefix_token):
             slug = normalized[len(prefix_token):]
-            return slug or None
+            return (slug or None), prefix
 
-    return normalized
+    return normalized, None
 
 
-async def _save_generated_page(location_name: str, location_slug: str, location_type: str, parent_state: str, file_path: Path):
+async def _save_generated_page(
+    location_name: str,
+    location_slug: str,
+    location_type: str,
+    parent_state: str,
+    file_path: Path,
+    location_prefix: str,
+):
     if _db is None:
         return
 
@@ -113,11 +142,26 @@ async def _save_generated_page(location_name: str, location_slug: str, location_
                 "location_type": location_type,
                 "parent_state": parent_state,
                 "file_path": str(file_path),
+                "location_prefix": location_prefix,
                 "generated_at": datetime.now(timezone.utc).isoformat(),
             }
         },
         upsert=True,
     )
+
+
+async def _get_location_slug_prefix() -> str:
+    if _db is None:
+        return DEFAULT_LOCATION_PREFIX
+
+    try:
+        settings = await _db.admin_settings.find_one(
+            {"type": "location_slug_settings"},
+            {"_id": 0, "location_slug_prefix": 1},
+        )
+        return _sanitize_location_prefix((settings or {}).get("location_slug_prefix"))
+    except Exception:
+        return DEFAULT_LOCATION_PREFIX
 
 
 async def _get_hero_settings():
@@ -157,6 +201,7 @@ async def location_preview():
 
     hero_settings = await _get_hero_settings()
     site_settings = await _get_site_settings()
+    location_prefix = await _get_location_slug_prefix()
     state_data = data[sample_slug]
     html = generate_location_page_html(
         location_name=state_data.get("name", sample_slug.title()),
@@ -169,8 +214,45 @@ async def location_preview():
         cities=state_data.get("cities", [])[:100],
         hero_settings=hero_settings,
         site_settings=site_settings,
+        location_url_prefix=location_prefix,
     )
     return HTMLResponse(content=html)
+
+
+@dev_router.get("/location-slug-settings")
+async def get_location_slug_settings():
+    location_slug_prefix = await _get_location_slug_prefix()
+    return {
+        "location_slug_prefix": location_slug_prefix,
+        "prefix_preview_example": f"{location_slug_prefix}-missouri",
+    }
+
+
+@dev_router.put("/location-slug-settings")
+async def update_location_slug_settings(payload: LocationSlugSettingsRequest):
+    if _db is None:
+        raise HTTPException(status_code=500, detail="Database unavailable")
+
+    location_slug_prefix = _sanitize_location_prefix(payload.location_slug_prefix)
+    now = datetime.now(timezone.utc).isoformat()
+    await _db.admin_settings.update_one(
+        {"type": "location_slug_settings"},
+        {
+            "$set": {
+                "type": "location_slug_settings",
+                "location_slug_prefix": location_slug_prefix,
+                "updated_at": now,
+            }
+        },
+        upsert=True,
+    )
+
+    return {
+        "success": True,
+        "location_slug_prefix": location_slug_prefix,
+        "prefix_preview_example": f"{location_slug_prefix}-missouri",
+        "message": "Location slug prefix updated",
+    }
 
 
 @public_router.get("/{filename}")
@@ -180,6 +262,9 @@ async def serve_generated_page(filename: str):
         raise HTTPException(status_code=404, detail="Page not found")
 
     normalized_filename = raw_filename.lower()
+    location_prefix = await _get_location_slug_prefix()
+    location_slug, requested_prefix = _parse_location_request(raw_filename, location_prefix)
+
     file_candidates = [
         OUTPUT_DIR / raw_filename,
         OUTPUT_DIR / normalized_filename,
@@ -188,13 +273,27 @@ async def serve_generated_page(filename: str):
     if normalized_filename.endswith(".html"):
         file_candidates.append(OUTPUT_DIR / normalized_filename[:-5])
 
-    for file_path in file_candidates:
+    if location_slug:
+        for known_prefix in _known_location_prefixes(location_prefix):
+            file_candidates.append(OUTPUT_DIR / _build_filename(location_slug, known_prefix))
+
+    seen_paths = set()
+    deduped_candidates = []
+    for path in file_candidates:
+        path_key = str(path)
+        if path_key in seen_paths:
+            continue
+        seen_paths.add(path_key)
+        deduped_candidates.append(path)
+
+    for file_path in deduped_candidates:
         if file_path.exists():
             return HTMLResponse(content=file_path.read_text(encoding="utf-8"))
 
-    location_slug = _normalize_location_request(raw_filename)
     if not location_slug:
         raise HTTPException(status_code=404, detail="Page not found")
+
+    page_prefix = requested_prefix or location_prefix
 
     data = _load_us_locations()
     hero_settings = await _get_hero_settings()
@@ -213,6 +312,7 @@ async def serve_generated_page(filename: str):
             cities=state_data.get("cities", [])[:100],
             hero_settings=hero_settings,
             site_settings=site_settings,
+            location_url_prefix=page_prefix,
         )
         return HTMLResponse(content=html)
 
@@ -241,6 +341,7 @@ async def serve_generated_page(filename: str):
             city_count=len(cities),
             hero_settings=hero_settings,
             site_settings=site_settings,
+            location_url_prefix=page_prefix,
         )
         return HTMLResponse(content=html)
 
@@ -259,6 +360,7 @@ async def serve_generated_page(filename: str):
             cities=cities[:50],  # Show cities from the state
             hero_settings=hero_settings,
             site_settings=site_settings,
+            location_url_prefix=page_prefix,
         )
         return HTMLResponse(content=html)
 
@@ -361,10 +463,11 @@ async def generate_state_pages(state_slug: str, request: Optional[GenerateStateR
     # Fetch settings once for all pages
     hero_settings = await _get_hero_settings()
     site_settings = await _get_site_settings()
+    location_prefix = await _get_location_slug_prefix()
 
     try:
         state_location_slug = state_slug
-        state_filename = _build_filename(state_location_slug)
+        state_filename = _build_filename(state_location_slug, location_prefix)
         state_path = OUTPUT_DIR / state_filename
         state_html = generate_location_page_html(
             location_name=state_name,
@@ -377,9 +480,10 @@ async def generate_state_pages(state_slug: str, request: Optional[GenerateStateR
             cities=cities[:100],
             hero_settings=hero_settings,
             site_settings=site_settings,
+            location_url_prefix=location_prefix,
         )
         state_path.write_text(state_html, encoding="utf-8")
-        await _save_generated_page(state_name, state_location_slug, "state", state_slug, state_path)
+        await _save_generated_page(state_name, state_location_slug, "state", state_slug, state_path, location_prefix)
         generated += 1
     except Exception as error:
         logger.error("Failed to generate state page for %s: %s", state_slug, error)
@@ -393,7 +497,7 @@ async def generate_state_pages(state_slug: str, request: Optional[GenerateStateR
             try:
                 county_slug = _slugify(county.replace(" County", ""))
                 location_slug = f"{county_slug}-{state_abbr}"
-                file_path = OUTPUT_DIR / _build_filename(location_slug)
+                file_path = OUTPUT_DIR / _build_filename(location_slug, location_prefix)
                 html = generate_location_page_html(
                     location_name=county,
                     location_type="county",
@@ -403,9 +507,10 @@ async def generate_state_pages(state_slug: str, request: Optional[GenerateStateR
                     city_count=len(cities),
                     hero_settings=hero_settings,
                     site_settings=site_settings,
+                    location_url_prefix=location_prefix,
                 )
                 file_path.write_text(html, encoding="utf-8")
-                await _save_generated_page(county, location_slug, "county", state_slug, file_path)
+                await _save_generated_page(county, location_slug, "county", state_slug, file_path, location_prefix)
                 generated += 1
             except Exception as error:
                 logger.error("Failed county page generation (%s): %s", county, error)
@@ -416,7 +521,7 @@ async def generate_state_pages(state_slug: str, request: Optional[GenerateStateR
             try:
                 city_slug = _slugify(city)
                 location_slug = f"{city_slug}-{state_abbr}"
-                file_path = OUTPUT_DIR / _build_filename(location_slug)
+                file_path = OUTPUT_DIR / _build_filename(location_slug, location_prefix)
                 html = generate_location_page_html(
                     location_name=city,
                     location_type="city",
@@ -426,9 +531,10 @@ async def generate_state_pages(state_slug: str, request: Optional[GenerateStateR
                     city_count=len(cities),
                     hero_settings=hero_settings,
                     site_settings=site_settings,
+                    location_url_prefix=location_prefix,
                 )
                 file_path.write_text(html, encoding="utf-8")
-                await _save_generated_page(city, location_slug, "city", state_slug, file_path)
+                await _save_generated_page(city, location_slug, "city", state_slug, file_path, location_prefix)
                 generated += 1
             except Exception as error:
                 logger.error("Failed city page generation (%s): %s", city, error)
@@ -439,7 +545,7 @@ async def generate_state_pages(state_slug: str, request: Optional[GenerateStateR
         "generated": generated,
         "errors": errors,
         "state": state_name,
-        "prefix": FILENAME_PREFIX,
+        "prefix": location_prefix,
     }
 
 
@@ -662,6 +768,7 @@ async def regenerate_all_pages():
     # Fetch settings once for all pages
     hero_settings = await _get_hero_settings()
     site_settings = await _get_site_settings()
+    default_location_prefix = await _get_location_slug_prefix()
     
     for state_slug in states_with_pages:
         if state_slug not in data:
@@ -700,6 +807,7 @@ async def regenerate_all_pages():
                     cities=cities[:100] if location_type == "state" else None,
                     hero_settings=hero_settings,
                     site_settings=site_settings,
+                    location_url_prefix=_sanitize_location_prefix(page.get("location_prefix") or default_location_prefix),
                 )
                 
                 # Write to file

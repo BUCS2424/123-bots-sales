@@ -39,6 +39,7 @@ def generate_location_page_html(
     phone: str = "(844) 589-PEPS",
     hero_settings: dict | None = None,
     site_settings: dict | None = None,
+    location_url_prefix: str = "commercial-cleaning-robots",
 ) -> str:
     counties = counties or []
     cities = cities or []
@@ -61,6 +62,7 @@ def generate_location_page_html(
     safe_location_name = escape(location_name)
     safe_state_name = escape(state_name)
     state_abbr = STATE_ABBR_MAP.get(state_slug, state_slug[:2].upper())
+    prefix_slug = _slugify(location_url_prefix) or "commercial-cleaning-robots"
 
     if location_type == "state":
         location_slug = state_slug
@@ -85,7 +87,7 @@ def generate_location_page_html(
         f"123Bots provides AI-powered commercial cleaning robots to {location_label}. "
         f"Floor scrubbers, autonomous vacuums, and robotic cleaning solutions. Buy or lease today."
     )
-    canonical_path = f"/locations/commercial-cleaning-robots-{location_slug}"
+    canonical_path = f"/locations/{prefix_slug}-{location_slug}"
     canonical_url = f"{base_url}{canonical_path}"
 
     json_ld_payload = {
@@ -105,7 +107,7 @@ def generate_location_page_html(
     county_cards = "".join(
         [
             (
-                f'<a class="location-card" href="/locations/commercial-cleaning-robots-{_slugify(county.replace(" County", ""))}-{state_abbr.lower()}">'
+                f'<a class="location-card" href="/locations/{prefix_slug}-{_slugify(county.replace(" County", ""))}-{state_abbr.lower()}">'
                 f'<div class="location-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M9 8h10M9 12h10M9 16h10M5 8v.01M5 12v.01M5 16v.01"/></svg></div>'
                 f'<div class="location-card-content"><span class="location-card-name">{escape(county)}</span><span class="location-card-type">County</span></div>'
                 f'<div class="location-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>'
@@ -118,7 +120,7 @@ def generate_location_page_html(
     city_cards = "".join(
         [
             (
-                f'<a class="location-card" href="/locations/commercial-cleaning-robots-{_slugify(city)}-{state_abbr.lower()}">'
+                f'<a class="location-card" href="/locations/{prefix_slug}-{_slugify(city)}-{state_abbr.lower()}">'
                 f'<div class="location-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M13 21V3l6 3v15M9 9v.01M9 13v.01M9 17v.01M17 9v.01M17 13v.01M17 17v.01"/></svg></div>'
                 f'<div class="location-card-content"><span class="location-card-name">{escape(city)}</span><span class="location-card-type">City</span></div>'
                 f'<div class="location-card-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>'
@@ -129,7 +131,7 @@ def generate_location_page_html(
     )
 
     breadcrumb = (
-        f'<a href="/locations/commercial-cleaning-robots-{state_slug}">{safe_state_name}</a> <span class="sep">/</span> <span>{safe_location_name}</span>'
+        f'<a href="/locations/{prefix_slug}-{state_slug}">{safe_state_name}</a> <span class="sep">/</span> <span>{safe_location_name}</span>'
         if location_type != "state"
         else f"<span>{safe_location_name}</span>"
     )

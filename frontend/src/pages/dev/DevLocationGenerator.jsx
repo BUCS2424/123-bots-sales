@@ -19,6 +19,15 @@ import { useAuth } from '../../context/AuthContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
+const sanitizePrefix = (value) =>
+  (value || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
 const DevLocationGenerator = () => {
   const { token } = useAuth();
   const [states, setStates] = useState([]);
@@ -28,6 +37,8 @@ const DevLocationGenerator = () => {
   const [loading, setLoading] = useState(true);
   const [selectedState, setSelectedState] = useState(null);
   const [stateData, setStateData] = useState(null);
+  const [locationSlugPrefix, setLocationSlugPrefix] = useState('commercial-cleaning-robots');
+  const [slugPrefixSaving, setSlugPrefixSaving] = useState(false);
 
   const requestHeaders = useMemo(
     () => (token ? { Authorization: `Bearer ${token}` } : {}),
@@ -44,9 +55,14 @@ const DevLocationGenerator = () => {
         axios.get(`${BACKEND_URL}/api/dev/generated-pages-grouped`, { headers: requestHeaders }),
       ]);
 
+      const slugPrefixRes = await axios.get(`${BACKEND_URL}/api/dev/location-slug-settings`, {
+        headers: requestHeaders,
+      });
+
       setStates(statesRes.data || []);
       setStats(statsRes.data || {});
       setGeneratedPages(pagesRes.data?.states || []);
+      setLocationSlugPrefix(slugPrefixRes.data?.location_slug_prefix || 'commercial-cleaning-robots');
     } catch (error) {
       toast({ title: 'Load failed', description: 'Unable to load location data.', variant: 'destructive' });
     } finally {
@@ -120,6 +136,40 @@ const DevLocationGenerator = () => {
       await fetchData();
     } catch (error) {
       toast({ title: 'Delete failed', description: 'Unable to delete generated pages.', variant: 'destructive' });
+    }
+  };
+
+  const handleSaveSlugPrefix = async () => {
+    const sanitizedPrefix = sanitizePrefix(locationSlugPrefix);
+    if (!sanitizedPrefix) {
+      toast({
+        title: 'Invalid prefix',
+        description: 'Use letters, numbers, and hyphens only.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setSlugPrefixSaving(true);
+    try {
+      const response = await axios.put(
+        `${BACKEND_URL}/api/dev/location-slug-settings`,
+        { location_slug_prefix: sanitizedPrefix },
+        { headers: requestHeaders }
+      );
+      setLocationSlugPrefix(response.data?.location_slug_prefix || sanitizedPrefix);
+      toast({
+        title: 'Slug prefix saved',
+        description: `New location URL prefix: ${response.data?.location_slug_prefix || sanitizedPrefix}`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Save failed',
+        description: 'Could not update location slug prefix.',
+        variant: 'destructive',
+      });
+    } finally {
+      setSlugPrefixSaving(false);
     }
   };
 
@@ -232,6 +282,39 @@ const DevLocationGenerator = () => {
           </CardContent>
         </Card>
       </div>
+
+      <Card data-testid="dev-location-prefix-settings-card">
+        <CardHeader>
+          <CardTitle className="text-lg">Location URL Prefix</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-gray-600" data-testid="dev-location-prefix-settings-description">
+            This prefix appears before each state/county/city slug in location URLs.
+          </p>
+          <div className="flex flex-col md:flex-row gap-3">
+            <input
+              type="text"
+              value={locationSlugPrefix}
+              onChange={(event) => setLocationSlugPrefix(event.target.value)}
+              placeholder="commercial-cleaning-robots"
+              className="w-full md:max-w-md h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6e2ea8]/30 focus:border-[#6e2ea8]"
+              data-testid="dev-location-prefix-input"
+            />
+            <Button
+              type="button"
+              onClick={handleSaveSlugPrefix}
+              disabled={slugPrefixSaving}
+              className="bg-[#6e2ea8] hover:bg-[#5a2490] text-white rounded-xl"
+              data-testid="dev-location-prefix-save-button"
+            >
+              {slugPrefixSaving ? 'Saving...' : 'Save Prefix'}
+            </Button>
+          </div>
+          <p className="text-xs text-gray-500" data-testid="dev-location-prefix-preview-text">
+            Example URL: /locations/{sanitizePrefix(locationSlugPrefix) || 'your-prefix'}-missouri
+          </p>
+        </CardContent>
+      </Card>
 
       <Card data-testid="dev-location-state-grid-card">
         <CardHeader>
@@ -359,7 +442,7 @@ const DevLocationGenerator = () => {
 
             <div className="border-t px-6 py-4 flex items-center justify-between gap-4">
               <a
-                href={`/locations/commercial-cleaning-robots-${stateData.slug}`}
+                href={`/locations/${sanitizePrefix(locationSlugPrefix) || 'commercial-cleaning-robots'}-${stateData.slug}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-[#6e2ea8] hover:underline inline-flex items-center gap-1"

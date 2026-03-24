@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 sitemap_router = APIRouter(tags=["SEO"])
 
 _db = None
+DEFAULT_LOCATION_PREFIX = "commercial-cleaning-robots"
 
 
 def _request_base_url(request: Request) -> str:
@@ -51,6 +52,18 @@ def _format_date(dt=None):
     if isinstance(dt, str):
         return dt[:10]
     return dt.strftime("%Y-%m-%d")
+
+
+def _sanitize_location_prefix(prefix_value):
+    raw = (prefix_value or "").strip().lower()
+    cleaned = "-".join(part for part in raw.split("-") if part)
+    return cleaned or DEFAULT_LOCATION_PREFIX
+
+
+def _build_location_url(base_url: str, location_doc: dict) -> str:
+    location_slug = (location_doc or {}).get("location_slug", "")
+    location_prefix = _sanitize_location_prefix((location_doc or {}).get("location_prefix"))
+    return f"{base_url}/locations/{location_prefix}-{location_slug}"
 
 
 @sitemap_router.get("/sitemap.xml", response_class=Response)
@@ -161,7 +174,7 @@ async def get_sitemap(request: Request):
                 if slug:
                     lastmod = _format_date(loc.get("generated_at"))
                     urls.append(f"""  <url>
-    <loc>{base_url}/locations/custom-sublimation-{slug}</loc>
+    <loc>{_build_location_url(base_url, loc)}</loc>
     <lastmod>{lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -206,7 +219,7 @@ async def get_locations_sitemap(request: Request):
                 if slug:
                     lastmod = _format_date(loc.get("generated_at"))
                     urls.append(f"""  <url>
-    <loc>{base_url}/locations/custom-sublimation-{slug}</loc>
+    <loc>{_build_location_url(base_url, loc)}</loc>
     <lastmod>{lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>{priority}</priority>
