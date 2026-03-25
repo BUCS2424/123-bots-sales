@@ -77,6 +77,33 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
   - Added reusable panel for lead/client contexts with quote list + create/edit + eSign link actions
   - Added public signing route in app: `/sign/:quoteId`
   - Installed ZIP-required frontend dependencies (`@dnd-kit/*`, `@uiw/react-md-editor`, `react-signature-canvas`, `@tiptap/*`, supporting packages)
+- [x] **Quote Configuration Modal + Quote-specific Catalogs (separate from cart)**
+  - Added quote settings route: `/admin/quotes/settings`
+  - Added **Configuration** button on Quote settings page (top-right), opening modal with:
+    - From-field visibility toggles (business name, address, city/state/zip, phone, email)
+    - Stripe fee charging enable/disable toggle
+    - Deposit value number input + deposit type dropdown (`%` or `$`)
+    - Synced business information/ logo preview from Business Information (General Settings)
+  - Added quote-specific catalogs (separate DB collections from cart):
+    - Products: `quote_products`
+    - Services: `quote_services`
+  - Added quote settings cog/button on QuoteBuilder left of Save Draft
+  - QuoteBuilder now uses quote-specific endpoints:
+    - `/api/quotes/catalog/products`
+    - `/api/quotes/catalog/services`
+  - Added quote form config APIs:
+    - `GET /api/quotes/config`
+    - `PUT /api/quotes/config`
+  - Quote preview behavior now follows config:
+    - General Settings logo synced to top-right (text business block removed)
+    - FROM fields shown/hidden per configuration
+    - Stripe fee line shown only if enabled
+    - Deposit display uses configured `%` or `$` type/value
+  - Added `quotes_enabled` feature flag and wired visibility gating:
+    - Sidebar Quotes menu
+    - Lead modal Quotes tab
+    - Client page Quotes tab
+    - Quote routes show disabled message when flag is OFF
 
 ### Completed (March 23, 2026)
 - [x] GitHub project cloned and dependencies installed
@@ -131,6 +158,9 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 - Testing Agent Iteration 63: PASS (Backend 100%, Frontend 100%)
   - Verified sidebar menu route, lead modal tab, client page tab, quote builder page, contract template CRUD, quote CRUD, and public signing flow
   - Verified no regressions across Opportunities and Booking modules
+- Testing Agent Iteration 66: PASS (Backend 100%, Frontend 100%)
+  - Verified Configuration modal fields and behavior, quote-specific catalog separation, quote settings cog placement, and quotes feature-flag toggling
+  - Verified quote config API validation (`deposit_type`, `deposit_value`) and UI visibility rules
 
 ## URL Structure
 | Page | URL |
