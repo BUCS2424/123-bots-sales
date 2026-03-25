@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, useLocation, Navigate, useNavigate } from
 import { CartProvider } from './context/CartContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SiteSettingsProvider, useSiteSettings } from './context/SiteSettingsContext';
+import { RadioProvider } from './context/RadioContext';
 import { Toaster } from './components/ui/toaster';
 import FloatingNav from './components/FloatingNav';
 import HomePage from './pages/HomePage';
@@ -48,6 +49,7 @@ import ScheduleDemoPage from './pages/ScheduleDemoPage';
 import BuyLeasePage from './pages/BuyLeasePage';
 import ResourcesPage from './pages/ResourcesPage';
 import CategoryLandingPage from './pages/CategoryLandingPage';
+import PublicBookingPage from './pages/PublicBookingPage';
 
 // Age Verification
 import AgeVerificationModal from './components/AgeVerificationModal';
@@ -182,12 +184,13 @@ const ImpersonationBanner = () => {
 const AppContent = () => {
   return (
     <div className="App bg-void-base min-h-screen">
-      <BrowserRouter>
-        <A2GAnalyticsScript />
-        <ImpersonationBanner />
-        <ScrollToTop />
-        <AgeVerificationModal />
-        <Routes>
+      <RadioProvider>
+        <BrowserRouter>
+          <A2GAnalyticsScript />
+          <ImpersonationBanner />
+          <ScrollToTop />
+          <AgeVerificationModal />
+          <Routes>
           {/* Dev Settings Routes (Super Admin Only) */}
           <Route path="/dev/settings/*" element={<DevSettingsLayout />} />
           
@@ -211,10 +214,10 @@ const AppContent = () => {
           } />
           
           {/* Public Routes - Protected by Maintenance Guard */}
-          <Route path="/*" element={
-            <MaintenanceGuard>
-              <PublicLayout>
-                <Routes>
+            <Route path="/*" element={
+              <MaintenanceGuard>
+                <PublicLayout>
+                  <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/shop" element={<CategoryLandingPage />} />
                   <Route path="/categories" element={<CategoryLandingPage />} />
@@ -228,7 +231,8 @@ const AppContent = () => {
                   <Route path="/schedule-a-demo" element={<ScheduleDemoPage />} />
                   <Route path="/rent-or-buy-a-cleaning-bot" element={<BuyLeasePage />} />
                   <Route path="/123-bots-resources" element={<ResourcesPage />} />
-                  <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/booking/:bookingSlug" element={<PublicBookingPage />} />
                   <Route path="/checkout" element={<CheckoutPage />} />
                   <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
                   <Route path="/login" element={<LoginPage />} />
@@ -248,13 +252,14 @@ const AppContent = () => {
                   <Route path="/rv-repair/*" element={<Navigate to="/" replace />} />
                   <Route path="/employment/*" element={<Navigate to="/" replace />} />
                   <Route path="/job-application/*" element={<Navigate to="/" replace />} />
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </PublicLayout>
-            </MaintenanceGuard>
-          } />
-        </Routes>
-      </BrowserRouter>
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </Routes>
+                </PublicLayout>
+              </MaintenanceGuard>
+            } />
+          </Routes>
+        </BrowserRouter>
+      </RadioProvider>
       <Toaster />
     </div>
   );

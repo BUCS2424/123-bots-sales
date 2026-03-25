@@ -6,7 +6,7 @@ import {
   LogOut, Home, Settings, ChevronRight, ChevronDown, Menu, X, BarChart3,
   Bell, Search, DollarSign, ShoppingBag, Gift, FolderTree, Layers, Cloud, User, Sliders, Code,
   Store, Truck, CreditCard, CheckCircle, LayoutGrid, Clock, FileText, UserPlus, Briefcase,
-  Calendar, CalendarOff, Wrench, Shield, BookOpen, PiggyBank, Star, Megaphone, Mail, Zap, MessageCircle, Building2, Box, Globe
+  Calendar, CalendarOff, Wrench, Shield, BookOpen, PiggyBank, Star, Megaphone, Mail, Zap, MessageCircle, Building2, Box, Globe, Radio as RadioIcon
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -59,6 +59,14 @@ import AdminKnowledgeBase from './admin/AdminKnowledgeBase';
 import AdminLeadsKanban from './admin/AdminLeadsKanban';
 import AdminPrintfulSettings from './admin/AdminPrintfulSettings';
 import AdminYoycolSettings from './admin/AdminYoycolSettings';
+import A2GTasksPage from './A2GTasksPage';
+import A2GContactsPage from './A2GContactsPage';
+import A2GContactDetailPage from './A2GContactDetailPage';
+import A2GCalendarPage from './A2GCalendarPage';
+import A2GRadioPage from './A2GRadioPage';
+import A2GAndGoPage from './A2GAndGoPage';
+import A2GBookingSettingsPage from './A2GBookingSettingsPage';
+import { AdminRadioMiniPlayer } from '../components/admin/AdminRadioMiniPlayer';
 
 // Johnny 5 Portal
 import Johnny5Dashboard from './admin/Johnny5Dashboard';
@@ -225,8 +233,44 @@ const AdminLayout = () => {
       icon: Users,
       children: [
         { path: '/admin/leads', label: 'Opportunities', icon: Users },
+        { path: '/admin/tasks', label: 'Tasks', icon: CheckCircle },
         ...(cartEnabled ? [{ path: '/admin/user-management/customers', label: 'Customers', icon: Users }] : []),
       ],
+    },
+    {
+      id: 'contacts',
+      type: 'single',
+      path: '/admin/contacts',
+      label: 'Contacts',
+      icon: User,
+    },
+    {
+      id: 'calendar',
+      type: 'single',
+      path: '/admin/calendar',
+      label: 'Calendar',
+      icon: Calendar,
+    },
+    {
+      id: 'radio',
+      type: 'single',
+      path: '/admin/radio',
+      label: 'Radio',
+      icon: RadioIcon,
+    },
+    {
+      id: 'andgo',
+      type: 'single',
+      path: '/admin/andgo',
+      label: 'And...Go',
+      icon: Globe,
+    },
+    {
+      id: 'booking',
+      type: 'single',
+      path: '/admin/booking',
+      label: 'Booking',
+      icon: Clock,
     },
     {
       id: 'user-management',
@@ -502,6 +546,16 @@ const AdminLayout = () => {
     if (path === '/admin/cart') return <AdminDashboard />;
     if (path === '/admin/orders') return <AdminOrders />;
     if (path === '/admin/leads') return <AdminLeadsKanban />;
+    if (path === '/admin/tasks') return <A2GTasksPage />;
+    if (path === '/admin/contacts') return <A2GContactsPage />;
+    if (path.match(/^\/admin\/contacts\/[^/]+$/)) {
+      const contactId = path.split('/').pop();
+      return <A2GContactDetailPage contactId={contactId} />;
+    }
+    if (path === '/admin/calendar') return <A2GCalendarPage />;
+    if (path === '/admin/radio') return <A2GRadioPage />;
+    if (path === '/admin/andgo') return <A2GAndGoPage />;
+    if (path === '/admin/booking') return <A2GBookingSettingsPage />;
     if (path === '/admin/products') return <AdminProducts />;
     if (path === '/admin/products/new') return <AdminProductEditor />;
     if (path.match(/^\/admin\/products\/[^/]+$/)) {
@@ -716,6 +770,7 @@ const AdminLayout = () => {
               {section.type === 'single' ? (
                 <Link
                   to={section.path}
+                  data-testid={`admin-sidebar-link-${section.path.replace(/\//g, '-').replace(/^-+/, '')}`}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                     isActive(section.path)
                       ? `${activeColor} text-white shadow-lg shadow-blue-500/30`
@@ -862,6 +917,7 @@ const AdminLayout = () => {
                   {section.type === 'single' ? (
                     <Link
                       to={section.path}
+                      data-testid={`admin-mobile-sidebar-link-${section.path.replace(/\//g, '-').replace(/^-+/, '')}`}
                       onClick={() => setMobileMenuOpen(false)}
                       className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                         isActive(section.path)
@@ -1053,6 +1109,8 @@ const AdminLayout = () => {
           {getCurrentPage()}
         </main>
       </div>
+
+      <AdminRadioMiniPlayer />
 
       <Toaster />
     </div>

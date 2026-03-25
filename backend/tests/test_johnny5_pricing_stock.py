@@ -14,7 +14,7 @@ import io
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 if not BASE_URL:
-    BASE_URL = "https://bot-shop-demo.preview.emergentagent.com"
+    BASE_URL = "https://a2g-integration.preview.emergentagent.com"
 
 # Admin credentials
 ADMIN_EMAIL = "super@amino.com"

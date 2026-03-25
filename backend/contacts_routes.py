@@ -76,6 +76,45 @@ async def list_contacts(current_user: dict = Depends(get_current_user)):
     return contacts
 
 
+# Export routes MUST be defined BEFORE /{contact_id} to avoid route conflict
+@router.get("/export")
+async def export_contacts_json(current_user: dict = Depends(get_current_user)):
+    contacts = await db.contacts.find({"user_id": current_user["id"]}, {"_id": 0}).sort("name", 1).to_list(2000)
+    return contacts
+
+
+@router.get("/export/csv")
+async def export_contacts_csv(current_user: dict = Depends(get_current_user)):
+    contacts = await db.contacts.find({"user_id": current_user["id"]}, {"_id": 0}).sort("name", 1).to_list(2000)
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=["id", "name", "email", "mobile_phone", "organization", "status", "created_at"])
+    writer.writeheader()
+    for c in contacts:
+        writer.writerow({k: c.get(k, "") for k in writer.fieldnames})
+    return PlainTextResponse(content=output.getvalue(), media_type="text/csv")
+
+
+@router.get("/export/vcf")
+async def export_contacts_vcf(current_user: dict = Depends(get_current_user)):
+    contacts = await db.contacts.find({"user_id": current_user["id"]}, {"_id": 0}).sort("name", 1).to_list(2000)
+    cards = []
+    for c in contacts:
+        cards.append(
+            "\n".join(
+                [
+                    "BEGIN:VCARD",
+                    "VERSION:3.0",
+                    f"FN:{c.get('name', '')}",
+                    f"N:{c.get('last_name', '')};{c.get('first_name', '')};;;",
+                    f"EMAIL:{c.get('email', '')}",
+                    f"TEL:{c.get('mobile_phone', '')}",
+                    "END:VCARD",
+                ]
+            )
+        )
+    return PlainTextResponse(content="\n".join(cards), media_type="text/vcard")
+
+
 @router.get("/{contact_id}")
 async def get_contact(contact_id: str, current_user: dict = Depends(get_current_user)):
     contact = await db.contacts.find_one({"id": contact_id, "user_id": current_user["id"]}, {"_id": 0})
@@ -123,43 +162,6 @@ async def delete_contact(contact_id: str, current_user: dict = Depends(get_curre
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Contact not found")
     return {"status": "deleted"}
-
-
-@router.get("/export")
-async def export_contacts_json(current_user: dict = Depends(get_current_user)):
-    return await list_contacts(current_user)
-
-
-@router.get("/export/csv")
-async def export_contacts_csv(current_user: dict = Depends(get_current_user)):
-    contacts = await list_contacts(current_user)
-    output = io.StringIO()
-    writer = csv.DictWriter(output, fieldnames=["id", "name", "email", "mobile_phone", "organization", "status", "created_at"])
-    writer.writeheader()
-    for c in contacts:
-        writer.writerow({k: c.get(k, "") for k in writer.fieldnames})
-    return PlainTextResponse(content=output.getvalue(), media_type="text/csv")
-
-
-@router.get("/export/vcf")
-async def export_contacts_vcf(current_user: dict = Depends(get_current_user)):
-    contacts = await list_contacts(current_user)
-    cards = []
-    for c in contacts:
-        cards.append(
-            "\n".join(
-                [
-                    "BEGIN:VCARD",
-                    "VERSION:3.0",
-                    f"FN:{c.get('name', '')}",
-                    f"N:{c.get('last_name', '')};{c.get('first_name', '')};;;",
-                    f"EMAIL:{c.get('email', '')}",
-                    f"TEL:{c.get('mobile_phone', '')}",
-                    "END:VCARD",
-                ]
-            )
-        )
-    return PlainTextResponse(content="\n".join(cards), media_type="text/vcard")
 
 
 @router.post("/import")
