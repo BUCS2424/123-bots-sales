@@ -58,6 +58,13 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
     - `Other Meeting URL` + plain text custom details field
   - Added Settings tab `Location Defaults` card (default location type, physical address, other meeting default)
   - Backend updated to persist/apply new fields in invite/public booking flows and return detailed booking response payload
+- [x] **Opportunities: Create an Opportunity flow (same original modal)**
+  - Added top-right `Create an Opportunity` button on Opportunities page
+  - Opens the same full Opportunity modal/tabs used by edit mode
+  - Create mode uses required fields and submits via `POST /api/leads/`
+  - New opportunities are forced into Opportunity column (`status: opportunity`) with default stage `1. New Inquiry`
+  - After successful create, modal closes and new card appears in Opportunity column
+  - Edit mode preserved (Update flow, Delete + Convert buttons remain for existing cards)
 
 ### Completed (March 23, 2026)
 - [x] GitHub project cloned and dependencies installed
@@ -106,6 +113,9 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
   - Verified location type behavior in admin + public booking forms
   - Verified mutually-exclusive online meeting checkboxes and field rendering
   - Verified backend handling for physical/saysme/other meeting modes
+- Testing Agent Iteration 62: PASS (Backend 100%, Frontend 100%)
+  - Verified Create Opportunity button placement, modal behavior, validation, and Opportunity-column insertion
+  - Verified no regressions in edit mode, drag-drop, delete, and convert-to-client flows
 
 ## URL Structure
 | Page | URL |
