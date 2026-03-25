@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, Header
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
-from bson import ObjectId
 import uuid
 
 from auth import decode_token, is_admin_or_above, get_password_hash, UserRole
+from email_utils import send_email
 
 router = APIRouter(prefix="/api/leads", tags=["leads"])
 
@@ -108,6 +108,106 @@ class LeadNotesUpdate(BaseModel):
 
 # Valid statuses for the kanban
 VALID_STATUSES = ["opportunity", "needs_order", "needs_support", "miscellaneous"]
+
+
+def _normalize_appointments(value: Optional[List[dict]]) -> List[dict]:
+    if not isinstance(value, list):
+        return []
+    normalized = []
+    for appointment in value:
+        if not isinstance(appointment, dict):
+            continue
+        normalized.append({
+            "id": appointment.get("id") or "",
+            "date": appointment.get("date") or "",
+            "title": appointment.get("title") or "",
+            "location": appointment.get("location") or "",
+            "notes": appointment.get("notes") or "",
+            "location_type": appointment.get("location_type") or "",
+            "physical_address": appointment.get("physical_address") or "",
+            "use_saysme": bool(appointment.get("use_saysme", False)),
+            "saysme_room_name": appointment.get("saysme_room_name") or "",
+            "saysme_meeting_url": appointment.get("saysme_meeting_url") or "",
+            "use_other_meeting": bool(appointment.get("use_other_meeting", False)),
+            "other_meeting_url": appointment.get("other_meeting_url") or "",
+        })
+    return normalized
+
+
+def _build_appointment_email_content(lead: dict, appointment: dict) -> tuple[str, str]:
+    lead_name = lead.get("primary_contact_name") or lead.get("name") or "Client"
+    title = appointment.get("title") or "Scheduled appointment"
+    date_value = appointment.get("date") or "TBD"
+    notes = appointment.get("notes") or ""
+    location_type = appointment.get("location_type") or ""
+    physical_address = appointment.get("physical_address") or ""
+    saysme_url = appointment.get("saysme_meeting_url") or ""
+    other_meeting_url = appointment.get("other_meeting_url") or ""
+
+    location_lines = []
+    if location_type == "physical" and physical_address:
+        location_lines.append(f"Physical Address: {physical_address}")
+    if saysme_url:
+        location_lines.append(f"Meeting Room (SaySMe): {saysme_url}")
+    if other_meeting_url:
+        location_lines.append(f"Other Meeting URL: {other_meeting_url}")
+    if not location_lines and appointment.get("location"):
+        location_lines.append(f"Location: {appointment.get('location')}")
+
+    location_html = "<br>".join(location_lines) if location_lines else "Location details pending"
+    location_text = "\n".join(location_lines) if location_lines else "Location details pending"
+
+    subject = f"Appointment Update: {title}"
+    html_content = f"""
+    <html>
+      <body style=\"font-family: Arial, sans-serif; color: #1f2937;\">
+        <h2 style=\"margin-bottom: 8px;\">Appointment Updated</h2>
+        <p style=\"margin-top: 0;\">Opportunity: <strong>{lead.get('opportunity_name') or lead.get('name') or 'Opportunity'}</strong></p>
+        <p><strong>Contact:</strong> {lead_name}</p>
+        <p><strong>Title:</strong> {title}</p>
+        <p><strong>Date/Time:</strong> {date_value}</p>
+        <p><strong>Location Details:</strong><br>{location_html}</p>
+        {f'<p><strong>Notes:</strong> {notes}</p>' if notes else ''}
+        <hr>
+        <p style=\"font-size: 12px; color: #6b7280;\">This update was sent from 123Bots Opportunities.</p>
+      </body>
+    </html>
+    """
+    notes_text = f"Notes: {notes}\n" if notes else ""
+    text_content = (
+        f"Appointment Updated\n"
+        f"Opportunity: {lead.get('opportunity_name') or lead.get('name') or 'Opportunity'}\n"
+        f"Contact: {lead_name}\n"
+        f"Title: {title}\n"
+        f"Date/Time: {date_value}\n"
+        f"Location Details:\n{location_text}\n"
+        f"{notes_text}"
+    )
+    return subject, html_content, text_content
+
+
+async def _send_appointment_update_notifications(lead: dict, sender_email: Optional[str]) -> int:
+    appointments = _normalize_appointments(lead.get("appointments"))
+    if not appointments:
+        return 0
+
+    latest_appointment = appointments[-1]
+    subject, html_content, text_content = _build_appointment_email_content(lead, latest_appointment)
+
+    recipients = []
+    primary_email = (lead.get("primary_email") or lead.get("email") or "").strip().lower()
+    if primary_email:
+        recipients.append(primary_email)
+    sender_clean = (sender_email or "").strip().lower()
+    if sender_clean and sender_clean not in recipients:
+        recipients.append(sender_clean)
+
+    sent_count = 0
+    for recipient in recipients:
+        sent = await send_email(recipient, subject, html_content, text_content)
+        if sent:
+            sent_count += 1
+    return sent_count
 
 
 @router.post("/")
@@ -222,18 +322,39 @@ async def update_lead(
     db=Depends(get_db)
 ):
     """Update a lead"""
-    _require_admin_token(authorization)
+    admin_user = _require_admin_token(authorization)
     
     lead = await db.leads.find_one({"id": lead_id})
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
     
     update_data = {k: v for k, v in update.model_dump().items() if v is not None}
+    appointment_notifications_sent = 0
+    appointments_changed = False
+
+    if "appointments" in update_data:
+        new_appointments = _normalize_appointments(update_data.get("appointments"))
+        old_appointments = _normalize_appointments(lead.get("appointments"))
+        update_data["appointments"] = new_appointments
+        appointments_changed = new_appointments != old_appointments
+
+        if appointments_changed and len(new_appointments) > 0:
+            update_data["last_appointment_email_sent_at"] = datetime.now(timezone.utc).isoformat()
     if update_data:
         update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
         await db.leads.update_one({"id": lead_id}, {"$set": update_data})
+        if appointments_changed and len(update_data.get("appointments", [])) > 0:
+            updated_lead = await db.leads.find_one({"id": lead_id}, {"_id": 0})
+            appointment_notifications_sent = await _send_appointment_update_notifications(
+                updated_lead or {**lead, **update_data},
+                admin_user.get("email"),
+            )
     
-    return {"success": True, "message": "Lead updated"}
+    return {
+        "success": True,
+        "message": "Lead updated",
+        "appointment_notifications_sent": appointment_notifications_sent,
+    }
 
 
 @router.patch("/{lead_id}/status")

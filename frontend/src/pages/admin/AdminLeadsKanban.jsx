@@ -56,6 +56,16 @@ const OPPORTUNITY_STATUS_OPTIONS = ['Open', 'In Progress', 'Won', 'Lost', 'On Ho
 const PAYMENT_STATUS_OPTIONS = ['Pending', 'Paid', 'Failed', 'Refunded'];
 const PAYMENT_METHOD_OPTIONS = ['Cash', 'Card', 'ACH', 'Wire', 'Check'];
 
+const buildSecureSaysmeRoomName = (leadName = '') => {
+  const cleaned = (leadName || 'meeting')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .slice(0, 22);
+  const suffix = Math.random().toString(36).slice(2, 8);
+  return `${cleaned || 'meeting'}-${suffix}`;
+};
+
 const normalizeLeadForEdit = (lead) => ({
   ...lead,
   primary_contact_name: lead.primary_contact_name || lead.name || '',
@@ -104,7 +114,17 @@ const AdminLeadsKanban = () => {
 
   const [additionalContactInput, setAdditionalContactInput] = useState('');
   const [tagInput, setTagInput] = useState('');
-  const [appointmentDraft, setAppointmentDraft] = useState({ date: '', title: '', location: '', notes: '' });
+  const [appointmentDraft, setAppointmentDraft] = useState({
+    date: '',
+    title: '',
+    location_type: 'physical',
+    physical_address: '',
+    use_saysme: false,
+    saysme_room_name: '',
+    use_other_meeting: false,
+    other_meeting_url: '',
+    notes: '',
+  });
   const [taskDraft, setTaskDraft] = useState('');
   const [timelineNoteDraft, setTimelineNoteDraft] = useState('');
   const [paymentDraft, setPaymentDraft] = useState({ date: '', amount: '', status: 'Pending', method: 'Card', note: '' });
@@ -179,7 +199,17 @@ const AdminLeadsKanban = () => {
     setHideEmptyFields(false);
     setAdditionalContactInput('');
     setTagInput('');
-    setAppointmentDraft({ date: '', title: '', location: '', notes: '' });
+    setAppointmentDraft({
+      date: '',
+      title: '',
+      location_type: 'physical',
+      physical_address: '',
+      use_saysme: false,
+      saysme_room_name: '',
+      use_other_meeting: false,
+      other_meeting_url: '',
+      notes: '',
+    });
     setTaskDraft('');
     setTimelineNoteDraft('');
     setPaymentDraft({ date: '', amount: '', status: 'Pending', method: 'Card', note: '' });
@@ -280,8 +310,62 @@ const AdminLeadsKanban = () => {
 
   const addAppointment = () => {
     if (!appointmentDraft.date || !appointmentDraft.title) return;
-    addArrayItem('appointments', { ...appointmentDraft, id: crypto.randomUUID?.() || Date.now().toString() });
-    setAppointmentDraft({ date: '', title: '', location: '', notes: '' });
+
+    if (appointmentDraft.location_type === 'physical' && !appointmentDraft.physical_address.trim()) {
+      toast({ title: 'Address Required', description: 'Please add a physical address for this appointment.', variant: 'destructive' });
+      return;
+    }
+
+    if (appointmentDraft.location_type === 'online' && !appointmentDraft.use_saysme && !appointmentDraft.use_other_meeting) {
+      toast({ title: 'Meeting Link Required', description: 'Select SaySMe or Other meeting option.', variant: 'destructive' });
+      return;
+    }
+
+    if (appointmentDraft.location_type === 'online' && appointmentDraft.use_other_meeting && !appointmentDraft.other_meeting_url.trim()) {
+      toast({ title: 'Other Meeting URL Required', description: 'Please provide the custom online meeting URL.', variant: 'destructive' });
+      return;
+    }
+
+    const saysmeRoomName = appointmentDraft.use_saysme
+      ? (appointmentDraft.saysme_room_name || buildSecureSaysmeRoomName(selectedLead?.primary_contact_name || selectedLead?.name || 'meeting'))
+      : '';
+
+    const saysmeMeetingUrl = appointmentDraft.use_saysme
+      ? `https://meet.saysme.org/${saysmeRoomName}`
+      : '';
+
+    const locationSummary = appointmentDraft.location_type === 'physical'
+      ? appointmentDraft.physical_address
+      : [saysmeMeetingUrl, appointmentDraft.use_other_meeting ? appointmentDraft.other_meeting_url : '']
+        .filter(Boolean)
+        .join(' | ');
+
+    addArrayItem('appointments', {
+      id: crypto.randomUUID?.() || Date.now().toString(),
+      date: appointmentDraft.date,
+      title: appointmentDraft.title,
+      location: locationSummary,
+      notes: appointmentDraft.notes,
+      location_type: appointmentDraft.location_type,
+      physical_address: appointmentDraft.location_type === 'physical' ? appointmentDraft.physical_address : '',
+      use_saysme: appointmentDraft.use_saysme,
+      saysme_room_name: saysmeRoomName,
+      saysme_meeting_url: saysmeMeetingUrl,
+      use_other_meeting: appointmentDraft.use_other_meeting,
+      other_meeting_url: appointmentDraft.use_other_meeting ? appointmentDraft.other_meeting_url : '',
+    });
+
+    setAppointmentDraft({
+      date: '',
+      title: '',
+      location_type: 'physical',
+      physical_address: '',
+      use_saysme: false,
+      saysme_room_name: '',
+      use_other_meeting: false,
+      other_meeting_url: '',
+      notes: '',
+    });
   };
 
   const addTask = () => {
@@ -721,9 +805,104 @@ const AdminLeadsKanban = () => {
                           <Input value={appointmentDraft.title} onChange={(event) => setAppointmentDraft((prev) => ({ ...prev, title: event.target.value }))} className="h-12 mt-2" data-testid="opportunity-appointment-title-input" />
                         </div>
                         <div>
-                          <Label className="text-sm font-semibold">Location</Label>
-                          <Input value={appointmentDraft.location} onChange={(event) => setAppointmentDraft((prev) => ({ ...prev, location: event.target.value }))} className="h-12 mt-2" data-testid="opportunity-appointment-location-input" />
+                          <Label className="text-sm font-semibold">Location Type</Label>
+                          <select
+                            value={appointmentDraft.location_type}
+                            onChange={(event) => setAppointmentDraft((prev) => ({
+                              ...prev,
+                              location_type: event.target.value,
+                              physical_address: event.target.value === 'physical' ? prev.physical_address : '',
+                              use_saysme: event.target.value === 'online' ? prev.use_saysme : false,
+                              use_other_meeting: event.target.value === 'online' ? prev.use_other_meeting : false,
+                              saysme_room_name: event.target.value === 'online' ? prev.saysme_room_name : '',
+                              other_meeting_url: event.target.value === 'online' ? prev.other_meeting_url : '',
+                            }))}
+                            className="w-full h-12 mt-2 rounded-md border border-gray-300 px-3"
+                            data-testid="opportunity-appointment-location-type-select"
+                          >
+                            <option value="physical">Physical Location</option>
+                            <option value="online">Online Meeting</option>
+                          </select>
                         </div>
+
+                        {appointmentDraft.location_type === 'physical' && (
+                          <div className="md:col-span-2">
+                            <Label className="text-sm font-semibold">Physical Address</Label>
+                            <Input
+                              value={appointmentDraft.physical_address}
+                              onChange={(event) => setAppointmentDraft((prev) => ({ ...prev, physical_address: event.target.value }))}
+                              className="h-12 mt-2"
+                              placeholder="Enter full address"
+                              data-testid="opportunity-appointment-physical-address-input"
+                            />
+                          </div>
+                        )}
+
+                        {appointmentDraft.location_type === 'online' && (
+                          <div className="md:col-span-2 space-y-3 rounded-md border border-gray-200 p-3" data-testid="opportunity-appointment-online-options-wrap">
+                            <label className="flex items-center gap-2 text-sm">
+                              <Checkbox
+                                checked={appointmentDraft.use_saysme}
+                                onCheckedChange={(checked) => setAppointmentDraft((prev) => {
+                                  const enabled = Boolean(checked);
+                                  const generatedRoom = enabled
+                                    ? (prev.saysme_room_name || buildSecureSaysmeRoomName(selectedLead?.primary_contact_name || selectedLead?.name || 'meeting'))
+                                    : '';
+                                  return {
+                                    ...prev,
+                                    use_saysme: enabled,
+                                    saysme_room_name: generatedRoom,
+                                  };
+                                })}
+                                data-testid="opportunity-appointment-saysme-checkbox"
+                              />
+                              <span>Use https://meet.saysme.org/</span>
+                            </label>
+
+                            {appointmentDraft.use_saysme && (
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                <div>
+                                  <Label className="text-xs font-semibold">Secure Room Name</Label>
+                                  <Input
+                                    value={appointmentDraft.saysme_room_name}
+                                    onChange={(event) => setAppointmentDraft((prev) => ({ ...prev, saysme_room_name: event.target.value.trim() }))}
+                                    className="h-10 mt-1"
+                                    data-testid="opportunity-appointment-saysme-room-input"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-xs font-semibold">Meeting URL</Label>
+                                  <Input
+                                    value={appointmentDraft.saysme_room_name ? `https://meet.saysme.org/${appointmentDraft.saysme_room_name}` : ''}
+                                    readOnly
+                                    className="h-10 mt-1 bg-gray-50"
+                                    data-testid="opportunity-appointment-saysme-url-preview"
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            <label className="flex items-center gap-2 text-sm">
+                              <Checkbox
+                                checked={appointmentDraft.use_other_meeting}
+                                onCheckedChange={(checked) => setAppointmentDraft((prev) => ({ ...prev, use_other_meeting: Boolean(checked) }))}
+                                data-testid="opportunity-appointment-other-meeting-checkbox"
+                              />
+                              <span>Other Meeting URL</span>
+                            </label>
+
+                            {appointmentDraft.use_other_meeting && (
+                              <Input
+                                value={appointmentDraft.other_meeting_url}
+                                onChange={(event) => setAppointmentDraft((prev) => ({ ...prev, other_meeting_url: event.target.value }))}
+                                className="h-10"
+                                placeholder="https://..."
+                                data-testid="opportunity-appointment-other-meeting-url-input"
+                              />
+                            )}
+                          </div>
+                        )}
+
                         <div>
                           <Label className="text-sm font-semibold">Notes</Label>
                           <Input value={appointmentDraft.notes} onChange={(event) => setAppointmentDraft((prev) => ({ ...prev, notes: event.target.value }))} className="h-12 mt-2" data-testid="opportunity-appointment-notes-input" />
@@ -735,7 +914,35 @@ const AdminLeadsKanban = () => {
                           <div key={appointment.id || `${appointment.title}-${index}`} className="border border-gray-200 rounded-md p-3 flex items-start justify-between">
                             <div>
                               <p className="font-semibold">{appointment.title}</p>
-                              <p className="text-sm text-gray-500">{appointment.date} {appointment.location ? `• ${appointment.location}` : ''}</p>
+                              <p className="text-sm text-gray-500">{appointment.date}</p>
+                              {appointment.location_type === 'physical' && appointment.physical_address && (
+                                <p className="text-sm text-gray-600 mt-1" data-testid={`opportunity-appointment-physical-display-${index}`}>Address: {appointment.physical_address}</p>
+                              )}
+                              {appointment.saysme_meeting_url && (
+                                <a
+                                  href={appointment.saysme_meeting_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm text-blue-600 hover:underline mt-1 block"
+                                  data-testid={`opportunity-appointment-saysme-url-display-${index}`}
+                                >
+                                  {appointment.saysme_meeting_url}
+                                </a>
+                              )}
+                              {appointment.other_meeting_url && (
+                                <a
+                                  href={appointment.other_meeting_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm text-blue-600 hover:underline mt-1 block"
+                                  data-testid={`opportunity-appointment-other-url-display-${index}`}
+                                >
+                                  {appointment.other_meeting_url}
+                                </a>
+                              )}
+                              {!appointment.physical_address && !appointment.saysme_meeting_url && !appointment.other_meeting_url && appointment.location ? (
+                                <p className="text-sm text-gray-600 mt-1">{appointment.location}</p>
+                              ) : null}
                               {appointment.notes ? <p className="text-sm text-gray-600 mt-1">{appointment.notes}</p> : null}
                             </div>
                             <Button variant="ghost" size="sm" onClick={() => removeArrayItem('appointments', index)} data-testid={`opportunity-appointment-remove-${index}`}><Trash2 className="w-4 h-4" /></Button>
