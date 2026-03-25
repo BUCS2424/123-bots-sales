@@ -46,6 +46,7 @@ const DevFeatureFlags = () => {
   // Feature flags (saved to DB)
   const [featureFlags, setFeatureFlags] = useState({
     cart_enabled: true,
+    quotes_enabled: true,
     pawn_checkout: true,
     storage_online: false,
     storage_pos: false,
@@ -66,6 +67,7 @@ const DevFeatureFlags = () => {
   // Feature definitions
   const featureDefinitions = [
     { id: 'cart_enabled', name: 'Shopping Cart Enabled', description: 'Show/hide storefront cart access in main navigation', category: 'E-commerce' },
+    { id: 'quotes_enabled', name: 'Quotes', description: 'Show/hide Quotes feature across sidebar, lead modal, and client page', category: 'E-commerce' },
     { id: 'pawn_checkout', name: 'Product Checkout', description: 'When OFF, storefront runs in catalog mode (no prices, cart, or checkout)', category: 'E-commerce' },
     { id: 'storage_online', name: 'Online Storage Rentals', description: 'Allow customers to rent storage units online', category: 'Storage' },
     { id: 'storage_pos', name: 'Storage POS', description: 'Point of sale for in-person storage rentals', category: 'Storage' },

@@ -43,6 +43,17 @@ class QuoteItem(BaseModel):
     category: Optional[str] = ""
 
 
+class QuoteCatalogItem(BaseModel):
+    name: str
+    description: Optional[str] = ""
+    category: Optional[str] = "General"
+    sku: Optional[str] = ""
+    price_onetime: Optional[float] = 0
+    price_monthly: Optional[float] = 0
+    price_yearly: Optional[float] = 0
+    is_active: bool = True
+
+
 class QuoteCreate(BaseModel):
     name: str
     notes: Optional[str] = ""
@@ -178,14 +189,116 @@ async def delete_contract_template(template_id: str, current_user=Depends(get_cu
 
 @router.get("/billing/products")
 async def list_quote_products(current_user=Depends(get_current_user)):
-    products = await db.products.find({}, {"_id": 0}).limit(500).to_list(500)
+    products = await db.quote_products.find({"user_id": current_user["id"]}, {"_id": 0}).limit(1000).to_list(1000)
     return {"products": products}
 
 
 @router.get("/billing/services")
 async def list_quote_services(current_user=Depends(get_current_user)):
-    services = await db.services.find({}, {"_id": 0}).limit(500).to_list(500)
+    services = await db.quote_services.find({"user_id": current_user["id"]}, {"_id": 0}).limit(1000).to_list(1000)
     return {"services": services}
+
+
+@router.get("/quotes/catalog/products")
+async def get_quote_catalog_products(current_user=Depends(get_current_user)):
+    products = await db.quote_products.find({"user_id": current_user["id"]}, {"_id": 0}).sort("name", 1).to_list(2000)
+    return {"products": products}
+
+
+@router.post("/quotes/catalog/products")
+async def create_quote_catalog_product(payload: QuoteCatalogItem, current_user=Depends(get_current_user)):
+    now = datetime.now(timezone.utc).isoformat()
+    doc = payload.model_dump()
+    doc.update({"id": str(uuid.uuid4()), "user_id": current_user["id"], "created_at": now, "updated_at": now})
+    await db.quote_products.insert_one(doc)
+    doc.pop("_id", None)
+    return doc
+
+
+@router.put("/quotes/catalog/products/{product_id}")
+async def update_quote_catalog_product(product_id: str, payload: QuoteCatalogItem, current_user=Depends(get_current_user)):
+    update = payload.model_dump()
+    update["updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.quote_products.update_one(
+        {"id": product_id, "user_id": current_user["id"]},
+        {"$set": update},
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    product = await db.quote_products.find_one({"id": product_id, "user_id": current_user["id"]}, {"_id": 0})
+    return product
+
+
+@router.delete("/quotes/catalog/products/{product_id}")
+async def delete_quote_catalog_product(product_id: str, current_user=Depends(get_current_user)):
+    result = await db.quote_products.delete_one({"id": product_id, "user_id": current_user["id"]})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return {"success": True}
+
+
+@router.get("/quotes/catalog/services")
+async def get_quote_catalog_services(current_user=Depends(get_current_user)):
+    services = await db.quote_services.find({"user_id": current_user["id"]}, {"_id": 0}).sort("name", 1).to_list(2000)
+    return {"services": services}
+
+
+@router.post("/quotes/catalog/services")
+async def create_quote_catalog_service(payload: QuoteCatalogItem, current_user=Depends(get_current_user)):
+    now = datetime.now(timezone.utc).isoformat()
+    doc = payload.model_dump()
+    doc.update({"id": str(uuid.uuid4()), "user_id": current_user["id"], "created_at": now, "updated_at": now})
+    await db.quote_services.insert_one(doc)
+    doc.pop("_id", None)
+    return doc
+
+
+@router.put("/quotes/catalog/services/{service_id}")
+async def update_quote_catalog_service(service_id: str, payload: QuoteCatalogItem, current_user=Depends(get_current_user)):
+    update = payload.model_dump()
+    update["updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.quote_services.update_one(
+        {"id": service_id, "user_id": current_user["id"]},
+        {"$set": update},
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Service not found")
+    service = await db.quote_services.find_one({"id": service_id, "user_id": current_user["id"]}, {"_id": 0})
+    return service
+
+
+@router.delete("/quotes/catalog/services/{service_id}")
+async def delete_quote_catalog_service(service_id: str, current_user=Depends(get_current_user)):
+    result = await db.quote_services.delete_one({"id": service_id, "user_id": current_user["id"]})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Service not found")
+    return {"success": True}
+
+
+@router.get("/quotes/catalog/lead-sales")
+async def get_quote_lead_sales(current_user=Depends(get_current_user)):
+    quotes = await db.quotes.find({"user_id": current_user["id"], "status": {"$in": ["sent", "signed", "draft"]}}, {"_id": 0}).sort("updated_at", -1).to_list(2000)
+    lead_ids = list({q.get("lead_id") for q in quotes if q.get("lead_id")})
+    leads = await db.leads.find({"id": {"$in": lead_ids}}, {"_id": 0, "id": 1, "primary_contact_name": 1, "primary_email": 1, "opportunity_name": 1}).to_list(2000) if lead_ids else []
+    leads_map = {lead.get("id"): lead for lead in leads}
+
+    results = []
+    for q in quotes:
+        lead = leads_map.get(q.get("lead_id"), {})
+        results.append(
+            {
+                "id": q.get("id"),
+                "lead_id": q.get("lead_id"),
+                "quote_name": q.get("name"),
+                "status": q.get("status", "draft"),
+                "total": q.get("total", 0),
+                "updated_at": q.get("updated_at"),
+                "lead_name": lead.get("primary_contact_name", ""),
+                "lead_email": lead.get("primary_email", ""),
+                "opportunity_name": lead.get("opportunity_name", ""),
+            }
+        )
+    return {"sales": results}
 
 
 @router.get("/leads/{lead_id}/quotes")

@@ -19,6 +19,7 @@ import { Textarea } from '../../components/ui/textarea';
 import { toast } from '../../hooks/use-toast';
 import { useAuth } from '../../context/AuthContext';
 import QuoteBuilderPage from '../quotes/QuoteBuilderPage';
+import { useSiteFeatureFlags } from '../../hooks/useSiteFeatureFlags';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -36,6 +37,7 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
   const customerId = propCustomerId || paramCustomerId;
   const navigate = useNavigate();
   const { startImpersonation } = useAuth();
+  const { quotes_enabled: quotesEnabled } = useSiteFeatureFlags();
   
   const [loading, setLoading] = useState(true);
   const [customerData, setCustomerData] = useState(null);
@@ -509,7 +511,7 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-flex">
+        <TabsList className={`grid w-full ${quotesEnabled ? 'grid-cols-5' : 'grid-cols-4'} lg:w-auto lg:inline-flex`}>
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <User className="w-4 h-4" /> Overview
           </TabsTrigger>
@@ -522,9 +524,11 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
           <TabsTrigger value="invoices" className="flex items-center gap-2">
             <FileText className="w-4 h-4" /> Invoices
           </TabsTrigger>
-          <TabsTrigger value="quotes-contracts-esign" className="flex items-center gap-2" data-testid="customer-quotes-contracts-tab-trigger">
-            <FileText className="w-4 h-4" /> Quotes
-          </TabsTrigger>
+          {quotesEnabled && (
+            <TabsTrigger value="quotes-contracts-esign" className="flex items-center gap-2" data-testid="customer-quotes-contracts-tab-trigger">
+              <FileText className="w-4 h-4" /> Quotes
+            </TabsTrigger>
+          )}
         </TabsList>
 
         {/* Overview Tab */}
@@ -816,20 +820,22 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="quotes-contracts-esign" data-testid="customer-quotes-contracts-tab-content">
-          <Card>
-            <CardHeader>
-              <CardTitle>Quotes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {linkedLeadId ? (
-                <QuoteBuilderPage leadId={linkedLeadId} quoteId="new" />
-              ) : (
-                <div className="text-sm text-gray-500" data-testid="customer-quotes-no-linked-lead">No linked lead found</div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+        {quotesEnabled && (
+          <TabsContent value="quotes-contracts-esign" data-testid="customer-quotes-contracts-tab-content">
+            <Card>
+              <CardHeader>
+                <CardTitle>Quotes</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {linkedLeadId ? (
+                  <QuoteBuilderPage leadId={linkedLeadId} quoteId="new" />
+                ) : (
+                  <div className="text-sm text-gray-500" data-testid="customer-quotes-no-linked-lead">No linked lead found</div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
       </Tabs>
 
       {/* Address Modal */}

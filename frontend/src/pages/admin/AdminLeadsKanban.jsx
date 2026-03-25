@@ -32,6 +32,7 @@ import { Checkbox } from '../../components/ui/checkbox';
 import { Dialog, DialogContent, DialogTitle } from '../../components/ui/dialog';
 import { toast } from '../../hooks/use-toast';
 import QuoteBuilderPage from '../quotes/QuoteBuilderPage';
+import { useSiteFeatureFlags } from '../../hooks/useSiteFeatureFlags';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -133,6 +134,7 @@ const isValueFilled = (value) => {
 };
 
 const AdminLeadsKanban = () => {
+  const { quotes_enabled: quotesEnabled } = useSiteFeatureFlags();
   const [leads, setLeads] = useState({ opportunity: [], needs_order: [], needs_support: [], miscellaneous: [] });
   const [loading, setLoading] = useState(true);
   const [draggedLead, setDraggedLead] = useState(null);
@@ -183,6 +185,16 @@ const AdminLeadsKanban = () => {
       setLoading(false);
     }
   }, [tokenHeaders]);
+
+  const visibleSectionTabs = useMemo(() => {
+    return SECTION_TABS.filter((tab) => (tab.id === 'quotes-contracts-esign' ? quotesEnabled : true));
+  }, [quotesEnabled]);
+
+  useEffect(() => {
+    if (!quotesEnabled && activeSection === 'quotes-contracts-esign') {
+      setActiveSection('opportunity-details');
+    }
+  }, [quotesEnabled, activeSection]);
 
   const fetchStaffOptions = useCallback(async () => {
     try {
@@ -749,7 +761,7 @@ const AdminLeadsKanban = () => {
               <div className="flex-1 min-h-0 overflow-hidden flex">
                 <aside className="w-[280px] min-h-0 border-r border-gray-200 bg-[#f8f8f9] p-4 flex flex-col" data-testid="opportunity-modal-sidebar">
                   <nav className="space-y-1 flex-1">
-                    {SECTION_TABS.map((tab) => (
+                    {visibleSectionTabs.map((tab) => (
                       <button
                         key={tab.id}
                         type="button"
@@ -768,7 +780,7 @@ const AdminLeadsKanban = () => {
 
                 <section className="flex-1 min-h-0 overflow-y-auto p-6" data-testid="opportunity-modal-main-content">
                   <div className="flex items-center justify-between mb-5">
-                    <h3 className="text-[30px] font-semibold text-gray-800">{SECTION_TABS.find((tab) => tab.id === activeSection)?.label}</h3>
+                    <h3 className="text-[30px] font-semibold text-gray-800">{visibleSectionTabs.find((tab) => tab.id === activeSection)?.label}</h3>
                     <label className="inline-flex items-center gap-2 text-sm text-gray-600" data-testid="opportunity-hide-empty-toggle-wrap">
                       <Checkbox checked={hideEmptyFields} onCheckedChange={(value) => setHideEmptyFields(Boolean(value))} data-testid="opportunity-hide-empty-toggle" />
                       Hide Empty Fields

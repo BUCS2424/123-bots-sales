@@ -69,6 +69,7 @@ import A2GBookingSettingsPage from './A2GBookingSettingsPage';
 import QuoteBuilderPage from './quotes/QuoteBuilderPage';
 import AdminContractsPage from './quotes/AdminContractsPage';
 import QuoteWorkspacePage from './quotes/QuoteWorkspacePage';
+import QuoteCatalogSettingsPage from './quotes/QuoteCatalogSettingsPage';
 import { AdminRadioMiniPlayer } from '../components/admin/AdminRadioMiniPlayer';
 
 // Johnny 5 Portal
@@ -101,6 +102,7 @@ const AdminLayout = () => {
   const [featureFlagsLoaded, setFeatureFlagsLoaded] = useState(false);
   const [featureFlags, setFeatureFlags] = useState({
     cart_enabled: true,
+    quotes_enabled: true,
     printful_enabled: false,
     yoycol_enabled: false,
     owner_chat_enabled: false,
@@ -121,6 +123,7 @@ const AdminLayout = () => {
         setJohnny5Settings(johnny5Res.data);
         setFeatureFlags({
           cart_enabled: featureFlagsRes?.data?.cart_enabled !== false,
+          quotes_enabled: featureFlagsRes?.data?.quotes_enabled !== false,
           printful_enabled: Boolean(featureFlagsRes?.data?.printful_enabled),
           yoycol_enabled: Boolean(featureFlagsRes?.data?.yoycol_enabled),
           owner_chat_enabled: Boolean(featureFlagsRes?.data?.owner_chat_enabled),
@@ -159,6 +162,7 @@ const AdminLayout = () => {
 
   const currentSection = getCurrentSection();
   const cartEnabled = featureFlags.cart_enabled !== false;
+  const quotesEnabled = featureFlags.quotes_enabled !== false;
 
   // Peptides menu structure
   const pawnMenuSections = [
@@ -275,13 +279,13 @@ const AdminLayout = () => {
       label: 'Booking',
       icon: Clock,
     },
-    {
+    ...(quotesEnabled ? [{
       id: 'quotes-contracts-esign',
       type: 'single',
       path: '/admin/quotes-contracts-esign',
       label: 'Quotes',
       icon: FileText,
-    },
+    }] : []),
     {
       id: 'user-management',
       type: 'accordion',
@@ -566,14 +570,26 @@ const AdminLayout = () => {
     if (path === '/admin/radio') return <A2GRadioPage />;
     if (path === '/admin/andgo') return <A2GAndGoPage />;
     if (path === '/admin/booking') return <A2GBookingSettingsPage />;
-    if (path === '/admin/quotes-contracts-esign') return <QuoteWorkspacePage />;
-    if (path === '/admin/quotes-contracts-esign/contracts') return <AdminContractsPage />;
+    if (path === '/admin/quotes-contracts-esign') {
+      if (!quotesEnabled) return <div className="p-6 text-sm text-gray-500" data-testid="quotes-disabled-message">Quotes feature is disabled.</div>;
+      return <QuoteWorkspacePage />;
+    }
+    if (path === '/admin/quotes-contracts-esign/contracts') {
+      if (!quotesEnabled) return <div className="p-6 text-sm text-gray-500" data-testid="quotes-disabled-contracts-message">Quotes feature is disabled.</div>;
+      return <AdminContractsPage />;
+    }
+    if (path === '/admin/quotes/settings') {
+      if (!quotesEnabled) return <div className="p-6 text-sm text-gray-500" data-testid="quotes-disabled-settings-message">Quotes feature is disabled.</div>;
+      return <QuoteCatalogSettingsPage />;
+    }
     if (path.match(/^\/admin\/leads\/[^/]+\/quote\/new$/)) {
+      if (!quotesEnabled) return <div className="p-6 text-sm text-gray-500" data-testid="quotes-disabled-builder-message">Quotes feature is disabled.</div>;
       const segments = path.split('/');
       const leadId = segments[3];
       return <QuoteBuilderPage leadId={leadId} quoteId="new" />;
     }
     if (path.match(/^\/admin\/leads\/[^/]+\/quote\/[^/]+$/)) {
+      if (!quotesEnabled) return <div className="p-6 text-sm text-gray-500" data-testid="quotes-disabled-builder-message">Quotes feature is disabled.</div>;
       const segments = path.split('/');
       const leadId = segments[3];
       const quoteId = segments[5];

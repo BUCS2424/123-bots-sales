@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useSiteFeatureFlags } from '../../hooks/useSiteFeatureFlags';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
@@ -8,7 +9,7 @@ import { Textarea } from '../../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { Checkbox } from '../../components/ui/checkbox';
 import { toast } from 'sonner';
-import { ArrowLeft, Save, Send, RefreshCw, Plus, Trash2, Package, Wrench, FileText, Eye, ScrollText, Shield, FileCheck, FilePlus, GripVertical } from 'lucide-react';
+import { ArrowLeft, Save, Send, RefreshCw, Plus, Trash2, Package, Wrench, FileText, Eye, ScrollText, Shield, FileCheck, FilePlus, GripVertical, Settings } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -102,6 +103,7 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
   const leadId = propLeadId || routeLeadId;
   const quoteId = propQuoteId || routeQuoteId;
   const navigate = useNavigate();
+  const { quotes_enabled: quotesEnabled } = useSiteFeatureFlags();
   const token = localStorage.getItem('token');
   const api = axios.create({
     baseURL: process.env.REACT_APP_BACKEND_URL,
@@ -152,8 +154,8 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
     try {
       const results = await Promise.all([
         api.get('/api/leads/' + leadId),
-        api.get('/api/billing/products').catch(() => ({ data: { products: [] } })),
-        api.get('/api/billing/services').catch(() => ({ data: { services: [] } })),
+        api.get('/api/quotes/catalog/products').catch(() => ({ data: { products: [] } })),
+        api.get('/api/quotes/catalog/services').catch(() => ({ data: { services: [] } })),
         api.get('/api/contract-templates').catch(() => ({ data: { templates: [] } })),
         api.get('/api/settings/general').catch(() => ({ data: {} }))
       ]);
@@ -349,6 +351,10 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
     );
   }
 
+  if (!quotesEnabled) {
+    return <div className="p-6 text-sm text-gray-500" data-testid="quote-builder-feature-disabled">Quotes feature is disabled.</div>;
+  }
+
   return (
     <div className="min-h-screen bg-gray-100" data-testid="quote-builder-page">
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -363,6 +369,10 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
             </h1>
           </div>
           <div className="flex items-center gap-3">
+            <Button variant="outline" onClick={() => navigate('/admin/quotes/settings')} data-testid="quote-builder-settings-cog-button">
+              <Settings className="w-4 h-4 mr-2" />
+              Settings
+            </Button>
             <Button variant="outline" onClick={handleSave} disabled={saving}>
               <Save className="w-4 h-4 mr-2" /> Save Draft
             </Button>
