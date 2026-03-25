@@ -31,7 +31,7 @@ import { Badge } from '../../components/ui/badge';
 import { Checkbox } from '../../components/ui/checkbox';
 import { Dialog, DialogContent, DialogTitle } from '../../components/ui/dialog';
 import { toast } from '../../hooks/use-toast';
-import { LeadQuoteContractPanel } from '../../components/quotes/LeadQuoteContractPanel';
+import QuoteBuilderPage from '../quotes/QuoteBuilderPage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -1117,7 +1117,7 @@ const AdminLeadsKanban = () => {
 
                   {activeSection === 'quotes-contracts-esign' && (
                     <div className="space-y-4" data-testid="opportunity-quotes-contracts-esign-section">
-                      <LeadQuoteContractPanel leadId={selectedLead.id} title="Quote, Contract & eSign" />
+                      <QuoteBuilderPage leadId={selectedLead.id} quoteId="new" />
                     </div>
                   )}
 

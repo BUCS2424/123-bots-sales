@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Textarea } from '../../components/ui/textarea';
 import { toast } from '../../hooks/use-toast';
 import { useAuth } from '../../context/AuthContext';
-import { LeadQuoteContractPanel } from '../../components/quotes/LeadQuoteContractPanel';
+import QuoteBuilderPage from '../quotes/QuoteBuilderPage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -822,7 +822,11 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
               <CardTitle>Quotes / Contracts / eSign</CardTitle>
             </CardHeader>
             <CardContent>
-              <LeadQuoteContractPanel leadId={linkedLeadId} title="Client Quote, Contract & eSign" />
+              {linkedLeadId ? (
+                <QuoteBuilderPage leadId={linkedLeadId} quoteId="new" />
+              ) : (
+                <div className="text-sm text-gray-500" data-testid="customer-quotes-no-linked-lead">No linked lead found</div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

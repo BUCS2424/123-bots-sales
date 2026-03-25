@@ -395,4 +395,43 @@ async def resolve_customer_lead_link(customer_id: str, current_user=Depends(get_
         if lead:
             return {"lead_id": lead.get("id")}
 
-    return {"lead_id": None}
+    # Auto-provision a lead so quote builder is always available on client page
+    now = datetime.now(timezone.utc).isoformat()
+    lead_id = str(uuid.uuid4())
+    lead_doc = {
+        "id": lead_id,
+        "name": customer.get("name") or customer.get("email", "Client"),
+        "email": customer.get("email", ""),
+        "phone": customer.get("phone", ""),
+        "subject": "Client Quote Workspace",
+        "message": "Auto-created from client page for quote/contract/esign",
+        "source": "client_quote_workspace",
+        "status": "opportunity",
+        "primary_contact_name": customer.get("name") or customer.get("email", "Client"),
+        "primary_email": customer.get("email", ""),
+        "primary_phone": customer.get("phone", ""),
+        "opportunity_name": f"{customer.get('name') or customer.get('email') or 'Client'} Quote Workspace",
+        "pipeline": "001. Main Leads Pipeline",
+        "stage": "1. New Inquiry",
+        "opportunity_status": "Open",
+        "opportunity_value": None,
+        "owner_id": current_user.get("id", ""),
+        "followers": [],
+        "business_name": "",
+        "opportunity_source": "Client Workspace",
+        "tags": ["client", "quote-workspace"],
+        "appointments": [],
+        "tasks": [],
+        "notes_timeline": [],
+        "payments": [],
+        "associated_objects": [],
+        "converted_to_client": True,
+        "created_at": now,
+        "updated_at": now,
+    }
+    await db.leads.insert_one(lead_doc)
+    await db.users.update_one(
+        {"id": customer_id},
+        {"$set": {"original_lead_id": lead_id, "updated_at": now}},
+    )
+    return {"lead_id": lead_id}
