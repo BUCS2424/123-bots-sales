@@ -149,8 +149,10 @@ async def _ensure_default_templates(user_id: str):
 
 
 async def _get_general_business_info():
-    settings = await db.admin_settings.find_one({}, {"_id": 0})
-    if not settings:
+    business_settings = await db.admin_settings.find_one({"type": "business"}, {"_id": 0})
+    site_settings = await db.admin_settings.find_one({"type": "site"}, {"_id": 0})
+
+    if not business_settings and not site_settings:
         return {
             "business_name": "123Bots",
             "address": "",
@@ -161,15 +163,16 @@ async def _get_general_business_info():
             "email": "",
             "logo_url": "",
         }
+    source = business_settings or {}
     return {
-        "business_name": settings.get("business_name", "123Bots"),
-        "address": settings.get("address", ""),
-        "city": settings.get("city", ""),
-        "state": settings.get("state", ""),
-        "zip_code": settings.get("zip_code", ""),
-        "phone": settings.get("phone", ""),
-        "email": settings.get("email", ""),
-        "logo_url": settings.get("logo_url", ""),
+        "business_name": source.get("business_name", "123Bots"),
+        "address": source.get("address", ""),
+        "city": source.get("city", ""),
+        "state": source.get("state", ""),
+        "zip_code": source.get("zip_code", ""),
+        "phone": source.get("phone", ""),
+        "email": source.get("email", ""),
+        "logo_url": source.get("logo_url") or (site_settings or {}).get("logo_url", ""),
     }
 
 
