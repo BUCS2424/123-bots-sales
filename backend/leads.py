@@ -106,6 +106,11 @@ class LeadNotesUpdate(BaseModel):
     notes: str
 
 
+class ResendAppointmentRequest(BaseModel):
+    appointment_id: Optional[str] = None
+    appointment_index: Optional[int] = None
+
+
 # Valid statuses for the kanban
 VALID_STATUSES = ["opportunity", "needs_order", "needs_support", "miscellaneous"]
 
@@ -192,7 +197,11 @@ async def _send_appointment_update_notifications(lead: dict, sender_email: Optio
         return 0
 
     latest_appointment = appointments[-1]
-    subject, html_content, text_content = _build_appointment_email_content(lead, latest_appointment)
+    return await _send_single_appointment_notification(lead, latest_appointment, sender_email)
+
+
+async def _send_single_appointment_notification(lead: dict, appointment: dict, sender_email: Optional[str]) -> int:
+    subject, html_content, text_content = _build_appointment_email_content(lead, appointment)
 
     recipients = []
     primary_email = (lead.get("primary_email") or lead.get("email") or "").strip().lower()
@@ -208,6 +217,49 @@ async def _send_appointment_update_notifications(lead: dict, sender_email: Optio
         if sent:
             sent_count += 1
     return sent_count
+
+
+@router.post("/{lead_id}/appointments/resend")
+async def resend_appointment_info(
+    lead_id: str,
+    payload: ResendAppointmentRequest,
+    authorization: Optional[str] = Header(None),
+    db=Depends(get_db),
+):
+    """Resend appointment info for a specific saved appointment."""
+    admin_user = _require_admin_token(authorization)
+
+    lead = await db.leads.find_one({"id": lead_id}, {"_id": 0})
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    appointments = _normalize_appointments(lead.get("appointments"))
+    if not appointments:
+        raise HTTPException(status_code=400, detail="No saved appointments found")
+
+    target_appointment = None
+    if payload.appointment_id:
+        target_appointment = next((appointment for appointment in appointments if appointment.get("id") == payload.appointment_id), None)
+
+    if target_appointment is None and payload.appointment_index is not None:
+        if 0 <= payload.appointment_index < len(appointments):
+            target_appointment = appointments[payload.appointment_index]
+
+    if target_appointment is None:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+
+    sent_count = await _send_single_appointment_notification(lead, target_appointment, admin_user.get("email"))
+
+    await db.leads.update_one(
+        {"id": lead_id},
+        {"$set": {"last_appointment_email_sent_at": datetime.now(timezone.utc).isoformat()}},
+    )
+
+    return {
+        "success": True,
+        "message": "Meeting info resent",
+        "appointment_notifications_sent": sent_count,
+    }
 
 
 @router.post("/")

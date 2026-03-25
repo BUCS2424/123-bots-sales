@@ -106,6 +106,7 @@ const AdminLeadsKanban = () => {
   const [selectedLead, setSelectedLead] = useState(null);
   const [saving, setSaving] = useState(false);
   const [converting, setConverting] = useState(false);
+  const [resendingAppointmentKey, setResendingAppointmentKey] = useState('');
   const [activeSection, setActiveSection] = useState('opportunity-details');
   const [hideEmptyFields, setHideEmptyFields] = useState(false);
 
@@ -247,8 +248,14 @@ const AdminLeadsKanban = () => {
         ...selectedLead,
         opportunity_value: selectedLead.opportunity_value === '' ? null : Number(selectedLead.opportunity_value),
       };
-      await axios.put(`${API}/leads/${selectedLead.id}`, payload, { headers: tokenHeaders });
-      toast({ title: 'Opportunity Updated', description: 'Changes saved successfully.' });
+      const response = await axios.put(`${API}/leads/${selectedLead.id}`, payload, { headers: tokenHeaders });
+      const sentCount = response.data?.appointment_notifications_sent ?? 0;
+      toast({
+        title: 'Opportunity Updated',
+        description: sentCount > 0
+          ? `Changes saved. Appointment email sent to ${sentCount} recipient(s).`
+          : 'Changes saved successfully.',
+      });
       closeEditModal();
       fetchLeads();
     } catch (error) {
@@ -280,6 +287,37 @@ const AdminLeadsKanban = () => {
       });
     } finally {
       setConverting(false);
+    }
+  };
+
+  const handleResendAppointmentInfo = async (appointment, index) => {
+    if (!selectedLead) return;
+    const appointmentKey = appointment?.id || `idx-${index}`;
+    setResendingAppointmentKey(appointmentKey);
+    try {
+      const response = await axios.post(
+        `${API}/leads/${selectedLead.id}/appointments/resend`,
+        {
+          appointment_id: appointment?.id || null,
+          appointment_index: Number.isInteger(index) ? index : null,
+        },
+        { headers: tokenHeaders }
+      );
+      const sentCount = response.data?.appointment_notifications_sent ?? 0;
+      toast({
+        title: 'Meeting Info Resent',
+        description: sentCount > 0
+          ? `Meeting details sent to ${sentCount} recipient(s).`
+          : 'Meeting details were queued, but no SMTP delivery occurred.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Resend Failed',
+        description: error.response?.data?.detail || 'Could not resend meeting details.',
+        variant: 'destructive',
+      });
+    } finally {
+      setResendingAppointmentKey('');
     }
   };
 
@@ -945,7 +983,22 @@ const AdminLeadsKanban = () => {
                               ) : null}
                               {appointment.notes ? <p className="text-sm text-gray-600 mt-1">{appointment.notes}</p> : null}
                             </div>
-                            <Button variant="ghost" size="sm" onClick={() => removeArrayItem('appointments', index)} data-testid={`opportunity-appointment-remove-${index}`}><Trash2 className="w-4 h-4" /></Button>
+                            <div className="flex items-center gap-1">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-xs"
+                                onClick={() => handleResendAppointmentInfo(appointment, index)}
+                                disabled={resendingAppointmentKey === (appointment.id || `idx-${index}`)}
+                                data-testid={`opportunity-appointment-resend-${index}`}
+                              >
+                                {resendingAppointmentKey === (appointment.id || `idx-${index}`)
+                                  ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" />
+                                  : <Mail className="w-3.5 h-3.5 mr-1" />}
+                                Resend Meeting Info
+                              </Button>
+                              <Button variant="ghost" size="sm" onClick={() => removeArrayItem('appointments', index)} data-testid={`opportunity-appointment-remove-${index}`}><Trash2 className="w-4 h-4" /></Button>
+                            </div>
                           </div>
                         ))}
                       </div>
