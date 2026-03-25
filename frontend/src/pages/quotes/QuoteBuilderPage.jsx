@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import axios from 'axios';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
@@ -102,7 +102,11 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
   const leadId = propLeadId || routeLeadId;
   const quoteId = propQuoteId || routeQuoteId;
   const navigate = useNavigate();
-  const { api } = useAuth();
+  const token = localStorage.getItem('token');
+  const api = axios.create({
+    baseURL: process.env.REACT_APP_BACKEND_URL,
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

@@ -68,6 +68,7 @@ import A2GAndGoPage from './A2GAndGoPage';
 import A2GBookingSettingsPage from './A2GBookingSettingsPage';
 import QuoteBuilderPage from './quotes/QuoteBuilderPage';
 import AdminContractsPage from './quotes/AdminContractsPage';
+import QuoteWorkspacePage from './quotes/QuoteWorkspacePage';
 import { AdminRadioMiniPlayer } from '../components/admin/AdminRadioMiniPlayer';
 
 // Johnny 5 Portal
@@ -565,7 +566,8 @@ const AdminLayout = () => {
     if (path === '/admin/radio') return <A2GRadioPage />;
     if (path === '/admin/andgo') return <A2GAndGoPage />;
     if (path === '/admin/booking') return <A2GBookingSettingsPage />;
-    if (path === '/admin/quotes-contracts-esign') return <AdminContractsPage />;
+    if (path === '/admin/quotes-contracts-esign') return <QuoteWorkspacePage />;
+    if (path === '/admin/quotes-contracts-esign/contracts') return <AdminContractsPage />;
     if (path.match(/^\/admin\/leads\/[^/]+\/quote\/new$/)) {
       const segments = path.split('/');
       const leadId = segments[3];

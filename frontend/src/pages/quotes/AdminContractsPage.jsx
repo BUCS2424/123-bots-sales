@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import axios from 'axios';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
@@ -53,7 +53,11 @@ const getDocTypeColor = (typeId) => {
 };
 
 export default function AdminContractsPage() {
-  const { api } = useAuth();
+  const token = localStorage.getItem('token');
+  const api = axios.create({
+    baseURL: process.env.REACT_APP_BACKEND_URL,
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
   const [contracts, setContracts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

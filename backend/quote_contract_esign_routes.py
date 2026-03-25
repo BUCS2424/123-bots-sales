@@ -435,3 +435,53 @@ async def resolve_customer_lead_link(customer_id: str, current_user=Depends(get_
         {"$set": {"original_lead_id": lead_id, "updated_at": now}},
     )
     return {"lead_id": lead_id}
+
+
+@router.get("/quotes/workspace-lead")
+async def get_or_create_quote_workspace_lead(current_user=Depends(get_current_user)):
+    existing = await db.leads.find_one(
+        {
+            "owner_id": current_user.get("id", ""),
+            "source": "quote_workspace",
+        },
+        {"_id": 0, "id": 1},
+        sort=[("updated_at", -1)],
+    )
+    if existing:
+        return {"lead_id": existing.get("id")}
+
+    now = datetime.now(timezone.utc).isoformat()
+    lead_id = str(uuid.uuid4())
+    lead_doc = {
+        "id": lead_id,
+        "name": current_user.get("name") or current_user.get("email", "Quote Workspace"),
+        "email": current_user.get("email", ""),
+        "phone": current_user.get("phone", ""),
+        "subject": "Quote Workspace",
+        "message": "Auto-created workspace lead for full quote builder",
+        "source": "quote_workspace",
+        "status": "opportunity",
+        "primary_contact_name": current_user.get("name") or current_user.get("email", "Quote Workspace"),
+        "primary_email": current_user.get("email", ""),
+        "primary_phone": current_user.get("phone", ""),
+        "opportunity_name": "Quote Workspace",
+        "pipeline": "001. Main Leads Pipeline",
+        "stage": "1. New Inquiry",
+        "opportunity_status": "Open",
+        "opportunity_value": None,
+        "owner_id": current_user.get("id", ""),
+        "followers": [],
+        "business_name": "",
+        "opportunity_source": "Quote Workspace",
+        "tags": ["quote-workspace"],
+        "appointments": [],
+        "tasks": [],
+        "notes_timeline": [],
+        "payments": [],
+        "associated_objects": [],
+        "converted_to_client": False,
+        "created_at": now,
+        "updated_at": now,
+    }
+    await db.leads.insert_one(lead_doc)
+    return {"lead_id": lead_id}
