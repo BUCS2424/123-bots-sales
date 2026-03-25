@@ -49,6 +49,15 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
     - Cross-user settings/link/bookings via `user_id` query on booking endpoints
   - Calendar now includes **Staff Booking Meetings** checkbox panel (admin/super_admin), showing selected staff bookings with status color tags
   - Preserved and extended `meet.saysme.org` logic in invite/public booking flow
+- [x] **Booking Location Type UX (matches appointment-style flow)**
+  - Applied to both Admin Create Meeting modal and Public Booking form
+  - Added `Location Type` select: Physical Location / Online Meeting
+  - Physical flow: required Physical Address field
+  - Online flow: mutually-exclusive checkboxes:
+    - `Use https://meet.saysme.org/` + editable Secure Room Name + live Meeting URL preview
+    - `Other Meeting URL` + plain text custom details field
+  - Added Settings tab `Location Defaults` card (default location type, physical address, other meeting default)
+  - Backend updated to persist/apply new fields in invite/public booking flows and return detailed booking response payload
 
 ### Completed (March 23, 2026)
 - [x] GitHub project cloned and dependencies installed
@@ -93,6 +102,10 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 - Testing Agent Iteration 60: PASS (Backend 100%, Frontend 100%)
   - Verified multi-user booking provisioning, per-user settings navigation, and staff booking calendar overlay
   - Verified first-last slug generation and meet.saysme.org video link logic
+- Testing Agent Iteration 61: PASS (Backend 100%, Frontend 100%)
+  - Verified location type behavior in admin + public booking forms
+  - Verified mutually-exclusive online meeting checkboxes and field rendering
+  - Verified backend handling for physical/saysme/other meeting modes
 
 ## URL Structure
 | Page | URL |
