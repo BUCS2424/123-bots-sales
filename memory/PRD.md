@@ -37,6 +37,18 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 - [x] **Regression-safe fixes from automated testing applied**
   - Contact export route ordering fixed in backend to prevent `/export` path collision with `/{contact_id}`
   - Contact detail route handling fixed for AdminLayout direct-render pattern
+- [x] **Multi-user Booking + Calendar Visibility (staff-focused)**
+  - Auto-provision on user creation: booking settings + first-last booking slug/URL + default calendar + default categories
+  - Added per-user booking access via settings cog/action in:
+    - `/admin/users` (dropdown action)
+    - `/admin/user-management` (staff row cog)
+  - Added admin-managed booking context on booking page via `?userId=` query parameter
+  - Added admin booking APIs:
+    - `GET /api/booking/admin/users`
+    - `GET /api/booking/admin/meetings`
+    - Cross-user settings/link/bookings via `user_id` query on booking endpoints
+  - Calendar now includes **Staff Booking Meetings** checkbox panel (admin/super_admin), showing selected staff bookings with status color tags
+  - Preserved and extended `meet.saysme.org` logic in invite/public booking flow
 
 ### Completed (March 23, 2026)
 - [x] GitHub project cloned and dependencies installed
@@ -78,6 +90,9 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 - Testing Agent Iteration 57: PASS (Backend 100%, Frontend 100%)
   - Verified admin routes and sidebar placement for all six A2G modules
   - Verified public booking flow `/booking/:bookingSlug`
+- Testing Agent Iteration 60: PASS (Backend 100%, Frontend 100%)
+  - Verified multi-user booking provisioning, per-user settings navigation, and staff booking calendar overlay
+  - Verified first-last slug generation and meet.saysme.org video link logic
 
 ## URL Structure
 | Page | URL |
@@ -141,7 +156,7 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 - [ ] Optional: expose `/sitemap-locations.xml` root-level alias (currently available at `/api/sitemap-locations.xml`)
 
 ## Prioritized Next Actions
-- **P0 (Now complete):** A2G frontend integration with requested admin menu structure
+- **P0 (Now complete):** A2G frontend integration + multi-user booking/calendar controls
 - **P1 (Next):**
   - Generate/publish SEO resource articles per robot product
   - Populate shop catalog and finalize pre-launch readiness
