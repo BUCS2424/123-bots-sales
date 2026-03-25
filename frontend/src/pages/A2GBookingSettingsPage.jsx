@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { 
   Calendar, 
   Clock, 
@@ -289,6 +290,8 @@ const EmptyState = ({ icon: Icon, title, description }) => (
 );
 
 const BookingSettingsPage = () => {
+  const [searchParams] = useSearchParams();
+  const managedUserId = searchParams.get("userId") || "";
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState({
@@ -306,6 +309,7 @@ const BookingSettingsPage = () => {
   const [copied, setCopied] = useState(false);
   const [bookings, setBookings] = useState([]);
   const [contacts, setContacts] = useState([]);
+  const [managedUserMeta, setManagedUserMeta] = useState(null);
   
   // Invite modal state
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -321,17 +325,31 @@ const BookingSettingsPage = () => {
   });
   const [inviteeInput, setInviteeInput] = useState({ type: "email", value: "" });
   const [sendingInvite, setSendingInvite] = useState(false);
+  const requestParams = managedUserId ? { params: { user_id: managedUserId } } : {};
 
   useEffect(() => {
     loadSettings();
     loadBookingLink();
     loadBookings();
     loadContacts();
+    if (managedUserId) {
+      loadManagedUserMeta();
+    }
   }, []);
+
+  const loadManagedUserMeta = async () => {
+    try {
+      const response = await apiClient.get("/booking/admin/users");
+      const selected = (response.data || []).find((item) => item.id === managedUserId);
+      setManagedUserMeta(selected || null);
+    } catch (error) {
+      console.error("Failed to load managed user meta", error);
+    }
+  };
 
   const loadSettings = async () => {
     try {
-      const response = await apiClient.get("/booking/settings");
+      const response = await apiClient.get("/booking/settings", requestParams);
       setSettings(response.data);
     } catch (error) {
       toast.error("Failed to load booking settings");
@@ -342,7 +360,7 @@ const BookingSettingsPage = () => {
 
   const loadBookingLink = async () => {
     try {
-      const response = await apiClient.get("/booking/link");
+      const response = await apiClient.get("/booking/link", requestParams);
       setBookingLink(response.data.booking_url);
     } catch (error) {
       console.error("Failed to load booking link:", error);
@@ -351,7 +369,7 @@ const BookingSettingsPage = () => {
 
   const loadBookings = async () => {
     try {
-      const response = await apiClient.get("/booking/my-bookings");
+      const response = await apiClient.get("/booking/my-bookings", requestParams);
       setBookings(response.data);
     } catch (error) {
       console.error("Failed to load bookings:", error);
@@ -370,8 +388,9 @@ const BookingSettingsPage = () => {
   const saveSettings = async () => {
     setSaving(true);
     try {
-      await apiClient.post("/booking/settings", settings);
+      await apiClient.post("/booking/settings", settings, requestParams);
       toast.success("Settings saved successfully");
+      loadBookingLink();
     } catch (error) {
       toast.error("Failed to save settings");
     } finally {
@@ -451,7 +470,7 @@ const BookingSettingsPage = () => {
     
     setSendingInvite(true);
     try {
-      const response = await apiClient.post("/booking/invite", inviteForm);
+      const response = await apiClient.post("/booking/invite", inviteForm, requestParams);
       const results = response.data.results;
       
       if (results.sent.length > 0) {
@@ -499,6 +518,14 @@ const BookingSettingsPage = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-6 md:p-10 space-y-8" data-testid="booking-settings-page">
+      {managedUserId && (
+        <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3" data-testid="booking-managed-user-banner">
+          <p className="text-sm font-medium text-blue-800">
+            Managing booking settings for: {managedUserMeta?.name || managedUserMeta?.email || managedUserId}
+          </p>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>

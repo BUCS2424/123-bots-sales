@@ -22,6 +22,7 @@ import {
   Sparkles,
   RefreshCw,
   Link2,
+  Users,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -74,6 +75,8 @@ const CalendarPage = () => {
   const [calendars, setCalendars] = useState([]);
   const [categories, setCategories] = useState([]);
   const [events, setEvents] = useState([]);
+  const [bookingUsers, setBookingUsers] = useState([]);
+  const [selectedBookingUsers, setSelectedBookingUsers] = useState([]);
   const [selectedCalendars, setSelectedCalendars] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -129,6 +132,9 @@ const CalendarPage = () => {
   useEffect(() => {
     loadData();
     loadSyncStatus();
+    if (user?.role === "admin" || user?.role === "super_admin") {
+      loadBookingUsers();
+    }
   }, []);
 
   useEffect(() => {
@@ -141,7 +147,25 @@ const CalendarPage = () => {
     if (selectedCalendars.length > 0) {
       loadEvents();
     }
-  }, [currentDate, viewMode, selectedCalendars]);
+  }, [currentDate, viewMode, selectedCalendars, selectedBookingUsers]);
+
+  const loadBookingUsers = async () => {
+    try {
+      const response = await apiClient.get("/booking/admin/users");
+      const usersList = response.data || [];
+      setBookingUsers(usersList);
+      setSelectedBookingUsers(usersList.map((item) => item.id));
+    } catch (error) {
+      console.error("Failed to load booking users", error);
+    }
+  };
+
+  const bookingStatusColor = (status) => {
+    if (status === "cancelled") return "#ef4444";
+    if (status === "confirmed") return "#10b981";
+    if (status === "scheduled") return "#0ea5e9";
+    return "#f59e0b";
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -186,7 +210,42 @@ const CalendarPage = () => {
           calendar_ids: selectedCalendars.join(",")
         }
       });
-      setEvents(response.data);
+
+      let mergedEvents = Array.isArray(response.data) ? response.data : [];
+
+      if ((user?.role === "admin" || user?.role === "super_admin") && selectedBookingUsers.length > 0) {
+        const bookingRes = await apiClient.get("/booking/admin/meetings", {
+          params: {
+            user_ids: selectedBookingUsers.join(","),
+            start_date: start.toISOString(),
+            end_date: end.toISOString(),
+          },
+        });
+
+        const bookingAsEvents = (bookingRes.data || []).map((meeting) => ({
+          id: `booking-${meeting.id}`,
+          title: `${meeting.host_name}: ${meeting.guest_name || "Booking"}`,
+          description: meeting.notes || "",
+          start_time: meeting.start_time,
+          end_time: meeting.end_time,
+          all_day: false,
+          calendar_id: `booking-${meeting.host_user_id}`,
+          category_id: "",
+          location: meeting.location_type === "physical"
+            ? (meeting.physical_address || "Physical location")
+            : (meeting.video_link || meeting.other_meeting_url || "Online meeting"),
+          status: meeting.status,
+          host_name: meeting.host_name,
+          source: "booking",
+          color: bookingStatusColor(meeting.status),
+          is_synced: true,
+          synced_from: "booking",
+        }));
+
+        mergedEvents = [...mergedEvents, ...bookingAsEvents];
+      }
+
+      setEvents(mergedEvents);
     } catch (error) {
       console.error("Failed to load events:", error);
     }
@@ -241,6 +300,10 @@ const CalendarPage = () => {
   };
 
   const handleEventClick = (event) => {
+    if (event.source === "booking") {
+      toast.info(`Booking: ${event.title} (${event.status || "pending"})`);
+      return;
+    }
     // Synced events (from external apps) are read-only — don't open edit modal
     if (event.is_synced) {
       toast.info(`${event.title} (synced from ${event.synced_from || "external"}) — read only`);
@@ -359,6 +422,12 @@ const CalendarPage = () => {
   const toggleCalendarVisibility = (id) => {
     setSelectedCalendars(prev => 
       prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+    );
+  };
+
+  const toggleBookingUserVisibility = (id) => {
+    setSelectedBookingUsers((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
 
@@ -544,9 +613,9 @@ const CalendarPage = () => {
                             className="text-[11px] px-2 py-1 rounded-lg truncate cursor-pointer
                               transition-all hover:scale-[1.02] hover:shadow-md"
                             style={{ 
-                              backgroundColor: `${getCategoryColor(event.category_id) || getCalendarColor(event.calendar_id)}15`,
-                              borderLeft: `3px solid ${getCategoryColor(event.category_id) || getCalendarColor(event.calendar_id)}`,
-                              color: getCategoryColor(event.category_id) || getCalendarColor(event.calendar_id)
+                              backgroundColor: `${event.color || getCategoryColor(event.category_id) || getCalendarColor(event.calendar_id)}15`,
+                              borderLeft: `3px solid ${event.color || getCategoryColor(event.category_id) || getCalendarColor(event.calendar_id)}`,
+                              color: event.color || getCategoryColor(event.category_id) || getCalendarColor(event.calendar_id)
                             }}
                           >
                             {!event.all_day && (
@@ -648,7 +717,7 @@ const CalendarPage = () => {
                         className="text-[10px] px-1.5 py-1 rounded mb-1 truncate cursor-pointer
                           hover:shadow-md transition-all"
                         style={{ 
-                          backgroundColor: getCategoryColor(event.category_id) || getCalendarColor(event.calendar_id),
+                          backgroundColor: event.color || getCategoryColor(event.category_id) || getCalendarColor(event.calendar_id),
                           color: "white"
                         }}
                         onClick={(e) => {
@@ -719,8 +788,8 @@ const CalendarPage = () => {
                       key={event.occurrence_id || event.id}
                       className="mb-2 p-3 rounded-xl cursor-pointer hover:shadow-lg transition-all"
                       style={{ 
-                        backgroundColor: `${getCategoryColor(event.category_id) || getCalendarColor(event.calendar_id)}15`,
-                        borderLeft: `4px solid ${getCategoryColor(event.category_id) || getCalendarColor(event.calendar_id)}`
+                        backgroundColor: `${event.color || getCategoryColor(event.category_id) || getCalendarColor(event.calendar_id)}15`,
+                        borderLeft: `4px solid ${event.color || getCategoryColor(event.category_id) || getCalendarColor(event.calendar_id)}`
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -843,6 +912,35 @@ const CalendarPage = () => {
             ))}
           </div>
         </div>
+
+        {/* Categories */}
+        {(user?.role === "admin" || user?.role === "super_admin") && (
+          <div className="mb-6" data-testid="booking-user-checkboxes-panel">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold text-sm text-slate-700 dark:text-slate-300 uppercase tracking-wide flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Staff Booking Meetings
+              </h3>
+            </div>
+            <div className="space-y-1">
+              {bookingUsers.map((staffUser) => (
+                <div key={staffUser.id} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white dark:hover:bg-slate-800 transition-all">
+                  <input
+                    type="checkbox"
+                    checked={selectedBookingUsers.includes(staffUser.id)}
+                    onChange={() => toggleBookingUserVisibility(staffUser.id)}
+                    className="h-4 w-4 rounded border-slate-300"
+                    data-testid={`booking-user-visibility-${staffUser.id}`}
+                  />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{staffUser.name}</p>
+                    <p className="text-xs text-slate-500 truncate">{staffUser.email}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Categories */}
         <div>

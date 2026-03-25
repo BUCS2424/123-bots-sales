@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   Users, Plus, Edit, Trash2, Shield, UserCheck, User, Search,
-  Loader2, MoreVertical, Mail, Calendar
+  Loader2, MoreVertical, Mail, Calendar, Settings
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card';
@@ -19,12 +19,14 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from '../../components/ui/table';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { toast } from '../../hooks/use-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const AdminUsers = () => {
+  const navigate = useNavigate();
   const { user: currentUser, isSuperAdmin } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -355,6 +357,13 @@ const AdminUsers = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => navigate(`/admin/booking?userId=${user.id}`)}
+                          data-testid={`user-booking-settings-${user.id}`}
+                        >
+                          <Settings className="w-4 h-4 mr-2" />
+                          Booking Settings
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => openEditDialog(user)}>
                           <Edit className="w-4 h-4 mr-2" />
                           Edit

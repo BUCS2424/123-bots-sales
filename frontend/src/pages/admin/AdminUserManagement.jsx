@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import {
   Users, UserPlus, Shield, ShoppingBag, Truck, Store, Search,
   Mail, Phone, DollarSign, Edit2, Trash2, ChevronRight, Check,
@@ -32,6 +33,7 @@ const CUSTOMER_TIERS = {
 };
 
 const AdminUserManagement = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('staff');
   
   // Staff state
@@ -292,6 +294,14 @@ const AdminUserManagement = () => {
                         </div>
                         <div className="flex items-center gap-3">
                           <Badge className={roleInfo.color}>{roleInfo.label}</Badge>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => navigate(`/admin/booking?userId=${member.id}`)}
+                            data-testid={`staff-booking-settings-${member.id}`}
+                          >
+                            <Settings className="w-4 h-4" />
+                          </Button>
                           <Button variant="ghost" size="sm" onClick={() => handleEditStaff(member)}>
                             <Edit2 className="w-4 h-4" />
                           </Button>

@@ -11,6 +11,7 @@ from typing import List, Dict, Any, Optional
 from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel, Field, EmailStr
 from motor.motor_asyncio import AsyncIOMotorDatabase
+from booking_provisioning import ensure_user_booking_calendar_setup
 
 logger = logging.getLogger(__name__)
 
@@ -253,6 +254,21 @@ async def create_staff_member(data: StaffMemberCreate):
     }
     
     await db.staff_members.insert_one(staff_member)
+
+    # Create a linked auth user so each staff account has booking/calendar workspace
+    linked_user = {
+        "id": staff_id,
+        "email": data.email.lower(),
+        "name": data.name,
+        "hashed_password": staff_member["hashed_password"],
+        "role": "admin",
+        "staff_role": data.role,
+        "is_active": True,
+        "created_at": now,
+        "updated_at": now,
+    }
+    await db.users.insert_one(linked_user)
+    await ensure_user_booking_calendar_setup(db, linked_user)
     staff_member.pop("_id", None)
     staff_member.pop("hashed_password", None)
     
@@ -289,6 +305,16 @@ async def update_staff_member(staff_id: str, data: StaffMemberUpdate):
     if update_data:
         update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
         await db.staff_members.update_one({"id": staff_id}, {"$set": update_data})
+        linked_updates = {}
+        if "name" in update_data:
+            linked_updates["name"] = update_data["name"]
+        if "role" in update_data:
+            linked_updates["staff_role"] = update_data["role"]
+        if "is_active" in update_data:
+            linked_updates["is_active"] = update_data["is_active"]
+        if linked_updates:
+            linked_updates["updated_at"] = update_data["updated_at"]
+            await db.users.update_one({"id": staff_id}, {"$set": linked_updates})
     
     # Fetch updated
     staff = await db.staff_members.find_one({"id": staff_id})
@@ -315,6 +341,11 @@ async def delete_staff_member(staff_id: str):
     
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Staff member not found")
+
+    await db.users.update_one(
+        {"id": staff_id},
+        {"$set": {"is_active": False, "updated_at": datetime.now(timezone.utc).isoformat()}},
+    )
     
     return {"message": "Staff member deleted"}
 

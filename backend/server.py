@@ -26,6 +26,7 @@ from two_factor_auth import (
     verify_two_factor_challenge,
 )
 from peptide_catalog import sync_pdf_catalog
+from booking_provisioning import ensure_user_booking_calendar_setup
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -887,6 +888,7 @@ async def create_user(user_data: UserCreateAdmin, current_user: TokenData = Depe
     }
     
     await db.users.insert_one(user)
+    await ensure_user_booking_calendar_setup(db, user)
     
     return UserResponse(
         id=user["id"],
