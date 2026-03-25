@@ -134,7 +134,19 @@ async def create_calendar(payload: CalendarCreate, current_user=Depends(get_curr
 @router.get("/calendars/categories")
 async def get_categories(current_user=Depends(get_current_user)):
     categories = await db.event_categories.find({"user_id": current_user.user_id}, {"_id": 0}).to_list(200)
-    return categories
+    if categories:
+        return categories
+
+    default_categories = [
+        {"id": str(uuid.uuid4()), "user_id": current_user.user_id, "name": "Work", "color": "#3b82f6"},
+        {"id": str(uuid.uuid4()), "user_id": current_user.user_id, "name": "Personal", "color": "#10b981"},
+        {"id": str(uuid.uuid4()), "user_id": current_user.user_id, "name": "Meeting", "color": "#f59e0b"},
+        {"id": str(uuid.uuid4()), "user_id": current_user.user_id, "name": "Important", "color": "#ef4444"},
+    ]
+    now = datetime.now(timezone.utc).isoformat()
+    docs = [{**c, "created_at": now, "updated_at": now} for c in default_categories]
+    await db.event_categories.insert_many(docs)
+    return docs
 
 
 @router.post("/calendars/categories")
@@ -154,15 +166,40 @@ async def create_category(payload: CategoryCreate, current_user=Depends(get_curr
 
 
 @router.get("/calendars/events")
-async def get_events(start: Optional[str] = None, end: Optional[str] = None, current_user=Depends(get_current_user)):
+async def get_events(
+    start: Optional[str] = None,
+    end: Optional[str] = None,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    calendar_ids: Optional[str] = None,
+    calendar_id: Optional[str] = None,
+    current_user=Depends(get_current_user),
+):
+    range_start = start_date or start
+    range_end = end_date or end
     query = {"user_id": current_user.user_id}
-    if start and end:
+
+    if calendar_id:
+        query["calendar_id"] = calendar_id
+    elif calendar_ids:
+        parsed_ids = [v.strip() for v in calendar_ids.split(",") if v.strip()]
+        if parsed_ids:
+            query["calendar_id"] = {"$in": parsed_ids}
+
+    if range_start and range_end:
         query["$or"] = [
-            {"start_time": {"$gte": start, "$lte": end}},
-            {"end_time": {"$gte": start, "$lte": end}},
+            {"start_time": {"$gte": range_start, "$lte": range_end}},
+            {"end_time": {"$gte": range_start, "$lte": range_end}},
+            {"$and": [{"start_time": {"$lte": range_start}}, {"end_time": {"$gte": range_end}}]},
         ]
     events = await db.calendar_events.find(query, {"_id": 0}).to_list(2000)
     return events
+
+
+@router.get("/calendar/sync/status")
+async def get_sync_status(current_user=Depends(get_current_user)):
+    count = await db.calendar_events.count_documents({"user_id": current_user.user_id, "is_synced": True})
+    return {"count": count}
 
 
 @router.post("/calendars/events")
@@ -181,6 +218,21 @@ async def create_event(payload: EventCreate, current_user=Depends(get_current_us
     await db.calendar_events.insert_one(doc)
     doc.pop("_id", None)
     return doc
+
+
+@router.delete("/calendars/{calendar_id}")
+async def delete_calendar(calendar_id: str, current_user=Depends(get_current_user)):
+    existing = await db.calendars.find_one({"id": calendar_id, "user_id": current_user.user_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Calendar not found")
+
+    total = await db.calendars.count_documents({"user_id": current_user.user_id})
+    if total <= 1:
+        raise HTTPException(status_code=400, detail="Cannot delete the last calendar")
+
+    await db.calendar_events.delete_many({"calendar_id": calendar_id, "user_id": current_user.user_id})
+    await db.calendars.delete_one({"id": calendar_id, "user_id": current_user.user_id})
+    return {"status": "deleted"}
 
 
 @router.put("/calendars/events/{event_id}")
