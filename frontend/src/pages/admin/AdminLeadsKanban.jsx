@@ -506,16 +506,16 @@ const AdminLeadsKanban = () => {
       </div>
 
       <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
-        <DialogContent className="max-w-[1280px] h-[92vh] p-0 gap-0 overflow-hidden" data-testid="opportunity-edit-modal">
+        <DialogContent className="max-w-[1280px] h-[92vh] p-0 gap-0 overflow-hidden flex flex-col" data-testid="opportunity-edit-modal">
           {selectedLead && (
-            <div className="h-full flex flex-col">
+            <div className="h-full min-h-0 flex flex-col">
               <div className="px-7 pt-6 pb-4 border-b border-gray-200" data-testid="opportunity-modal-header">
                 <h2 className="text-4xl font-semibold text-gray-800 leading-none" data-testid="opportunity-modal-title">Edit “{selectedLead.opportunity_name || selectedLead.name || 'Opportunity'}”</h2>
                 <p className="text-gray-500 mt-3 text-base">Add and edit opportunity details, tasks, notes and appointments.</p>
               </div>
 
-              <div className="flex-1 overflow-hidden flex">
-                <aside className="w-[280px] border-r border-gray-200 bg-[#f8f8f9] p-4 flex flex-col" data-testid="opportunity-modal-sidebar">
+              <div className="flex-1 min-h-0 overflow-hidden flex">
+                <aside className="w-[280px] min-h-0 border-r border-gray-200 bg-[#f8f8f9] p-4 flex flex-col" data-testid="opportunity-modal-sidebar">
                   <nav className="space-y-1 flex-1">
                     {SECTION_TABS.map((tab) => (
                       <button
@@ -534,7 +534,7 @@ const AdminLeadsKanban = () => {
                   </div>
                 </aside>
 
-                <section className="flex-1 overflow-y-auto p-6" data-testid="opportunity-modal-main-content">
+                <section className="flex-1 min-h-0 overflow-y-auto p-6" data-testid="opportunity-modal-main-content">
                   <div className="flex items-center justify-between mb-5">
                     <h3 className="text-[30px] font-semibold text-gray-800">{SECTION_TABS.find((tab) => tab.id === activeSection)?.label}</h3>
                     <label className="inline-flex items-center gap-2 text-sm text-gray-600" data-testid="opportunity-hide-empty-toggle-wrap">
