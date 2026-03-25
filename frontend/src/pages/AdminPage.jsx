@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { useAuth } from '../context/AuthContext';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 import { toast } from '../hooks/use-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -23,6 +24,7 @@ const API = `${BACKEND_URL}/api`;
 const AdminPage = () => {
   const navigate = useNavigate();
   const { user, logout, isAuthenticated, isAdmin, isSuperAdmin, loading } = useAuth();
+  const { logoUrl, siteName } = useSiteSettings();
   const [users, setUsers] = useState([]);
   const [stats, setStats] = useState(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -149,9 +151,10 @@ const AdminPage = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <img
-                src="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png"
-                alt="APS"
+                src={logoUrl || '/images/gingerkare-logo.png'}
+                alt={siteName || 'Site logo'}
                 className="h-12"
+                data-testid="admin-page-header-logo"
               />
               <div>
                 <h1 className="text-xl font-bold">Admin Dashboard</h1>

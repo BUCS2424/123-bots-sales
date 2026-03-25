@@ -15,6 +15,7 @@ import { Badge } from '../../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import { toast } from '../../hooks/use-toast';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -423,6 +424,7 @@ const CustomItemModal = ({ isOpen, onClose, onAdd }) => {
 };
 
 const PeptidesPOSPage = () => {
+  const { logoUrl, siteName } = useSiteSettings();
   // State
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -844,11 +846,16 @@ const PeptidesPOSPage = () => {
             </div>
           )}
           
-          <img
-            src="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png"
-            alt="APS"
-            className="h-10"
-          />
+          {logoUrl ? (
+            <img
+              src={logoUrl}
+              alt={siteName || 'Site logo'}
+              className="h-10"
+              data-testid="pawn-pos-header-logo"
+            />
+          ) : (
+            <span className="text-white font-semibold" data-testid="pawn-pos-header-logo-fallback">{siteName || '123Bots'}</span>
+          )}
         </div>
       </header>
 

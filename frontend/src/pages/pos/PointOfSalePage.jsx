@@ -12,6 +12,7 @@ import { Label } from '../../components/ui/label';
 import { Badge } from '../../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { toast } from '../../hooks/use-toast';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -174,6 +175,7 @@ const SuccessModal = ({ isOpen, onClose, rental, customer }) => {
 
 const PointOfSalePage = () => {
   const navigate = useNavigate();
+  const { logoUrl, siteName } = useSiteSettings();
   const [sizes, setSizes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -320,11 +322,16 @@ const PointOfSalePage = () => {
               <p className="text-white/60 text-sm">Point of Sale - In-Person Rentals</p>
             </div>
           </div>
-          <img
-            src="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png"
-            alt="APS"
-            className="h-12"
-          />
+          {logoUrl ? (
+            <img
+              src={logoUrl}
+              alt={siteName || 'Site logo'}
+              className="h-12"
+              data-testid="storage-pos-header-logo"
+            />
+          ) : (
+            <span className="text-white font-semibold" data-testid="storage-pos-header-logo-fallback">{siteName || '123Bots'}</span>
+          )}
         </div>
       </header>
 

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../..
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
+import { DEFAULT_LOGO_URL } from '../../lib/siteDefaults';
 
 const DevBrandingSettings = () => {
   return (
@@ -36,14 +37,14 @@ const DevBrandingSettings = () => {
               <div>
                 <Label>Primary Logo</Label>
                 <Input 
-                  defaultValue="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png"
+                  defaultValue={DEFAULT_LOGO_URL}
                   className="mt-1" 
                 />
                 <p className="text-xs text-gray-500 mt-1">Used in header and emails</p>
               </div>
               <div className="flex items-center justify-center bg-gray-100 rounded-lg p-4">
                 <img 
-                  src="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png" 
+                  src={DEFAULT_LOGO_URL} 
                   alt="Logo preview" 
                   className="max-h-16" 
                 />

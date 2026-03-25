@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Lock, Eye, EyeOff } from 'lucide-react';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 const ComingSoonCover = ({ children }) => {
+  const { logoUrl, siteName } = useSiteSettings();
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [pin, setPin] = useState(['', '', '', '']);
   const [error, setError] = useState(false);
@@ -99,9 +101,10 @@ const ComingSoonCover = ({ children }) => {
         {/* Logo */}
         <div className="mb-8">
           <img 
-            src="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png" 
-            alt="123Bots" 
+            src={logoUrl || '/images/gingerkare-logo.png'} 
+            alt={siteName || '123Bots'} 
             className="h-20 mx-auto mb-6"
+            data-testid="coming-soon-site-logo"
           />
         </div>
 

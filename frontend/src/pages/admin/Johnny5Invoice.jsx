@@ -3,11 +3,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ArrowLeft, Printer, Download, Package, CheckCircle } from 'lucide-react';
 import { Button } from '../../components/ui/button';
+import { DEFAULT_LOGO_URL } from '../../lib/siteDefaults';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 // Default logo if none configured
-const DEFAULT_LOGO = "https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png";
+const DEFAULT_LOGO = DEFAULT_LOGO_URL;
 
 const Johnny5Invoice = () => {
   const location = useLocation();

@@ -12,11 +12,13 @@ import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { Checkbox } from '../components/ui/checkbox';
 import { toast } from '../hooks/use-toast';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const JobApplicationPage = () => {
+  const { logoUrl, siteName } = useSiteSettings();
   const formRef = useRef(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -177,9 +179,10 @@ const JobApplicationPage = () => {
         {/* Header */}
         <div className="text-center mb-8 print:mb-4">
           <img
-            src="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png"
-            alt="123Bots"
+            src={logoUrl || '/images/gingerkare-logo.png'}
+            alt={siteName || '123Bots'}
             className="h-16 mx-auto mb-4 print:h-12"
+            data-testid="job-application-header-logo"
           />
           <h1 className="text-3xl font-bold text-gray-900 print:text-2xl">Employment Application</h1>
           <p className="text-gray-600 mt-2">123Bots • Dothan, Alabama</p>

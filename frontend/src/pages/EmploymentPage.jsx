@@ -19,12 +19,14 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '../components/ui/accordion';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const EmploymentPage = () => {
   const navigate = useNavigate();
+  const { logoUrl, siteName } = useSiteSettings();
   const [searchParams] = useSearchParams();
   const initialTab = searchParams.get('tab') || 'jobs';
   
@@ -181,9 +183,10 @@ const EmploymentPage = () => {
           <div className="max-w-3xl">
             <div className="flex items-center gap-3 mb-4">
               <img
-                src="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png"
-                alt="123Bots"
+                src={logoUrl || '/images/gingerkare-logo.png'}
+                alt={siteName || '123Bots'}
                 className="h-12"
+                data-testid="employment-hero-logo"
               />
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4" data-testid="employment-hero-title">
@@ -693,9 +696,10 @@ const EmploymentPage = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <img
-                src="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png"
-                alt="123Bots"
+                src={logoUrl || '/images/gingerkare-logo.png'}
+                alt={siteName || '123Bots'}
                 className="h-8"
+                data-testid="employment-footer-logo"
               />
               <span className="text-sm text-gray-400">© {new Date().getFullYear()} All rights reserved.</span>
             </div>

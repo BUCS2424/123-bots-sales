@@ -7,6 +7,7 @@ import {
   Home, LogOut, Code, Percent, Warehouse, Image, UserPlus, DollarSign, Sparkles, HardDriveDownload, FolderTree
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 import { Toaster } from '../../components/ui/toaster';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../../components/ui/dropdown-menu';
 
@@ -31,6 +32,7 @@ const AdminSettingsLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout, isAuthenticated, loading } = useAuth();
+  const { logoUrl, siteName } = useSiteSettings();
   const [expandedSections, setExpandedSections] = useState(['overview']);
   const [featureFlags, setFeatureFlags] = useState({
     owner_chat_enabled: false,
@@ -255,11 +257,16 @@ const AdminSettingsLayout = () => {
         {/* Top Header */}
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
           <div className="flex items-center gap-4">
-            <img
-              src="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png"
-              alt="APS"
-              className="h-8"
-            />
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt={siteName || 'Site logo'}
+                className="h-8"
+                data-testid="admin-settings-header-logo"
+              />
+            ) : (
+              <span className="font-semibold text-gray-900" data-testid="admin-settings-header-logo-fallback">{siteName || '123Bots'}</span>
+            )}
             <span className="text-gray-400">|</span>
             <p className="text-gray-500 text-sm">Configure your business settings</p>
           </div>

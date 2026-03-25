@@ -2,12 +2,14 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Store } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 import AdminScreensaver from '../../components/AdminScreensaver';
 
 const AdminLandingPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
+  const { logoUrl, siteName } = useSiteSettings();
   const [showScreensaver, setShowScreensaver] = useState(false);
   const screensaverTimeoutRef = useRef(null);
 
@@ -115,9 +117,10 @@ const AdminLandingPage = () => {
         <header className="p-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <img
-              src="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png"
-              alt="123Bots"
+              src={logoUrl || '/images/gingerkare-logo.png'}
+              alt={siteName || '123Bots'}
               className="h-12"
+              data-testid="admin-landing-header-logo"
             />
           </div>
           <div className="text-white text-right">

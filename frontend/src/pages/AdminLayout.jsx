@@ -13,6 +13,7 @@ import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 import { useAuth } from '../context/AuthContext';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 import { Toaster } from '../components/ui/toaster';
 import { useInactivityTimeout } from '../hooks/useInactivityTimeout';
 import AdminScreensaver from '../components/AdminScreensaver';
@@ -79,6 +80,7 @@ const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout, isAuthenticated, isAdmin, loading } = useAuth();
+  const { logoUrl, siteName } = useSiteSettings();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [stats, setStats] = useState(null);
@@ -819,11 +821,16 @@ const AdminLayout = () => {
           <div className="fixed inset-0 bg-black/50" onClick={() => setMobileMenuOpen(false)} />
           <aside className="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-[#0a1929] to-[#0d2847] text-white z-50 flex flex-col">
             <div className="h-16 flex items-center justify-between px-4 border-b border-white/10 bg-gradient-to-r from-blue-600 to-green-500">
-              <img
-                src="https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png"
-                alt="APS"
-                className="h-10"
-              />
+              {logoUrl ? (
+                <img
+                  src={logoUrl}
+                  alt={siteName || 'Site logo'}
+                  className="h-10"
+                  data-testid="admin-mobile-header-logo"
+                />
+              ) : (
+                <span className="text-white font-semibold" data-testid="admin-mobile-header-logo-fallback">{siteName || '123Bots'}</span>
+              )}
               <button onClick={() => setMobileMenuOpen(false)}>
                 <X className="w-6 h-6" />
               </button>
