@@ -46,7 +46,7 @@ const COLUMNS = [
 const SECTION_TABS = [
   { id: 'opportunity-details', label: 'Opportunity Details', icon: UserRound },
   { id: 'appointments', label: 'Book/Update Appointment', icon: Calendar },
-  { id: 'quotes-contracts-esign', label: 'Quote / Contract / eSign', icon: FileSignature },
+  { id: 'quotes-contracts-esign', label: 'Quotes', icon: FileSignature },
   { id: 'tasks', label: 'Tasks', icon: CheckCircle2 },
   { id: 'notes', label: 'Notes', icon: MessageSquare },
   { id: 'payments', label: 'Payments', icon: CreditCard },

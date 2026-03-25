@@ -279,7 +279,7 @@ const AdminLayout = () => {
       id: 'quotes-contracts-esign',
       type: 'single',
       path: '/admin/quotes-contracts-esign',
-      label: 'Quotes / Contracts / eSign',
+      label: 'Quotes',
       icon: FileText,
     },
     {

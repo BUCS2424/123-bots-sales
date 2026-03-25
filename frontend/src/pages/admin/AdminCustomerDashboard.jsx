@@ -523,7 +523,7 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
             <FileText className="w-4 h-4" /> Invoices
           </TabsTrigger>
           <TabsTrigger value="quotes-contracts-esign" className="flex items-center gap-2" data-testid="customer-quotes-contracts-tab-trigger">
-            <FileText className="w-4 h-4" /> Quotes / Contracts / eSign
+            <FileText className="w-4 h-4" /> Quotes
           </TabsTrigger>
         </TabsList>
 
@@ -819,7 +819,7 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
         <TabsContent value="quotes-contracts-esign" data-testid="customer-quotes-contracts-tab-content">
           <Card>
             <CardHeader>
-              <CardTitle>Quotes / Contracts / eSign</CardTitle>
+              <CardTitle>Quotes</CardTitle>
             </CardHeader>
             <CardContent>
               {linkedLeadId ? (

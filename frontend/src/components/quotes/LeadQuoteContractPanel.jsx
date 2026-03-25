@@ -5,7 +5,7 @@ import { Button } from '../ui/button';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-export const LeadQuoteContractPanel = ({ leadId, title = 'Quotes / Contracts / eSign' }) => {
+export const LeadQuoteContractPanel = ({ leadId, title = 'Quotes' }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [quotes, setQuotes] = useState([]);
