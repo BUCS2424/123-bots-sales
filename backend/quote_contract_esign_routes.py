@@ -172,7 +172,7 @@ async def _get_general_business_info():
         "zip_code": source.get("zip_code", ""),
         "phone": source.get("phone", ""),
         "email": source.get("email", ""),
-        "logo_url": source.get("logo_url") or (site_settings or {}).get("logo_url", ""),
+        "logo_url": (site_settings or {}).get("logo_url", ""),
     }
 
 
