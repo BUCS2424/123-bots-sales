@@ -18,6 +18,26 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 
 ## What's Been Implemented
 
+### Completed (March 25, 2026)
+- [x] **A2G Modules Step 2 (Frontend) integrated into Admin**
+  - Tasks page integrated at `/admin/tasks` and placed under **CRM** menu
+  - Contacts page integrated at `/admin/contacts` with detail page `/admin/contacts/:contactId`
+  - Calendar page integrated at `/admin/calendar`
+  - Radio page integrated at `/admin/radio` with app-level `RadioProvider` and persistent admin mini-player
+  - And...Go page integrated at `/admin/andgo`
+  - Booking settings page integrated at `/admin/booking`
+  - Public booking page integrated at `/booking/:bookingSlug`
+- [x] **Admin Sidebar structure updated as requested**
+  - CRM now includes: Opportunities + Tasks
+  - Top-level items added: Contacts, Calendar, Radio, And...Go, Booking
+- [x] **API wiring for new frontend modules standardized**
+  - Added `frontend/src/lib/apiClient.js` with token interceptor using localStorage token
+- [x] **Booking dependency validated**
+  - `aiosmtplib` ensured in backend environment and requirements regenerated
+- [x] **Regression-safe fixes from automated testing applied**
+  - Contact export route ordering fixed in backend to prevent `/export` path collision with `/{contact_id}`
+  - Contact detail route handling fixed for AdminLayout direct-render pattern
+
 ### Completed (March 23, 2026)
 - [x] GitHub project cloned and dependencies installed
 - [x] Full rebranding from "GingerKare" to "123Bots"
@@ -51,6 +71,13 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 - Frontend Testing: PASS (100% success rate)
 - Backend Testing: PASS (leads API working)
 - Mobile Responsive: PASS
+
+### Latest Testing (March 25, 2026)
+- Backend smoke tests: PASS for `/api/contacts`, `/api/calendars`, `/api/tasks`, `/api/radio`, `/api/goto-links`, `/api/booking`, `/api/health`
+- Frontend smoke screenshot: PASS (homepage loads)
+- Testing Agent Iteration 57: PASS (Backend 100%, Frontend 100%)
+  - Verified admin routes and sidebar placement for all six A2G modules
+  - Verified public booking flow `/booking/:bookingSlug`
 
 ## URL Structure
 | Page | URL |
@@ -112,3 +139,13 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 - [ ] Upload assets to iDrive E2 bucket (currently in local public folder)
 - [ ] Add Healthcare industry page
 - [ ] Optional: expose `/sitemap-locations.xml` root-level alias (currently available at `/api/sitemap-locations.xml`)
+
+## Prioritized Next Actions
+- **P0 (Now complete):** A2G frontend integration with requested admin menu structure
+- **P1 (Next):**
+  - Generate/publish SEO resource articles per robot product
+  - Populate shop catalog and finalize pre-launch readiness
+- **P2 (Backlog):**
+  - Checkout refactor + legacy component cleanup
+  - Asset migration to iDrive E2
+  - Security/performance review
