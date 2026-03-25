@@ -89,6 +89,7 @@ const AdminLayout = () => {
   const [johnny5Settings, setJohnny5Settings] = useState({ show_menu: false, integration_enabled: false });
   const [featureFlagsLoaded, setFeatureFlagsLoaded] = useState(false);
   const [featureFlags, setFeatureFlags] = useState({
+    cart_enabled: true,
     printful_enabled: false,
     yoycol_enabled: false,
     owner_chat_enabled: false,
@@ -108,6 +109,7 @@ const AdminLayout = () => {
         setBusinessSettings(businessRes.data);
         setJohnny5Settings(johnny5Res.data);
         setFeatureFlags({
+          cart_enabled: featureFlagsRes?.data?.cart_enabled !== false,
           printful_enabled: Boolean(featureFlagsRes?.data?.printful_enabled),
           yoycol_enabled: Boolean(featureFlagsRes?.data?.yoycol_enabled),
           owner_chat_enabled: Boolean(featureFlagsRes?.data?.owner_chat_enabled),
@@ -145,74 +147,85 @@ const AdminLayout = () => {
   };
 
   const currentSection = getCurrentSection();
+  const cartEnabled = featureFlags.cart_enabled !== false;
 
   // Peptides menu structure
   const pawnMenuSections = [
+    ...(cartEnabled ? [
+      {
+        id: 'dashboard',
+        type: 'single',
+        path: '/admin/cart',
+        label: 'Dashboard',
+        icon: LayoutDashboard,
+      },
+      {
+        id: 'pos',
+        type: 'single',
+        path: '/admin/cart/pos',
+        label: 'POS',
+        icon: CreditCard,
+      },
+      {
+        id: 'sales',
+        type: 'accordion',
+        label: 'Sales',
+        icon: DollarSign,
+        children: [
+          { path: '/admin/orders', label: 'Orders', icon: ShoppingCart, badge: stats?.pending_orders },
+          { path: '/admin/abandoned-carts', label: 'Abandoned Carts', icon: ShoppingBag },
+          { path: '/admin/customers', label: 'Customers', icon: Users },
+        ],
+      },
+      {
+        id: 'catalog',
+        type: 'accordion',
+        label: 'Catalog',
+        icon: Layers,
+        children: [
+          { path: '/admin/products', label: 'Products', icon: Package },
+          { path: '/admin/categories', label: 'Categories', icon: FolderTree },
+          { path: '/admin/inventory', label: 'Inventory', icon: Warehouse, badge: stats?.low_stock_count },
+          { path: '/admin/gift-cards', label: 'Gift Cards', icon: Gift },
+        ],
+      },
+      {
+        id: 'shipping',
+        type: 'single',
+        path: '/admin/shipping',
+        label: 'Shipping',
+        icon: Truck,
+      },
+      ...((featureFlags.printful_enabled || featureFlags.yoycol_enabled) ? [{
+        id: 'fulfillment',
+        type: 'accordion',
+        label: 'Fulfillment',
+        icon: Box,
+        children: [
+          ...(featureFlags.printful_enabled ? [{ path: '/admin/fulfillment/printful', label: 'Printful', icon: Store }] : []),
+          ...(featureFlags.yoycol_enabled ? [{ path: '/admin/fulfillment/yoycol', label: 'YOYCOL', icon: Globe }] : []),
+        ],
+      }] : []),
+      {
+        id: 'marketing',
+        type: 'accordion',
+        label: 'Marketing',
+        icon: Megaphone,
+        children: [
+          { path: '/admin/discounts', label: 'Discounts', icon: Tag },
+          { path: '/admin/reviews', label: 'Reviews', icon: Star },
+          { path: '/admin/emails', label: 'System Emails', icon: Mail },
+          { href: getAnalyticsUrl(), label: 'Analytics', icon: BarChart3, external: true },
+        ],
+      },
+    ] : []),
     {
-      id: 'dashboard',
-      type: 'single',
-      path: '/admin/cart',
-      label: 'Dashboard',
-      icon: LayoutDashboard,
-    },
-    {
-      id: 'pos',
-      type: 'single',
-      path: '/admin/cart/pos',
-      label: 'POS',
-      icon: CreditCard,
-    },
-    {
-      id: 'sales',
+      id: 'crm',
       type: 'accordion',
-      label: 'Sales',
-      icon: DollarSign,
+      label: 'CRM',
+      icon: Users,
       children: [
-        { path: '/admin/orders', label: 'Orders', icon: ShoppingCart, badge: stats?.pending_orders },
         { path: '/admin/leads', label: 'Leads Kanban', icon: Users },
-        { path: '/admin/abandoned-carts', label: 'Abandoned Carts', icon: ShoppingBag },
-        { path: '/admin/customers', label: 'Customers', icon: Users },
-      ],
-    },
-    {
-      id: 'catalog',
-      type: 'accordion',
-      label: 'Catalog',
-      icon: Layers,
-      children: [
-        { path: '/admin/products', label: 'Products', icon: Package },
-        { path: '/admin/categories', label: 'Categories', icon: FolderTree },
-        { path: '/admin/inventory', label: 'Inventory', icon: Warehouse, badge: stats?.low_stock_count },
-        { path: '/admin/gift-cards', label: 'Gift Cards', icon: Gift },
-      ],
-    },
-    {
-      id: 'shipping',
-      type: 'single',
-      path: '/admin/shipping',
-      label: 'Shipping',
-      icon: Truck,
-    },
-    ...((featureFlags.printful_enabled || featureFlags.yoycol_enabled) ? [{
-      id: 'fulfillment',
-      type: 'accordion',
-      label: 'Fulfillment',
-      icon: Box,
-      children: [
-        ...(featureFlags.printful_enabled ? [{ path: '/admin/fulfillment/printful', label: 'Printful', icon: Store }] : []),
-        ...(featureFlags.yoycol_enabled ? [{ path: '/admin/fulfillment/yoycol', label: 'YOYCOL', icon: Globe }] : []),
-      ],
-    }] : []),
-    {
-      id: 'marketing',
-      type: 'accordion',
-      label: 'Marketing',
-      icon: Megaphone,
-      children: [
-        { path: '/admin/discounts', label: 'Discounts', icon: Tag },
-        { path: '/admin/reviews', label: 'Reviews', icon: Star },
-        { path: '/admin/emails', label: 'System Emails', icon: Mail },
-        { href: getAnalyticsUrl(), label: 'Analytics', icon: BarChart3, external: true },
       ],
     },
     {
@@ -230,7 +243,7 @@ const AdminLayout = () => {
       icon: PiggyBank,
     },
     // Johnny 5 Portal - conditionally shown based on settings
-    ...(johnny5Settings.show_menu ? [{
+    ...(cartEnabled && johnny5Settings.show_menu ? [{
       id: 'johnny5',
       type: 'accordion',
       label: 'Johnny 5 Portal',
