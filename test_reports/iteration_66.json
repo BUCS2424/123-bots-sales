@@ -1,0 +1,100 @@
+{
+  "summary": "Tested Quote Configuration Modal, Feature Flag, and Quote Catalog Separation. All 19 backend API tests pass (100%). UI testing confirms: Configuration button on Quotes Settings page opens modal with business info sync, from-field visibility toggles, stripe fees checkbox, and deposit value/type fields. Settings button on QuoteBuilder is LEFT of Save Draft. Quote preview shows FROM section with business name, Stripe fee row, and deposit display. Sidebar Quotes menu and Lead modal Quotes tab are visible when quotes_enabled=true.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Opportunity Modal",
+        "issues": ["Console warnings about DialogContent missing DialogTitle for accessibility - minor a11y issue (pre-existing)"]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/test_reports/pytest/quote_config_modal_results.xml",
+    "/app/backend/tests/test_quote_config_modal.py"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "QuoteCatalogSettingsPage.jsx: Configuration button correctly opens modal with all required fields",
+    "QuoteBuilderPage.jsx: Settings button correctly positioned LEFT of Save Draft",
+    "Quote preview correctly shows FROM section based on config toggles",
+    "Quote preview shows Stripe fee row when charge_stripe_fees=true",
+    "Quote preview shows deposit display (65% deposit due upon signing)",
+    "AdminLayout.jsx: Sidebar Quotes menu correctly uses quotesEnabled flag",
+    "AdminLeadsKanban.jsx: Quotes tab in lead modal correctly uses quotesEnabled flag",
+    "Quote catalog products/services are separate from cart (uses /api/quotes/catalog/products and /api/quotes/catalog/services)"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_quote_config_modal.py"
+  ],
+  "success_rate": {
+    "backend": "100%",
+    "frontend": "100%"
+  },
+  "test_credentials": {
+    "admin_email": "qa-admin-a2g@example.com",
+    "admin_password": "TestPass123!"
+  },
+  "seed_data_creation": "Used existing test data from previous iterations",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Quote Configuration Modal fully implemented. Configuration button on Quotes Settings page opens modal with: business info sync note, logo preview, from-field visibility toggles (business name, address, city/state/zip, phone, email), stripe fees checkbox, deposit value input, and deposit type dropdown (% or $). Settings button on QuoteBuilder navigates to /admin/quotes/settings. Quote preview shows FROM section based on config toggles, Stripe fee row when enabled, and deposit display. Feature flag 'quotes_enabled' controls visibility of Quotes menu in sidebar and Quotes tab in lead modal/customer dashboard.",
+  "features_tested": {
+    "Configuration Button": {
+      "Configuration button exists on Quotes Settings page": "PASS",
+      "Configuration button opens modal": "PASS"
+    },
+    "Configuration Modal Contents": {
+      "Business Information sync note": "PASS",
+      "Logo preview/empty state": "PASS",
+      "show_from_business_name toggle": "PASS",
+      "show_from_address toggle": "PASS",
+      "show_from_city_state_zip toggle": "PASS",
+      "show_from_phone toggle": "PASS",
+      "show_from_email toggle": "PASS",
+      "Charge Stripe fees checkbox": "PASS",
+      "Deposit value input": "PASS",
+      "Deposit type dropdown (% or $)": "PASS",
+      "Save Configuration button": "PASS"
+    },
+    "Quote Builder Settings Button": {
+      "Settings button exists on QuoteBuilder": "PASS",
+      "Settings button is LEFT of Save Draft": "PASS"
+    },
+    "Quote Preview": {
+      "FROM section shows business name": "PASS",
+      "Stripe fee row visible (charge_stripe_fees=true)": "PASS",
+      "Deposit display in Payment Terms": "PASS"
+    },
+    "Quote Config API Tests": {
+      "GET /api/quotes/config returns config and business_info": "PASS",
+      "PUT /api/quotes/config updates visibility toggles": "PASS",
+      "PUT /api/quotes/config updates charge_stripe_fees": "PASS",
+      "PUT /api/quotes/config updates deposit as percent": "PASS",
+      "PUT /api/quotes/config updates deposit as flat $": "PASS",
+      "PUT /api/quotes/config rejects invalid deposit_type": "PASS",
+      "PUT /api/quotes/config rejects negative deposit_value": "PASS"
+    },
+    "Quote Catalog Separation": {
+      "GET /api/quotes/catalog/products returns quote-specific products": "PASS",
+      "GET /api/quotes/catalog/services returns quote-specific services": "PASS",
+      "POST /api/quotes/catalog/products creates quote product": "PASS",
+      "POST /api/quotes/catalog/services creates quote service": "PASS"
+    },
+    "Feature Flag Tests": {
+      "GET /api/admin-settings/feature-flags includes quotes_enabled": "PASS",
+      "GET /api/settings/feature-flags includes quotes_enabled": "PASS",
+      "PUT /api/admin-settings/feature-flags toggles quotes_enabled OFF": "PASS",
+      "PUT /api/admin-settings/feature-flags toggles quotes_enabled ON": "PASS"
+    },
+    "Feature Flag UI Behavior (quotes_enabled=true)": {
+      "Sidebar Quotes menu is VISIBLE": "PASS",
+      "Lead modal Quotes tab is VISIBLE": "PASS"
+    }
+  }
+}

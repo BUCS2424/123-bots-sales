@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Package, Wrench, TrendingUp, Plus, Pencil, Trash2, Search } from 'lucide-react';
+import { ArrowLeft, Package, Wrench, TrendingUp, Plus, Pencil, Trash2, Search, Settings } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
@@ -31,19 +31,50 @@ export default function QuoteCatalogSettingsPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyItem);
+  const [configOpen, setConfigOpen] = useState(false);
+  const [quoteConfig, setQuoteConfig] = useState({
+    show_from_business_name: true,
+    show_from_address: true,
+    show_from_city_state_zip: true,
+    show_from_phone: false,
+    show_from_email: false,
+    charge_stripe_fees: true,
+    deposit_value: 65,
+    deposit_type: 'percent',
+  });
+  const [businessInfo, setBusinessInfo] = useState({
+    business_name: '',
+    address: '',
+    city: '',
+    state: '',
+    zip_code: '',
+    phone: '',
+    email: '',
+    logo_url: '',
+  });
 
   const token = localStorage.getItem('token');
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
   const loadData = async () => {
-    const [productsRes, servicesRes, salesRes] = await Promise.all([
+    const [productsRes, servicesRes, salesRes, configRes] = await Promise.all([
       axios.get(`${API}/quotes/catalog/products`, { headers }),
       axios.get(`${API}/quotes/catalog/services`, { headers }),
       axios.get(`${API}/quotes/catalog/lead-sales`, { headers }),
+      axios.get(`${API}/quotes/config`, { headers }),
     ]);
     setProducts(productsRes.data?.products || []);
     setServices(servicesRes.data?.services || []);
     setLeadSales(salesRes.data?.sales || []);
+    setQuoteConfig(configRes.data?.config || {});
+    setBusinessInfo(configRes.data?.business_info || {});
+  };
+
+  const saveQuoteConfig = async () => {
+    const response = await axios.put(`${API}/quotes/config`, quoteConfig, { headers });
+    setQuoteConfig(response.data?.config || quoteConfig);
+    setBusinessInfo(response.data?.business_info || businessInfo);
+    setConfigOpen(false);
   };
 
   useEffect(() => {
@@ -109,6 +140,10 @@ export default function QuoteCatalogSettingsPage() {
           </Button>
           <h1 className="text-2xl font-bold" data-testid="quotes-catalog-heading">Quote Products & Services</h1>
         </div>
+        <Button variant="outline" onClick={() => setConfigOpen(true)} data-testid="quotes-configuration-button">
+          <Settings className="w-4 h-4 mr-2" />
+          Configuration
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -282,6 +317,87 @@ export default function QuoteCatalogSettingsPage() {
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="outline" onClick={() => setOpen(false)} data-testid="quotes-catalog-item-cancel-button">Cancel</Button>
               <Button onClick={saveItem} data-testid="quotes-catalog-item-save-button">Save</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={configOpen} onOpenChange={setConfigOpen}>
+        <DialogContent data-testid="quotes-configuration-modal">
+          <DialogHeader>
+            <DialogTitle>Quote Configuration</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="rounded-lg border p-3 bg-gray-50" data-testid="quotes-configuration-business-sync-note">
+              <p className="text-sm font-medium">Business Information (Synced from Business Information page)</p>
+              <p className="text-xs text-gray-600 mt-1">These values are read-only here and sync from General Settings.</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Logo (synced)</Label>
+              {businessInfo.logo_url ? (
+                <img src={businessInfo.logo_url} alt="Business logo" className="h-12 object-contain" data-testid="quotes-config-logo-preview" />
+              ) : (
+                <div className="text-xs text-gray-500" data-testid="quotes-config-logo-empty">No logo set in business settings.</div>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <Label>From Fields visibility on quote form</Label>
+              {[
+                ['show_from_business_name', `Business Name: ${businessInfo.business_name || '—'}`],
+                ['show_from_address', `Address: ${businessInfo.address || '—'}`],
+                ['show_from_city_state_zip', `City/State/Zip: ${[businessInfo.city, businessInfo.state, businessInfo.zip_code].filter(Boolean).join(', ') || '—'}`],
+                ['show_from_phone', `Phone: ${businessInfo.phone || '—'}`],
+                ['show_from_email', `Email: ${businessInfo.email || '—'}`],
+              ].map(([key, label]) => (
+                <label key={key} className="flex items-center gap-2 text-sm" data-testid={`quotes-config-${key}`}>
+                  <input
+                    type="checkbox"
+                    checked={Boolean(quoteConfig[key])}
+                    onChange={(e) => setQuoteConfig({ ...quoteConfig, [key]: e.target.checked })}
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+
+            <label className="flex items-center gap-2 text-sm" data-testid="quotes-config-charge-stripe-fees">
+              <input
+                type="checkbox"
+                checked={Boolean(quoteConfig.charge_stripe_fees)}
+                onChange={(e) => setQuoteConfig({ ...quoteConfig, charge_stripe_fees: e.target.checked })}
+              />
+              Charge Stripe fees on quote totals
+            </label>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Deposit Amount</Label>
+                <Input
+                  type="number"
+                  value={quoteConfig.deposit_value ?? 65}
+                  onChange={(e) => setQuoteConfig({ ...quoteConfig, deposit_value: Number(e.target.value || 0) })}
+                  data-testid="quotes-config-deposit-value"
+                />
+              </div>
+              <div>
+                <Label>Deposit Type</Label>
+                <select
+                  className="w-full h-10 rounded-md border px-3"
+                  value={quoteConfig.deposit_type || 'percent'}
+                  onChange={(e) => setQuoteConfig({ ...quoteConfig, deposit_type: e.target.value })}
+                  data-testid="quotes-config-deposit-type"
+                >
+                  <option value="percent">%</option>
+                  <option value="flat">$</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="outline" onClick={() => setConfigOpen(false)} data-testid="quotes-config-cancel-button">Cancel</Button>
+              <Button onClick={saveQuoteConfig} data-testid="quotes-config-save-button">Save Configuration</Button>
             </div>
           </div>
         </DialogContent>

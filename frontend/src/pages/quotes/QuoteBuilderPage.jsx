@@ -117,6 +117,26 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
   const [services, setServices] = useState([]);
   const [contractTemplates, setContractTemplates] = useState([]);
   const [companySettings, setCompanySettings] = useState({});
+  const [quoteFormConfig, setQuoteFormConfig] = useState({
+    show_from_business_name: true,
+    show_from_address: true,
+    show_from_city_state_zip: true,
+    show_from_phone: false,
+    show_from_email: false,
+    charge_stripe_fees: true,
+    deposit_value: 65,
+    deposit_type: 'percent',
+  });
+  const [quoteBusinessInfo, setQuoteBusinessInfo] = useState({
+    business_name: '',
+    address: '',
+    city: '',
+    state: '',
+    zip_code: '',
+    phone: '',
+    email: '',
+    logo_url: '',
+  });
   
   const [quoteName, setQuoteName] = useState('');
   const [notes, setNotes] = useState('');
@@ -157,7 +177,8 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
         api.get('/api/quotes/catalog/products').catch(() => ({ data: { products: [] } })),
         api.get('/api/quotes/catalog/services').catch(() => ({ data: { services: [] } })),
         api.get('/api/contract-templates').catch(() => ({ data: { templates: [] } })),
-        api.get('/api/settings/general').catch(() => ({ data: {} }))
+        api.get('/api/settings/general').catch(() => ({ data: {} })),
+        api.get('/api/quotes/config').catch(() => ({ data: { config: {}, business_info: {} } }))
       ]);
       
       setLead(results[0].data);
@@ -165,6 +186,8 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
       setServices(results[2].data.services || []);
       setContractTemplates(results[3].data.templates || []);
       setCompanySettings(results[4].data || {});
+      setQuoteFormConfig((prev) => ({ ...prev, ...(results[5].data?.config || {}) }));
+      setQuoteBusinessInfo(results[5].data?.business_info || {});
       
       if (!isNewQuote) {
         const quotesRes = await api.get('/api/leads/' + leadId + '/quotes');
@@ -208,10 +231,16 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
   const STRIPE_RATE = 0.029;
   const STRIPE_FLAT = 0.30;
   const ccFee = (amount) => amount > 0 ? (amount * STRIPE_RATE) + STRIPE_FLAT : 0;
-  const ccFeeOnetime = ccFee(totals.onetime);
-  const ccFeeMonthly = ccFee(totals.monthly);
-  const ccFeeYearly = ccFee(totals.yearly);
-  const totalWithFees = totals.combined + ccFee(totals.combined);
+  const stripeFeesEnabled = quoteFormConfig.charge_stripe_fees !== false;
+  const stripeFeeAmount = stripeFeesEnabled ? ccFee(totals.combined) : 0;
+  const totalWithFees = totals.combined + stripeFeeAmount;
+  const depositType = quoteFormConfig.deposit_type === 'flat' ? 'flat' : 'percent';
+  const rawDepositValue = Number(quoteFormConfig.deposit_value || 0);
+  const depositAmount = Math.min(
+    Math.max(depositType === 'flat' ? rawDepositValue : (totalWithFees * rawDepositValue) / 100, 0),
+    totalWithFees,
+  );
+  const balanceAmount = Math.max(totalWithFees - depositAmount, 0);
 
   const handleItemChange = (index, field, value) => {
     const newItems = [...items];
@@ -321,7 +350,7 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
     let merged = content;
     const clientFullName = lead ? `${lead.first_name || ''} ${lead.last_name || ''}`.trim() : 'Client';
     const clientBusiness = lead?.company_name || lead?.company || '';
-    const providerName = companySettings?.company_name || 'DME R\'US';
+    const providerName = quoteBusinessInfo?.business_name || companySettings?.business_name || companySettings?.company_name || '123Bots';
     merged = merged.replace(/\{\{client_name\}\}/g, clientFullName);
     merged = merged.replace(/\{\{company_name\}\}/g, clientBusiness);
     merged = merged.replace(/\{\{business_name\}\}/g, providerName);
@@ -337,11 +366,14 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
   const selectedContract = contractTemplates.find(t => t.id === contractTemplateId);
   const clientName = ((lead?.first_name || '') + ' ' + (lead?.last_name || '')).trim() || 'Client';
   const clientBusinessName = lead?.company_name || lead?.company || '';
-  const companyName = companySettings?.company_name || 'DME R\'US';
-  const companyAddress = companySettings?.address || '123 Business St';
-  const companyCity = companySettings?.city || 'Lakewood Ranch';
-  const companyState = companySettings?.state || 'FL';
-  const companyZip = companySettings?.zip || '34202';
+  const companyName = quoteBusinessInfo?.business_name || companySettings?.business_name || companySettings?.company_name || 'Business Name';
+  const companyAddress = quoteBusinessInfo?.address || companySettings?.address || '';
+  const companyCity = quoteBusinessInfo?.city || companySettings?.city || '';
+  const companyState = quoteBusinessInfo?.state || companySettings?.state || '';
+  const companyZip = quoteBusinessInfo?.zip_code || companySettings?.zip_code || companySettings?.zip || '';
+  const companyPhone = quoteBusinessInfo?.phone || companySettings?.phone || '';
+  const companyEmail = quoteBusinessInfo?.email || companySettings?.email || '';
+  const companyLogoUrl = quoteBusinessInfo?.logo_url || companySettings?.logo_url || '';
 
   if (loading) {
     return (
@@ -436,18 +468,30 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
                   <p className="text-[#014DB7] font-medium">#QT-{Date.now().toString().slice(-6)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xl font-bold text-gray-900">{companyName}</p>
-                  <p className="text-sm text-gray-500">{companyAddress}</p>
-                  <p className="text-sm text-gray-500">{companyCity}, {companyState} {companyZip}</p>
+                  {companyLogoUrl ? (
+                    <img src={companyLogoUrl} alt="Business logo" className="h-14 object-contain ml-auto" data-testid="quote-preview-business-logo" />
+                  ) : null}
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-8 mb-8">
                 <div className="bg-[#E8F4FF] rounded-xl p-4">
                   <p className="text-xs font-semibold text-gray-500 uppercase mb-2">From</p>
-                  <p className="font-semibold text-gray-900">{companyName}</p>
-                  <p className="text-sm text-gray-600">{companyAddress}</p>
-                  <p className="text-sm text-gray-600">{companyCity}, {companyState}</p>
+                  {quoteFormConfig.show_from_business_name !== false && (
+                    <p className="font-semibold text-gray-900">{companyName}</p>
+                  )}
+                  {quoteFormConfig.show_from_address !== false && companyAddress && (
+                    <p className="text-sm text-gray-600">{companyAddress}</p>
+                  )}
+                  {quoteFormConfig.show_from_city_state_zip !== false && (companyCity || companyState || companyZip) && (
+                    <p className="text-sm text-gray-600">{[companyCity, companyState, companyZip].filter(Boolean).join(', ')}</p>
+                  )}
+                  {quoteFormConfig.show_from_phone && companyPhone && (
+                    <p className="text-sm text-gray-600">{companyPhone}</p>
+                  )}
+                  {quoteFormConfig.show_from_email && companyEmail && (
+                    <p className="text-sm text-gray-600">{companyEmail}</p>
+                  )}
                 </div>
                 <div className="border-2 border-dashed border-gray-200 rounded-xl p-4">
                   <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Bill To</p>
@@ -519,10 +563,12 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
                       <span className="font-medium">{formatCurrency(totals.combined)}</span>
                     </div>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Credit Card Processing Fee (2.9% + $0.30)</span>
-                    <span className="font-medium text-gray-600">{formatCurrency(ccFee(totals.combined))}</span>
-                  </div>
+                  {stripeFeesEnabled && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">Credit Card Processing Fee (2.9% + $0.30)</span>
+                      <span className="font-medium text-gray-600">{formatCurrency(stripeFeeAmount)}</span>
+                    </div>
+                  )}
                   <div className="border-t pt-2">
                     <div className="flex justify-between">
                       <span className="font-semibold text-gray-700">Total</span>
@@ -543,12 +589,16 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="text-sm opacity-80">Payment Terms</p>
-                    <p className="text-xs opacity-60 mt-1">65% deposit due upon signing</p>
+                    <p className="text-xs opacity-60 mt-1">
+                      {depositType === 'flat'
+                        ? `${formatCurrency(rawDepositValue)} deposit due upon signing`
+                        : `${rawDepositValue}% deposit due upon signing`}
+                    </p>
                     <p className="text-xs opacity-60">Balance due at project go-live</p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm opacity-80">First Payment</p>
-                    <p className="text-3xl font-bold">{formatCurrency(totals.combined)}</p>
+                    <p className="text-3xl font-bold">{formatCurrency(depositAmount)}</p>
                   </div>
                 </div>
               </div>
@@ -818,18 +868,20 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
                     <span className="opacity-80">Subtotal</span>
                     <span className="font-medium">{formatCurrency(totals.combined)}</span>
                   </div>
-                  <div className="flex justify-between text-sm mt-1">
-                    <span className="opacity-70">CC Processing Fee (2.9% + $0.30)</span>
-                    <span className="font-medium">{formatCurrency(ccFee(totals.combined))}</span>
-                  </div>
+                  {stripeFeesEnabled && (
+                    <div className="flex justify-between text-sm mt-1">
+                      <span className="opacity-70">CC Processing Fee (2.9% + $0.30)</span>
+                      <span className="font-medium">{formatCurrency(stripeFeeAmount)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between items-center mt-2 pt-2 border-t border-white/20">
                     <span className="font-semibold">Total</span>
                     <span className="text-3xl font-bold">{formatCurrency(totalWithFees)}</span>
                   </div>
                 </div>
                 <div className="pt-2 text-sm opacity-70">
-                  <p>65% Deposit: {formatCurrency(totalWithFees * 0.65)}</p>
-                  <p>Balance at Go-Live: {formatCurrency(totalWithFees * 0.35)}</p>
+                  <p>{depositType === 'flat' ? 'Deposit ($): ' : `Deposit (${rawDepositValue}%): `}{formatCurrency(depositAmount)}</p>
+                  <p>Balance at Go-Live: {formatCurrency(balanceAmount)}</p>
                 </div>
               </div>
             </div>

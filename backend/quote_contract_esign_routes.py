@@ -54,6 +54,17 @@ class QuoteCatalogItem(BaseModel):
     is_active: bool = True
 
 
+class QuoteFormConfigUpdate(BaseModel):
+    show_from_business_name: bool = True
+    show_from_address: bool = True
+    show_from_city_state_zip: bool = True
+    show_from_phone: bool = False
+    show_from_email: bool = False
+    charge_stripe_fees: bool = True
+    deposit_value: float = 65
+    deposit_type: str = "percent"  # percent | flat
+
+
 class QuoteCreate(BaseModel):
     name: str
     notes: Optional[str] = ""
@@ -137,11 +148,84 @@ async def _ensure_default_templates(user_id: str):
     await db.contract_templates.insert_many(docs)
 
 
+async def _get_general_business_info():
+    settings = await db.admin_settings.find_one({}, {"_id": 0})
+    if not settings:
+        return {
+            "business_name": "123Bots",
+            "address": "",
+            "city": "",
+            "state": "",
+            "zip_code": "",
+            "phone": "",
+            "email": "",
+            "logo_url": "",
+        }
+    return {
+        "business_name": settings.get("business_name", "123Bots"),
+        "address": settings.get("address", ""),
+        "city": settings.get("city", ""),
+        "state": settings.get("state", ""),
+        "zip_code": settings.get("zip_code", ""),
+        "phone": settings.get("phone", ""),
+        "email": settings.get("email", ""),
+        "logo_url": settings.get("logo_url", ""),
+    }
+
+
+async def _get_quote_form_config_doc():
+    existing = await db.quote_form_config.find_one({"scope": "global"}, {"_id": 0})
+    defaults = {
+        "scope": "global",
+        "show_from_business_name": True,
+        "show_from_address": True,
+        "show_from_city_state_zip": True,
+        "show_from_phone": False,
+        "show_from_email": False,
+        "charge_stripe_fees": True,
+        "deposit_value": 65,
+        "deposit_type": "percent",
+    }
+    return {**defaults, **(existing or {})}
+
+
 @router.get("/contract-templates")
 async def list_contract_templates(current_user=Depends(get_current_user)):
     await _ensure_default_templates(current_user["id"])
     templates = await db.contract_templates.find({"user_id": current_user["id"]}, {"_id": 0}).sort("name", 1).to_list(200)
     return {"templates": templates}
+
+
+@router.get("/quotes/config")
+async def get_quote_form_config(current_user=Depends(get_current_user)):
+    config = await _get_quote_form_config_doc()
+    business_info = await _get_general_business_info()
+    return {
+        "config": config,
+        "business_info": business_info,
+    }
+
+
+@router.put("/quotes/config")
+async def update_quote_form_config(payload: QuoteFormConfigUpdate, current_user=Depends(get_current_user)):
+    now = datetime.now(timezone.utc).isoformat()
+    update = payload.model_dump()
+    if update.get("deposit_type") not in ["percent", "flat"]:
+        raise HTTPException(status_code=400, detail="deposit_type must be percent or flat")
+    if update.get("deposit_value", 0) < 0:
+        raise HTTPException(status_code=400, detail="deposit_value must be >= 0")
+
+    await db.quote_form_config.update_one(
+        {"scope": "global"},
+        {
+            "$set": {**update, "scope": "global", "updated_at": now},
+            "$setOnInsert": {"id": str(uuid.uuid4()), "created_at": now},
+        },
+        upsert=True,
+    )
+    config = await _get_quote_form_config_doc()
+    business_info = await _get_general_business_info()
+    return {"config": config, "business_info": business_info}
 
 
 @router.post("/contract-templates")
