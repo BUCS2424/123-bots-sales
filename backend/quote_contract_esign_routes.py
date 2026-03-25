@@ -65,6 +65,20 @@ class QuoteFormConfigUpdate(BaseModel):
     deposit_type: str = "percent"  # percent | flat
 
 
+class QuoteFlowConfigUpdate(BaseModel):
+    start_status: str = "draft"  # draft | sent
+    allow_save_draft: bool = True
+    allow_send_email: bool = True
+    status_on_send: str = "sent"  # sent | draft | none
+    allow_public_sign: bool = True
+    require_all_documents_signature: bool = True
+    status_on_sign: str = "signed"  # signed | sent | none
+    lock_quote_on_sign: bool = True
+    allow_unlock_after_sign: bool = True
+    allow_convert_to_invoice: bool = True
+    auto_send_sign_confirmation_email: bool = True
+
+
 class QuoteCreate(BaseModel):
     name: str
     notes: Optional[str] = ""
@@ -192,6 +206,28 @@ async def _get_quote_form_config_doc():
     return {**defaults, **(existing or {})}
 
 
+def _default_quote_flow_config():
+    return {
+        "scope": "global",
+        "start_status": "draft",
+        "allow_save_draft": True,
+        "allow_send_email": True,
+        "status_on_send": "sent",
+        "allow_public_sign": True,
+        "require_all_documents_signature": True,
+        "status_on_sign": "signed",
+        "lock_quote_on_sign": True,
+        "allow_unlock_after_sign": True,
+        "allow_convert_to_invoice": True,
+        "auto_send_sign_confirmation_email": True,
+    }
+
+
+async def _get_quote_flow_config_doc():
+    existing = await db.quote_flow_config.find_one({"scope": "global"}, {"_id": 0})
+    return {**_default_quote_flow_config(), **(existing or {})}
+
+
 @router.get("/contract-templates")
 async def list_contract_templates(current_user=Depends(get_current_user)):
     await _ensure_default_templates(current_user["id"])
@@ -229,6 +265,50 @@ async def update_quote_form_config(payload: QuoteFormConfigUpdate, current_user=
     config = await _get_quote_form_config_doc()
     business_info = await _get_general_business_info()
     return {"config": config, "business_info": business_info}
+
+
+@router.get("/quotes/flow-config")
+async def get_quote_flow_config(current_user=Depends(get_current_user)):
+    config = await _get_quote_flow_config_doc()
+    return {"config": config}
+
+
+@router.put("/quotes/flow-config")
+async def update_quote_flow_config(payload: QuoteFlowConfigUpdate, current_user=Depends(get_current_user)):
+    now = datetime.now(timezone.utc).isoformat()
+    update = payload.model_dump()
+    if update.get("start_status") not in ["draft", "sent"]:
+        raise HTTPException(status_code=400, detail="start_status must be draft or sent")
+    if update.get("status_on_send") not in ["sent", "draft", "none"]:
+        raise HTTPException(status_code=400, detail="status_on_send must be sent, draft, or none")
+    if update.get("status_on_sign") not in ["signed", "sent", "none"]:
+        raise HTTPException(status_code=400, detail="status_on_sign must be signed, sent, or none")
+
+    await db.quote_flow_config.update_one(
+        {"scope": "global"},
+        {
+            "$set": {**update, "scope": "global", "updated_at": now},
+            "$setOnInsert": {"id": str(uuid.uuid4()), "created_at": now},
+        },
+        upsert=True,
+    )
+    config = await _get_quote_flow_config_doc()
+    return {"config": config}
+
+
+@router.post("/quotes/flow-config/reset")
+async def reset_quote_flow_config(current_user=Depends(get_current_user)):
+    defaults = _default_quote_flow_config()
+    now = datetime.now(timezone.utc).isoformat()
+    await db.quote_flow_config.update_one(
+        {"scope": "global"},
+        {
+            "$set": {**defaults, "scope": "global", "updated_at": now},
+            "$setOnInsert": {"id": str(uuid.uuid4()), "created_at": now},
+        },
+        upsert=True,
+    )
+    return {"config": defaults, "message": "Flow reset to default"}
 
 
 @router.post("/contract-templates")
@@ -401,13 +481,14 @@ async def create_lead_quote(lead_id: str, payload: QuoteCreate, current_user=Dep
         raise HTTPException(status_code=404, detail="Lead not found")
 
     now = datetime.now(timezone.utc).isoformat()
+    flow = await _get_quote_flow_config_doc()
     doc = payload.model_dump()
     doc.update(
         {
             "id": str(uuid.uuid4()),
             "lead_id": lead_id,
             "user_id": current_user["id"],
-            "status": "draft",
+            "status": flow.get("start_status", "draft"),
             "is_locked": False,
             "sent_at": None,
             "signed_at": None,
@@ -445,6 +526,10 @@ async def delete_lead_quote(lead_id: str, quote_id: str, current_user=Depends(ge
 
 @router.post("/leads/{lead_id}/quotes/{quote_id}/send-email")
 async def send_quote_email(lead_id: str, quote_id: str, current_user=Depends(get_current_user)):
+    flow = await _get_quote_flow_config_doc()
+    if not flow.get("allow_send_email", True):
+        raise HTTPException(status_code=400, detail="Flow rule disabled sending quotes by email")
+
     quote = await db.quotes.find_one({"id": quote_id, "lead_id": lead_id, "user_id": current_user["id"]}, {"_id": 0})
     if not quote:
         raise HTTPException(status_code=404, detail="Quote not found")
@@ -465,15 +550,26 @@ async def send_quote_email(lead_id: str, quote_id: str, current_user=Depends(get
     except Exception:
         pass
 
+    update_payload = {
+        "sent_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    status_on_send = flow.get("status_on_send", "sent")
+    if status_on_send in ["sent", "draft"]:
+        update_payload["status"] = status_on_send
     await db.quotes.update_one(
         {"id": quote_id, "lead_id": lead_id, "user_id": current_user["id"]},
-        {"$set": {"status": "sent", "sent_at": datetime.now(timezone.utc).isoformat(), "updated_at": datetime.now(timezone.utc).isoformat()}},
+        {"$set": update_payload},
     )
     return {"success": True, "sign_url": sign_url}
 
 
 @router.post("/leads/{lead_id}/quotes/{quote_id}/unlock")
 async def unlock_quote(lead_id: str, quote_id: str, current_user=Depends(get_current_user)):
+    flow = await _get_quote_flow_config_doc()
+    if not flow.get("allow_unlock_after_sign", True):
+        raise HTTPException(status_code=400, detail="Flow rule disabled quote unlock")
+
     await db.quotes.update_one(
         {"id": quote_id, "lead_id": lead_id, "user_id": current_user["id"]},
         {"$set": {"is_locked": False, "updated_at": datetime.now(timezone.utc).isoformat()}},
@@ -483,6 +579,10 @@ async def unlock_quote(lead_id: str, quote_id: str, current_user=Depends(get_cur
 
 @router.post("/leads/{lead_id}/quotes/{quote_id}/convert-to-invoice")
 async def convert_quote_to_invoice(lead_id: str, quote_id: str, current_user=Depends(get_current_user)):
+    flow = await _get_quote_flow_config_doc()
+    if not flow.get("allow_convert_to_invoice", True):
+        raise HTTPException(status_code=400, detail="Flow rule disabled quote to invoice conversion")
+
     quote = await db.quotes.find_one({"id": quote_id, "lead_id": lead_id, "user_id": current_user["id"]}, {"_id": 0})
     if not quote:
         raise HTTPException(status_code=404, detail="Quote not found")
@@ -506,6 +606,10 @@ async def convert_quote_to_invoice(lead_id: str, quote_id: str, current_user=Dep
 
 @router.get("/public/quote/{quote_id}")
 async def get_public_quote(quote_id: str):
+    flow = await _get_quote_flow_config_doc()
+    if not flow.get("allow_public_sign", True):
+        raise HTTPException(status_code=403, detail="Quote public signing is currently disabled by flow settings")
+
     quote = await db.quotes.find_one({"id": quote_id}, {"_id": 0})
     if not quote:
         raise HTTPException(status_code=404, detail="Quote not found")
@@ -535,6 +639,10 @@ async def get_public_quote(quote_id: str):
 
 @router.post("/public/quote/{quote_id}/sign")
 async def sign_public_quote(quote_id: str, payload: SignaturePayload):
+    flow = await _get_quote_flow_config_doc()
+    if not flow.get("allow_public_sign", True):
+        raise HTTPException(status_code=403, detail="Quote public signing is currently disabled by flow settings")
+
     quote = await db.quotes.find_one({"id": quote_id}, {"_id": 0})
     if not quote:
         raise HTTPException(status_code=404, detail="Quote not found")
@@ -544,6 +652,11 @@ async def sign_public_quote(quote_id: str, payload: SignaturePayload):
 
     now = datetime.now(timezone.utc).isoformat()
     signatures = []
+    expected_docs_count = len(quote.get("contract_document_ids") or [])
+    if flow.get("require_all_documents_signature", True) and expected_docs_count > 0:
+        if len(payload.document_signatures) < expected_docs_count:
+            raise HTTPException(status_code=400, detail="All quote documents must be signed before submission")
+
     for doc_signature in payload.document_signatures:
         signatures.append(
             {
@@ -556,17 +669,19 @@ async def sign_public_quote(quote_id: str, payload: SignaturePayload):
             }
         )
 
+    update_payload = {
+        "is_locked": bool(flow.get("lock_quote_on_sign", True)),
+        "signed_at": now,
+        "signatures": signatures,
+        "updated_at": now,
+    }
+    status_on_sign = flow.get("status_on_sign", "signed")
+    if status_on_sign in ["signed", "sent"]:
+        update_payload["status"] = status_on_sign
+
     await db.quotes.update_one(
         {"id": quote_id},
-        {
-            "$set": {
-                "status": "signed",
-                "is_locked": True,
-                "signed_at": now,
-                "signatures": signatures,
-                "updated_at": now,
-            }
-        },
+        {"$set": update_payload},
     )
 
     deposit_amount = (quote.get("total") or 0) * 0.65

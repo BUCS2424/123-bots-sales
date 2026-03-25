@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Package, Wrench, TrendingUp, Plus, Pencil, Trash2, Search, Settings } from 'lucide-react';
+import { ArrowLeft, Package, Wrench, TrendingUp, Plus, Pencil, Trash2, Search, Settings, Workflow } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
@@ -32,6 +32,7 @@ export default function QuoteCatalogSettingsPage() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyItem);
   const [configOpen, setConfigOpen] = useState(false);
+  const [flowOpen, setFlowOpen] = useState(false);
   const [quoteConfig, setQuoteConfig] = useState({
     show_from_business_name: true,
     show_from_address: true,
@@ -41,6 +42,19 @@ export default function QuoteCatalogSettingsPage() {
     charge_stripe_fees: true,
     deposit_value: 65,
     deposit_type: 'percent',
+  });
+  const [flowConfig, setFlowConfig] = useState({
+    start_status: 'draft',
+    allow_save_draft: true,
+    allow_send_email: true,
+    status_on_send: 'sent',
+    allow_public_sign: true,
+    require_all_documents_signature: true,
+    status_on_sign: 'signed',
+    lock_quote_on_sign: true,
+    allow_unlock_after_sign: true,
+    allow_convert_to_invoice: true,
+    auto_send_sign_confirmation_email: true,
   });
   const [businessInfo, setBusinessInfo] = useState({
     business_name: '',
@@ -57,17 +71,19 @@ export default function QuoteCatalogSettingsPage() {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
   const loadData = async () => {
-    const [productsRes, servicesRes, salesRes, configRes] = await Promise.all([
+    const [productsRes, servicesRes, salesRes, configRes, flowRes] = await Promise.all([
       axios.get(`${API}/quotes/catalog/products`, { headers }),
       axios.get(`${API}/quotes/catalog/services`, { headers }),
       axios.get(`${API}/quotes/catalog/lead-sales`, { headers }),
       axios.get(`${API}/quotes/config`, { headers }),
+      axios.get(`${API}/quotes/flow-config`, { headers }),
     ]);
     setProducts(productsRes.data?.products || []);
     setServices(servicesRes.data?.services || []);
     setLeadSales(salesRes.data?.sales || []);
     setQuoteConfig(configRes.data?.config || {});
     setBusinessInfo(configRes.data?.business_info || {});
+    setFlowConfig(flowRes.data?.config || {});
   };
 
   const saveQuoteConfig = async () => {
@@ -75,6 +91,17 @@ export default function QuoteCatalogSettingsPage() {
     setQuoteConfig(response.data?.config || quoteConfig);
     setBusinessInfo(response.data?.business_info || businessInfo);
     setConfigOpen(false);
+  };
+
+  const saveFlowConfig = async () => {
+    const response = await axios.put(`${API}/quotes/flow-config`, flowConfig, { headers });
+    setFlowConfig(response.data?.config || flowConfig);
+    setFlowOpen(false);
+  };
+
+  const resetFlowConfig = async () => {
+    const response = await axios.post(`${API}/quotes/flow-config/reset`, {}, { headers });
+    setFlowConfig(response.data?.config || flowConfig);
   };
 
   useEffect(() => {
@@ -140,10 +167,16 @@ export default function QuoteCatalogSettingsPage() {
           </Button>
           <h1 className="text-2xl font-bold" data-testid="quotes-catalog-heading">Quote Products & Services</h1>
         </div>
-        <Button variant="outline" onClick={() => setConfigOpen(true)} data-testid="quotes-configuration-button">
-          <Settings className="w-4 h-4 mr-2" />
-          Configuration
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setFlowOpen(true)} data-testid="quotes-flow-button">
+            <Workflow className="w-4 h-4 mr-2" />
+            Flow
+          </Button>
+          <Button variant="outline" onClick={() => setConfigOpen(true)} data-testid="quotes-configuration-button">
+            <Settings className="w-4 h-4 mr-2" />
+            Configuration
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -398,6 +431,71 @@ export default function QuoteCatalogSettingsPage() {
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="outline" onClick={() => setConfigOpen(false)} data-testid="quotes-config-cancel-button">Cancel</Button>
               <Button onClick={saveQuoteConfig} data-testid="quotes-config-save-button">Save Configuration</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={flowOpen} onOpenChange={setFlowOpen}>
+        <DialogContent data-testid="quotes-flow-modal">
+          <DialogHeader>
+            <DialogTitle>Quote Flow Rules</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600" data-testid="quotes-flow-modal-description">
+              Control what happens from quote creation through sending, signing, unlocking, and invoice conversion.
+            </p>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Start Status</Label>
+                <select className="w-full h-10 rounded-md border px-3" value={flowConfig.start_status || 'draft'} onChange={(e) => setFlowConfig({ ...flowConfig, start_status: e.target.value })} data-testid="quotes-flow-start-status">
+                  <option value="draft">draft</option>
+                  <option value="sent">sent</option>
+                </select>
+              </div>
+              <div>
+                <Label>Status on Send Email</Label>
+                <select className="w-full h-10 rounded-md border px-3" value={flowConfig.status_on_send || 'sent'} onChange={(e) => setFlowConfig({ ...flowConfig, status_on_send: e.target.value })} data-testid="quotes-flow-status-on-send">
+                  <option value="sent">sent</option>
+                  <option value="draft">draft</option>
+                  <option value="none">none (keep current)</option>
+                </select>
+              </div>
+              <div>
+                <Label>Status on Sign</Label>
+                <select className="w-full h-10 rounded-md border px-3" value={flowConfig.status_on_sign || 'signed'} onChange={(e) => setFlowConfig({ ...flowConfig, status_on_sign: e.target.value })} data-testid="quotes-flow-status-on-sign">
+                  <option value="signed">signed</option>
+                  <option value="sent">sent</option>
+                  <option value="none">none (keep current)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              {[
+                ['allow_save_draft', 'Allow saving draft'],
+                ['allow_send_email', 'Allow send quote email'],
+                ['allow_public_sign', 'Allow public eSign'],
+                ['require_all_documents_signature', 'Require all selected documents signed'],
+                ['lock_quote_on_sign', 'Lock quote immediately on sign'],
+                ['allow_unlock_after_sign', 'Allow manual unlock'],
+                ['allow_convert_to_invoice', 'Allow convert to invoice'],
+                ['auto_send_sign_confirmation_email', 'Auto send sign confirmation emails'],
+              ].map(([key, label]) => (
+                <label key={key} className="flex items-center gap-2 text-sm" data-testid={`quotes-flow-${key}`}>
+                  <input type="checkbox" checked={Boolean(flowConfig[key])} onChange={(e) => setFlowConfig({ ...flowConfig, [key]: e.target.checked })} />
+                  {label}
+                </label>
+              ))}
+            </div>
+
+            <div className="flex justify-between items-center gap-2 pt-2">
+              <Button variant="outline" onClick={resetFlowConfig} data-testid="quotes-flow-reset-default-button">Reset to Default</Button>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setFlowOpen(false)} data-testid="quotes-flow-cancel-button">Cancel</Button>
+                <Button onClick={saveFlowConfig} data-testid="quotes-flow-save-button">Save Flow Rules</Button>
+              </div>
             </div>
           </div>
         </DialogContent>

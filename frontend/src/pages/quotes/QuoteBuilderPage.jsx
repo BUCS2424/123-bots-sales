@@ -127,6 +127,10 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
     deposit_value: 65,
     deposit_type: 'percent',
   });
+  const [quoteFlowConfig, setQuoteFlowConfig] = useState({
+    allow_save_draft: true,
+    allow_send_email: true,
+  });
   const [quoteBusinessInfo, setQuoteBusinessInfo] = useState({
     business_name: '',
     address: '',
@@ -178,7 +182,8 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
         api.get('/api/quotes/catalog/services').catch(() => ({ data: { services: [] } })),
         api.get('/api/contract-templates').catch(() => ({ data: { templates: [] } })),
         api.get('/api/settings/general').catch(() => ({ data: {} })),
-        api.get('/api/quotes/config').catch(() => ({ data: { config: {}, business_info: {} } }))
+        api.get('/api/quotes/config').catch(() => ({ data: { config: {}, business_info: {} } })),
+        api.get('/api/quotes/flow-config').catch(() => ({ data: { config: {} } })),
       ]);
       
       setLead(results[0].data);
@@ -188,6 +193,7 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
       setCompanySettings(results[4].data || {});
       setQuoteFormConfig((prev) => ({ ...prev, ...(results[5].data?.config || {}) }));
       setQuoteBusinessInfo(results[5].data?.business_info || {});
+      setQuoteFlowConfig((prev) => ({ ...prev, ...(results[6].data?.config || {}) }));
       
       if (!isNewQuote) {
         const quotesRes = await api.get('/api/leads/' + leadId + '/quotes');
@@ -405,10 +411,10 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
               <Settings className="w-4 h-4 mr-2" />
               Settings
             </Button>
-            <Button variant="outline" onClick={handleSave} disabled={saving}>
+            <Button variant="outline" onClick={handleSave} disabled={saving || quoteFlowConfig.allow_save_draft === false} data-testid="quote-builder-save-draft-button">
               <Save className="w-4 h-4 mr-2" /> Save Draft
             </Button>
-            <Button className="bg-[#014DB7]" onClick={handleSave} disabled={saving}>
+            <Button className="bg-[#014DB7]" onClick={handleSave} disabled={saving || quoteFlowConfig.allow_send_email === false} data-testid="quote-builder-save-continue-button">
               <Send className="w-4 h-4 mr-2" /> Save & Continue
             </Button>
           </div>
