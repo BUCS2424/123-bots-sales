@@ -4,6 +4,7 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const useSiteFeatureFlags = () => {
   const [flags, setFlags] = useState({
+    cart_enabled: true,
     pawn_checkout: true,
     storage_online: false,
     storage_pos: false,
@@ -40,6 +41,7 @@ export const useSiteFeatureFlags = () => {
         if (!active) return;
 
         setFlags({
+          cart_enabled: featureData.cart_enabled !== false,
           pawn_checkout: featureData.pawn_checkout !== false,
           storage_online: Boolean(featureData.storage_online),
           storage_pos: Boolean(featureData.storage_pos),

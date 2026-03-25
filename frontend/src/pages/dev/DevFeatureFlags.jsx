@@ -45,6 +45,7 @@ const DevFeatureFlags = () => {
 
   // Feature flags (saved to DB)
   const [featureFlags, setFeatureFlags] = useState({
+    cart_enabled: true,
     pawn_checkout: true,
     storage_online: false,
     storage_pos: false,
@@ -64,7 +65,8 @@ const DevFeatureFlags = () => {
 
   // Feature definitions
   const featureDefinitions = [
-    { id: 'pawn_checkout', name: 'Product Checkout', description: 'Enable checkout flow for catalog products', category: 'E-commerce' },
+    { id: 'cart_enabled', name: 'Shopping Cart Enabled', description: 'Show/hide storefront cart access in main navigation', category: 'E-commerce' },
+    { id: 'pawn_checkout', name: 'Product Checkout', description: 'When OFF, storefront runs in catalog mode (no prices, cart, or checkout)', category: 'E-commerce' },
     { id: 'storage_online', name: 'Online Storage Rentals', description: 'Allow customers to rent storage units online', category: 'Storage' },
     { id: 'storage_pos', name: 'Storage POS', description: 'Point of sale for in-person storage rentals', category: 'Storage' },
     { id: 'ai_products', name: 'AI Product Generator', description: 'Auto-fill product details using AI', category: 'AI' },

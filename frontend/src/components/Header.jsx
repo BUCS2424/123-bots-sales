@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown, Phone, ShoppingCart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import { useSiteFeatureFlags } from '../hooks/useSiteFeatureFlags';
 import CartDrawer from './CartDrawer';
 
 const Header = () => {
@@ -13,6 +14,7 @@ const Header = () => {
   const location = useLocation();
   const { cartItems } = useCart();
   const { logoUrl } = useSiteSettings();
+  const { cart_enabled, pawn_checkout } = useSiteFeatureFlags();
 
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -42,7 +44,7 @@ const Header = () => {
         { label: 'EDUCATION', href: '/industries/education' },
       ],
     },
-    { label: 'PARTS', href: '/shop/products?category=parts' },
+    ...(cart_enabled ? [{ label: 'PARTS', href: '/shop/products?category=parts' }] : []),
     { label: 'SUPPORT', href: '/contact' },
     {
       label: 'PRODUCTS',
@@ -83,14 +85,18 @@ const Header = () => {
               (877) 702-2687
             </a>
             <div className="flex items-center space-x-4">
-              <Link
-                to="/shop"
-                className="text-gray-300 hover:text-white transition-colors"
-                data-testid="header-shop-link"
-              >
-                Shop
-              </Link>
-              <span className="text-gray-600">|</span>
+              {cart_enabled && (
+                <>
+                  <Link
+                    to="/shop"
+                    className="text-gray-300 hover:text-white transition-colors"
+                    data-testid="header-shop-link"
+                  >
+                    Shop
+                  </Link>
+                  <span className="text-gray-600">|</span>
+                </>
+              )}
               <Link 
                 to="/123-bots-resources" 
                 className="text-gray-300 hover:text-white transition-colors"
@@ -194,18 +200,20 @@ const Header = () => {
               </Link>
 
               {/* Cart Button */}
-              <button
-                onClick={() => setIsCartOpen(true)}
-                className="relative p-2 text-white hover:text-blue-400 transition-colors"
-                data-testid="cart-button"
-              >
-                <ShoppingCart className="w-6 h-6" />
-                {cartItemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                    {cartItemCount}
-                  </span>
-                )}
-              </button>
+              {cart_enabled && pawn_checkout && (
+                <button
+                  onClick={() => setIsCartOpen(true)}
+                  className="relative p-2 text-white hover:text-blue-400 transition-colors"
+                  data-testid="cart-button"
+                >
+                  <ShoppingCart className="w-6 h-6" />
+                  {cartItemCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                      {cartItemCount}
+                    </span>
+                  )}
+                </button>
+              )}
 
               {/* Mobile Menu Toggle */}
               <button

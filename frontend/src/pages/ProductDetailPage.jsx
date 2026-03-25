@@ -40,7 +40,7 @@ const ProductDetailPage = () => {
   const [relatedLoading, setRelatedLoading] = useState(false);
   const { addToCart } = useCart();
   const { isAuthenticated, user, isWholesale, customerTier } = useAuth();
-  const { require_account_for_checkout } = useSiteFeatureFlags();
+  const { require_account_for_checkout, pawn_checkout } = useSiteFeatureFlags();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -185,6 +185,14 @@ const ProductDetailPage = () => {
   };
 
   const handleAddToCart = () => {
+    if (!pawn_checkout) {
+      toast({
+        title: 'Catalog Mode',
+        description: 'Checkout is currently disabled. Browse products in catalog mode.',
+      });
+      return;
+    }
+
     if (!isAuthenticated && require_account_for_checkout) {
       navigate('/register');
       return;
@@ -267,7 +275,7 @@ const ProductDetailPage = () => {
     );
   }
 
-  const showPricing = isAuthenticated || !require_account_for_checkout;
+  const showPricing = pawn_checkout && (isAuthenticated || !require_account_for_checkout);
 
   return (
     <div className="min-h-screen bg-slate-50 pt-32 pb-32" data-testid="product-detail-page">
@@ -393,7 +401,7 @@ const ProductDetailPage = () => {
                   </div>
                 )}
               </div>
-            ) : (
+            ) : pawn_checkout ? (
               <div className="flex items-center gap-3 mb-8 p-4 bg-purple-50 border border-purple-200 rounded-xl">
                 <Lock className="w-6 h-6 text-purple-500" />
                 <div>
@@ -407,6 +415,14 @@ const ProductDetailPage = () => {
                 >
                   Register
                 </Link>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 mb-8 p-4 bg-slate-100 border border-slate-200 rounded-xl" data-testid="catalog-mode-price-hidden-banner">
+                <Lock className="w-6 h-6 text-slate-500" />
+                <div>
+                  <p className="font-heading font-semibold text-slate-700">Catalog Mode</p>
+                  <p className="text-slate-600 text-sm">Price visibility is disabled while Product Checkout is OFF.</p>
+                </div>
               </div>
             )}
 
@@ -521,25 +537,32 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Add to cart button */}
-            <button
-              onClick={handleAddToCart}
-              disabled={(!selectedOptionInStock && !selectedOptionAllowPreorder) || (!showPricing && require_account_for_checkout)}
-              className={`w-full flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-heading font-bold text-lg uppercase tracking-wider transition-all ${
-                (selectedOptionInStock || selectedOptionAllowPreorder) && (showPricing || !require_account_for_checkout)
-                  ? 'bg-gradient-to-r from-[#6e2ea8] to-[#b9893d] text-white hover:shadow-xl hover:shadow-[#b9893d]/35'
-                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-              }`}
-              data-testid="add-to-cart-btn"
-            >
-              <ShoppingCart className="w-5 h-5" />
-              {!showPricing && require_account_for_checkout
-                ? 'Register to Shop'
-                : selectedOptionInStock
-                ? 'Add to Cart'
-                : selectedOptionAllowPreorder
-                ? 'Pre-Order'
-                : 'Out of Stock'}
-            </button>
+            {pawn_checkout ? (
+              <button
+                onClick={handleAddToCart}
+                disabled={(!selectedOptionInStock && !selectedOptionAllowPreorder) || (!showPricing && require_account_for_checkout)}
+                className={`w-full flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-heading font-bold text-lg uppercase tracking-wider transition-all ${
+                  (selectedOptionInStock || selectedOptionAllowPreorder) && (showPricing || !require_account_for_checkout)
+                    ? 'bg-gradient-to-r from-[#6e2ea8] to-[#b9893d] text-white hover:shadow-xl hover:shadow-[#b9893d]/35'
+                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                }`}
+                data-testid="add-to-cart-btn"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {!showPricing && require_account_for_checkout
+                  ? 'Register to Shop'
+                  : selectedOptionInStock
+                  ? 'Add to Cart'
+                  : selectedOptionAllowPreorder
+                  ? 'Pre-Order'
+                  : 'Out of Stock'}
+              </button>
+            ) : (
+              <div className="w-full rounded-xl border border-slate-200 bg-slate-100 px-6 py-4 text-center" data-testid="catalog-mode-banner">
+                <p className="font-semibold text-slate-700">Catalog Mode</p>
+                <p className="text-sm text-slate-500">Checkout is currently disabled for this storefront.</p>
+              </div>
+            )}
 
             {/* Trust badges */}
             <div className="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-slate-200">

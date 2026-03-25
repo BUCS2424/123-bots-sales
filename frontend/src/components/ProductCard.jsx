@@ -16,7 +16,7 @@ import {
 const ProductCard = ({ product, index = 0, cardContext = 'default' }) => {
   const { addToCart } = useCart();
   const { isAuthenticated, isWholesale } = useAuth();
-  const { require_account_for_checkout } = useSiteFeatureFlags();
+  const { require_account_for_checkout, pawn_checkout } = useSiteFeatureFlags();
   const navigate = useNavigate();
 
   const getDefaultOptionPayload = () => {
@@ -45,6 +45,7 @@ const ProductCard = ({ product, index = 0, cardContext = 'default' }) => {
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!pawn_checkout) return;
     if (!product.in_stock) return;
     if (!isAuthenticated && require_account_for_checkout) return;
     const customizationSettings = getProductCustomizationSettings(product);
@@ -55,7 +56,7 @@ const ProductCard = ({ product, index = 0, cardContext = 'default' }) => {
     addToCart(getDefaultOptionPayload());
   };
 
-  const showPricing = isAuthenticated || !require_account_for_checkout;
+  const showPricing = pawn_checkout && (isAuthenticated || !require_account_for_checkout);
   const isHomeCard = cardContext === 'homepage';
 
   return (
@@ -112,7 +113,7 @@ const ProductCard = ({ product, index = 0, cardContext = 'default' }) => {
                 >
                   <ShoppingCart className="w-5 h-5" />
                 </button>
-              ) : (
+              ) : pawn_checkout ? (
                 <button
                   type="button"
                   onClick={(event) => {
@@ -125,6 +126,13 @@ const ProductCard = ({ product, index = 0, cardContext = 'default' }) => {
                 >
                   Register to Buy
                 </button>
+              ) : (
+                <span
+                  className="px-4 py-2 bg-slate-800 text-white rounded-lg text-xs font-semibold uppercase tracking-wider"
+                  data-testid={`catalog-mode-label-${product.id}`}
+                >
+                  Catalog
+                </span>
               )}
               <button
                 type="button"
@@ -216,10 +224,14 @@ const ProductCard = ({ product, index = 0, cardContext = 'default' }) => {
                     </p>
                   )}
                 </div>
-              ) : (
+              ) : pawn_checkout ? (
                 <div className="flex items-center gap-2 text-gold-600">
                   <Lock className="w-4 h-4" />
                   <span className="font-semibold text-sm">Register to see price</span>
+                </div>
+              ) : (
+                <div className="text-sm font-semibold text-slate-500" data-testid={`catalog-mode-price-hidden-${product.id}`}>
+                  Catalog Mode
                 </div>
               )}
               

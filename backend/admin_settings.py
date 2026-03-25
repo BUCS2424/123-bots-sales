@@ -808,6 +808,7 @@ async def update_site_settings(settings: SiteSettings, db=Depends(get_db)):
 # ============== Feature Flags ==============
 
 class FeatureFlags(BaseModel):
+    cart_enabled: bool = True
     pawn_checkout: bool = True
     storage_online: bool = False
     storage_pos: bool = False
@@ -871,6 +872,7 @@ async def get_public_feature_flags(db=Depends(get_db)):
         {"type": "feature_flags"},
         {
             "_id": 0,
+            "cart_enabled": 1,
             "pawn_checkout": 1,
             "storage_online": 1,
             "storage_pos": 1,
@@ -888,6 +890,7 @@ async def get_public_feature_flags(db=Depends(get_db)):
         },
     )
     return {
+        "cart_enabled": bool(settings.get("cart_enabled", True)) if settings else True,
         "pawn_checkout": bool(settings.get("pawn_checkout", True)) if settings else True,
         "storage_online": bool(settings.get("storage_online", False)) if settings else False,
         "storage_pos": bool(settings.get("storage_pos", False)) if settings else False,

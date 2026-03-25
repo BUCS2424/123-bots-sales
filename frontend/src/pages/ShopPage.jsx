@@ -26,7 +26,7 @@ const ShopPage = () => {
   const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
   const { isAuthenticated, user, isWholesale, customerTier } = useAuth();
-  const { left_menu_enabled, require_account_for_checkout } = useSiteFeatureFlags();
+  const { left_menu_enabled, require_account_for_checkout, pawn_checkout } = useSiteFeatureFlags();
 
   // Set SEO metadata based on category
   useEffect(() => {
@@ -380,15 +380,17 @@ const ShopPage = () => {
                       {product.name}
                     </Link>
 
-                    <Link
-                      to={getProductHref(product)}
-                      className="block mt-2 text-[15px] font-medium text-white hover:text-blue-300 transition-colors"
-                      data-testid={`shop-minimal-product-price-link-${product.id}`}
-                    >
-                      {isAuthenticated || !require_account_for_checkout
-                        ? `$${Number(product.price || 0).toFixed(2)}`
-                        : 'Login to view'}
-                    </Link>
+                    {pawn_checkout && (
+                      <Link
+                        to={getProductHref(product)}
+                        className="block mt-2 text-[15px] font-medium text-white hover:text-blue-300 transition-colors"
+                        data-testid={`shop-minimal-product-price-link-${product.id}`}
+                      >
+                        {isAuthenticated || !require_account_for_checkout
+                          ? `$${Number(product.price || 0).toFixed(2)}`
+                          : 'Login to view'}
+                      </Link>
+                    )}
                   </motion.article>
                 ))}
               </motion.div>

@@ -50,6 +50,8 @@ const CheckoutPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [accessFlags, setAccessFlags] = useState({
+    cart_enabled: true,
+    pawn_checkout: true,
     require_account_for_checkout: false,
     require_email_verification_for_registration: true,
   });
@@ -173,13 +175,29 @@ const CheckoutPage = () => {
   useEffect(() => {
     const fetchAccessFlags = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/settings/site`);
-        if (response.ok) {
-          const data = await response.json();
+        const [siteResponse, featureResponse] = await Promise.all([
+          fetch(`${API_URL}/api/settings/site`),
+          fetch(`${API_URL}/api/settings/feature-flags`),
+        ]);
+
+        let siteData = {};
+        let featureData = {};
+
+        if (siteResponse.ok) {
+          siteData = await siteResponse.json();
+        }
+
+        if (featureResponse.ok) {
+          featureData = await featureResponse.json();
+        }
+
+        if (siteResponse.ok || featureResponse.ok) {
           setAccessFlags({
-            require_account_for_checkout: Boolean(data.require_account_for_checkout),
+            cart_enabled: featureData.cart_enabled !== false,
+            pawn_checkout: featureData.pawn_checkout !== false,
+            require_account_for_checkout: Boolean(siteData.require_account_for_checkout),
             require_email_verification_for_registration:
-              data.require_email_verification_for_registration !== false,
+              siteData.require_email_verification_for_registration !== false,
           });
         }
       } catch (error) {
@@ -919,6 +937,30 @@ const CheckoutPage = () => {
                 data-testid="checkout-gate-login-button"
               >
                 Sign In
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!accessFlags.cart_enabled || !accessFlags.pawn_checkout) {
+    return (
+      <div className="min-h-screen bg-bots-dark pt-32 pb-24" data-testid="checkout-catalog-mode-gate">
+        <div className="max-w-3xl mx-auto px-6">
+          <div className="rounded-2xl border border-gray-700 bg-bots-surface shadow-sm p-8 text-center space-y-4">
+            <h1 className="text-3xl font-semibold text-white" data-testid="checkout-catalog-mode-title">Catalog Mode Enabled</h1>
+            <p className="text-gray-400" data-testid="checkout-catalog-mode-description">
+              Shopping cart and checkout are currently disabled. You can continue browsing products.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3 pt-2">
+              <button
+                className="px-5 py-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-500 transition-colors"
+                onClick={() => navigate('/shop/products')}
+                data-testid="checkout-catalog-mode-browse-button"
+              >
+                Browse Catalog
               </button>
             </div>
           </div>
