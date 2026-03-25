@@ -166,6 +166,24 @@ set_email_func(send_email_async)
 from mega_menu import router as mega_menu_router, public_router as mega_menu_public_router, set_database as set_mega_menu_db
 set_mega_menu_db(db)
 
+# Import and configure A2G modules (Step 1 backend wiring)
+from contacts_routes import router as contacts_router, set_database as set_contacts_db
+set_contacts_db(db)
+
+from calendar_routes import router as calendar_router, set_database as set_calendar_db
+set_calendar_db(db)
+
+from tasks_routes import router as tasks_router, set_database as set_tasks_db
+set_tasks_db(db)
+
+from radio_routes import router as radio_router
+
+from andgo_routes import router as andgo_router, set_database as set_andgo_db
+set_andgo_db(db)
+
+from booking_routes import router as booking_router, set_database as set_booking_db
+set_booking_db(db)
+
 # Create the main app without a prefix
 app = FastAPI(title="123Bots API")
 
@@ -1266,6 +1284,14 @@ app.include_router(abandoned_carts_router, prefix="/api")
 # Mega Menu router
 app.include_router(mega_menu_router)
 app.include_router(mega_menu_public_router)
+
+# A2G modules routers
+app.include_router(contacts_router, prefix="/api")
+app.include_router(calendar_router, prefix="/api")
+app.include_router(tasks_router, prefix="/api")
+app.include_router(radio_router, prefix="/api")
+app.include_router(andgo_router, prefix="/api")
+app.include_router(booking_router, prefix="/api")
 
 # Serve uploaded chat files
 @app.get("/api/uploads/chat/{filename}", include_in_schema=False)
