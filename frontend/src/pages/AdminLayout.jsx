@@ -174,7 +174,6 @@ const AdminLayout = () => {
         children: [
           { path: '/admin/orders', label: 'Orders', icon: ShoppingCart, badge: stats?.pending_orders },
           { path: '/admin/abandoned-carts', label: 'Abandoned Carts', icon: ShoppingBag },
-          { path: '/admin/customers', label: 'Customers', icon: Users },
         ],
       },
       {
@@ -226,6 +225,7 @@ const AdminLayout = () => {
       icon: Users,
       children: [
         { path: '/admin/leads', label: 'Leads Kanban', icon: Users },
+        { path: '/admin/customers', label: 'Customers', icon: Users },
       ],
     },
     {
