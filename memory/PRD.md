@@ -65,6 +65,18 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
   - New opportunities are forced into Opportunity column (`status: opportunity`) with default stage `1. New Inquiry`
   - After successful create, modal closes and new card appears in Opportunity column
   - Edit mode preserved (Update flow, Delete + Convert buttons remain for existing cards)
+- [x] **Quote / Contract / eSign ZIP System Installed (exact package integration)**
+  - Extracted and integrated ZIP module frontend pages:
+    - `QuoteBuilderPage`
+    - `AdminContractsPage`
+    - `QuoteSigningPage`
+  - Added backend integration router: `quote_contract_esign_routes.py` with authenticated CRUD + public signing endpoints
+  - Added sidebar top-level menu item: **Quotes / Contracts / eSign** at `/admin/quotes-contracts-esign`
+  - Integrated into Opportunities lead modal with dedicated tab: `Quote / Contract / eSign`
+  - Integrated into Client page (`AdminCustomerDashboard`) with tab: `Quotes / Contracts / eSign`
+  - Added reusable panel for lead/client contexts with quote list + create/edit + eSign link actions
+  - Added public signing route in app: `/sign/:quoteId`
+  - Installed ZIP-required frontend dependencies (`@dnd-kit/*`, `@uiw/react-md-editor`, `react-signature-canvas`, `@tiptap/*`, supporting packages)
 
 ### Completed (March 23, 2026)
 - [x] GitHub project cloned and dependencies installed
@@ -116,6 +128,9 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 - Testing Agent Iteration 62: PASS (Backend 100%, Frontend 100%)
   - Verified Create Opportunity button placement, modal behavior, validation, and Opportunity-column insertion
   - Verified no regressions in edit mode, drag-drop, delete, and convert-to-client flows
+- Testing Agent Iteration 63: PASS (Backend 100%, Frontend 100%)
+  - Verified sidebar menu route, lead modal tab, client page tab, quote builder page, contract template CRUD, quote CRUD, and public signing flow
+  - Verified no regressions across Opportunities and Booking modules
 
 ## URL Structure
 | Page | URL |

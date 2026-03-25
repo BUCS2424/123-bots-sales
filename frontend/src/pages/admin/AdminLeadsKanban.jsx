@@ -29,7 +29,7 @@ import { Label } from '../../components/ui/label';
 import { Textarea } from '../../components/ui/textarea';
 import { Badge } from '../../components/ui/badge';
 import { Checkbox } from '../../components/ui/checkbox';
-import { Dialog, DialogContent } from '../../components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '../../components/ui/dialog';
 import { toast } from '../../hooks/use-toast';
 import { LeadQuoteContractPanel } from '../../components/quotes/LeadQuoteContractPanel';
 
@@ -736,6 +736,9 @@ const AdminLeadsKanban = () => {
         <DialogContent className="max-w-[1280px] h-[92vh] p-0 gap-0 overflow-hidden flex flex-col" data-testid="opportunity-edit-modal">
           {selectedLead && (
             <div className="h-full min-h-0 flex flex-col">
+              <DialogTitle className="sr-only">
+                {isCreatingOpportunity ? 'Create Opportunity' : `Edit ${selectedLead.opportunity_name || selectedLead.name || 'Opportunity'}`}
+              </DialogTitle>
               <div className="px-7 pt-6 pb-4 border-b border-gray-200" data-testid="opportunity-modal-header">
                 <h2 className="text-4xl font-semibold text-gray-800 leading-none" data-testid="opportunity-modal-title">
                   {isCreatingOpportunity ? 'Create Opportunity' : `Edit “${selectedLead.opportunity_name || selectedLead.name || 'Opportunity'}”`}
