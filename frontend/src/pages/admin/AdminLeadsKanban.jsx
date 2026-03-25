@@ -90,6 +90,39 @@ const normalizeLeadForEdit = (lead) => ({
   converted_to_client: Boolean(lead.converted_to_client),
 });
 
+const buildNewOpportunityDraft = () =>
+  normalizeLeadForEdit({
+    id: '',
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: 'Opportunity created from Opportunities board',
+    source: 'admin_opportunities',
+    status: 'opportunity',
+    notes: '',
+    primary_contact_name: '',
+    primary_email: '',
+    primary_phone: '',
+    opportunity_name: '',
+    pipeline: '001. Main Leads Pipeline',
+    stage: '1. New Inquiry',
+    opportunity_status: 'Open',
+    opportunity_value: '',
+    owner_id: '',
+    followers: [],
+    business_name: '',
+    opportunity_source: 'Manual Opportunity',
+    tags: [],
+    appointments: [],
+    tasks: [],
+    notes_timeline: [],
+    payments: [],
+    associated_objects: [],
+    created_at: new Date().toISOString(),
+    converted_to_client: false,
+  });
+
 const isValueFilled = (value) => {
   if (Array.isArray(value)) return value.length > 0;
   if (value === 0) return true;
@@ -104,6 +137,7 @@ const AdminLeadsKanban = () => {
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState(null);
+  const [isCreatingOpportunity, setIsCreatingOpportunity] = useState(false);
   const [saving, setSaving] = useState(false);
   const [converting, setConverting] = useState(false);
   const [resendingAppointmentKey, setResendingAppointmentKey] = useState('');
@@ -195,8 +229,34 @@ const AdminLeadsKanban = () => {
   };
 
   const openEditModal = (lead, section = 'opportunity-details') => {
+    setIsCreatingOpportunity(false);
     setSelectedLead(normalizeLeadForEdit(lead));
     setActiveSection(section);
+    setHideEmptyFields(false);
+    setAdditionalContactInput('');
+    setTagInput('');
+    setAppointmentDraft({
+      date: '',
+      title: '',
+      location_type: 'physical',
+      physical_address: '',
+      use_saysme: false,
+      saysme_room_name: '',
+      use_other_meeting: false,
+      other_meeting_url: '',
+      notes: '',
+    });
+    setTaskDraft('');
+    setTimelineNoteDraft('');
+    setPaymentDraft({ date: '', amount: '', status: 'Pending', method: 'Card', note: '' });
+    setAssociatedObjectDraft({ type: '', reference: '', url: '' });
+    setEditModalOpen(true);
+  };
+
+  const openCreateOpportunityModal = () => {
+    setIsCreatingOpportunity(true);
+    setSelectedLead(buildNewOpportunityDraft());
+    setActiveSection('opportunity-details');
     setHideEmptyFields(false);
     setAdditionalContactInput('');
     setTagInput('');
@@ -221,6 +281,7 @@ const AdminLeadsKanban = () => {
   const closeEditModal = () => {
     setEditModalOpen(false);
     setSelectedLead(null);
+    setIsCreatingOpportunity(false);
   };
 
   const handleDelete = async (lead) => {
@@ -237,8 +298,8 @@ const AdminLeadsKanban = () => {
 
   const handleSaveEdit = async () => {
     if (!selectedLead) return;
-    if (!selectedLead.primary_contact_name || !selectedLead.opportunity_name) {
-      toast({ title: 'Missing Required Fields', description: 'Primary Contact Name and Opportunity Name are required.', variant: 'destructive' });
+    if (!selectedLead.primary_contact_name || !selectedLead.primary_email || !selectedLead.opportunity_name) {
+      toast({ title: 'Missing Required Fields', description: 'Primary Contact Name, Primary Email, and Opportunity Name are required.', variant: 'destructive' });
       return;
     }
 
@@ -247,14 +308,49 @@ const AdminLeadsKanban = () => {
       const payload = {
         ...selectedLead,
         opportunity_value: selectedLead.opportunity_value === '' ? null : Number(selectedLead.opportunity_value),
+        status: 'opportunity',
       };
-      const response = await axios.put(`${API}/leads/${selectedLead.id}`, payload, { headers: tokenHeaders });
+
+      let response;
+      if (isCreatingOpportunity) {
+        const createPayload = {
+          name: selectedLead.primary_contact_name,
+          email: selectedLead.primary_email,
+          phone: selectedLead.primary_phone || '',
+          subject: selectedLead.opportunity_name,
+          message: selectedLead.message || selectedLead.notes || 'Opportunity created from Opportunities board',
+          source: selectedLead.opportunity_source || 'admin_opportunities',
+          primary_contact_name: selectedLead.primary_contact_name,
+          primary_email: selectedLead.primary_email,
+          primary_phone: selectedLead.primary_phone || '',
+          additional_contacts: selectedLead.additional_contacts || [],
+          opportunity_name: selectedLead.opportunity_name,
+          pipeline: selectedLead.pipeline || '001. Main Leads Pipeline',
+          stage: '1. New Inquiry',
+          opportunity_status: selectedLead.opportunity_status || 'Open',
+          opportunity_value: payload.opportunity_value,
+          owner_id: selectedLead.owner_id || '',
+          followers: selectedLead.followers || [],
+          business_name: selectedLead.business_name || '',
+          opportunity_source: selectedLead.opportunity_source || 'Manual Opportunity',
+          tags: selectedLead.tags || [],
+          appointments: selectedLead.appointments || [],
+          tasks: selectedLead.tasks || [],
+          notes_timeline: selectedLead.notes_timeline || [],
+          payments: selectedLead.payments || [],
+          associated_objects: selectedLead.associated_objects || [],
+        };
+        response = await axios.post(`${API}/leads/`, createPayload, { headers: tokenHeaders });
+      } else {
+        response = await axios.put(`${API}/leads/${selectedLead.id}`, payload, { headers: tokenHeaders });
+      }
+
       const sentCount = response.data?.appointment_notifications_sent ?? 0;
       toast({
-        title: 'Opportunity Updated',
+        title: isCreatingOpportunity ? 'Opportunity Created' : 'Opportunity Updated',
         description: sentCount > 0
           ? `Changes saved. Appointment email sent to ${sentCount} recipient(s).`
-          : 'Changes saved successfully.',
+          : isCreatingOpportunity ? 'Created and placed in Opportunity column.' : 'Changes saved successfully.',
       });
       closeEditModal();
       fetchLeads();
@@ -489,15 +585,21 @@ const AdminLeadsKanban = () => {
           </h1>
           <p className="text-gray-500" data-testid="opportunities-count-label">{totalLeads} total opportunities from contact forms</p>
         </div>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <Input
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Search opportunities..."
-            className="pl-9 w-72"
-            data-testid="opportunities-search-input"
-          />
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Input
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Search opportunities..."
+              className="pl-9 w-72"
+              data-testid="opportunities-search-input"
+            />
+          </div>
+          <Button onClick={openCreateOpportunityModal} data-testid="create-opportunity-button">
+            <Plus className="w-4 h-4 mr-2" />
+            Create an Opportunity
+          </Button>
         </div>
       </div>
 
@@ -627,12 +729,14 @@ const AdminLeadsKanban = () => {
         })}
       </div>
 
-      <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+      <Dialog open={editModalOpen} onOpenChange={(open) => (open ? setEditModalOpen(true) : closeEditModal())}>
         <DialogContent className="max-w-[1280px] h-[92vh] p-0 gap-0 overflow-hidden flex flex-col" data-testid="opportunity-edit-modal">
           {selectedLead && (
             <div className="h-full min-h-0 flex flex-col">
               <div className="px-7 pt-6 pb-4 border-b border-gray-200" data-testid="opportunity-modal-header">
-                <h2 className="text-4xl font-semibold text-gray-800 leading-none" data-testid="opportunity-modal-title">Edit “{selectedLead.opportunity_name || selectedLead.name || 'Opportunity'}”</h2>
+                <h2 className="text-4xl font-semibold text-gray-800 leading-none" data-testid="opportunity-modal-title">
+                  {isCreatingOpportunity ? 'Create Opportunity' : `Edit “${selectedLead.opportunity_name || selectedLead.name || 'Opportunity'}”`}
+                </h2>
                 <p className="text-gray-500 mt-3 text-base">Add and edit opportunity details, tasks, notes and appointments.</p>
               </div>
 
@@ -1131,20 +1235,24 @@ const AdminLeadsKanban = () => {
               <div className="border-t border-gray-200 px-7 py-4 flex items-center justify-between gap-4" data-testid="opportunity-modal-footer">
                 <div className="text-sm text-gray-500" data-testid="opportunity-modal-audit-info">
                   <p>Created on: {formatDate(selectedLead.created_at)}</p>
-                  <p>Audit ID: {selectedLead.id}</p>
+                  <p>Audit ID: {isCreatingOpportunity ? 'Pending on save' : selectedLead.id}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" className="border-red-300 text-red-600 hover:bg-red-50" onClick={() => handleDelete(selectedLead)} data-testid="opportunity-modal-delete-button">
-                    <Trash2 className="w-4 h-4 mr-2" />Delete
-                  </Button>
+                  {!isCreatingOpportunity && (
+                    <Button variant="outline" className="border-red-300 text-red-600 hover:bg-red-50" onClick={() => handleDelete(selectedLead)} data-testid="opportunity-modal-delete-button">
+                      <Trash2 className="w-4 h-4 mr-2" />Delete
+                    </Button>
+                  )}
                   <Button variant="outline" onClick={closeEditModal} data-testid="opportunity-modal-cancel-button">Cancel</Button>
-                  <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-50" onClick={handleConvertToClient} disabled={converting || selectedLead.converted_to_client} data-testid="opportunity-modal-convert-to-client-button">
-                    {converting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <UserPlus className="w-4 h-4 mr-2" />}
-                    {selectedLead.converted_to_client ? 'Converted' : 'Convert to Client'}
-                  </Button>
+                  {!isCreatingOpportunity && (
+                    <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-50" onClick={handleConvertToClient} disabled={converting || selectedLead.converted_to_client} data-testid="opportunity-modal-convert-to-client-button">
+                      {converting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <UserPlus className="w-4 h-4 mr-2" />}
+                      {selectedLead.converted_to_client ? 'Converted' : 'Convert to Client'}
+                    </Button>
+                  )}
                   <Button onClick={handleSaveEdit} disabled={saving} className="bg-[rgb(37,99,235)] hover:bg-[rgb(29,78,216)]" data-testid="opportunity-modal-update-button">
                     {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                    Update
+                    {isCreatingOpportunity ? 'Create' : 'Update'}
                   </Button>
                 </div>
               </div>
