@@ -83,16 +83,6 @@ async def update_link(link_id: str, payload: GoLinkCreate, current_user=Depends(
     return {"status": "success"}
 
 
-@router.post("/goto-links/reorder-alt")
-async def reorder_links_alt(payload: GoLinkReorder, current_user=Depends(get_current_user)):
-    for position, link_id in enumerate(payload.ordered_ids):
-        await db.goto_links.update_one(
-            {"id": link_id, "user_id": current_user.user_id},
-            {"$set": {"position": position, "updated_at": datetime.now(timezone.utc).isoformat()}},
-        )
-    return {"status": "success"}
-
-
 @router.delete("/goto-links/{link_id}")
 async def delete_link(link_id: str, current_user=Depends(get_current_user)):
     result = await db.goto_links.delete_one({"id": link_id, "user_id": current_user.user_id})
