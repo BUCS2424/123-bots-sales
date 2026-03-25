@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import {
   Settings, Database, FileText, Globe, ToggleLeft, Mail, MessageSquare,
   Phone, ChevronRight, ChevronDown, ArrowLeft, Lock, Shield,
-  Server, Key, Palette, Bell, Users, Webhook, Code, RefreshCw, MapPin, Home, LogOut, User, PiggyBank, Percent, Image, Monitor
+  Server, Key, Bell, Users, Webhook, Code, RefreshCw, MapPin, Home, LogOut, User, PiggyBank, Percent, Image, Monitor
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Toaster } from '../../components/ui/toaster';
@@ -23,7 +23,6 @@ import DevFeatureFlags from './DevFeatureFlags';
 import DevEmailSettings from './DevEmailSettings';
 import DevSmsSettings from './DevSmsSettings';
 import DevSecuritySettings from './DevSecuritySettings';
-import DevBrandingSettings from './DevBrandingSettings';
 import DevHeroMediaSettings from './DevHeroMediaSettings';
 import DevScreensaverSettings from './DevScreensaverSettings';
 import DevLocationGenerator from './DevLocationGenerator';
@@ -44,7 +43,6 @@ const DevSettingsLayout = () => {
       label: 'Platform',
       children: [
         { path: '/dev/settings', label: 'General Settings', icon: Settings, description: 'Site configuration' },
-        { path: '/dev/settings/branding', label: 'Branding', icon: Palette, description: 'Logo, colors & theme' },
         { path: '/dev/settings/hero-media', label: 'Hero Media', icon: Image, description: 'Hero background & video assets' },
         { path: '/dev/settings/screensaver', label: 'Screensaver', icon: Monitor, description: 'Idle overlay images, counts & video' },
         { path: '/dev/settings/features', label: 'Feature Flags', icon: ToggleLeft, description: 'Enable/disable features' },
@@ -106,7 +104,7 @@ const DevSettingsLayout = () => {
   const getCurrentPage = () => {
     const path = location.pathname;
     if (path === '/dev/settings') return <DevGeneralSettings />;
-    if (path === '/dev/settings/branding') return <DevBrandingSettings />;
+    if (path === '/dev/settings/branding') return <Navigate to="/dev/settings" replace />;
     if (path === '/dev/settings/hero-media') return <DevHeroMediaSettings />;
     if (path === '/dev/settings/screensaver') return <DevScreensaverSettings />;
     if (path === '/dev/settings/features') return <DevFeatureFlags />;
