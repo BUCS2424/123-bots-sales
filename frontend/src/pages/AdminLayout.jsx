@@ -224,7 +224,7 @@ const AdminLayout = () => {
       label: 'CRM',
       icon: Users,
       children: [
-        { path: '/admin/leads', label: 'Leads Kanban', icon: Users },
+        { path: '/admin/leads', label: 'Opportunities', icon: Users },
         ...(cartEnabled ? [{ path: '/admin/user-management/customers', label: 'Customers', icon: Users }] : []),
       ],
     },

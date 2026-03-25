@@ -245,9 +245,9 @@ const AdminLeadsKanban = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
             <Users className="w-8 h-8 text-[rgb(37, 99, 235)]" />
-            Leads Kanban
+            Opportunities
           </h1>
-          <p className="text-gray-500">{totalLeads} total leads from contact forms</p>
+          <p className="text-gray-500">{totalLeads} total opportunities from contact forms</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="relative">
