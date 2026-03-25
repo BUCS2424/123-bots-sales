@@ -32,6 +32,7 @@ import { Badge } from "../components/ui/badge";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -969,6 +970,9 @@ const CalendarPage = () => {
               <CalendarIcon className="w-5 h-5 text-blue-500" />
               {selectedEvent ? "Edit Event" : "New Event"}
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              Create or edit a calendar event.
+            </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
@@ -1210,6 +1214,7 @@ const CalendarPage = () => {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>New Calendar</DialogTitle>
+            <DialogDescription className="sr-only">Create a new calendar.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
@@ -1253,6 +1258,7 @@ const CalendarPage = () => {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>New Category</DialogTitle>
+            <DialogDescription className="sr-only">Create a new event category.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
