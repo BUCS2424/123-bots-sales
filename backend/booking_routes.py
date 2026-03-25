@@ -86,6 +86,11 @@ class BookingRequestLegacy(BaseModel):
     time: str
     duration: int = 30
     notes: Optional[str] = None
+    location_type: Optional[str] = "online"
+    physical_address: Optional[str] = ""
+    use_saysme: Optional[bool] = True
+    use_other: Optional[bool] = False
+    other_meeting_text: Optional[str] = ""
     custom_room_name: Optional[str] = None
 
 
@@ -95,7 +100,11 @@ class MeetingInvite(BaseModel):
     time: str
     duration: int = 30
     description: Optional[str] = None
-    video_enabled: bool = True
+    location_type: str = "online"
+    use_saysme: bool = True
+    use_other: bool = False
+    other_meeting_text: str = ""
+    physical_address: str = ""
     custom_room_name: Optional[str] = None
     invitees: List[dict] = []
 
@@ -343,7 +352,10 @@ async def send_invite(
     base_url = settings.get("video_meet_base_url", "https://meet.saysme.org")
     video_link = None
 
-    if payload.video_enabled and settings.get("default_location_type", "online") != "physical":
+    location_type = payload.location_type or settings.get("default_location_type", "online")
+    if location_type == "online" and payload.use_other and payload.other_meeting_text:
+        video_link = payload.other_meeting_text
+    elif location_type == "online" and payload.use_saysme:
         username = (target_user.get("name") or target_user.get("email", "user")).lower().replace(" ", "-")
         room = (payload.custom_room_name or f"{username}-meeting-{int(datetime.now().timestamp())}").lower().replace(" ", "-")
         video_link = f"{base_url}/{room}"
@@ -383,9 +395,9 @@ async def send_invite(
             "duration": payload.duration,
             "notes": payload.description or "",
             "video_link": video_link,
-            "location_type": settings.get("default_location_type", "online"),
-            "physical_address": settings.get("physical_address", ""),
-            "other_meeting_url": settings.get("other_meeting_url", ""),
+            "location_type": location_type,
+            "physical_address": payload.physical_address or settings.get("physical_address", ""),
+            "other_meeting_url": payload.other_meeting_text or settings.get("other_meeting_url", ""),
             "status": "pending",
             "created_at": now,
             "updated_at": now,
@@ -621,7 +633,10 @@ async def create_public_booking_legacy(slug: str, payload: BookingRequestLegacy)
 
     merged = _merge_exact_settings(settings, host)
     video_link = None
-    if merged.get("video_meet_enabled", True):
+    location_type = payload.location_type or merged.get("default_location_type", "online")
+    if location_type == "online" and payload.use_other and payload.other_meeting_text:
+        video_link = payload.other_meeting_text
+    elif location_type == "online" and merged.get("video_meet_enabled", True) and payload.use_saysme:
         base_url = merged.get("video_meet_base_url", "https://meet.saysme.org")
         username = (host.get("name") or host.get("email", "user")).lower().replace(" ", "-")
         room = (payload.custom_room_name or f"{username}-meeting-{int(datetime.now().timestamp())}").lower().replace(" ", "-")
@@ -639,6 +654,9 @@ async def create_public_booking_legacy(slug: str, payload: BookingRequestLegacy)
         "duration": payload.duration,
         "notes": payload.notes,
         "video_link": video_link,
+        "location_type": location_type,
+        "physical_address": payload.physical_address or merged.get("physical_address", ""),
+        "other_meeting_url": payload.other_meeting_text or merged.get("other_meeting_url", ""),
         "status": "confirmed",
         "created_at": now,
         "updated_at": now,
@@ -656,7 +674,21 @@ async def create_public_booking_legacy(slug: str, payload: BookingRequestLegacy)
         pass
 
     booking.pop("_id", None)
-    return booking
+    return {
+        "status": "success",
+        "message": "Meeting booked successfully!",
+        "booking_id": booking["id"],
+        "video_link": video_link,
+        "details": {
+            "date": payload.date,
+            "time": payload.time,
+            "duration": payload.duration,
+            "host_name": host.get("name", "Host"),
+            "location_type": location_type,
+            "physical_address": booking.get("physical_address", ""),
+            "other_meeting_url": booking.get("other_meeting_url", ""),
+        },
+    }
 
 
 @router.post("/public/{slug}/book")

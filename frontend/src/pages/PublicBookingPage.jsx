@@ -15,16 +15,12 @@ import {
   FileText,
   Sparkles,
   ArrowRight,
-  CalendarCheck,
-  VideoIcon,
-  Copy,
-  ExternalLink
+  CalendarCheck
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
-import { Switch } from "../components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -55,7 +51,6 @@ const PublicBookingPage = () => {
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [bookingResult, setBookingResult] = useState(null);
-  const [copiedRoomLink, setCopiedRoomLink] = useState(false);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -63,7 +58,11 @@ const PublicBookingPage = () => {
     phone: "",
     duration: 30,
     notes: "",
-    requestVideoMeeting: false
+    location_type: "online",
+    use_saysme: true,
+    use_other: false,
+    other_meeting_text: "",
+    physical_address: ""
   });
 
   // Generate the meeting room name based on host name and meeting title
@@ -78,22 +77,15 @@ const PublicBookingPage = () => {
 
   // Generate room name when video meeting is requested
   useEffect(() => {
-    if (formData.requestVideoMeeting && hostInfo) {
+    if (hostInfo && formData.location_type === "online" && formData.use_saysme && !generatedRoomName) {
       setGeneratedRoomName(generateRoomName());
     }
-  }, [formData.requestVideoMeeting, hostInfo]);
+  }, [formData.location_type, formData.use_saysme, hostInfo]);
 
   const getVideoMeetingUrl = () => {
     if (!hostInfo || !generatedRoomName) return "";
     const baseUrl = hostInfo.video_meet_base_url || "https://meet.saysme.org";
     return `${baseUrl}/${generatedRoomName}`;
-  };
-
-  const copyRoomLink = () => {
-    navigator.clipboard.writeText(getVideoMeetingUrl());
-    setCopiedRoomLink(true);
-    toast.success("Meeting link copied!");
-    setTimeout(() => setCopiedRoomLink(false), 2000);
   };
 
   useEffect(() => {
@@ -114,7 +106,14 @@ const PublicBookingPage = () => {
       }
       const data = await response.json();
       setHostInfo(data);
-      setFormData(prev => ({ ...prev, duration: data.default_length || 30 }));
+      setFormData(prev => ({
+        ...prev,
+        duration: data.default_length || 30,
+        location_type: data.default_location_type || "online",
+        physical_address: data.default_location_type === "physical" ? (data.physical_address || "") : "",
+        other_meeting_text: data.default_location_type === "online" ? (data.other_meeting_url || "") : "",
+      }));
+      setGeneratedRoomName(generateRoomName());
     } catch (err) {
       setError(err.message);
     } finally {
@@ -157,6 +156,22 @@ const PublicBookingPage = () => {
       toast.error("Please fill in all required fields");
       return;
     }
+    if (formData.location_type === "physical" && !formData.physical_address.trim()) {
+      toast.error("Please enter physical address");
+      return;
+    }
+    if (formData.location_type === "online" && !formData.use_saysme && !formData.use_other) {
+      toast.error("Select meet.saysme.org or Other Meeting URL");
+      return;
+    }
+    if (formData.location_type === "online" && formData.use_saysme && !generatedRoomName.trim()) {
+      toast.error("Please enter secure room name");
+      return;
+    }
+    if (formData.location_type === "online" && formData.use_other && !formData.other_meeting_text.trim()) {
+      toast.error("Please enter other meeting details");
+      return;
+    }
     
     setSubmitting(true);
     try {
@@ -171,7 +186,12 @@ const PublicBookingPage = () => {
           time: selectedSlot.time,
           duration: formData.duration,
           notes: formData.notes || null,
-          custom_room_name: formData.requestVideoMeeting ? generatedRoomName : null
+          location_type: formData.location_type,
+          use_saysme: formData.location_type === "online" ? formData.use_saysme : false,
+          use_other: formData.location_type === "online" ? formData.use_other : false,
+          other_meeting_text: formData.location_type === "online" ? formData.other_meeting_text : "",
+          physical_address: formData.location_type === "physical" ? formData.physical_address : "",
+          custom_room_name: formData.location_type === "online" && formData.use_saysme ? generatedRoomName : null
         })
       });
       
@@ -527,59 +547,113 @@ const PublicBookingPage = () => {
                   </Select>
                 </div>
                 
-                {hostInfo?.video_meet_enabled && (
-                  <div className="space-y-4">
-                    {/* Video Meeting Toggle */}
-                    <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-violet-50 to-indigo-50 dark:from-violet-900/20 dark:to-indigo-900/20 border border-violet-200 dark:border-violet-800">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500 text-white">
-                          <Video className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-slate-900 dark:text-white">Request Online Meeting</p>
-                          <p className="text-sm text-slate-500 dark:text-slate-400">Add a video call to this booking</p>
-                        </div>
-                      </div>
-                      <Switch
-                        checked={formData.requestVideoMeeting}
-                        onCheckedChange={(checked) => setFormData({ ...formData, requestVideoMeeting: checked })}
-                        className="data-[state=checked]:bg-violet-500"
+                <div className="space-y-4" data-testid="public-booking-location-section">
+                  <div className="space-y-2">
+                    <Label className="text-slate-700 dark:text-slate-300">Location Type</Label>
+                    <Select
+                      value={formData.location_type}
+                      onValueChange={(value) =>
+                        setFormData({
+                          ...formData,
+                          location_type: value,
+                          use_saysme: value === "online",
+                          use_other: false,
+                        })
+                      }
+                    >
+                      <SelectTrigger className="h-12 rounded-xl bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700" data-testid="public-booking-location-type-select">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="physical">Physical Location</SelectItem>
+                        <SelectItem value="online">Online Meeting</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {formData.location_type === "physical" && (
+                    <div className="space-y-2" data-testid="public-booking-physical-address-wrap">
+                      <Label className="text-slate-700 dark:text-slate-300">Physical Address</Label>
+                      <Input
+                        className="h-12 rounded-xl bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                        placeholder="Enter full address"
+                        value={formData.physical_address}
+                        onChange={(e) => setFormData({ ...formData, physical_address: e.target.value })}
+                        data-testid="public-booking-physical-address-input"
                       />
                     </div>
-                    
-                    {/* Video Meeting Room Preview */}
-                    {formData.requestVideoMeeting && generatedRoomName && (
-                      <div className="p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-3">
-                        <div className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
-                          <VideoIcon className="w-4 h-4 text-violet-500" />
-                          Your Meeting Room
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 p-3 rounded-lg bg-slate-50 dark:bg-slate-900 font-mono text-sm text-slate-600 dark:text-slate-400 truncate">
-                            {getVideoMeetingUrl()}
+                  )}
+
+                  {formData.location_type === "online" && (
+                    <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 space-y-4" data-testid="public-booking-online-options">
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.use_saysme}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              use_saysme: e.target.checked,
+                              use_other: e.target.checked ? false : formData.use_other,
+                            })
+                          }
+                          data-testid="public-booking-use-saysme-checkbox"
+                        />
+                        <span className="text-sm text-slate-700 dark:text-slate-300">Use https://meet.saysme.org/</span>
+                      </label>
+
+                      {formData.use_saysme && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div className="space-y-2">
+                            <Label>Secure Room Name</Label>
+                            <Input
+                              value={generatedRoomName}
+                              onChange={(e) => setGeneratedRoomName(e.target.value)}
+                              placeholder="melvin-team-sync"
+                              data-testid="public-booking-room-name-input"
+                            />
                           </div>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={copyRoomLink}
-                            className="shrink-0 h-11 w-11 rounded-lg"
-                          >
-                            {copiedRoomLink ? (
-                              <Check className="w-4 h-4 text-emerald-500" />
-                            ) : (
-                              <Copy className="w-4 h-4" />
-                            )}
-                          </Button>
+                          <div className="space-y-2">
+                            <Label>Meeting URL</Label>
+                            <Input
+                              readOnly
+                              value={getVideoMeetingUrl()}
+                              data-testid="public-booking-room-url-preview"
+                            />
+                          </div>
                         </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                          This link will be included in your confirmation email
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
+                      )}
+
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.use_other}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              use_other: e.target.checked,
+                              use_saysme: e.target.checked ? false : formData.use_saysme,
+                            })
+                          }
+                          data-testid="public-booking-use-other-checkbox"
+                        />
+                        <span className="text-sm text-slate-700 dark:text-slate-300">Other Meeting URL</span>
+                      </label>
+
+                      {formData.use_other && (
+                        <div className="space-y-2">
+                          <Label>Other Meeting Details</Label>
+                          <Input
+                            value={formData.other_meeting_text}
+                            onChange={(e) => setFormData({ ...formData, other_meeting_text: e.target.value })}
+                            placeholder="Paste custom meeting details"
+                            data-testid="public-booking-other-details-input"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
                 
                 <div className="space-y-2">
                   <Label className="text-slate-700 dark:text-slate-300">Additional Notes <span className="text-slate-400">(optional)</span></Label>
@@ -701,7 +775,19 @@ const PublicBookingPage = () => {
                   setStep(1);
                   setSelectedDate(null);
                   setSelectedSlot(null);
-                  setFormData({ name: "", email: "", phone: "", duration: hostInfo?.default_length || 30, notes: "", requestVideoMeeting: false });
+                  setFormData({
+                    name: "",
+                    email: "",
+                    phone: "",
+                    duration: hostInfo?.default_length || 30,
+                    notes: "",
+                    location_type: hostInfo?.default_location_type || "online",
+                    use_saysme: true,
+                    use_other: false,
+                    other_meeting_text: "",
+                    physical_address: "",
+                  });
+                  setGeneratedRoomName(generateRoomName());
                   setBookingResult(null);
                 }}
                 className="h-12 px-8 rounded-xl"

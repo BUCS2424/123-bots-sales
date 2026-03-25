@@ -303,7 +303,10 @@ const BookingSettingsPage = () => {
     advance_days: 30,
     timezone: "America/New_York",
     video_meet_enabled: true,
-    video_meet_base_url: "https://meet.saysme.org"
+    video_meet_base_url: "https://meet.saysme.org",
+    default_location_type: "online",
+    physical_address: "",
+    other_meeting_url: ""
   });
   const [bookingLink, setBookingLink] = useState("");
   const [copied, setCopied] = useState(false);
@@ -319,13 +322,22 @@ const BookingSettingsPage = () => {
     time: "09:00",
     duration: 30,
     description: "",
-    video_enabled: true,
+    location_type: "online",
+    use_saysme: true,
+    use_other: false,
+    other_meeting_text: "",
     custom_room_name: "",
+    physical_address: "",
     invitees: []
   });
   const [inviteeInput, setInviteeInput] = useState({ type: "email", value: "" });
   const [sendingInvite, setSendingInvite] = useState(false);
   const requestParams = managedUserId ? { params: { user_id: managedUserId } } : {};
+
+  const generateSecureRoomName = () => {
+    const baseName = (managedUserMeta?.name || "meeting").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    return `${baseName}-${Date.now().toString(36).slice(-5)}`;
+  };
 
   useEffect(() => {
     loadSettings();
@@ -458,6 +470,13 @@ const BookingSettingsPage = () => {
     }));
   };
 
+  const getInviteMeetingUrl = () => {
+    const baseUrl = settings.video_meet_base_url || "https://meet.saysme.org";
+    const roomName = inviteForm.custom_room_name?.trim();
+    if (!roomName) return "";
+    return `${baseUrl}/${roomName}`;
+  };
+
   const sendInvites = async () => {
     if (!inviteForm.title || !inviteForm.date || !inviteForm.time) {
       toast.error("Please fill in meeting title, date, and time");
@@ -465,6 +484,22 @@ const BookingSettingsPage = () => {
     }
     if (inviteForm.invitees.length === 0) {
       toast.error("Please add at least one invitee");
+      return;
+    }
+    if (inviteForm.location_type === "online" && !inviteForm.use_saysme && !inviteForm.use_other) {
+      toast.error("Select meet.saysme.org or Other for online meeting");
+      return;
+    }
+    if (inviteForm.location_type === "online" && inviteForm.use_saysme && !inviteForm.custom_room_name.trim()) {
+      toast.error("Please enter a secure room name");
+      return;
+    }
+    if (inviteForm.location_type === "online" && inviteForm.use_other && !inviteForm.other_meeting_text.trim()) {
+      toast.error("Please enter custom meeting details");
+      return;
+    }
+    if (inviteForm.location_type === "physical" && !inviteForm.physical_address.trim()) {
+      toast.error("Please enter physical address");
       return;
     }
     
@@ -491,8 +526,12 @@ const BookingSettingsPage = () => {
         time: "09:00",
         duration: 30,
         description: "",
-        video_enabled: true,
+        location_type: "online",
+        use_saysme: true,
+        use_other: false,
+        other_meeting_text: "",
         custom_room_name: "",
+        physical_address: "",
         invitees: []
       });
     } catch (error) {
@@ -540,7 +579,13 @@ const BookingSettingsPage = () => {
           </p>
         </div>
         <Button 
-          onClick={() => setShowInviteModal(true)}
+          onClick={() => {
+            setInviteForm((prev) => ({
+              ...prev,
+              custom_room_name: prev.custom_room_name || generateSecureRoomName(),
+            }));
+            setShowInviteModal(true);
+          }}
           className="bg-indigo-500 hover:bg-indigo-600 text-white shadow-lg shadow-indigo-500/25 h-11 px-5"
         >
           <Sparkles className="w-4 h-4 mr-2" />
@@ -762,6 +807,55 @@ const BookingSettingsPage = () => {
               </div>
             )}
           </div>
+
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-6 shadow-sm space-y-4" data-testid="booking-location-defaults-card">
+            <div>
+              <h3 className="font-manrope text-lg font-semibold text-slate-900 dark:text-white">Location Defaults</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Default location type used for new meetings</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Location Type</Label>
+              <Select
+                value={settings.default_location_type || "online"}
+                onValueChange={(value) => setSettings({ ...settings, default_location_type: value })}
+              >
+                <SelectTrigger className="h-11" data-testid="booking-default-location-type-select">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="physical">Physical Location</SelectItem>
+                  <SelectItem value="online">Online Meeting</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {settings.default_location_type === "physical" && (
+              <div className="space-y-2">
+                <Label>Physical Address</Label>
+                <Input
+                  value={settings.physical_address || ""}
+                  onChange={(e) => setSettings({ ...settings, physical_address: e.target.value })}
+                  placeholder="Enter full address"
+                  className="h-11"
+                  data-testid="booking-default-physical-address-input"
+                />
+              </div>
+            )}
+
+            {settings.default_location_type === "online" && (
+              <div className="space-y-2">
+                <Label>Other Meeting Default (optional)</Label>
+                <Input
+                  value={settings.other_meeting_url || ""}
+                  onChange={(e) => setSettings({ ...settings, other_meeting_url: e.target.value })}
+                  placeholder="Custom online meeting details"
+                  className="h-11"
+                  data-testid="booking-default-other-meeting-input"
+                />
+              </div>
+            )}
+          </div>
         </TabsContent>
 
         {/* Bookings Tab */}
@@ -894,27 +988,111 @@ const BookingSettingsPage = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex items-end pb-1">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <Switch
-                    checked={inviteForm.video_enabled}
-                    onCheckedChange={(checked) => setInviteForm({ ...inviteForm, video_enabled: checked })}
-                    className="data-[state=checked]:bg-violet-500"
-                  />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">Video Link</span>
-                </label>
+
+              <div className="space-y-2">
+                <Label>Location Type</Label>
+                <Select
+                  value={inviteForm.location_type}
+                  onValueChange={(value) =>
+                    setInviteForm({
+                      ...inviteForm,
+                      location_type: value,
+                      use_saysme: value === "online",
+                      use_other: false,
+                    })
+                  }
+                >
+                  <SelectTrigger className="h-11" data-testid="create-meeting-location-type-select">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="physical">Physical Location</SelectItem>
+                    <SelectItem value="online">Online Meeting</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-            
-            {inviteForm.video_enabled && (
-              <div className="space-y-2">
-                <Label>Custom Room Name <span className="text-slate-400">(optional)</span></Label>
+
+            {inviteForm.location_type === "physical" && (
+              <div className="space-y-2" data-testid="create-meeting-physical-address-wrap">
+                <Label>Physical Address</Label>
                 <Input
-                  value={inviteForm.custom_room_name}
-                  onChange={(e) => setInviteForm({ ...inviteForm, custom_room_name: e.target.value })}
-                  placeholder="team-standup"
+                  value={inviteForm.physical_address}
+                  onChange={(e) => setInviteForm({ ...inviteForm, physical_address: e.target.value })}
+                  placeholder="Enter full address"
                   className="h-11"
+                  data-testid="create-meeting-physical-address-input"
                 />
+              </div>
+            )}
+
+            {inviteForm.location_type === "online" && (
+              <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-4 space-y-4" data-testid="create-meeting-online-options-wrap">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={inviteForm.use_saysme}
+                    onChange={(e) =>
+                      setInviteForm({
+                        ...inviteForm,
+                        use_saysme: e.target.checked,
+                        use_other: e.target.checked ? false : inviteForm.use_other,
+                      })
+                    }
+                    data-testid="create-meeting-use-saysme-checkbox"
+                  />
+                  <span className="text-sm text-slate-700 dark:text-slate-300">Use https://meet.saysme.org/</span>
+                </label>
+
+                {inviteForm.use_saysme && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label>Secure Room Name</Label>
+                      <Input
+                        value={inviteForm.custom_room_name}
+                        onChange={(e) => setInviteForm({ ...inviteForm, custom_room_name: e.target.value })}
+                        placeholder="melvin-team-sync"
+                        data-testid="create-meeting-room-name-input"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Meeting URL</Label>
+                      <Input
+                        readOnly
+                        value={getInviteMeetingUrl()}
+                        data-testid="create-meeting-room-url-preview"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={inviteForm.use_other}
+                    onChange={(e) =>
+                      setInviteForm({
+                        ...inviteForm,
+                        use_other: e.target.checked,
+                        use_saysme: e.target.checked ? false : inviteForm.use_saysme,
+                      })
+                    }
+                    data-testid="create-meeting-use-other-checkbox"
+                  />
+                  <span className="text-sm text-slate-700 dark:text-slate-300">Other Meeting URL</span>
+                </label>
+
+                {inviteForm.use_other && (
+                  <div className="space-y-2">
+                    <Label>Other Meeting Details</Label>
+                    <Input
+                      value={inviteForm.other_meeting_text}
+                      onChange={(e) => setInviteForm({ ...inviteForm, other_meeting_text: e.target.value })}
+                      placeholder="Zoom link, Teams room, call-in details"
+                      data-testid="create-meeting-other-detail-input"
+                    />
+                  </div>
+                )}
               </div>
             )}
             
