@@ -225,15 +225,18 @@ const AdminLayout = () => {
       icon: Users,
       children: [
         { path: '/admin/leads', label: 'Leads Kanban', icon: Users },
-        { path: '/admin/customers', label: 'Customers', icon: Users },
+        ...(cartEnabled ? [{ path: '/admin/user-management/customers', label: 'Customers', icon: Users }] : []),
       ],
     },
     {
       id: 'user-management',
-      type: 'single',
-      path: '/admin/user-management',
+      type: 'accordion',
       label: 'User Management',
       icon: Shield,
+      children: [
+        { path: '/admin/user-management', label: 'Staff', icon: Shield },
+        { path: '/admin/user-management/customers', label: 'Customers', icon: Users },
+      ],
     },
     {
       id: 'accounting',
@@ -506,10 +509,15 @@ const AdminLayout = () => {
       return <AdminProductEditor productId={productId} />;
     }
     if (path === '/admin/inventory') return <AdminInventory />;
-    if (path === '/admin/customers') return <AdminCustomers />;
-    if (path.match(/^\/admin\/customers\/[^/]+$/)) {
+    if (path === '/admin/user-management/customers') return <AdminCustomers />;
+    if (path.match(/^\/admin\/user-management\/customers\/[^/]+$/)) {
       const customerId = path.split('/').pop();
       return <AdminCustomerDashboard key={customerId} customerId={customerId} />;
+    }
+    if (path === '/admin/customers') return <Navigate to="/admin/user-management/customers" replace />;
+    if (path.match(/^\/admin\/customers\/[^/]+$/)) {
+      const customerId = path.split('/').pop();
+      return <Navigate to={`/admin/user-management/customers/${customerId}`} replace />;
     }
     if (path === '/admin/discounts') return <AdminDiscounts />;
     if (path === '/admin/user-management') return <AdminUserManagement />;

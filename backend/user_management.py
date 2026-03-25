@@ -179,7 +179,27 @@ def can_access(user_role: str, permission: str) -> bool:
 @router.get("/staff", response_model=List[StaffMemberResponse])
 async def list_staff_members():
     """List all staff members (Store Owner only)"""
-    staff = await db.staff_members.find({"is_deleted": {"$ne": True}}).to_list(100)
+    staff = await db.staff_members.find({"is_deleted": {"$ne": True}}).to_list(200)
+    admin_users = await db.users.find(
+        {"role": {"$in": ["admin", "super_admin"]}},
+        {"_id": 0, "id": 1, "email": 1, "name": 1, "phone": 1, "is_active": 1, "created_at": 1, "last_login": 1, "role": 1},
+    ).to_list(50)
+
+    existing_staff_emails = {member.get("email") for member in staff if member.get("email")}
+    for user in admin_users:
+        email = user.get("email")
+        if not email or email in existing_staff_emails:
+            continue
+        staff.append({
+            "id": user.get("id"),
+            "email": email,
+            "name": user.get("name") or email,
+            "role": StaffRole.STORE_OWNER,
+            "phone": user.get("phone"),
+            "is_active": user.get("is_active", True),
+            "created_at": user.get("created_at") or datetime.now(timezone.utc).isoformat(),
+            "last_login": user.get("last_login"),
+        })
     
     result = []
     for member in staff:
@@ -322,7 +342,7 @@ async def list_customers(
     limit: int = 50
 ):
     """List all customers with optional filtering"""
-    query = {}
+    query = {"role": "user"}
     
     if tier and tier in [CustomerTier.RETAIL, CustomerTier.WHOLESALE]:
         query["customer_type"] = tier

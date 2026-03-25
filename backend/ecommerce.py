@@ -1186,8 +1186,28 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
                 {"email": {"$regex": search, "$options": "i"}}
             ]
         
-        customers = await db.customers.find(query, {"_id": 0}).sort("total_spent", -1).limit(limit).to_list(limit)
-        return customers
+        customers = await db.customers.find(query, {"_id": 0}).sort("total_spent", -1).limit(limit * 2).to_list(limit * 2)
+
+        if not customers:
+            return []
+
+        customer_emails = [c.get("email") for c in customers if c.get("email")]
+        role_by_email = {}
+        if customer_emails:
+            users = await db.users.find({"email": {"$in": customer_emails}}, {"_id": 0, "email": 1, "role": 1}).to_list(len(customer_emails))
+            role_by_email = {u.get("email"): u.get("role") for u in users}
+
+        filtered_customers = []
+        for customer in customers:
+            customer_email = customer.get("email")
+            linked_role = role_by_email.get(customer_email)
+            if linked_role and linked_role != "user":
+                continue
+            filtered_customers.append(customer)
+            if len(filtered_customers) >= limit:
+                break
+
+        return filtered_customers
 
     @router.get("/customers/{customer_id}", response_model=Customer)
     async def get_customer(customer_id: str, current_user: TokenData = Depends(require_admin)):

@@ -349,7 +349,7 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">Customer not found</p>
-        <Button onClick={() => navigate('/admin/customers')} className="mt-4">
+        <Button onClick={() => navigate('/admin/user-management/customers')} className="mt-4">
           Back to Customers
         </Button>
       </div>
@@ -363,7 +363,7 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="icon" onClick={() => navigate('/admin/customers')}>
+          <Button variant="outline" size="icon" onClick={() => navigate('/admin/user-management/customers')}>
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>

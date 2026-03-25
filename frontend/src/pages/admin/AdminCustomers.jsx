@@ -99,7 +99,7 @@ const AdminCustomers = () => {
   };
 
   const handleViewCustomer = (customer) => {
-    navigate(`/admin/customers/${customer.id}`);
+    navigate(`/admin/user-management/customers/${customer.id}`);
   };
 
   const filteredCustomers = customers.filter(customer => {

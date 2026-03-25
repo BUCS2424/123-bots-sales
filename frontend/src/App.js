@@ -153,7 +153,7 @@ const ImpersonationBanner = () => {
     const result = await exitImpersonation();
     if (result.success) {
       if (!location.pathname.startsWith('/admin')) {
-        navigate('/admin/customers');
+        navigate('/admin/user-management/customers');
       }
     }
   };

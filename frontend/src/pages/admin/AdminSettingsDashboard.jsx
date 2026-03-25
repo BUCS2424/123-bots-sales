@@ -275,7 +275,7 @@ const AdminSettingsDashboard = () => {
                 <span>View Orders</span>
               </Button>
             </Link>
-            <Link to="/admin/customers">
+            <Link to="/admin/user-management/customers">
               <Button variant="outline" className="w-full h-auto py-4 flex flex-col gap-2" data-testid="quick-action-customers">
                 <Users className="w-6 h-6 text-amber-600" />
                 <span>Customers</span>
