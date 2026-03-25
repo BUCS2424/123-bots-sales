@@ -233,6 +233,7 @@ const AppContent = () => {
                   <Route path="/123-bots-resources" element={<ResourcesPage />} />
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/booking/:bookingSlug" element={<PublicBookingPage />} />
+                    <Route path="/book/:bookingSlug" element={<PublicBookingPage />} />
                   <Route path="/checkout" element={<CheckoutPage />} />
                   <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
                   <Route path="/login" element={<LoginPage />} />
