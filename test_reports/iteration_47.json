@@ -1,0 +1,63 @@
+{
+  "summary": "Tested AI Products feature flag functionality. Found and fixed a bug where AdminProductEditor.jsx was using the admin endpoint (/api/admin-settings/feature-flags) which requires auth, causing it to default to true when auth fails. Fixed to use public endpoint (/api/settings/feature-flags). Backend correctly returns ai_products in public feature flags and AI endpoint returns 403 when disabled.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "AdminProductEditor.jsx",
+        "issue": "Was using admin endpoint for feature flags which requires auth, defaulting to true on auth failure",
+        "selector": "fetchFeatureFlags function",
+        "priority": "HIGH",
+        "status": "FIXED"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_ai_products_feature_flag.py",
+    "/app/test_reports/pytest/ai_products_feature_flag_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Backend /api/settings/feature-flags correctly returns ai_products key with boolean value",
+    "Backend /api/ai/product-lookup correctly checks is_ai_products_enabled() and returns 403 when disabled",
+    "Frontend AdminProductEditor.jsx now uses public endpoint /api/settings/feature-flags (no auth required)",
+    "Frontend correctly hides AIProductLookup component when aiProductsEnabled is false",
+    "No regression in other feature flags - all expected keys present (coming_soon, left_menu, printful/yoycol, owner_chat)"
+  ],
+  "updated_files": [
+    "/app/frontend/src/pages/admin/AdminProductEditor.jsx",
+    "/app/backend/tests/test_ai_products_feature_flag.py"
+  ],
+  "success_rate": {
+    "backend": "100% (7/7 tests passed)",
+    "frontend": "Unable to fully test UI - admin auth required"
+  },
+  "test_credentials": {
+    "gate_password": "8487",
+    "localStorage_bypass": "localStorage.setItem('123Bots_unlocked', 'true')"
+  },
+  "seed_data_creation": "",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "AI Products feature flag fix applied. AdminProductEditor.jsx now uses public endpoint /api/settings/feature-flags instead of admin endpoint. When ai_products=false in feature flags, the AI Product Generator panel should be hidden on /admin/products/new page. Backend AI endpoint /api/ai/product-lookup returns 403 when ai_products=false. Admin credentials required to fully test the UI behavior.",
+  "features_tested": {
+    "Public feature flags returns ai_products": "PASS - Returns boolean value",
+    "Public feature flags returns all expected keys": "PASS - All 14 keys present",
+    "AI product lookup requires auth": "PASS - Returns 401 without auth",
+    "Public endpoint accessible without auth": "PASS - Returns 200",
+    "Admin endpoint requires auth": "PASS - Returns 401 without auth",
+    "Frontend uses correct endpoint": "FIXED - Changed from admin to public endpoint",
+    "AI panel visibility when disabled": "UNABLE TO TEST - Admin auth required"
+  },
+  "bug_fix_details": {
+    "root_cause": "AdminProductEditor.jsx was calling /api/admin-settings/feature-flags which requires admin auth. When the request failed (401), the catch block defaulted aiProductsEnabled to true, causing the AI Product Generator to always show.",
+    "fix_applied": "Changed endpoint from /api/admin-settings/feature-flags to /api/settings/feature-flags (public endpoint that doesn't require auth)",
+    "file_changed": "/app/frontend/src/pages/admin/AdminProductEditor.jsx",
+    "line_numbers": "498-506"
+  }
+}

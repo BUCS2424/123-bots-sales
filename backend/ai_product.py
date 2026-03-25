@@ -71,6 +71,22 @@ async def get_ai_api_config():
     
     return None
 
+
+async def is_ai_products_enabled() -> bool:
+    """Feature flag gate for AI Product Generator."""
+    db = init_ai_db()
+    if not db:
+        return True
+
+    settings = await db.admin_settings.find_one(
+        {"type": "feature_flags"},
+        {"_id": 0, "ai_products": 1},
+    )
+    if not settings:
+        return True
+
+    return bool(settings.get("ai_products", True))
+
 class ProductLookupRequest(BaseModel):
     query: str  # Product name, model number, or manufacturer
     manufacturer: Optional[str] = None
@@ -103,6 +119,9 @@ def get_ai_product_router(require_admin):
         """
         Use AI to search the web and find product information
         """
+        if not await is_ai_products_enabled():
+            raise HTTPException(status_code=403, detail="AI Product Generator is disabled by feature flag")
+
         # Get AI config from admin settings or environment
         ai_config = await get_ai_api_config()
         

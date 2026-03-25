@@ -871,6 +871,13 @@ async def get_public_feature_flags(db=Depends(get_db)):
         {"type": "feature_flags"},
         {
             "_id": 0,
+            "pawn_checkout": 1,
+            "storage_online": 1,
+            "storage_pos": 1,
+            "ai_products": 1,
+            "notifications": 1,
+            "sms": 1,
+            "analytics": 1,
             "printful_enabled": 1,
             "yoycol_enabled": 1,
             "owner_chat_enabled": 1,
@@ -881,6 +888,13 @@ async def get_public_feature_flags(db=Depends(get_db)):
         },
     )
     return {
+        "pawn_checkout": bool(settings.get("pawn_checkout", True)) if settings else True,
+        "storage_online": bool(settings.get("storage_online", False)) if settings else False,
+        "storage_pos": bool(settings.get("storage_pos", False)) if settings else False,
+        "ai_products": bool(settings.get("ai_products", True)) if settings else True,
+        "notifications": bool(settings.get("notifications", False)) if settings else False,
+        "sms": bool(settings.get("sms", False)) if settings else False,
+        "analytics": bool(settings.get("analytics", True)) if settings else True,
         "printful_enabled": bool(settings.get("printful_enabled", False)) if settings else False,
         "yoycol_enabled": bool(settings.get("yoycol_enabled", False)) if settings else False,
         "owner_chat_enabled": bool(settings.get("owner_chat_enabled", False)) if settings else False,

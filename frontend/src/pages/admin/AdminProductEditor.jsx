@@ -375,6 +375,7 @@ const AdminProductEditor = ({ productId: propProductId }) => {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [storageConfigured, setStorageConfigured] = useState(false);
+  const [aiProductsEnabled, setAiProductsEnabled] = useState(true);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -487,11 +488,23 @@ const AdminProductEditor = ({ productId: propProductId }) => {
   useEffect(() => {
     fetchCategories();
     checkStorageConfig();
+    fetchFeatureFlags();
     fetchAllProducts();
     if (isEditing) {
       fetchProduct();
     }
   }, [productId]);
+
+  const fetchFeatureFlags = async () => {
+    try {
+      // Use public feature flags endpoint - no auth required
+      const response = await axios.get(`${API}/settings/feature-flags`);
+      setAiProductsEnabled(response.data?.ai_products !== false);
+    } catch (error) {
+      // Default to true only if endpoint fails completely
+      setAiProductsEnabled(true);
+    }
+  };
 
   // Fetch category custom fields when category changes
   useEffect(() => {
@@ -1289,7 +1302,7 @@ const AdminProductEditor = ({ productId: propProductId }) => {
           {/* Left Column - Main Form */}
           <div className="flex-1 space-y-6">
             {/* AI Product Lookup - Only show for new products on General tab */}
-            {activeTab === 'general' && (
+            {activeTab === 'general' && aiProductsEnabled && (
               <AIProductLookup 
                 onProductFound={handleAIProductFound} 
                 isEditing={isEditing} 

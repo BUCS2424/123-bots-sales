@@ -4,6 +4,13 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const useSiteFeatureFlags = () => {
   const [flags, setFlags] = useState({
+    pawn_checkout: true,
+    storage_online: false,
+    storage_pos: false,
+    ai_products: true,
+    notifications: false,
+    sms: false,
+    analytics: true,
     require_account_for_checkout: false,
     require_email_verification_for_registration: true,
     left_menu_enabled: true,
@@ -33,6 +40,13 @@ export const useSiteFeatureFlags = () => {
         if (!active) return;
 
         setFlags({
+          pawn_checkout: featureData.pawn_checkout !== false,
+          storage_online: Boolean(featureData.storage_online),
+          storage_pos: Boolean(featureData.storage_pos),
+          ai_products: featureData.ai_products !== false,
+          notifications: Boolean(featureData.notifications),
+          sms: Boolean(featureData.sms),
+          analytics: featureData.analytics !== false,
           require_account_for_checkout: Boolean(siteData.require_account_for_checkout),
           require_email_verification_for_registration:
             siteData.require_email_verification_for_registration !== false,
