@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Textarea } from '../../components/ui/textarea';
 import { toast } from '../../hooks/use-toast';
 import { useAuth } from '../../context/AuthContext';
+import { LeadQuoteContractPanel } from '../../components/quotes/LeadQuoteContractPanel';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -82,6 +83,7 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
   const [customerReviews, setCustomerReviews] = useState([]);
   const [reviewedOrders, setReviewedOrders] = useState(new Set());
   const [impersonating, setImpersonating] = useState(false);
+  const [linkedLeadId, setLinkedLeadId] = useState(null);
 
   useEffect(() => {
     if (customerId) {
@@ -98,6 +100,7 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCustomerData(response.data);
+      await fetchLinkedLead(response.data.customer?.id);
       setProfileForm({
         name: response.data.customer?.name || '',
         phone: response.data.customer?.phone || '',
@@ -108,6 +111,22 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
       toast({ title: 'Error', description: 'Failed to load customer data', variant: 'destructive' });
     }
     setLoading(false);
+  };
+
+  const fetchLinkedLead = async (id) => {
+    if (!id) {
+      setLinkedLeadId(null);
+      return;
+    }
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API}/customers/${id}/quote-lead-link`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setLinkedLeadId(response.data?.lead_id || null);
+    } catch (_error) {
+      setLinkedLeadId(null);
+    }
   };
 
   const fetchCustomerReviews = async () => {
@@ -490,7 +509,7 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-flex">
+        <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-flex">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <User className="w-4 h-4" /> Overview
           </TabsTrigger>
@@ -502,6 +521,9 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
           </TabsTrigger>
           <TabsTrigger value="invoices" className="flex items-center gap-2">
             <FileText className="w-4 h-4" /> Invoices
+          </TabsTrigger>
+          <TabsTrigger value="quotes-contracts-esign" className="flex items-center gap-2" data-testid="customer-quotes-contracts-tab-trigger">
+            <FileText className="w-4 h-4" /> Quotes / Contracts / eSign
           </TabsTrigger>
         </TabsList>
 
@@ -790,6 +812,17 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
                   <p className="text-sm text-gray-400">Invoices are generated for completed orders</p>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="quotes-contracts-esign" data-testid="customer-quotes-contracts-tab-content">
+          <Card>
+            <CardHeader>
+              <CardTitle>Quotes / Contracts / eSign</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <LeadQuoteContractPanel leadId={linkedLeadId} title="Client Quote, Contract & eSign" />
             </CardContent>
           </Card>
         </TabsContent>

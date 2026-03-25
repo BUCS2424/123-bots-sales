@@ -18,6 +18,7 @@ import {
   Clock3,
   CreditCard,
   Link as LinkIcon,
+  FileSignature,
   UserRound,
   UserPlus,
 } from 'lucide-react';
@@ -30,6 +31,7 @@ import { Badge } from '../../components/ui/badge';
 import { Checkbox } from '../../components/ui/checkbox';
 import { Dialog, DialogContent } from '../../components/ui/dialog';
 import { toast } from '../../hooks/use-toast';
+import { LeadQuoteContractPanel } from '../../components/quotes/LeadQuoteContractPanel';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -44,6 +46,7 @@ const COLUMNS = [
 const SECTION_TABS = [
   { id: 'opportunity-details', label: 'Opportunity Details', icon: UserRound },
   { id: 'appointments', label: 'Book/Update Appointment', icon: Calendar },
+  { id: 'quotes-contracts-esign', label: 'Quote / Contract / eSign', icon: FileSignature },
   { id: 'tasks', label: 'Tasks', icon: CheckCircle2 },
   { id: 'notes', label: 'Notes', icon: MessageSquare },
   { id: 'payments', label: 'Payments', icon: CreditCard },
@@ -1106,6 +1109,12 @@ const AdminLeadsKanban = () => {
                           </div>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {activeSection === 'quotes-contracts-esign' && (
+                    <div className="space-y-4" data-testid="opportunity-quotes-contracts-esign-section">
+                      <LeadQuoteContractPanel leadId={selectedLead.id} title="Quote, Contract & eSign" />
                     </div>
                   )}
 

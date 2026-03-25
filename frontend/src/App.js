@@ -50,6 +50,7 @@ import BuyLeasePage from './pages/BuyLeasePage';
 import ResourcesPage from './pages/ResourcesPage';
 import CategoryLandingPage from './pages/CategoryLandingPage';
 import PublicBookingPage from './pages/PublicBookingPage';
+import QuoteSigningPage from './pages/quotes/QuoteSigningPage';
 
 // Age Verification
 import AgeVerificationModal from './components/AgeVerificationModal';
@@ -234,6 +235,7 @@ const AppContent = () => {
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/booking/:bookingSlug" element={<PublicBookingPage />} />
                     <Route path="/book/:bookingSlug" element={<PublicBookingPage />} />
+                    <Route path="/sign/:quoteId" element={<QuoteSigningPage />} />
                   <Route path="/checkout" element={<CheckoutPage />} />
                   <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
                   <Route path="/login" element={<LoginPage />} />

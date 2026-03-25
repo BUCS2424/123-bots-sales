@@ -184,6 +184,8 @@ set_andgo_db(db)
 
 from booking_routes import router as booking_router, set_database as set_booking_db
 set_booking_db(db)
+from quote_contract_esign_routes import router as quote_contract_esign_router, set_database as set_quote_contract_esign_db
+set_quote_contract_esign_db(db)
 
 # Create the main app without a prefix
 app = FastAPI(title="123Bots API")
@@ -1294,6 +1296,7 @@ app.include_router(tasks_router, prefix="/api")
 app.include_router(radio_router, prefix="/api")
 app.include_router(andgo_router, prefix="/api")
 app.include_router(booking_router, prefix="/api")
+app.include_router(quote_contract_esign_router, prefix="/api")
 
 # Serve uploaded chat files
 @app.get("/api/uploads/chat/{filename}", include_in_schema=False)
