@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { setSeoMetadata, generateOrganizationSchema } from '../lib/seo';
 import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 const AboutUsPage = () => {
   useEffect(() => {
@@ -176,6 +177,7 @@ const AboutUsPage = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
