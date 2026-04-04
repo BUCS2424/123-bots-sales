@@ -37,6 +37,7 @@ const Header = () => {
     {
       label: 'INDUSTRIES',
       items: [
+        { label: 'HEALTHCARE', href: '/industries/healthcare' },
         { label: 'RETAIL', href: '/industries/retail-uses' },
         { label: 'WAREHOUSES', href: '/industries/warehouses' },
         { label: 'HOSPITALITY', href: '/industries/hospitality' },
