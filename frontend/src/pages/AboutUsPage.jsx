@@ -177,6 +177,23 @@ const AboutUsPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Available States Section */}
+      <div className="bg-[#0a1628] py-16 border-t border-gray-800">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-8">
+            <span className="text-green-400 italic">AVAILABLE STATES</span>{' '}
+            <span className="text-white">WE SERVE</span>
+          </h2>
+          <p className="text-gray-300 text-lg mb-4">
+            Missouri | Iowa | Illinois | Indiana | Ohio | Kentucky | Tennessee | Arkansas | Kansas | Oklahoma
+          </p>
+          <p className="text-gray-300 text-lg">
+            Texas | Louisiana | Mississippi | Alabama | Georgia | South Carolina | Florida | Puerto Rico | Virgin Islands
+          </p>
+        </div>
+      </div>
+
       <Footer />
     </div>
   );
