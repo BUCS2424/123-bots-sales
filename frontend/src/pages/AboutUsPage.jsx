@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowLeft,
-  Gift,
+  Bot,
   Users,
   Heart,
   CheckCircle,
@@ -87,7 +87,7 @@ const AboutUsPage = () => {
             <div className="hidden lg:flex justify-center">
               <div className="relative">
                 <div className="w-64 h-64 rounded-full bg-gradient-to-br from-blue-500/30 to-green-500/20 flex items-center justify-center">
-                  <Gift className="w-32 h-32 text-blue-400" />
+                  <Bot className="w-32 h-32 text-blue-400" />
                 </div>
                 <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full bg-blue-500/20 flex items-center justify-center">
                   <Star className="w-10 h-10 text-blue-400" />
