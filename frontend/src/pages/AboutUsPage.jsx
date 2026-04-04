@@ -1,225 +1,108 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  ArrowLeft, Gift, Shield, Award, Target, Users, Heart,
-  CheckCircle, Palette, Sparkles, Globe, Zap, Star
-} from 'lucide-react';
+import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { setSeoMetadata, generateOrganizationSchema } from '../lib/seo';
+
+const differentiators = [
+  'Operator-First Perspective: We are former Directors of Operations and EVS experts who have managed robotic fleets in high-stakes healthcare environments.',
+  'Edge-to-Edge Strategy: We deploy a "Hub and Spoke" fleet model, utilizing heavy-duty units like the B1G for open areas and precision robots like the CC1 Pro for tight corridors and corners.',
+  'The "Proof of Clean" Guarantee: Every deployment includes transparent, data-driven reporting that provides a digital paper trail of exactly where, when, and how your facility was maintained.',
+  'Comprehensive Life-Cycle Support: From initial site mapping and elevator integration to long-term "All-in-One" service, we stay with the equipment from day one through its life.',
+  'Regional Specialization: With deep roots in the Midwest and expanding operations in the Caribbean, we provide localized, high-frequency support that national retailers cannot match.',
+];
+
+const coreValues = [
+  'Operational Transparency: We believe in data-backed results. If it is not measured, it is not clean.',
+  'Relentless Solution-Orientation: Every team member is an end-user; we solve technical challenges with the urgency of someone who has a facility to run.',
+  'Human-Centric Automation: We do not replace people; we empower them by automating the repetitive so they can focus on the exceptional.',
+];
+
+const journey = [
+  'Year 1: The Foundation. The partners found common interest in advancing robotic technology and began using Generation 1 robots.',
+  'Year 2: Field Testing & Lessons Learned. We spent this year in the trenches, running robots as operational leaders in healthcare, manufacturing, and retail environments.',
+  'Year 3: Expansion & Refinement. We reviewed and tested multiple robotics brands for durability, effectiveness, and innovation.',
+  'Year 4: The Strategic Horizon. We are currently expanding into Puerto Rico and the Caribbean, bringing mechanical floor restoration and autonomous fleet management to a global stage while continuing to serve the local hospitals and schools that started it all.',
+];
 
 const AboutUsPage = () => {
   useEffect(() => {
     setSeoMetadata({
       title: 'About Us',
-      description: 'Learn about 123Bots - your trusted source for custom printables and personalized gifts. Made with love in Alabama since 2020!',
-      keywords: 'about 123Bots, custom printing company, Alabama business, personalized gifts, sublimation printing',
+      description: 'Learn the 123BoTs story, operating model, core values, and strategic journey in autonomous facility maintenance.',
+      keywords: '123BoTs about us, autonomous floor care, healthcare robotics, proof of clean, facility maintenance automation',
       canonicalPath: '/about',
       ogType: 'website',
       jsonLd: generateOrganizationSchema(),
     });
   }, []);
 
-  const values = [
-    {
-      icon: Heart,
-      title: 'Made With Care',
-      description: 'Every product is crafted with attention to detail and love. We take pride in creating items that bring joy.'
-    },
-    {
-      icon: Palette,
-      title: 'Creative Excellence',
-      description: 'Our design team brings your visions to life with vibrant colors and stunning prints that last.'
-    },
-    {
-      icon: Users,
-      title: 'Customer Focus',
-      description: 'You\'re not just a customer, you\'re part of the 123Bots family. We\'re here to help every step of the way.'
-    },
-    {
-      icon: Zap,
-      title: 'Fast & Reliable',
-      description: 'Quick turnaround on custom orders and reliable shipping means your treasures arrive when you need them.'
-    }
-  ];
-
-  const milestones = [
-    { year: '2020', event: '123Bots founded with a passion for creating unique personalized gifts' },
-    { year: '2021', event: 'Expanded product line to include tumblers, mugs, and home goods' },
-    { year: '2022', event: 'Launched Hawaiian and Cruise collections, served 1,000+ happy customers' },
-    { year: '2023', event: 'Introduced same-day production on select items, expanded shipping nationwide' },
-    { year: '2024', event: 'Partnered with Baltimore Cancer Support Group for awareness merchandise' },
-    { year: '2025', event: 'Continuing to grow and spread joy through personalized creations' }
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Header */}
-      <div className="bg-gradient-to-br from-[#2c1810] via-[#3a1f12] to-[#2c1810] text-white py-20 pt-36">
+    <div className="min-h-screen bg-gray-50" data-testid="about-us-page">
+      <div className="bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white py-20 pt-36">
         <div className="max-w-6xl mx-auto px-4">
-          <Link to="/" className="inline-flex items-center text-[#ffd4b8] hover:text-white mb-6">
+          <Link to="/" className="inline-flex items-center text-slate-300 hover:text-white mb-6" data-testid="about-us-back-home-link">
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
           </Link>
-          
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-4xl lg:text-5xl font-bold mb-6">
-                Whatever Your Pleasure,<br />
-                <span className="text-[#ff8c42]">Find Your Treasure!</span>
-              </h1>
-              <p className="text-xl text-[#ffd4b8] leading-relaxed">
-                123Bots is dedicated to creating unique, personalized products 
-                that celebrate life's special moments. From custom apparel to one-of-a-kind gifts, 
-                we make treasures just for you.
-              </p>
-            </div>
-            <div className="hidden lg:flex justify-center">
-              <div className="relative">
-                <div className="w-64 h-64 rounded-full bg-gradient-to-br from-[#ff8c42]/30 to-[#9370db]/20 flex items-center justify-center">
-                  <Gift className="w-32 h-32 text-[#ff8c42]" />
-                </div>
-                <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full bg-[#ff8c42]/20 flex items-center justify-center">
-                  <Star className="w-10 h-10 text-[#ff8c42]" />
-                </div>
-                <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full bg-[#9370db]/30 flex items-center justify-center">
-                  <Heart className="w-8 h-8 text-[#9370db]" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Our Story */}
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
-            <div className="space-y-4 text-gray-600 leading-relaxed">
-              <p>
-                123Bots started with a simple idea: everyone deserves something 
-                special that's uniquely theirs. What began as a passion project creating custom 
-                gifts for friends and family has grown into something we're truly proud of.
-              </p>
-              <p>
-                We believe that the best gifts come from the heart. That's why every item we create 
-                is made with care and attention to detail. Whether it's a custom t-shirt for a family 
-                reunion, a personalized tumbler for a cruise vacation, or a heartfelt gift for someone 
-                going through a tough time, we pour our hearts into every creation.
-              </p>
-              <p>
-                Today, 123Bots serves customers across the United States, helping them celebrate 
-                life's moments with unique, personalized products. From our Hawaiian collection to our 
-                Cancer Support merchandise, every design tells a story and spreads a little joy.
-              </p>
-            </div>
-          </div>
-          <div className="bg-[#fff8f3] rounded-2xl p-8 border border-[#ffe4d4]">
-            <h3 className="text-xl font-bold text-[#2c1810] mb-4">What Sets Us Apart</h3>
-            <ul className="space-y-3">
-              {['Custom designs tailored to your vision', 'High-quality materials that last', 'Fast production and shipping', 'Responsive customer support', 'Satisfaction guaranteed'].map((item, idx) => (
-                <li key={idx} className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-[#ff8c42]" />
-                  <span className="text-gray-700">{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Our Values */}
-      <div className="bg-gradient-to-br from-[#2c1810] to-[#3a1f12] py-16">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-white text-center mb-12">Our Values</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {values.map((value, idx) => {
-              const Icon = value.icon;
-              return (
-                <div key={idx} className="bg-white/10 backdrop-blur rounded-xl p-6 text-center">
-                  <div className="w-16 h-16 rounded-full bg-[#ff8c42]/20 flex items-center justify-center mx-auto mb-4">
-                    <Icon className="w-8 h-8 text-[#ff8c42]" />
-                  </div>
-                  <h3 className="text-lg font-bold text-white mb-2">{value.title}</h3>
-                  <p className="text-[#ffd4b8] text-sm">{value.description}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Our Journey */}
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">Our Journey</h2>
-        <div className="relative">
-          {/* Timeline line */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-[#ff8c42] to-[#9370db]" />
-          
-          {/* Milestones */}
-          <div className="space-y-8">
-            {milestones.map((milestone, idx) => (
-              <div key={idx} className={`flex items-center gap-8 ${idx % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}>
-                <div className={`flex-1 ${idx % 2 === 0 ? 'text-right' : 'text-left'}`}>
-                  <div className="bg-white rounded-xl p-6 shadow-lg inline-block max-w-md border border-gray-100">
-                    <span className="text-[#ff8c42] font-bold text-lg">{milestone.year}</span>
-                    <p className="text-gray-600 mt-2">{milestone.event}</p>
-                  </div>
-                </div>
-                <div className="w-4 h-4 rounded-full bg-[#ff8c42] ring-4 ring-white shadow-lg z-10" />
-                <div className="flex-1" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Featured Collections */}
-      <div className="bg-gray-100 py-16">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-4">Our Collections</h2>
-          <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
-            Explore our themed collections, each designed to bring joy and celebrate life's special moments.
+          <h1 className="text-4xl lg:text-5xl font-bold mb-4" data-testid="about-us-hero-title">Our Story</h1>
+          <p className="text-lg text-slate-200 max-w-4xl leading-relaxed" data-testid="about-us-hero-summary">
+            At 123BoTs, we believe that the standard of cleanliness should not be a variable — it should be a guarantee.
           </p>
-          
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              { name: 'Hawaiian Collection', desc: 'Tropical vibes for beach lovers and island dreamers', icon: '🌺' },
-              { name: 'Cruise Collection', desc: 'Set sail with custom cruise merchandise and memories', icon: '🚢' },
-              { name: 'Cancer Support', desc: 'Products that spread hope and support fighters', icon: '💜' }
-            ].map((collection, idx) => (
-              <div key={idx} className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow text-center">
-                <span className="text-4xl mb-4 block">{collection.icon}</span>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{collection.name}</h3>
-                <p className="text-gray-600 text-sm">{collection.desc}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 
-      {/* CTA Section */}
-      <div className="bg-gradient-to-r from-[#ff8c42] to-[#ff6b1a] py-16">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Ready to Create Something Special?</h2>
-          <p className="text-white/90 mb-8 text-lg">
-            Let us help you bring your ideas to life. Whether it's a gift for someone special or 
-            merchandise for your group, we're here to make it happen.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/shop"
-              className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-white text-[#ff8c42] font-semibold rounded-full hover:bg-gray-100 transition-colors"
-            >
-              <Sparkles className="w-5 h-5" />
-              Browse Products
-            </Link>
-            <Link
-              to="/contact"
-              className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-transparent border-2 border-white text-white font-semibold rounded-full hover:bg-white/10 transition-colors"
-            >
-              Request Custom Design
-            </Link>
+      <div className="max-w-6xl mx-auto px-4 py-16 space-y-14">
+        <section data-testid="about-us-story-section">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
+          <div className="space-y-4 text-gray-700 leading-relaxed">
+            <p>
+              At 123BoTs, we believe that the standard of cleanliness should not be a variable — it should be a guarantee. Our story began not in a boardroom, but on the front lines of facility management. After years of overseeing environmental services and operations for large-scale healthcare systems and industrial sites, we experienced the labor gap firsthand. We saw the burnout, the high turnover, and the inconsistency that comes with manual floor care.
+            </p>
+            <p>
+              We realized that the future of facility maintenance was not just about better chemicals; it was about smarter systems. We founded 123BoTs to bridge the gap between cutting-edge autonomous technology and the practical realities of everyday operations.
+            </p>
+            <p>
+              We are not just a robotics distributor; we are a team of former operators and end-users who have lived the challenges our clients face. We have spent years testing, breaking, and perfecting robotic workflows in hospitals, 3PL warehouses, and retail centers across 17 states.
+            </p>
+            <p>
+              Today, we bring that expertise to your facility, offering a Proof of Clean that protects your budget, your staff, and your reputation. At 123BoTs, our success is measured by the miles of floor we autonomously maintain and the peace of mind we return to our partners.
+            </p>
           </div>
-        </div>
+        </section>
+
+        <section className="bg-white border rounded-2xl p-8" data-testid="about-us-differentiators-section">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">What Sets Us Apart</h2>
+          <ul className="space-y-4">
+            {differentiators.map((item, idx) => (
+              <li key={idx} className="flex items-start gap-3" data-testid={`about-us-differentiator-${idx + 1}`}>
+                <CheckCircle2 className="w-5 h-5 text-blue-600 mt-0.5" />
+                <span className="text-gray-700 leading-relaxed">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section data-testid="about-us-core-values-section">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Core Values</h2>
+          <ol className="space-y-4 list-decimal list-inside">
+            {coreValues.map((item, idx) => (
+              <li key={idx} className="text-gray-700 leading-relaxed" data-testid={`about-us-core-value-${idx + 1}`}>
+                {item}
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className="bg-white border rounded-2xl p-8" data-testid="about-us-journey-section">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Journey</h2>
+          <ul className="space-y-4">
+            {journey.map((item, idx) => (
+              <li key={idx} className="text-gray-700 leading-relaxed" data-testid={`about-us-journey-item-${idx + 1}`}>
+                • {item}
+              </li>
+            ))}
+          </ul>
+        </section>
       </div>
     </div>
   );
