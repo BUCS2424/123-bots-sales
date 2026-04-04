@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, Gift, Clock, Upload, X, FileImage, Loader2 } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Bot, Clock, Upload, X, FileImage, Loader2 } from 'lucide-react';
 import { toast } from '../hooks/use-toast';
 import axios from 'axios';
 import { setSeoMetadata, generateLocalBusinessSchema } from '../lib/seo';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 const MAX_FILE_SIZE = 250 * 1024 * 1024; // 250 MB
@@ -28,8 +30,8 @@ const ContactPage = () => {
   useEffect(() => {
     setSeoMetadata({
       title: 'Contact Us',
-      description: 'Get in touch with 123Bots. We\'re here to help with your custom product needs, quotes, and questions!',
-      keywords: 'contact 123Bots, custom order inquiry, customer support, request quote',
+      description: 'Get in touch with 123Bots. We\'re here to help with autonomous floor care solutions, demos, and questions!',
+      keywords: 'contact 123Bots, autonomous floor care, robotic cleaning, request demo',
       canonicalPath: '/contact',
       ogType: 'website',
       jsonLd: generateLocalBusinessSchema(),
@@ -208,31 +210,31 @@ const ContactPage = () => {
   const showHours = businessInfo?.show_hours_on_contact !== false;
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-32 pb-32" data-testid="contact-page">
+    <div className="min-h-screen bg-[#0a1628]" data-testid="contact-page">
+      <Header />
+      
       {/* Hero */}
-      <section className="relative py-16 mb-12 bg-gradient-to-b from-white to-slate-50">
-        <div className="absolute inset-0 grid-bg opacity-30" />
-        
+      <section className="relative py-16 pt-36 mb-12">
         <div className="relative max-w-4xl mx-auto px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#fff8f3] border border-[#ffe4d4] text-[#ff8c42] text-sm font-semibold tracking-wider mb-6">
-              <Gift className="w-4 h-4" />
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-400 text-sm font-semibold tracking-wider mb-6">
+              <Bot className="w-4 h-4" />
               GET IN TOUCH
             </span>
-            <h1 className="font-heading text-4xl md:text-5xl font-bold text-slate-800 mb-4">
+            <h1 className="font-heading text-4xl md:text-5xl font-bold text-white mb-4">
               Contact Our Team
             </h1>
-            <p className="text-slate-600 text-lg max-w-2xl mx-auto">
-              Have questions about custom designs or need help with an order? Our team is here to help bring your ideas to life.
+            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+              Have questions about autonomous floor care solutions or need help scheduling a demo? Our team is here to help transform your facility maintenance.
             </p>
           </motion.div>
         </div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-6 lg:px-8 pb-16">
         <div className="grid lg:grid-cols-5 gap-12">
           {/* Contact info */}
           <motion.div
@@ -240,54 +242,54 @@ const ContactPage = () => {
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-2 space-y-6"
           >
-            <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm">
+            <div className="p-6 bg-[#111d2e] border border-gray-700 rounded-2xl">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center shadow-lg shadow-cyan-200">
-                  <Mail className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                  <Mail className="w-6 h-6 text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="font-heading font-semibold text-slate-800">Email</h3>
-                  <p className="text-slate-500 text-sm">{businessInfo?.email || 'support@123bots.com'}</p>
+                  <h3 className="font-heading font-semibold text-white">Email</h3>
+                  <p className="text-gray-400 text-sm">{businessInfo?.email || 'info@123bots.com'}</p>
                 </div>
               </div>
             </div>
 
-            <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm">
+            <div className="p-6 bg-[#111d2e] border border-gray-700 rounded-2xl">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center shadow-lg shadow-cyan-200">
-                  <Phone className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                  <Phone className="w-6 h-6 text-green-400" />
                 </div>
                 <div>
-                  <h3 className="font-heading font-semibold text-slate-800">Phone</h3>
-                  <p className="text-slate-500 text-sm">{businessInfo?.phone || '(844) 589-PEPS (7377)'}</p>
+                  <h3 className="font-heading font-semibold text-white">Phone</h3>
+                  <p className="text-gray-400 text-sm">{businessInfo?.phone || '(877) 702-2687'}</p>
                 </div>
               </div>
             </div>
 
             {showHours && (
-              <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm">
+              <div className="p-6 bg-[#111d2e] border border-gray-700 rounded-2xl">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center shadow-lg shadow-cyan-200">
-                    <Clock className="w-6 h-6 text-white" />
+                  <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                    <Clock className="w-6 h-6 text-blue-400" />
                   </div>
                   <div>
-                    <h3 className="font-heading font-semibold text-slate-800">Business Hours</h3>
-                    <p className="text-slate-500 text-sm">Mon-Fri: {businessInfo?.monday_hours || '9AM - 6PM EST'}</p>
+                    <h3 className="font-heading font-semibold text-white">Business Hours</h3>
+                    <p className="text-gray-400 text-sm">Mon-Fri: {businessInfo?.monday_hours || '8AM - 5PM CST'}</p>
                   </div>
                 </div>
               </div>
             )}
 
             {showAddress && (
-              <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm">
+              <div className="p-6 bg-[#111d2e] border border-gray-700 rounded-2xl">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center shadow-lg shadow-cyan-200">
-                    <MapPin className="w-6 h-6 text-white" />
+                  <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                    <MapPin className="w-6 h-6 text-green-400" />
                   </div>
                   <div>
-                    <h3 className="font-heading font-semibold text-slate-800">Location</h3>
+                    <h3 className="font-heading font-semibold text-white">Location</h3>
                     {formattedAddress.map((line, i) => (
-                      <p key={i} className="text-slate-500 text-sm">{line}</p>
+                      <p key={i} className="text-gray-400 text-sm">{line}</p>
                     ))}
                   </div>
                 </div>
@@ -295,14 +297,14 @@ const ContactPage = () => {
             )}
 
             {!showAddress && (
-              <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm">
+              <div className="p-6 bg-[#111d2e] border border-gray-700 rounded-2xl">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center shadow-lg shadow-cyan-200">
-                    <MapPin className="w-6 h-6 text-white" />
+                  <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                    <MapPin className="w-6 h-6 text-green-400" />
                   </div>
                   <div>
-                    <h3 className="font-heading font-semibold text-slate-800">Location</h3>
-                    <p className="text-slate-500 text-sm">Research facilities in USA</p>
+                    <h3 className="font-heading font-semibold text-white">Service Areas</h3>
+                    <p className="text-gray-400 text-sm">Midwest & Caribbean Regions</p>
                   </div>
                 </div>
               </div>
@@ -316,32 +318,32 @@ const ContactPage = () => {
             transition={{ delay: 0.1 }}
             className="lg:col-span-3"
           >
-            <form onSubmit={handleSubmit} className="p-8 bg-white border border-slate-200 rounded-2xl shadow-sm">
-              <h2 className="font-heading text-2xl font-bold text-slate-800 mb-6">Send us a message</h2>
+            <form onSubmit={handleSubmit} className="p-8 bg-[#111d2e] border border-gray-700 rounded-2xl">
+              <h2 className="font-heading text-2xl font-bold text-white mb-6">Send us a message</h2>
               
               <div className="grid md:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <label className="block text-sm text-slate-600 font-medium mb-2">Name</label>
+                  <label className="block text-sm text-gray-300 font-medium mb-2">Name</label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 transition-all"
+                    className="w-full px-4 py-3 bg-[#0a1628] border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all"
                     placeholder="Your name"
                     data-testid="contact-name"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-slate-600 font-medium mb-2">Email</label>
+                  <label className="block text-sm text-gray-300 font-medium mb-2">Email</label>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 transition-all"
+                    className="w-full px-4 py-3 bg-[#0a1628] border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all"
                     placeholder="your@email.com"
                     data-testid="contact-email"
                   />
@@ -350,26 +352,26 @@ const ContactPage = () => {
 
               <div className="grid md:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <label className="block text-sm text-slate-600 font-medium mb-2">Phone (Optional)</label>
+                  <label className="block text-sm text-gray-300 font-medium mb-2">Phone (Optional)</label>
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 transition-all"
+                    className="w-full px-4 py-3 bg-[#0a1628] border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all"
                     placeholder="(555) 123-4567"
                     data-testid="contact-phone"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-slate-600 font-medium mb-2">Subject</label>
+                  <label className="block text-sm text-gray-300 font-medium mb-2">Subject</label>
                   <input
                     type="text"
                     name="subject"
                     value={formData.subject}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 transition-all"
+                    className="w-full px-4 py-3 bg-[#0a1628] border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all"
                     placeholder="How can we help?"
                     data-testid="contact-subject"
                   />
@@ -377,46 +379,46 @@ const ContactPage = () => {
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm text-slate-600 font-medium mb-2">Message</label>
+                <label className="block text-sm text-gray-300 font-medium mb-2">Message</label>
                 <textarea
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
                   required
                   rows={5}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#ff8c42] focus:ring-2 focus:ring-[#ff8c42]/20 transition-all resize-none"
-                  placeholder="Tell us about your custom design needs..."
+                  className="w-full px-4 py-3 bg-[#0a1628] border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all resize-none"
+                  placeholder="Tell us about your facility and floor care needs..."
                   data-testid="contact-message"
                 />
               </div>
 
               {/* File Upload Section */}
               <div className="mb-6">
-                <label className="block text-sm text-slate-600 font-medium mb-2">
-                  Upload Custom Art (Optional)
+                <label className="block text-sm text-gray-300 font-medium mb-2">
+                  Upload Files (Optional)
                 </label>
-                <p className="text-xs text-slate-400 mb-3">
-                  Share your design files, logos, or inspiration images. Max 250 MB per file.
+                <p className="text-xs text-gray-500 mb-3">
+                  Share facility photos, floor plans, or other relevant documents. Max 250 MB per file.
                 </p>
                 
                 {/* Upload Button */}
                 <div 
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center cursor-pointer hover:border-[#ff8c42] hover:bg-[#fff8f3] transition-all"
+                  className="border-2 border-dashed border-gray-600 rounded-xl p-6 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-500/10 transition-all"
                 >
                   <input
                     ref={fileInputRef}
                     type="file"
                     multiple
-                    accept="image/*,.pdf,.ai,.eps,.svg,.psd"
+                    accept="image/*,.pdf,.doc,.docx"
                     onChange={handleFileSelect}
                     className="hidden"
                     data-testid="contact-file-upload"
                   />
-                  <Upload className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-                  <p className="text-slate-600 font-medium">Click to upload files</p>
-                  <p className="text-slate-400 text-sm mt-1">
-                    Images, PDF, AI, EPS, SVG, PSD accepted
+                  <Upload className="w-10 h-10 text-gray-500 mx-auto mb-3" />
+                  <p className="text-gray-300 font-medium">Click to upload files</p>
+                  <p className="text-gray-500 text-sm mt-1">
+                    Images, PDF, Word documents accepted
                   </p>
                 </div>
 
@@ -428,37 +430,37 @@ const ContactPage = () => {
                         key={file.id}
                         className={`flex items-center gap-3 p-3 rounded-lg border ${
                           file.status === 'complete' 
-                            ? 'bg-green-50 border-green-200' 
+                            ? 'bg-green-500/10 border-green-500/30' 
                             : file.status === 'error'
-                            ? 'bg-red-50 border-red-200'
-                            : 'bg-slate-50 border-slate-200'
+                            ? 'bg-red-500/10 border-red-500/30'
+                            : 'bg-[#0a1628] border-gray-600'
                         }`}
                       >
                         <FileImage className={`w-8 h-8 flex-shrink-0 ${
-                          file.status === 'complete' ? 'text-green-500' :
-                          file.status === 'error' ? 'text-red-500' : 'text-slate-400'
+                          file.status === 'complete' ? 'text-green-400' :
+                          file.status === 'error' ? 'text-red-400' : 'text-gray-500'
                         }`} />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-700 truncate">{file.name}</p>
-                          <p className="text-xs text-slate-400">{formatFileSize(file.size)}</p>
+                          <p className="text-sm font-medium text-gray-200 truncate">{file.name}</p>
+                          <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
                           {uploadProgress[file.id] !== undefined && (
-                            <div className="mt-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                            <div className="mt-1 h-1.5 bg-gray-700 rounded-full overflow-hidden">
                               <div 
-                                className="h-full bg-[#ff8c42] transition-all duration-300"
+                                className="h-full bg-blue-500 transition-all duration-300"
                                 style={{ width: `${uploadProgress[file.id]}%` }}
                               />
                             </div>
                           )}
                         </div>
                         {file.status === 'uploading' ? (
-                          <Loader2 className="w-5 h-5 text-[#ff8c42] animate-spin" />
+                          <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
                         ) : (
                           <button
                             type="button"
                             onClick={() => removeFile(file.id)}
-                            className="p-1 hover:bg-slate-200 rounded-full transition-colors"
+                            className="p-1 hover:bg-gray-700 rounded-full transition-colors"
                           >
-                            <X className="w-4 h-4 text-slate-500" />
+                            <X className="w-4 h-4 text-gray-400" />
                           </button>
                         )}
                       </div>
@@ -470,7 +472,7 @@ const ContactPage = () => {
               <button
                 type="submit"
                 disabled={isSubmitting || isUploading}
-                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-[#ff8c42] to-[#ff6b1a] text-white font-heading font-bold uppercase tracking-wider rounded-xl hover:shadow-xl hover:shadow-[#ff8c42]/35 transition-all disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-blue-600 text-white font-heading font-bold uppercase tracking-wider rounded-xl hover:bg-blue-500 hover:shadow-xl hover:shadow-blue-500/25 transition-all disabled:opacity-50"
                 data-testid="contact-submit"
               >
                 {isSubmitting ? (
@@ -489,6 +491,24 @@ const ContactPage = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* Available States Section */}
+      <div className="bg-[#0a1628] py-16 border-t border-gray-800">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-8">
+            <span className="text-green-400 italic">AVAILABLE STATES</span>{' '}
+            <span className="text-white">WE SERVE</span>
+          </h2>
+          <p className="text-gray-300 text-lg mb-4">
+            Missouri | Iowa | Illinois | Indiana | Ohio | Kentucky | Tennessee | Arkansas | Kansas | Oklahoma
+          </p>
+          <p className="text-gray-300 text-lg">
+            Texas | Louisiana | Mississippi | Alabama | Georgia | South Carolina | Florida | Puerto Rico | Virgin Islands
+          </p>
+        </div>
+      </div>
+
+      <Footer />
     </div>
   );
 };
