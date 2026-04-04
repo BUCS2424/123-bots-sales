@@ -85,6 +85,11 @@ import ChatDashboard from './admin/ChatDashboard';
 import Johnny5Fulfillment from './admin/Johnny5Fulfillment';
 import Johnny5Invoice from './admin/Johnny5Invoice';
 
+// Inventory Management System
+import InventoryDashboard from './admin/InventoryDashboard';
+import ManufacturersPage from './admin/ManufacturersPage';
+import OrderRecommendationsPage from './admin/OrderRecommendationsPage';
+
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
@@ -250,6 +255,18 @@ const AdminLayout = () => {
       path: '/admin/contacts',
       label: 'Contacts',
       icon: User,
+    },
+    {
+      id: 'inventory-management',
+      type: 'accordion',
+      label: 'Inventory Mgmt',
+      icon: Warehouse,
+      children: [
+        { path: '/admin/inventory-management', label: 'Dashboard', icon: LayoutDashboard },
+        { path: '/admin/inventory/items', label: 'Stock Levels', icon: Package },
+        { path: '/admin/inventory/manufacturers', label: 'Manufacturers', icon: Building2 },
+        { path: '/admin/inventory/recommendations', label: 'Order Recs', icon: Truck },
+      ],
     },
     {
       id: 'calendar',
@@ -602,6 +619,13 @@ const AdminLayout = () => {
       return <AdminProductEditor productId={productId} />;
     }
     if (path === '/admin/inventory') return <AdminInventory />;
+    // Inventory Management System routes
+    if (path === '/admin/inventory-management') return <InventoryDashboard />;
+    if (path === '/admin/inventory/items') return <AdminInventory />;
+    if (path === '/admin/inventory/manufacturers') return <ManufacturersPage />;
+    if (path === '/admin/inventory/recommendations') return <OrderRecommendationsPage />;
+    if (path === '/admin/inventory/purchase-orders') return <InventoryDashboard />; // Placeholder for now
+    if (path === '/admin/inventory/settings') return <InventoryDashboard />; // Placeholder for now
     if (path === '/admin/user-management/customers') return <AdminCustomers />;
     if (path.match(/^\/admin\/user-management\/customers\/[^/]+$/)) {
       const customerId = path.split('/').pop();

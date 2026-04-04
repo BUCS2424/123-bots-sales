@@ -187,6 +187,10 @@ set_booking_db(db)
 from quote_contract_esign_routes import router as quote_contract_esign_router, set_database as set_quote_contract_esign_db
 set_quote_contract_esign_db(db)
 
+# Import and configure Inventory Management module
+from inventory_management import router as inventory_router, set_database as set_inventory_db
+set_inventory_db(db)
+
 # Create the main app without a prefix
 app = FastAPI(title="123Bots API")
 
@@ -1298,6 +1302,9 @@ app.include_router(andgo_router, prefix="/api")
 app.include_router(booking_router, prefix="/api")
 app.include_router(quote_contract_esign_router, prefix="/api")
 
+# Inventory Management router
+app.include_router(inventory_router)
+
 # Serve uploaded chat files
 @app.get("/api/uploads/chat/{filename}", include_in_schema=False)
 async def serve_chat_upload(filename: str):
@@ -1414,10 +1421,17 @@ async def startup_event():
             catalog_sync_result.get("products"),
             catalog_sync_result.get("categories"),
         )
+        
+        # Initialize background scheduler for periodic tasks
+        from scheduler import init_scheduler
+        init_scheduler(db)
+        
     except Exception as e:
         logger.error(f"Startup initialization error (non-fatal): {e}")
         # Don't fail startup - let the server start and retry later
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
+    from scheduler import shutdown_scheduler
+    shutdown_scheduler()
     client.close()
