@@ -84,22 +84,38 @@ def _with_compat_fields(contact: dict) -> dict:
     return result
 
 
+def _is_admin(user: dict) -> bool:
+    """Check if user is admin or super_admin"""
+    role = user.get("role", "").lower()
+    return role in ["admin", "super_admin", "owner"]
+
+
 @router.get("")
 async def list_contacts(current_user: dict = Depends(get_current_user)):
-    contacts = await db.contacts.find({"user_id": current_user["id"]}, {"_id": 0}).sort("name", 1).to_list(2000)
+    # Admins see all contacts, regular users see only their own
+    if _is_admin(current_user):
+        contacts = await db.contacts.find({}, {"_id": 0}).sort("name", 1).to_list(2000)
+    else:
+        contacts = await db.contacts.find({"user_id": current_user["id"]}, {"_id": 0}).sort("name", 1).to_list(2000)
     return [_with_compat_fields(c) for c in contacts]
 
 
 # Export routes MUST be defined BEFORE /{contact_id} to avoid route conflict
 @router.get("/export")
 async def export_contacts_json(current_user: dict = Depends(get_current_user)):
-    contacts = await db.contacts.find({"user_id": current_user["id"]}, {"_id": 0}).sort("name", 1).to_list(2000)
+    if _is_admin(current_user):
+        contacts = await db.contacts.find({}, {"_id": 0}).sort("name", 1).to_list(2000)
+    else:
+        contacts = await db.contacts.find({"user_id": current_user["id"]}, {"_id": 0}).sort("name", 1).to_list(2000)
     return [_with_compat_fields(c) for c in contacts]
 
 
 @router.get("/export/csv")
 async def export_contacts_csv(current_user: dict = Depends(get_current_user)):
-    contacts = await db.contacts.find({"user_id": current_user["id"]}, {"_id": 0}).sort("name", 1).to_list(2000)
+    if _is_admin(current_user):
+        contacts = await db.contacts.find({}, {"_id": 0}).sort("name", 1).to_list(2000)
+    else:
+        contacts = await db.contacts.find({"user_id": current_user["id"]}, {"_id": 0}).sort("name", 1).to_list(2000)
     contacts = [_with_compat_fields(c) for c in contacts]
     output = io.StringIO()
     writer = csv.DictWriter(output, fieldnames=["id", "name", "email", "phone_number", "organization", "status", "created_at"])
@@ -111,7 +127,10 @@ async def export_contacts_csv(current_user: dict = Depends(get_current_user)):
 
 @router.get("/export/vcf")
 async def export_contacts_vcf(current_user: dict = Depends(get_current_user)):
-    contacts = await db.contacts.find({"user_id": current_user["id"]}, {"_id": 0}).sort("name", 1).to_list(2000)
+    if _is_admin(current_user):
+        contacts = await db.contacts.find({}, {"_id": 0}).sort("name", 1).to_list(2000)
+    else:
+        contacts = await db.contacts.find({"user_id": current_user["id"]}, {"_id": 0}).sort("name", 1).to_list(2000)
     contacts = [_with_compat_fields(c) for c in contacts]
     cards = []
     for c in contacts:
@@ -133,7 +152,11 @@ async def export_contacts_vcf(current_user: dict = Depends(get_current_user)):
 
 @router.get("/{contact_id}")
 async def get_contact(contact_id: str, current_user: dict = Depends(get_current_user)):
-    contact = await db.contacts.find_one({"id": contact_id, "user_id": current_user["id"]}, {"_id": 0})
+    # Admins can access any contact
+    if _is_admin(current_user):
+        contact = await db.contacts.find_one({"id": contact_id}, {"_id": 0})
+    else:
+        contact = await db.contacts.find_one({"id": contact_id, "user_id": current_user["id"]}, {"_id": 0})
     if not contact:
         raise HTTPException(status_code=404, detail="Contact not found")
     return _with_compat_fields(contact)
