@@ -125,6 +125,7 @@ const ROBOT_PRODUCTS = {
     tagline: 'AI-Native Large Scrubber-Dryer Robot',
     description: 'The world\'s first AI-Native Large Scrubber-Dryer Robot. The PUDU BG1 delivers ultra-long runtime and ultra-high cleaning efficiency with one-pass sweep and scrub capability, perfect for large commercial spaces requiring 24/7 autonomous cleaning.',
     image: '/images/products/pudu-bg1/bg1-front.jpg',
+    heroVideo: '/images/products/pudu-bg1/pudu-bg1-hero.mp4',
     images: [
       '/images/products/pudu-bg1/bg1-front.jpg',
       '/images/products/pudu-bg1/bg1-side.jpg',
@@ -228,58 +229,70 @@ const RobotProductPage = () => {
       <section className="pt-32 pb-16 bg-gradient-to-b from-bots-surface to-bots-dark">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            {/* Product Image Gallery */}
+            {/* Product Image Gallery or Hero Video */}
             <div className="flex flex-col items-center">
-              {/* Main Image */}
-              <div className="relative w-full max-w-lg">
-                <img
-                  src={productImages[selectedImage]}
-                  alt={`${product.name} - View ${selectedImage + 1}`}
-                  className="w-full h-auto max-h-96 object-contain"
-                />
-                
-                {/* Navigation arrows for multiple images */}
-                {productImages.length > 1 && (
-                  <>
-                    <button 
-                      onClick={prevImage}
-                      className="absolute left-0 top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
-                      aria-label="Previous image"
-                    >
-                      <ChevronLeft className="w-6 h-6" />
-                    </button>
-                    <button 
-                      onClick={nextImage}
-                      className="absolute right-0 top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
-                      aria-label="Next image"
-                    >
-                      <ChevronRight className="w-6 h-6" />
-                    </button>
-                  </>
-                )}
-              </div>
-              
-              {/* Thumbnail Gallery */}
-              {productImages.length > 1 && (
-                <div className="flex gap-3 mt-6">
-                  {productImages.map((img, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setSelectedImage(idx)}
-                      className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                        selectedImage === idx 
-                          ? 'border-blue-500 ring-2 ring-blue-500/50' 
-                          : 'border-gray-700 hover:border-gray-500'
-                      }`}
-                    >
-                      <img 
-                        src={img} 
-                        alt={`${product.name} thumbnail ${idx + 1}`} 
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                  ))}
+              {product.heroVideo ? (
+                <div className="relative w-full max-w-lg rounded-2xl overflow-hidden">
+                  <video
+                    src={product.heroVideo}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-auto rounded-2xl"
+                    data-testid="product-hero-video"
+                  />
                 </div>
+              ) : (
+                <>
+                  {/* Main Image */}
+                  <div className="relative w-full max-w-lg">
+                    <img
+                      src={productImages[selectedImage]}
+                      alt={`${product.name} - View ${selectedImage + 1}`}
+                      className="w-full h-auto max-h-96 object-contain"
+                    />
+                    {productImages.length > 1 && (
+                      <>
+                        <button 
+                          onClick={prevImage}
+                          className="absolute left-0 top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
+                          aria-label="Previous image"
+                        >
+                          <ChevronLeft className="w-6 h-6" />
+                        </button>
+                        <button 
+                          onClick={nextImage}
+                          className="absolute right-0 top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
+                          aria-label="Next image"
+                        >
+                          <ChevronRight className="w-6 h-6" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                  {productImages.length > 1 && (
+                    <div className="flex gap-3 mt-6">
+                      {productImages.map((img, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setSelectedImage(idx)}
+                          className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                            selectedImage === idx 
+                              ? 'border-blue-500 ring-2 ring-blue-500/50' 
+                              : 'border-gray-700 hover:border-gray-500'
+                          }`}
+                        >
+                          <img 
+                            src={img} 
+                            alt={`${product.name} thumbnail ${idx + 1}`} 
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
@@ -359,16 +372,79 @@ const RobotProductPage = () => {
       <section className="py-20 bg-bots-surface">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-white text-center mb-12">Specifications</h2>
-          <div className="max-w-2xl mx-auto bg-bots-dark rounded-2xl p-8">
-            <dl className="space-y-4">
-              {Object.entries(product.specs).map(([key, value]) => (
-                <div key={key} className="flex justify-between py-3 border-b border-gray-800">
-                  <dt className="text-gray-400">{key}</dt>
-                  <dd className="text-white font-medium">{value}</dd>
+          {product.heroVideo && productImages.length > 1 ? (
+            <div className="grid md:grid-cols-2 gap-10 items-start">
+              {/* Image Gallery - left side */}
+              <div className="flex flex-col items-center">
+                <div className="relative w-full">
+                  <img
+                    src={productImages[selectedImage]}
+                    alt={`${product.name} - View ${selectedImage + 1}`}
+                    className="w-full h-auto max-h-[420px] object-contain rounded-xl"
+                  />
+                  {productImages.length > 1 && (
+                    <>
+                      <button 
+                        onClick={prevImage}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
+                        aria-label="Previous image"
+                      >
+                        <ChevronLeft className="w-6 h-6" />
+                      </button>
+                      <button 
+                        onClick={nextImage}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
+                        aria-label="Next image"
+                      >
+                        <ChevronRight className="w-6 h-6" />
+                      </button>
+                    </>
+                  )}
                 </div>
-              ))}
-            </dl>
-          </div>
+                <div className="flex gap-3 mt-4">
+                  {productImages.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedImage(idx)}
+                      className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                        selectedImage === idx 
+                          ? 'border-blue-500 ring-2 ring-blue-500/50' 
+                          : 'border-gray-700 hover:border-gray-500'
+                      }`}
+                    >
+                      <img 
+                        src={img} 
+                        alt={`${product.name} thumbnail ${idx + 1}`} 
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {/* Specs - right side */}
+              <div className="bg-bots-dark rounded-2xl p-8">
+                <dl className="space-y-4">
+                  {Object.entries(product.specs).map(([key, value]) => (
+                    <div key={key} className="flex justify-between py-3 border-b border-gray-800">
+                      <dt className="text-gray-400">{key}</dt>
+                      <dd className="text-white font-medium">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            </div>
+          ) : (
+            <div className="max-w-2xl mx-auto bg-bots-dark rounded-2xl p-8">
+              <dl className="space-y-4">
+                {Object.entries(product.specs).map(([key, value]) => (
+                  <div key={key} className="flex justify-between py-3 border-b border-gray-800">
+                    <dt className="text-gray-400">{key}</dt>
+                    <dd className="text-white font-medium">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          )}
         </div>
       </section>
 
