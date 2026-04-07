@@ -742,7 +742,7 @@ const AdminLeadsKanban = () => {
           return (
             <div
               key={column.id}
-              className={`rounded-xl border-2 transition-all min-w-[260px] flex-shrink-0 ${isDropTarget ? 'border-[rgb(37,99,235)] bg-blue-50 shadow-lg' : 'border-gray-200 bg-gray-50'}`}
+              className={`rounded-xl border-2 transition-all w-[280px] min-w-[280px] flex-shrink-0 ${isDropTarget ? 'border-[rgb(37,99,235)] bg-blue-50 shadow-lg' : 'border-gray-200 bg-gray-50'}`}
               onDragOver={(event) => handleDragOver(event, column.id)}
               onDragLeave={() => setDragOverColumn(null)}
               onDrop={(event) => handleDrop(event, column.id)}
@@ -771,7 +771,7 @@ const AdminLeadsKanban = () => {
                       draggable
                       onDragStart={(event) => handleDragStart(event, lead, column.id)}
                       onClick={() => openEditModal(lead, 'opportunity-details')}
-                      className={`cursor-grab active:cursor-grabbing hover:shadow-md transition-all bg-white group ${draggedLead?.id === lead.id ? 'opacity-50 scale-95' : ''}`}
+                      className={`cursor-grab active:cursor-grabbing hover:shadow-md transition-all bg-white group overflow-hidden ${draggedLead?.id === lead.id ? 'opacity-50 scale-95' : ''}`}
                       data-testid={`opportunity-card-${lead.id}`}
                     >
                       <CardContent className="p-3">
