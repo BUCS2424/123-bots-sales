@@ -455,7 +455,7 @@ const AdminCategories = () => {
   return (
     <div className="space-y-4" data-testid="admin-categories-page">
       <div className="flex flex-wrap items-center gap-3">
-        <Button onClick={handleAddRootCategory} className="bg-[rgb(37, 99, 235)] hover:bg-[#552483]" data-testid="add-root-category-button">
+        <Button onClick={handleAddRootCategory} className="bg-blue-600 hover:bg-blue-700 text-white font-medium" data-testid="add-root-category-button">
           <Plus className="w-4 h-4 mr-2" /> Add Root Category
         </Button>
         <Button variant="outline" onClick={handleAddSubcategory} data-testid="add-subcategory-button">
@@ -646,7 +646,7 @@ const AdminCategories = () => {
                 </div>
 
                 <div className="flex justify-end">
-                  <Button onClick={handleSaveCategory} disabled={saving} className="bg-[rgb(37, 99, 235)] hover:bg-[#552483]" data-testid="save-category-button">
+                  <Button onClick={handleSaveCategory} disabled={saving} className="bg-green-600 hover:bg-green-700 text-white font-medium" data-testid="save-category-button">
                     {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                     {editorMode === 'new' ? 'Create Category' : 'Save Category'}
                   </Button>
