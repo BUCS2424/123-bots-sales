@@ -207,14 +207,15 @@ const AdminLeadsKanban = () => {
       const response = await axios.get(`${API}/pipelines/`, { headers: tokenHeaders });
       const data = response.data || [];
       setPipelines(data);
-      if (data.length > 0 && !selectedPipelineId) {
+      setSelectedPipelineId((prev) => {
+        if (prev) return prev;
         const defaultPipeline = data.find(p => p.is_default) || data[0];
-        setSelectedPipelineId(defaultPipeline.id);
-      }
+        return defaultPipeline?.id || '';
+      });
     } catch {
       setPipelines([]);
     }
-  }, [tokenHeaders, selectedPipelineId]);
+  }, [tokenHeaders]);
 
   // Derive columns from selected pipeline
   const columns = useMemo(() => {

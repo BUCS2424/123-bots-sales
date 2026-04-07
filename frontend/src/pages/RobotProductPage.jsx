@@ -125,7 +125,8 @@ const ROBOT_PRODUCTS = {
     tagline: 'AI-Native Large Scrubber-Dryer Robot',
     description: 'The world\'s first AI-Native Large Scrubber-Dryer Robot. The PUDU BG1 delivers ultra-long runtime and ultra-high cleaning efficiency with one-pass sweep and scrub capability, perfect for large commercial spaces requiring 24/7 autonomous cleaning.',
     image: '/images/products/pudu-bg1/bg1-front.jpg',
-    heroVideo: '/images/products/pudu-bg1/pudu-bg1-hero.mp4',
+    heroVideo: '/images/products/pudu-bg1/pudu-bg1-hero-sm.mp4',
+    heroVideoFull: '/images/products/pudu-bg1/pudu-bg1-hero.mp4',
     images: [
       '/images/products/pudu-bg1/bg1-front.jpg',
       '/images/products/pudu-bg1/bg1-side.jpg',
@@ -244,6 +245,7 @@ const RobotProductPage = () => {
                     loop
                     muted={videoMuted}
                     playsInline
+                    preload="auto"
                     className="w-full h-auto rounded-2xl"
                     data-testid="product-hero-video"
                   />
@@ -583,7 +585,11 @@ const RobotProductPage = () => {
 
       {/* Fullscreen Video Modal */}
       {videoModalOpen && product.heroVideo && (
-        <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center" data-testid="video-modal-overlay">
+        <div
+          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
+          onClick={() => setVideoModalOpen(false)}
+          data-testid="video-modal-overlay"
+        >
           <button
             onClick={() => setVideoModalOpen(false)}
             className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10"
@@ -592,14 +598,15 @@ const RobotProductPage = () => {
           >
             <X className="w-6 h-6" />
           </button>
-          <div className="w-full max-w-6xl mx-4">
+          <div className="w-full max-w-6xl mx-4" onClick={(e) => e.stopPropagation()}>
             <video
               ref={modalVideoRef}
-              src={product.heroVideo}
+              src={product.heroVideoFull || product.heroVideo}
               autoPlay
               loop
               playsInline
               controls
+              preload="auto"
               className="w-full h-auto rounded-xl max-h-[85vh]"
               data-testid="video-modal-player"
             />
