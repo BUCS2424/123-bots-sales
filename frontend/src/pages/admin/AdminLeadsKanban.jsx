@@ -770,86 +770,38 @@ const AdminLeadsKanban = () => {
                       key={lead.id}
                       draggable
                       onDragStart={(event) => handleDragStart(event, lead, column.id)}
-                      className={`cursor-grab active:cursor-grabbing hover:shadow-md transition-all bg-white ${draggedLead?.id === lead.id ? 'opacity-50 scale-95' : ''}`}
+                      onClick={() => openEditModal(lead, 'opportunity-details')}
+                      className={`cursor-grab active:cursor-grabbing hover:shadow-md transition-all bg-white group ${draggedLead?.id === lead.id ? 'opacity-50 scale-95' : ''}`}
                       data-testid={`opportunity-card-${lead.id}`}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <GripVertical className="w-4 h-4 text-gray-300" />
-                            <span className="font-medium text-gray-900 truncate max-w-[140px]">{lead.name}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 w-7 p-0 hover:bg-blue-50 hover:text-blue-600"
-                              onClick={() => openEditModal(lead, 'opportunity-details')}
-                              data-testid={`opportunity-edit-button-${lead.id}`}
-                            >
-                              <Edit className="w-3.5 h-3.5" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 w-7 p-0 hover:bg-amber-50 hover:text-amber-600"
-                              onClick={() => openEditModal(lead, 'notes')}
-                              data-testid={`opportunity-notes-button-${lead.id}`}
-                            >
-                              <MessageSquare className="w-3.5 h-3.5" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 w-7 p-0 hover:bg-red-50 hover:text-red-600"
-                              onClick={() => handleDelete(lead)}
-                              data-testid={`opportunity-delete-button-${lead.id}`}
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </Button>
-                          </div>
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <GripVertical className="w-4 h-4 text-gray-300 flex-shrink-0" />
+                          <span className="font-semibold text-gray-900 truncate text-sm">{lead.name}</span>
                         </div>
 
-                        <div className="space-y-1.5 text-sm">
-                          <div className="flex items-center gap-2 text-gray-600">
+                        <div className="space-y-1 text-sm pl-1">
+                          <div className="flex items-center gap-2 text-gray-600 min-w-0">
                             <Mail className="w-3.5 h-3.5 flex-shrink-0" />
-                            <a href={`mailto:${lead.email}`} className="truncate hover:text-[rgb(37,99,235)] hover:underline">{lead.email}</a>
+                            <span className="truncate">{lead.email || ''}</span>
                           </div>
                           {lead.phone && (
-                            <div className="flex items-center gap-2 text-gray-600">
+                            <div className="flex items-center gap-2 text-gray-600 min-w-0">
                               <Phone className="w-3.5 h-3.5 flex-shrink-0" />
-                              <a href={`tel:${lead.phone}`} className="hover:text-[rgb(37,99,235)] hover:underline">{lead.phone}</a>
-                            </div>
-                          )}
-                          {lead.subject && <p className="text-gray-500 text-xs bg-gray-50 px-2 py-1 rounded truncate">{lead.subject}</p>}
-                          {lead.notes && <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded px-2 py-1 line-clamp-2">{lead.notes}</p>}
-                          {Array.isArray(lead.attachments) && lead.attachments.length > 0 && (
-                            <div className="flex items-center gap-2 mt-2">
-                              <Paperclip className="w-3 h-3 text-blue-500" />
-                              <div className="flex flex-wrap gap-1">
-                                {lead.attachments.map((attachment, index) => (
-                                  <a
-                                    key={`${lead.id}-att-${index}`}
-                                    href={attachment.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-xs text-blue-600 hover:text-blue-800 underline flex items-center gap-1"
-                                  >
-                                    {attachment.name?.slice(0, 15)}{attachment.name?.length > 15 ? '...' : ''}
-                                    <ExternalLink className="w-2.5 h-2.5" />
-                                  </a>
-                                ))}
-                              </div>
+                              <span className="truncate">{lead.phone}</span>
                             </div>
                           )}
                         </div>
 
-                        <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-100">
-                          <div className="flex items-center gap-1 text-xs text-gray-400">
-                            <Calendar className="w-3 h-3" />
-                            {formatDate(lead.created_at)}
+                        {lead.notes && (
+                          <div className="mt-2 -mx-3 px-3 py-1.5 bg-amber-50 border-y border-amber-100">
+                            <p className="text-xs text-amber-800 truncate">{lead.notes}</p>
                           </div>
-                          <Badge variant="outline" className="text-xs">{lead.source || 'Contact Form'}</Badge>
+                        )}
+
+                        <div className="flex items-center gap-1.5 text-xs text-gray-400 mt-2 pl-1">
+                          <Calendar className="w-3 h-3 flex-shrink-0" />
+                          <span>{formatDate(lead.created_at)}</span>
                         </div>
                       </CardContent>
                     </Card>
