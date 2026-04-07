@@ -729,27 +729,19 @@ const ContactsPage = () => {
                             {getInitials(contact.name)}
                           </div>
 
-                          {/* Contact Info - Business Name first, Contact Name below */}
+                          {/* Contact Info - Name and Business */}
                           <div className="flex-1 min-w-0">
-                            {company ? (
-                              <>
-                                <p className="font-semibold text-gray-900 dark:text-white truncate">
-                                  {company}
-                                </p>
-                                <p className="text-sm text-gray-600 dark:text-gray-300 truncate">
-                                  {contact.name}
-                                </p>
-                              </>
-                            ) : (
+                            <div className="flex items-center gap-2">
                               <p className="font-semibold text-gray-900 dark:text-white truncate">
                                 {contact.name}
                               </p>
-                            )}
-                          </div>
-
-                          {/* Phone Number on the right */}
-                          <div className="hidden sm:block text-right flex-shrink-0 mr-2">
-                            <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                              {company && (
+                                <span className="text-sm text-blue-600 dark:text-blue-400 truncate">
+                                  — {company}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                               {contact.phone_number}
                             </p>
                           </div>
@@ -801,11 +793,8 @@ const ContactsPage = () => {
                             </DropdownMenu>
                           </div>
 
-                          {/* Mobile: Phone + Chevron */}
-                          <div className="sm:hidden flex items-center gap-2 flex-shrink-0">
-                            <span className="text-xs text-gray-500">{contact.phone_number}</span>
-                            <ChevronRight className="w-5 h-5 text-gray-400" />
-                          </div>
+                          {/* Mobile: Chevron */}
+                          <ChevronRight className="w-5 h-5 text-gray-400 sm:hidden flex-shrink-0" />
                         </div>
 
                         {/* Mobile: Expanded actions */}
