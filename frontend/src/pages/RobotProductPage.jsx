@@ -31,6 +31,19 @@ const ROBOT_PRODUCTS = {
       'Navigation': 'LiDAR + V-SLAM',
     },
     useCases: ['Hospitals', 'Shopping Malls', 'Airports', 'Corporate Offices', 'Hotels'],
+    // Docking Station info
+    dockingStation: {
+      name: 'CC1 Docking Station',
+      description: 'The CC1 Docking Station is the perfect companion for your CC1 robots. It provides automated charging, water refill, and waste disposal for truly autonomous 24/7 operation.',
+      features: [
+        'Auto Charging (< 3 hours)',
+        'Water Refill System (100L capacity)',
+        'Waste Disposal (50L tank)',
+        'Status Monitoring',
+        'Multi-Robot Support',
+        'Compact Footprint (1200 x 800 x 1000mm)',
+      ],
+    },
   },
   'ab-kas': {
     name: 'AVIDBOT KAS',
@@ -106,31 +119,6 @@ const ROBOT_PRODUCTS = {
       'Navigation': 'LiDAR + Vision',
     },
     useCases: ['Large Warehouses', 'Shopping Centers', 'Airports', 'Universities', 'Stadiums'],
-  },
-  'pudu-cc1-docking-station': {
-    name: 'CC1 DOCKING STATION',
-    tagline: 'Automated Charging & Maintenance',
-    description: 'The CC1 Docking Station is the perfect companion for your CC1 robots. It provides automated charging, water refill, and waste disposal for truly autonomous operation.',
-    image: '/images/bots/pudu-cc1_pro.png',
-    features: [
-      'Auto Charging',
-      'Water Refill System',
-      'Waste Disposal',
-      'Status Monitoring',
-      'Multi-Robot Support',
-      'Compact Footprint',
-      'Easy Installation',
-      '24/7 Operation Ready',
-    ],
-    specs: {
-      'Compatible With': 'PUDU CC1 Series',
-      'Charging Time': '< 3 hours',
-      'Water Capacity': '100L',
-      'Waste Tank': '50L',
-      'Power': '220V AC',
-      'Dimensions': '1200 x 800 x 1000mm',
-    },
-    useCases: ['24/7 Operations', 'Multi-Shift Facilities', 'Large Commercial Spaces'],
   },
   'pudu-bg1': {
     name: 'PUDU BG1',
@@ -400,6 +388,41 @@ const RobotProductPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Docking Station Section (for CC1 Pro) */}
+      {product.dockingStation && (
+        <section className="py-20 bg-bots-surface">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div>
+                <p className="text-green-400 font-semibold mb-2">Complete Your Setup</p>
+                <h2 className="text-3xl font-bold text-white mb-6">{product.dockingStation.name}</h2>
+                <p className="text-gray-300 text-lg mb-8">{product.dockingStation.description}</p>
+                <ul className="space-y-3">
+                  {product.dockingStation.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-center gap-3 text-white">
+                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex justify-center">
+                <div className="bg-bots-dark rounded-2xl p-8 border border-gray-800">
+                  <img
+                    src="/images/bots/pudu-cc1_pro.png"
+                    alt={product.dockingStation.name}
+                    className="max-w-full h-auto max-h-64 object-contain mx-auto"
+                  />
+                  <p className="text-center text-gray-400 mt-4 text-sm">
+                    Available as an add-on with your {product.name}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="py-16 bg-gradient-to-r from-blue-600 to-blue-500">
