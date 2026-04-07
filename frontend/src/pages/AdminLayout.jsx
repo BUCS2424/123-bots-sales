@@ -1088,7 +1088,7 @@ const AdminLayout = () => {
       )}
 
       {/* Main Content */}
-      <div className={`flex-1 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-20'} transition-all duration-300`}>
+      <div className={`flex-1 min-w-0 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-20'} transition-all duration-300`}>
         {/* Top Header */}
         <header className="h-16 bg-white shadow-sm flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30">
           <div className="flex items-center gap-4">
@@ -1168,7 +1168,7 @@ const AdminLayout = () => {
         </header>
 
         {/* Page Content */}
-        <main className="p-4 lg:p-6">
+        <main className="p-4 lg:p-6 overflow-x-hidden">
           {getCurrentPage()}
         </main>
       </div>
