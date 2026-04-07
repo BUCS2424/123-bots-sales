@@ -728,19 +728,19 @@ const ContactsPage = () => {
                             {getInitials(contact.name)}
                           </div>
 
-                          {/* Contact Info - Business on top, Name below with Phone to the right */}
+                          {/* Contact Info - Business on top, Name below with Business Phone to the right */}
                           <div className="flex-1 min-w-0">
                             {/* Business Name - Top, Bold */}
                             <p className="font-semibold text-gray-900 dark:text-white truncate">
                               {business || "No Business"}
                             </p>
-                            {/* Name and Phone on same line */}
+                            {/* Name and Business Phone on same line */}
                             <div className="flex items-center justify-between">
                               <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
                                 {contact.name}
                               </p>
                               <p className="text-sm text-gray-500 dark:text-gray-400 ml-2 flex-shrink-0">
-                                {contact.phone_number}
+                                {contact.business_phone || contact.phone_number}
                               </p>
                             </div>
                           </div>
