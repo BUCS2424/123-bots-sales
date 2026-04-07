@@ -22,12 +22,32 @@ export const SiteSettingsProvider = ({ children }) => {
         }
 
         if (nextSettings.faviconUrl) {
-          const existingIcon = document.querySelector("link[rel='icon']") || document.querySelector("link[rel='shortcut icon']");
-          const iconLink = existingIcon || document.createElement('link');
-          iconLink.type = 'image/x-icon';
-          iconLink.rel = 'icon';
-          iconLink.href = nextSettings.faviconUrl;
-          if (!existingIcon) {
+          // Build the full URL if it's a relative path
+          let faviconFullUrl = nextSettings.faviconUrl;
+          if (faviconFullUrl.startsWith('/')) {
+            faviconFullUrl = `${API_URL}${faviconFullUrl}`;
+          }
+          
+          // Update ALL favicon-related link elements
+          const faviconSelectors = [
+            "link[rel='icon']",
+            "link[rel='shortcut icon']",
+            "link[rel='apple-touch-icon']"
+          ];
+          
+          faviconSelectors.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(el => {
+              el.href = faviconFullUrl;
+            });
+          });
+          
+          // If no icon exists, create one
+          if (!document.querySelector("link[rel='icon']")) {
+            const iconLink = document.createElement('link');
+            iconLink.type = 'image/x-icon';
+            iconLink.rel = 'icon';
+            iconLink.href = faviconFullUrl;
             document.head.appendChild(iconLink);
           }
         }
