@@ -21,7 +21,7 @@ const BuyLeasePage = () => {
 
   const leaseBenefits = [
     { icon: DollarSign, title: 'Lower Upfront Cost', desc: 'Start cleaning with minimal initial investment' },
-    { icon: Clock, title: 'Flexible Terms', desc: '12, 24, or 36 month options available' },
+    { icon: Clock, title: 'Flexible Terms', desc: '36, 48, or 60 month options available' },
     { icon: Shield, title: 'Maintenance Included', desc: 'We handle repairs and upkeep' },
   ];
 
@@ -145,7 +145,7 @@ const BuyLeasePage = () => {
             {[
               {
                 q: 'What are the lease terms available?',
-                a: 'We offer 12, 24, and 36 month lease terms. Longer terms typically result in lower monthly payments.',
+                a: 'We offer 36, 48, and 60 month lease terms. Longer terms typically result in lower monthly payments.',
               },
               {
                 q: 'Is maintenance really included in the lease?',
