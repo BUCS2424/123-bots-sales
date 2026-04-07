@@ -62,6 +62,7 @@ const ContactsPage = () => {
   const [filterLetter, setFilterLetter] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [filterBusiness, setFilterBusiness] = useState("all");
   const [sortField, setSortField] = useState("first"); // "first" | "last"
   const [showDialog, setShowDialog] = useState(false);
   const [showImportDialog, setShowImportDialog] = useState(false);
@@ -424,17 +425,25 @@ const ContactsPage = () => {
     return "#";                                        // symbols → #
   };
 
+  // Get unique businesses for filter dropdown
+  const uniqueBusinesses = [...new Set(
+    contacts
+      .map(c => extractCompany(c.notes))
+      .filter(b => b && b.trim() !== "")
+  )].sort();
+
   // Filter and sort contacts
   const filteredContacts = contacts
     .filter((contact) => {
       const query = searchQuery.toLowerCase();
+      const company = extractCompany(contact.notes);
       if (query) {
         const matchesSearch =
           contact.name?.toLowerCase().includes(query) ||
           contact.phone_number?.includes(query) ||
           contact.email?.toLowerCase().includes(query) ||
           contact.organization?.toLowerCase().includes(query) ||
-          extractCompany(contact.notes)?.toLowerCase().includes(query);
+          company?.toLowerCase().includes(query);
         if (!matchesSearch) return false;
       }
       if (filterLetter !== "all") {
@@ -445,6 +454,9 @@ const ContactsPage = () => {
       }
       if (filterStatus !== "all") {
         if ((contact.status || "active").toLowerCase() !== filterStatus) return false;
+      }
+      if (filterBusiness !== "all") {
+        if (company !== filterBusiness) return false;
       }
       return true;
     })
@@ -513,6 +525,37 @@ const ContactsPage = () => {
                   {s === "all" ? "All Statuses" : s.charAt(0).toUpperCase() + s.slice(1)}
                 </DropdownMenuItem>
               ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Business Filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-1.5 h-10 px-3 border border-gray-200 dark:border-slate-700 rounded-lg text-sm text-gray-600 dark:text-gray-300 bg-white dark:bg-slate-800 hover:bg-gray-50 whitespace-nowrap max-w-[180px]"
+                data-testid="business-filter">
+                <span className="truncate">
+                  {filterBusiness === "all" ? "All Businesses" : filterBusiness}
+                </span>
+                <ChevronDown className="w-3.5 h-3.5 opacity-60 flex-shrink-0" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="max-h-64 overflow-y-auto">
+              <DropdownMenuItem onClick={() => setFilterBusiness("all")}
+                className={filterBusiness === "all" ? "font-semibold" : ""}>
+                All Businesses
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              {uniqueBusinesses.map(business => (
+                <DropdownMenuItem key={business} onClick={() => setFilterBusiness(business)}
+                  className={filterBusiness === business ? "font-semibold" : ""}>
+                  {business}
+                </DropdownMenuItem>
+              ))}
+              {uniqueBusinesses.length === 0 && (
+                <DropdownMenuItem disabled className="text-gray-400 text-sm">
+                  No businesses found
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
 
@@ -686,13 +729,28 @@ const ContactsPage = () => {
                             {getInitials(contact.name)}
                           </div>
 
-                          {/* Contact Info */}
+                          {/* Contact Info - Business Name first, Contact Name below */}
                           <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-gray-900 dark:text-white truncate">
-                              {contact.name}
-                            </p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                              {company || contact.phone_number}
+                            {company ? (
+                              <>
+                                <p className="font-semibold text-gray-900 dark:text-white truncate">
+                                  {company}
+                                </p>
+                                <p className="text-sm text-gray-600 dark:text-gray-300 truncate">
+                                  {contact.name}
+                                </p>
+                              </>
+                            ) : (
+                              <p className="font-semibold text-gray-900 dark:text-white truncate">
+                                {contact.name}
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Phone Number on the right */}
+                          <div className="hidden sm:block text-right flex-shrink-0 mr-2">
+                            <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                              {contact.phone_number}
                             </p>
                           </div>
 
@@ -743,8 +801,11 @@ const ContactsPage = () => {
                             </DropdownMenu>
                           </div>
 
-                          {/* Mobile: Chevron */}
-                          <ChevronRight className="w-5 h-5 text-gray-400 sm:hidden flex-shrink-0" />
+                          {/* Mobile: Phone + Chevron */}
+                          <div className="sm:hidden flex items-center gap-2 flex-shrink-0">
+                            <span className="text-xs text-gray-500">{contact.phone_number}</span>
+                            <ChevronRight className="w-5 h-5 text-gray-400" />
+                          </div>
                         </div>
 
                         {/* Mobile: Expanded actions */}
