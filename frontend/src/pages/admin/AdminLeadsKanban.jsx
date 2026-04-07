@@ -42,13 +42,13 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const COLUMNS = [
-  { id: 'cold_call', label: 'Cold Call', color: 'bg-slate-500', lightColor: 'bg-slate-50 border-slate-200' },
-  { id: 'build_interest', label: 'Build Interest', color: 'bg-purple-500', lightColor: 'bg-purple-50 border-purple-200' },
-  { id: 'interested_waiting', label: 'Interested/Waiting', color: 'bg-blue-500', lightColor: 'bg-blue-50 border-blue-200' },
-  { id: 'demo', label: 'Demo', color: 'bg-cyan-500', lightColor: 'bg-cyan-50 border-cyan-200' },
-  { id: 'proposal_sent', label: 'Proposal Sent', color: 'bg-amber-500', lightColor: 'bg-amber-50 border-amber-200' },
-  { id: 'waiting_leadership', label: 'Waiting on Leadership', color: 'bg-orange-500', lightColor: 'bg-orange-50 border-orange-200' },
-  { id: 'closed', label: 'Closed', color: 'bg-green-500', lightColor: 'bg-green-50 border-green-200' },
+  { id: 'cold_call', label: 'Cold Call', color: 'bg-red-500', barColor: 'bg-red-500', lightColor: 'bg-white border-gray-200' },
+  { id: 'build_interest', label: 'Build Interest', color: 'bg-orange-500', barColor: 'bg-orange-500', lightColor: 'bg-white border-gray-200' },
+  { id: 'interested_waiting', label: 'Interested/Waiting', color: 'bg-amber-400', barColor: 'bg-amber-400', lightColor: 'bg-white border-gray-200' },
+  { id: 'demo', label: 'Demo', color: 'bg-slate-400', barColor: 'bg-slate-400', lightColor: 'bg-white border-gray-200' },
+  { id: 'proposal_sent', label: 'Proposal Sent', color: 'bg-green-500', barColor: 'bg-green-500', lightColor: 'bg-white border-gray-200' },
+  { id: 'waiting_leadership', label: 'Waiting on Leadership', color: 'bg-blue-500', barColor: 'bg-blue-500', lightColor: 'bg-white border-gray-200' },
+  { id: 'closed', label: 'Closed', color: 'bg-emerald-600', barColor: 'bg-emerald-600', lightColor: 'bg-white border-gray-200' },
 ];
 
 const SECTION_TABS = [
@@ -750,13 +750,17 @@ const AdminLeadsKanban = () => {
               onDrop={(event) => handleDrop(event, column.id)}
               data-testid={`opportunities-column-${column.id}`}
             >
-              <div className={`px-4 py-3 border-b ${column.lightColor} rounded-t-xl`}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-3 h-3 rounded-full ${column.color}`} />
-                    <h3 className="font-semibold text-gray-800">{column.label}</h3>
-                  </div>
-                  <Badge variant="secondary" className="bg-white">{columnLeads.length}</Badge>
+              <div className={`h-1.5 ${column.barColor} rounded-t-xl`} />
+              <div className="px-4 py-3 border-b border-gray-200">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className={`w-3 h-3 rounded-full ${column.color}`} />
+                  <h3 className="font-semibold text-gray-800 text-sm">{column.label}</h3>
+                </div>
+                <div className="text-xs text-gray-400">
+                  {columnLeads.length} {columnLeads.length === 1 ? 'Opportunity' : 'Opportunities'}
+                </div>
+                <div className="text-sm font-semibold text-gray-700 mt-0.5">
+                  ${columnLeads.reduce((sum, l) => sum + (Number(l.opportunity_value) || 0), 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
               </div>
 
