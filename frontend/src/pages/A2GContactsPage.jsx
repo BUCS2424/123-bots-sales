@@ -428,7 +428,7 @@ const ContactsPage = () => {
   // Get unique businesses for filter dropdown
   const uniqueBusinesses = [...new Set(
     contacts
-      .map(c => extractCompany(c.notes))
+      .map(c => c.organization || extractCompany(c.notes))
       .filter(b => b && b.trim() !== "")
   )].sort();
 
@@ -436,14 +436,13 @@ const ContactsPage = () => {
   const filteredContacts = contacts
     .filter((contact) => {
       const query = searchQuery.toLowerCase();
-      const company = extractCompany(contact.notes);
+      const business = contact.organization || extractCompany(contact.notes) || "";
       if (query) {
         const matchesSearch =
           contact.name?.toLowerCase().includes(query) ||
           contact.phone_number?.includes(query) ||
           contact.email?.toLowerCase().includes(query) ||
-          contact.organization?.toLowerCase().includes(query) ||
-          company?.toLowerCase().includes(query);
+          business?.toLowerCase().includes(query);
         if (!matchesSearch) return false;
       }
       if (filterLetter !== "all") {
@@ -456,7 +455,7 @@ const ContactsPage = () => {
         if ((contact.status || "active").toLowerCase() !== filterStatus) return false;
       }
       if (filterBusiness !== "all") {
-        if (company !== filterBusiness) return false;
+        if (business !== filterBusiness) return false;
       }
       return true;
     })
@@ -712,7 +711,7 @@ const ContactsPage = () => {
                 {/* Contacts in this letter group */}
                 <div className="divide-y divide-gray-100 dark:divide-slate-800">
                   {letterContacts.map((contact) => {
-                    const company = extractCompany(contact.notes);
+                    const business = contact.organization || extractCompany(contact.notes) || "";
                     const isSelected = selectedContact?.id === contact.id;
                     
                     return (
@@ -735,9 +734,9 @@ const ContactsPage = () => {
                               <p className="font-semibold text-gray-900 dark:text-white truncate">
                                 {contact.name}
                               </p>
-                              {company && (
+                              {business && (
                                 <span className="text-sm text-blue-600 dark:text-blue-400 truncate">
-                                  — {company}
+                                  — {business}
                                 </span>
                               )}
                             </div>
