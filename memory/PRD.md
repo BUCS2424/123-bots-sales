@@ -289,11 +289,19 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
   - Categories: Industry Applications (21), Robot Reviews (15), Guides & Tutorials (13), Technology & Innovation (9), ROI & Business (8), Commercial Cleaning (8), Maintenance & Care (7)
   - Research Library page rebranded from "Design Inspiration Library" to "Robot Cleaning Resources"
 
+- [x] **External Stack API Delivery Module**
+  - Feature flag `external_api_enabled` in Dev Settings controls visibility
+  - **Pipelines CRUD**: Create/edit/delete custom pipelines with configurable stages and colors
+  - **External API Sources CRUD**: Multi-source auth credentials with unique auth header + token per source
+  - **Lead Ingestion Endpoint**: `POST /api/external-api/leads` — full 25+ field set, source-authenticated
+  - **Email forwarding**: Optional per-source notification on lead arrival
+  - Admin UI: `/admin/external-api/sources` and `/admin/external-api/pipelines`
+  - Testing Agent Iteration 69: PASS (Backend 15/15, Frontend 100%)
+
 ## Prioritized Next Actions
-- **P0 (Now complete):** Kanban custom pipeline stages + A2G frontend integration + multi-user booking/calendar controls
+- **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**
-  - Generate/publish SEO resource articles per robot product
-  - Populate shop catalog and finalize pre-launch readiness
+  - Pre-launch: disable Coming Soon gate, populate shop catalog
 - **P2 (Backlog):**
   - Checkout refactor + legacy component cleanup
   - Asset migration to iDrive E2
