@@ -41,7 +41,7 @@ import { useSiteFeatureFlags } from '../../hooks/useSiteFeatureFlags';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const COLUMNS = [
+const DEFAULT_COLUMNS = [
   { id: 'cold_call', label: 'Cold Call', color: 'bg-red-500', barColor: 'bg-red-500', lightColor: 'bg-white border-gray-200' },
   { id: 'build_interest', label: 'Build Interest', color: 'bg-orange-500', barColor: 'bg-orange-500', lightColor: 'bg-white border-gray-200' },
   { id: 'interested_waiting', label: 'Interested/Waiting', color: 'bg-amber-400', barColor: 'bg-amber-400', lightColor: 'bg-white border-gray-200' },
@@ -154,15 +154,9 @@ const isValueFilled = (value) => {
 
 const AdminLeadsKanban = () => {
   const { quotes_enabled: quotesEnabled } = useSiteFeatureFlags();
-  const [leads, setLeads] = useState({ 
-    cold_call: [], 
-    build_interest: [], 
-    interested_waiting: [], 
-    demo: [], 
-    proposal_sent: [], 
-    waiting_leadership: [], 
-    closed: [] 
-  });
+  const [pipelines, setPipelines] = useState([]);
+  const [selectedPipelineId, setSelectedPipelineId] = useState('');
+  const [leads, setLeads] = useState({});
   const [loading, setLoading] = useState(true);
   const [draggedLead, setDraggedLead] = useState(null);
   const [dragOverColumn, setDragOverColumn] = useState(null);
@@ -207,6 +201,34 @@ const AdminLeadsKanban = () => {
     return token ? { Authorization: `Bearer ${token}` } : {};
   }, []);
 
+  // Fetch pipelines from API
+  const fetchPipelines = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API}/pipelines/`, { headers: tokenHeaders });
+      const data = response.data || [];
+      setPipelines(data);
+      if (data.length > 0 && !selectedPipelineId) {
+        const defaultPipeline = data.find(p => p.is_default) || data[0];
+        setSelectedPipelineId(defaultPipeline.id);
+      }
+    } catch {
+      setPipelines([]);
+    }
+  }, [tokenHeaders, selectedPipelineId]);
+
+  // Derive columns from selected pipeline
+  const columns = useMemo(() => {
+    const pipeline = pipelines.find(p => p.id === selectedPipelineId);
+    if (!pipeline || !pipeline.stages?.length) return DEFAULT_COLUMNS;
+    return pipeline.stages.map(s => ({
+      id: s.id,
+      label: s.label,
+      color: s.color || 'bg-slate-500',
+      barColor: s.bar_color || s.color || 'bg-slate-500',
+      lightColor: 'bg-white border-gray-200',
+    }));
+  }, [pipelines, selectedPipelineId]);
+
   const fetchLeads = useCallback(async () => {
     try {
       const response = await axios.get(`${API}/leads/`, { headers: tokenHeaders });
@@ -238,9 +260,10 @@ const AdminLeadsKanban = () => {
   }, [tokenHeaders]);
 
   useEffect(() => {
+    fetchPipelines();
     fetchLeads();
     fetchStaffOptions();
-  }, [fetchLeads, fetchStaffOptions]);
+  }, [fetchPipelines, fetchLeads, fetchStaffOptions]);
 
   const handleDragStart = (event, lead, fromColumn) => {
     setDraggedLead({ ...lead, fromColumn });
@@ -695,12 +718,26 @@ const AdminLeadsKanban = () => {
   return (
     <div className="space-y-6 min-w-0" data-testid="admin-opportunities-kanban">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3" data-testid="opportunities-page-title">
-            <Users className="w-8 h-8 text-[rgb(37,99,235)]" />
-            Opportunities
-          </h1>
-          <p className="text-gray-500" data-testid="opportunities-count-label">{totalLeads} total opportunities from contact forms</p>
+        <div className="flex items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3" data-testid="opportunities-page-title">
+              <Users className="w-8 h-8 text-[rgb(37,99,235)]" />
+              Opportunities
+            </h1>
+            <p className="text-gray-500" data-testid="opportunities-count-label">{totalLeads} total opportunities from contact forms</p>
+          </div>
+          {pipelines.length > 1 && (
+            <select
+              value={selectedPipelineId}
+              onChange={(e) => setSelectedPipelineId(e.target.value)}
+              className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm font-medium text-gray-700 shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              data-testid="pipeline-selector"
+            >
+              {pipelines.map((p) => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          )}
         </div>
         <div className="flex items-center gap-3">
           <div className="relative">
@@ -738,7 +775,7 @@ const AdminLeadsKanban = () => {
       </div>
 
       <div className="flex gap-4 overflow-x-auto pb-4" data-testid="opportunities-kanban-columns">
-        {COLUMNS.map((column) => {
+        {columns.map((column) => {
           const columnLeads = filterLeads(leads[column.id] || []);
           const isDropTarget = dragOverColumn === column.id;
           return (
