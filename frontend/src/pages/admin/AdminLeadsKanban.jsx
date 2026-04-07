@@ -60,7 +60,7 @@ const SECTION_TABS = [
 ];
 
 const PIPELINE_OPTIONS = ['001. Main Leads Pipeline', '002. Enterprise Opportunities', '003. Follow-up Pipeline'];
-const STAGE_OPTIONS = ['1. New Inquiry', '2. Discovery Call', '3. Contacted Lead', '4. Proposal Sent', '5. Negotiation', '6. Won', '7. Lost'];
+const STAGE_OPTIONS = ['Cold Call', 'Build Interest', 'Interested/Waiting', 'Demo', 'Proposal Sent', 'Waiting on Leadership', 'Closed'];
 const OPPORTUNITY_STATUS_OPTIONS = ['Open', 'In Progress', 'Won', 'Lost', 'On Hold'];
 const PAYMENT_STATUS_OPTIONS = ['Pending', 'Paid', 'Failed', 'Refunded'];
 const PAYMENT_METHOD_OPTIONS = ['Cash', 'Card', 'ACH', 'Wire', 'Check'];
@@ -83,7 +83,7 @@ const normalizeLeadForEdit = (lead) => ({
   additional_contacts: Array.isArray(lead.additional_contacts) ? lead.additional_contacts : [],
   opportunity_name: lead.opportunity_name || lead.name || '',
   pipeline: lead.pipeline || '001. Main Leads Pipeline',
-  stage: lead.stage || '3. Contacted Lead',
+  stage: lead.stage || 'Cold Call',
   opportunity_status: lead.opportunity_status || 'Open',
   opportunity_value: lead.opportunity_value ?? '',
   owner_id: lead.owner_id || '',
@@ -353,7 +353,6 @@ const AdminLeadsKanban = () => {
       const payload = {
         ...selectedLead,
         opportunity_value: selectedLead.opportunity_value === '' ? null : Number(selectedLead.opportunity_value),
-        status: 'opportunity',
       };
 
       let response;
@@ -371,7 +370,7 @@ const AdminLeadsKanban = () => {
           additional_contacts: selectedLead.additional_contacts || [],
           opportunity_name: selectedLead.opportunity_name,
           pipeline: selectedLead.pipeline || '001. Main Leads Pipeline',
-          stage: '1. New Inquiry',
+          stage: selectedLead.stage || 'Cold Call',
           opportunity_status: selectedLead.opportunity_status || 'Open',
           opportunity_value: payload.opportunity_value,
           owner_id: selectedLead.owner_id || '',
@@ -736,14 +735,14 @@ const AdminLeadsKanban = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4" data-testid="opportunities-kanban-columns">
+      <div className="flex gap-4 overflow-x-auto pb-4" data-testid="opportunities-kanban-columns">
         {COLUMNS.map((column) => {
           const columnLeads = filterLeads(leads[column.id] || []);
           const isDropTarget = dragOverColumn === column.id;
           return (
             <div
               key={column.id}
-              className={`rounded-xl border-2 transition-all ${isDropTarget ? 'border-[rgb(37,99,235)] bg-blue-50 shadow-lg' : 'border-gray-200 bg-gray-50'}`}
+              className={`rounded-xl border-2 transition-all min-w-[260px] flex-shrink-0 ${isDropTarget ? 'border-[rgb(37,99,235)] bg-blue-50 shadow-lg' : 'border-gray-200 bg-gray-50'}`}
               onDragOver={(event) => handleDragOver(event, column.id)}
               onDragLeave={() => setDragOverColumn(null)}
               onDrop={(event) => handleDrop(event, column.id)}

@@ -47,7 +47,7 @@ class LeadCreate(BaseModel):
     additional_contacts: Optional[List[str]] = None
     opportunity_name: Optional[str] = ""
     pipeline: Optional[str] = "001. Main Leads Pipeline"
-    stage: Optional[str] = "3. Contacted Lead"
+    stage: Optional[str] = "Cold Call"
     opportunity_status: Optional[str] = "Open"
     opportunity_value: Optional[float] = None
     owner_id: Optional[str] = ""
@@ -342,7 +342,7 @@ async def create_lead(lead: LeadCreate, db=Depends(get_db)):
         "subject": lead.subject or "",
         "message": lead.message,
         "source": lead.source,
-        "status": "opportunity",  # All new leads go to Opportunity
+        "status": _map_stage_to_status(lead.stage or "Cold Call"),
         "notes": "",
         "attachments": lead.attachments or [],
         "primary_contact_name": lead.primary_contact_name or lead.name,
@@ -351,7 +351,7 @@ async def create_lead(lead: LeadCreate, db=Depends(get_db)):
         "additional_contacts": lead.additional_contacts or [],
         "opportunity_name": lead.opportunity_name or lead.name,
         "pipeline": lead.pipeline or "001. Main Leads Pipeline",
-        "stage": lead.stage or "3. Contacted Lead",
+        "stage": lead.stage or "Cold Call",
         "opportunity_status": lead.opportunity_status or "Open",
         "opportunity_value": lead.opportunity_value,
         "owner_id": lead.owner_id or "",
@@ -811,7 +811,7 @@ async def export_opportunities_csv(authorization: str = Header(None)):
     _require_admin_token(authorization)
     
     leads = await _db.leads.find(
-        {"status": "opportunity"},
+        {"status": {"$in": VALID_STATUSES + ["opportunity"]}},
         {"_id": 0}
     ).sort("created_at", -1).to_list(5000)
     
