@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle, ArrowRight, Phone, ChevronLeft, ChevronRight, Zap } from 'lucide-react';
+import { CheckCircle, ArrowRight, Phone, ChevronLeft, ChevronRight, Zap, Volume2, VolumeX, Maximize2, X } from 'lucide-react';
 import { setSeoMetadata, generateProductSchema } from '../lib/seo';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -173,6 +173,10 @@ const RobotProductPage = () => {
   const { productSlug } = useParams();
   const product = ROBOT_PRODUCTS[productSlug];
   const [selectedImage, setSelectedImage] = useState(0);
+  const [videoMuted, setVideoMuted] = useState(true);
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
+  const heroVideoRef = useRef(null);
+  const modalVideoRef = useRef(null);
   
   // Get all images (use images array if available, otherwise just the main image)
   const productImages = product?.images || (product?.image ? [product.image] : []);
@@ -232,16 +236,38 @@ const RobotProductPage = () => {
             {/* Product Image Gallery or Hero Video */}
             <div className="flex flex-col items-center">
               {product.heroVideo ? (
-                <div className="relative w-full max-w-lg rounded-2xl overflow-hidden">
+                <div className="relative w-full max-w-lg rounded-2xl overflow-hidden group">
                   <video
+                    ref={heroVideoRef}
                     src={product.heroVideo}
                     autoPlay
                     loop
-                    muted
+                    muted={videoMuted}
                     playsInline
                     className="w-full h-auto rounded-2xl"
                     data-testid="product-hero-video"
                   />
+                  <div className="absolute bottom-4 right-4 flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setVideoMuted(prev => !prev);
+                        if (heroVideoRef.current) heroVideoRef.current.muted = !heroVideoRef.current.muted;
+                      }}
+                      className="w-10 h-10 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/80 transition-colors"
+                      data-testid="video-sound-toggle"
+                      aria-label={videoMuted ? 'Enable sound' : 'Mute sound'}
+                    >
+                      {videoMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                    </button>
+                    <button
+                      onClick={() => setVideoModalOpen(true)}
+                      className="w-10 h-10 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/80 transition-colors"
+                      data-testid="video-expand-btn"
+                      aria-label="Expand video"
+                    >
+                      <Maximize2 className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <>
@@ -554,6 +580,32 @@ const RobotProductPage = () => {
       </section>
 
       <Footer />
+
+      {/* Fullscreen Video Modal */}
+      {videoModalOpen && product.heroVideo && (
+        <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center" data-testid="video-modal-overlay">
+          <button
+            onClick={() => setVideoModalOpen(false)}
+            className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10"
+            data-testid="video-modal-close"
+            aria-label="Close video"
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <div className="w-full max-w-6xl mx-4">
+            <video
+              ref={modalVideoRef}
+              src={product.heroVideo}
+              autoPlay
+              loop
+              playsInline
+              controls
+              className="w-full h-auto rounded-xl max-h-[85vh]"
+              data-testid="video-modal-player"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
