@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException, Header, UploadFile, File
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
 import uuid
+import csv
+import io
 
 from auth import decode_token, is_admin_or_above, get_password_hash, UserRole
 from email_utils import send_email
@@ -583,3 +585,163 @@ async def convert_lead_to_client(
         user_created=user_created,
         temporary_password=temporary_password,
     )
+
+
+
+# ============ IMPORT OPPORTUNITIES ============
+
+@router.post("/import")
+async def import_opportunities(
+    file: UploadFile = File(...),
+    skip_duplicates: bool = True,
+    authorization: str = Header(None)
+):
+    """
+    Import opportunities from CSV file.
+    Expected columns: Opportunity Name, Contact Name, phone, email, pipeline, stage, 
+    Lead Value, source, Notes, tags, status
+    """
+    admin = _require_admin_token(authorization)
+    
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="Only CSV files are supported")
+    
+    content = await file.read()
+    try:
+        decoded = content.decode('utf-8')
+    except UnicodeDecodeError:
+        decoded = content.decode('latin-1')
+    
+    reader = csv.DictReader(io.StringIO(decoded))
+    
+    imported = 0
+    skipped = 0
+    errors = []
+    
+    for row_num, row in enumerate(reader, start=2):
+        try:
+            opportunity_name = (row.get('Opportunity Name') or row.get('opportunity_name') or '').strip()
+            if not opportunity_name:
+                errors.append(f"Row {row_num}: Missing Opportunity Name")
+                continue
+            
+            # Check for duplicate by name if skip_duplicates is enabled
+            if skip_duplicates:
+                existing = await _db.leads.find_one({"opportunity_name": opportunity_name})
+                if existing:
+                    skipped += 1
+                    continue
+            
+            # Parse Lead Value
+            lead_value_str = row.get('Lead Value') or row.get('lead_value') or '0'
+            try:
+                lead_value = float(lead_value_str.replace(',', '').replace('$', ''))
+            except (ValueError, TypeError):
+                lead_value = 0.0
+            
+            # Parse tags
+            tags_str = row.get('tags') or ''
+            tags = [t.strip() for t in tags_str.split(',') if t.strip()] if tags_str else []
+            
+            # Get status - map "open" to "Open"
+            status_raw = (row.get('status') or 'open').strip().lower()
+            if status_raw == 'open':
+                opportunity_status = 'Open'
+            elif status_raw == 'won':
+                opportunity_status = 'Won'
+            elif status_raw in ['lost', 'closed']:
+                opportunity_status = 'Lost'
+            else:
+                opportunity_status = 'Open'
+            
+            # Build the lead/opportunity document
+            lead = {
+                "id": str(uuid.uuid4()),
+                "name": (row.get('Contact Name') or row.get('contact_name') or opportunity_name).strip(),
+                "email": (row.get('email') or '').strip(),
+                "phone": (row.get('phone') or '').strip(),
+                "opportunity_name": opportunity_name,
+                "pipeline": (row.get('pipeline') or '001. Main Leads Pipeline').strip(),
+                "stage": (row.get('stage') or 'New Lead').strip(),
+                "opportunity_status": opportunity_status,
+                "opportunity_value": lead_value,
+                "opportunity_source": (row.get('source') or '').strip(),
+                "business_name": opportunity_name,  # Use opportunity name as business name
+                "primary_contact_name": (row.get('Contact Name') or row.get('contact_name') or '').strip(),
+                "primary_email": (row.get('email') or '').strip(),
+                "primary_phone": (row.get('phone') or '').strip(),
+                "notes": (row.get('Notes') or row.get('Followers') or '').strip(),
+                "tags": tags,
+                "source": "csv_import",
+                "status": "opportunity",
+                "owner_id": admin.get("user_id", ""),
+                "followers": [],
+                "additional_contacts": [],
+                "appointments": [],
+                "tasks": [],
+                "notes_timeline": [],
+                "payments": [],
+                "associated_objects": [],
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+            }
+            
+            # Try to parse original created date
+            created_on = row.get('Created on') or row.get('created_on')
+            if created_on:
+                try:
+                    lead["created_at"] = created_on
+                except:
+                    pass
+            
+            await _db.leads.insert_one(lead)
+            imported += 1
+            
+        except Exception as e:
+            errors.append(f"Row {row_num}: {str(e)}")
+    
+    return {
+        "success": True,
+        "imported": imported,
+        "skipped": skipped,
+        "errors": errors[:20],  # Limit errors shown
+        "total_errors": len(errors)
+    }
+
+
+@router.get("/export/csv")
+async def export_opportunities_csv(authorization: str = Header(None)):
+    """Export all opportunities as CSV"""
+    _require_admin_token(authorization)
+    
+    leads = await _db.leads.find(
+        {"status": "opportunity"},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(5000)
+    
+    output = io.StringIO()
+    fieldnames = [
+        "Opportunity Name", "Contact Name", "phone", "email", "pipeline", "stage",
+        "Lead Value", "source", "Notes", "tags", "status", "Created on"
+    ]
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.writeheader()
+    
+    for lead in leads:
+        writer.writerow({
+            "Opportunity Name": lead.get("opportunity_name", ""),
+            "Contact Name": lead.get("primary_contact_name") or lead.get("name", ""),
+            "phone": lead.get("primary_phone") or lead.get("phone", ""),
+            "email": lead.get("primary_email") or lead.get("email", ""),
+            "pipeline": lead.get("pipeline", ""),
+            "stage": lead.get("stage", ""),
+            "Lead Value": lead.get("opportunity_value", ""),
+            "source": lead.get("opportunity_source", ""),
+            "Notes": lead.get("notes", ""),
+            "tags": ",".join(lead.get("tags", [])),
+            "status": lead.get("opportunity_status", ""),
+            "Created on": lead.get("created_at", ""),
+        })
+    
+    from fastapi.responses import PlainTextResponse
+    return PlainTextResponse(content=output.getvalue(), media_type="text/csv")

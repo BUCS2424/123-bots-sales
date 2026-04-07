@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import axios from 'axios';
 import {
   Users,
@@ -21,6 +21,8 @@ import {
   FileSignature,
   UserRound,
   UserPlus,
+  Upload,
+  Download,
 } from 'lucide-react';
 import { Card, CardContent } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -151,6 +153,11 @@ const AdminLeadsKanban = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [staffOptions, setStaffOptions] = useState([]);
+
+  // Import functionality
+  const fileInputRef = useRef(null);
+  const [importing, setImporting] = useState(false);
+  const [showImportDialog, setShowImportDialog] = useState(false);
 
   const [additionalContactInput, setAdditionalContactInput] = useState('');
   const [tagInput, setTagInput] = useState('');
@@ -580,6 +587,71 @@ const AdminLeadsKanban = () => {
     return new Date(value).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
   };
 
+  // Import CSV handler
+  const handleImportFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setImporting(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await axios.post(`${API}/leads/import`, formData, {
+        headers: {
+          ...tokenHeaders,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      const { imported, skipped, total_errors } = response.data;
+      toast({
+        title: 'Import Complete',
+        description: `Imported ${imported} opportunities. ${skipped} duplicates skipped.${total_errors > 0 ? ` ${total_errors} errors.` : ''}`,
+      });
+      
+      fetchLeads();
+    } catch (error) {
+      toast({
+        title: 'Import Failed',
+        description: error.response?.data?.detail || 'Failed to import opportunities',
+        variant: 'destructive',
+      });
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  // Export CSV handler
+  const handleExportCSV = async () => {
+    try {
+      const response = await axios.get(`${API}/leads/export/csv`, {
+        headers: tokenHeaders,
+        responseType: 'blob',
+      });
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `opportunities_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast({ title: 'Export Complete', description: 'Opportunities exported to CSV' });
+    } catch (error) {
+      toast({
+        title: 'Export Failed',
+        description: error.response?.data?.detail || 'Failed to export opportunities',
+        variant: 'destructive',
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96" data-testid="opportunities-loading-state">
@@ -611,10 +683,27 @@ const AdminLeadsKanban = () => {
               data-testid="opportunities-search-input"
             />
           </div>
-          <Button onClick={openCreateOpportunityModal} data-testid="create-opportunity-button">
-            <Plus className="w-4 h-4 mr-2" />
-            Create an Opportunity
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={importing} data-testid="import-opportunities-button">
+              {importing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
+              Import CSV
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".csv"
+              onChange={handleImportFile}
+              className="hidden"
+            />
+            <Button variant="outline" onClick={handleExportCSV} data-testid="export-opportunities-button">
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </Button>
+            <Button onClick={openCreateOpportunityModal} data-testid="create-opportunity-button">
+              <Plus className="w-4 h-4 mr-2" />
+              Create an Opportunity
+            </Button>
+          </div>
         </div>
       </div>
 
