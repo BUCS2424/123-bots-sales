@@ -40,10 +40,13 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const COLUMNS = [
-  { id: 'opportunity', label: 'Opportunity', color: 'bg-blue-500', lightColor: 'bg-blue-50 border-blue-200' },
-  { id: 'needs_order', label: 'Needs Order', color: 'bg-amber-500', lightColor: 'bg-amber-50 border-amber-200' },
-  { id: 'needs_support', label: 'Needs Support', color: 'bg-purple-500', lightColor: 'bg-purple-50 border-purple-200' },
-  { id: 'miscellaneous', label: 'Miscellaneous', color: 'bg-gray-500', lightColor: 'bg-gray-50 border-gray-200' },
+  { id: 'cold_call', label: 'Cold Call', color: 'bg-slate-500', lightColor: 'bg-slate-50 border-slate-200' },
+  { id: 'build_interest', label: 'Build Interest', color: 'bg-purple-500', lightColor: 'bg-purple-50 border-purple-200' },
+  { id: 'interested_waiting', label: 'Interested/Waiting', color: 'bg-blue-500', lightColor: 'bg-blue-50 border-blue-200' },
+  { id: 'demo', label: 'Demo', color: 'bg-cyan-500', lightColor: 'bg-cyan-50 border-cyan-200' },
+  { id: 'proposal_sent', label: 'Proposal Sent', color: 'bg-amber-500', lightColor: 'bg-amber-50 border-amber-200' },
+  { id: 'waiting_leadership', label: 'Waiting on Leadership', color: 'bg-orange-500', lightColor: 'bg-orange-50 border-orange-200' },
+  { id: 'closed', label: 'Closed', color: 'bg-green-500', lightColor: 'bg-green-50 border-green-200' },
 ];
 
 const SECTION_TABS = [
@@ -105,14 +108,14 @@ const buildNewOpportunityDraft = () =>
     subject: '',
     message: 'Opportunity created from Opportunities board',
     source: 'admin_opportunities',
-    status: 'opportunity',
+    status: 'cold_call',
     notes: '',
     primary_contact_name: '',
     primary_email: '',
     primary_phone: '',
     opportunity_name: '',
     pipeline: '001. Main Leads Pipeline',
-    stage: '1. New Inquiry',
+    stage: 'Cold Call',
     opportunity_status: 'Open',
     opportunity_value: '',
     owner_id: '',
@@ -132,7 +135,6 @@ const buildNewOpportunityDraft = () =>
     lost_reason_id: '',
     lost_reason_name: '',
     engagement_score: '',
-    notes: '',
     external_opportunity_id: '',
     external_contact_id: '',
     pipeline_stage_id: '',
@@ -150,7 +152,15 @@ const isValueFilled = (value) => {
 
 const AdminLeadsKanban = () => {
   const { quotes_enabled: quotesEnabled } = useSiteFeatureFlags();
-  const [leads, setLeads] = useState({ opportunity: [], needs_order: [], needs_support: [], miscellaneous: [] });
+  const [leads, setLeads] = useState({ 
+    cold_call: [], 
+    build_interest: [], 
+    interested_waiting: [], 
+    demo: [], 
+    proposal_sent: [], 
+    waiting_leadership: [], 
+    closed: [] 
+  });
   const [loading, setLoading] = useState(true);
   const [draggedLead, setDraggedLead] = useState(null);
   const [dragOverColumn, setDragOverColumn] = useState(null);

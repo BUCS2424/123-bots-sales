@@ -137,8 +137,48 @@ class ResendAppointmentRequest(BaseModel):
     appointment_index: Optional[int] = None
 
 
-# Valid statuses for the kanban
-VALID_STATUSES = ["opportunity", "needs_order", "needs_support", "miscellaneous"]
+# Valid statuses/stages for the kanban pipeline
+VALID_STATUSES = ["cold_call", "build_interest", "interested_waiting", "demo", "proposal_sent", "waiting_leadership", "closed"]
+
+# Map imported stage names to our column IDs
+STAGE_MAPPING = {
+    # Exact matches
+    "cold call": "cold_call",
+    "build interest": "build_interest",
+    "interested/waiting": "interested_waiting",
+    "interested waiting": "interested_waiting",
+    "demo": "demo",
+    "proposal sent": "proposal_sent",
+    "waiting on leadership": "waiting_leadership",
+    "waiting leadership": "waiting_leadership",
+    "closed": "closed",
+    # Legacy/alternative stage names mapping
+    "new lead": "cold_call",
+    "new inquiry": "cold_call",
+    "1. new inquiry": "cold_call",
+    "contacted": "build_interest",
+    "contacted lead": "build_interest",
+    "3. contacted lead": "build_interest",
+    "qualified": "interested_waiting",
+    "interested": "interested_waiting",
+    "meeting": "demo",
+    "meeting scheduled": "demo",
+    "proposal": "proposal_sent",
+    "negotiation": "waiting_leadership",
+    "won": "closed",
+    "lost": "closed",
+    "opportunity": "cold_call",
+    "needs_order": "proposal_sent",
+    "needs_support": "demo",
+    "miscellaneous": "cold_call",
+}
+
+def _map_stage_to_status(stage: str) -> str:
+    """Map a stage name to the correct kanban column ID"""
+    if not stage:
+        return "cold_call"
+    stage_lower = stage.lower().strip()
+    return STAGE_MAPPING.get(stage_lower, "cold_call")
 
 
 def _normalize_appointments(value: Optional[List[dict]]) -> List[dict]:
@@ -341,25 +381,34 @@ async def get_all_leads(
     authorization: Optional[str] = Header(None),
     db=Depends(get_db)
 ):
-    """Get all leads grouped by status for kanban view"""
+    """Get all leads grouped by pipeline stage for kanban view"""
     _require_admin_token(authorization)
     
     leads = await db.leads.find({}, {"_id": 0}).sort("created_at", -1).to_list(length=1000)
     
-    # Group by status
+    # Group by stage (mapped to column IDs)
     grouped = {
-        "opportunity": [],
-        "needs_order": [],
-        "needs_support": [],
-        "miscellaneous": []
+        "cold_call": [],
+        "build_interest": [],
+        "interested_waiting": [],
+        "demo": [],
+        "proposal_sent": [],
+        "waiting_leadership": [],
+        "closed": []
     }
     
     for lead in leads:
-        status = lead.get("status", "opportunity")
+        # First check the status field (for backwards compatibility)
+        status = lead.get("status", "")
+        
+        # If status is one of our new column IDs, use it directly
         if status in grouped:
             grouped[status].append(lead)
         else:
-            grouped["opportunity"].append(lead)
+            # Otherwise, map from the stage field
+            stage = lead.get("stage", "")
+            column_id = _map_stage_to_status(stage)
+            grouped[column_id].append(lead)
     
     return grouped
 
