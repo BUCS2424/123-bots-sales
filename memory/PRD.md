@@ -270,14 +270,24 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 ### Completed (April 7, 2026)
 - [x] **Kanban Pipeline Custom Stages Refactoring**
   - Updated Kanban board to 7 custom pipeline columns: Cold Call, Build Interest, Interested/Waiting, Demo, Proposal Sent, Waiting on Leadership, Closed
-  - Backend `VALID_STATUSES` and `STAGE_MAPPING` updated to support new stages and map legacy statuses
-  - Fixed critical bug: `handleSaveEdit` was resetting status to `'opportunity'` on every edit, now preserves existing column status
-  - Updated Stage dropdown in opportunity modal to use new pipeline stage names
-  - Fixed CSV import to map stages to proper column IDs instead of hardcoded `'opportunity'`
-  - Fixed CSV export to include leads from all new statuses
-  - Changed Kanban layout from 4-column grid to horizontal flex scroll to properly display all 7 columns
-  - Default stage for new leads updated from `'3. Contacted Lead'` to `'Cold Call'`
+  - Fixed critical bug: `handleSaveEdit` was resetting status to `'opportunity'` on every edit
+  - Changed Kanban layout to horizontal flex scroll with fixed-width columns (280px)
   - Testing Agent Iteration 68: PASS (Backend 13/13 100%, Frontend 100%)
+
+- [x] **Kanban Lead Card Redesign (matching reference image)**
+  - Cards now show: Opportunity Name (bold) + Person icon, Business Name, Opportunity Source, Opportunity Value as label:value pairs
+  - Bottom action icon row: Phone, Email, Tags (with count), Notes (with count), Tasks (with count), Calendar/Appointments (with count)
+  - Blue badge numbers show counts for tags, notes_timeline, tasks, and appointments
+  - Cards are compact with fixed column widths preventing stretch issues
+
+- [x] **SEO Resource Articles (81 articles, dated Jan 2025 - Apr 2026)**
+  - PUDU CC1 PRO: 20 articles
+  - AVIDBOT KAS: 19 articles
+  - PUDU SH1: 15 articles
+  - PUDU MT1 MAX: 14 articles
+  - PUDU BG1: 14 articles
+  - Categories: Industry Applications (21), Robot Reviews (15), Guides & Tutorials (13), Technology & Innovation (9), ROI & Business (8), Commercial Cleaning (8), Maintenance & Care (7)
+  - Research Library page rebranded from "Design Inspiration Library" to "Robot Cleaning Resources"
 
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban custom pipeline stages + A2G frontend integration + multi-user booking/calendar controls

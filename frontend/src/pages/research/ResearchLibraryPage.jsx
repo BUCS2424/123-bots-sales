@@ -30,15 +30,15 @@ export default function ResearchLibraryPage() {
 
   useEffect(() => {
     setSeoMetadata({
-      title: 'Custom Printing & Sublimation Tips | 123Bots',
-      description: 'Explore our collection of articles about custom printing, sublimation techniques, design tips, and product care guides.',
-      keywords: 'sublimation printing, custom t-shirts, design tips, product care, 123Bots',
+      title: 'Robot Cleaning Resources & Guides | 123 Bots',
+      description: 'Explore our collection of articles about autonomous cleaning robots, commercial floor scrubbers, ROI guides, and maintenance tips.',
+      keywords: 'cleaning robots, commercial floor scrubber, autonomous cleaning, robot maintenance, 123Bots',
       canonicalPath: '/research',
       jsonLd: {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
-        name: '123Bots Design & Printing Tips',
-        description: 'Browse articles about custom printing, sublimation, and product customization.',
+        name: '123Bots Robot Cleaning Resources',
+        description: 'Browse articles about autonomous cleaning robots, setup guides, and industry applications.',
       },
     });
   }, []);
@@ -114,13 +114,13 @@ export default function ResearchLibraryPage() {
           >
             <p className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-semibold text-[#ff8c42] border border-[#ff8c42]/30 mb-5" data-testid="research-library-kicker">
               <ButterflyIcon className="w-4 h-4" />
-              INSPIRATION & IDEAS
+              RESOURCES & GUIDES
             </p>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-slate-800 mb-5" data-testid="research-library-heading">
-              Design Inspiration Library
+              Robot Cleaning Resources
             </h1>
             <p className="text-sm md:text-base text-slate-800 max-w-2xl" data-testid="research-library-description">
-              Browse our collection of design ideas, customization tips, and creative inspiration for your personalized products.
+              Guides, reviews, and insights on autonomous commercial cleaning robots for every industry and facility size.
             </p>
           </motion.div>
         </div>

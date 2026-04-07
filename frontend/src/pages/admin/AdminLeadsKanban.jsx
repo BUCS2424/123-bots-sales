@@ -23,6 +23,8 @@ import {
   UserPlus,
   Upload,
   Download,
+  Tag,
+  FileText,
 } from 'lucide-react';
 import { Card, CardContent } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -765,47 +767,85 @@ const AdminLeadsKanban = () => {
                     <p className="text-sm">No opportunities</p>
                   </div>
                 ) : (
-                  columnLeads.map((lead) => (
+                  columnLeads.map((lead) => {
+                    const notesCount = Array.isArray(lead.notes_timeline) ? lead.notes_timeline.length : 0;
+                    const tasksCount = Array.isArray(lead.tasks) ? lead.tasks.length : 0;
+                    const appointmentsCount = Array.isArray(lead.appointments) ? lead.appointments.length : 0;
+                    const tagsCount = Array.isArray(lead.tags) ? lead.tags.length : 0;
+                    const formattedValue = lead.opportunity_value ? `$${Number(lead.opportunity_value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '';
+
+                    return (
                     <Card
                       key={lead.id}
                       draggable
                       onDragStart={(event) => handleDragStart(event, lead, column.id)}
                       onClick={() => openEditModal(lead, 'opportunity-details')}
-                      className={`cursor-grab active:cursor-grabbing hover:shadow-md transition-all bg-white group overflow-hidden ${draggedLead?.id === lead.id ? 'opacity-50 scale-95' : ''}`}
+                      className={`cursor-grab active:cursor-grabbing hover:shadow-md transition-all bg-white overflow-hidden ${draggedLead?.id === lead.id ? 'opacity-50 scale-95' : ''}`}
                       data-testid={`opportunity-card-${lead.id}`}
                     >
-                      <CardContent className="p-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <GripVertical className="w-4 h-4 text-gray-300 flex-shrink-0" />
-                          <span className="font-semibold text-gray-900 truncate text-sm">{lead.name}</span>
+                      <CardContent className="p-3.5">
+                        <div className="flex items-start justify-between mb-2">
+                          <span className="font-bold text-gray-900 text-sm leading-tight truncate pr-2">{lead.opportunity_name || lead.name}</span>
+                          <div className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center flex-shrink-0">
+                            <UserRound className="w-4 h-4 text-gray-400" />
+                          </div>
                         </div>
 
-                        <div className="space-y-1 text-sm pl-1">
-                          <div className="flex items-center gap-2 text-gray-600 min-w-0">
-                            <Mail className="w-3.5 h-3.5 flex-shrink-0" />
-                            <span className="truncate">{lead.email || ''}</span>
-                          </div>
-                          {lead.phone && (
-                            <div className="flex items-center gap-2 text-gray-600 min-w-0">
-                              <Phone className="w-3.5 h-3.5 flex-shrink-0" />
-                              <span className="truncate">{lead.phone}</span>
+                        <div className="space-y-1.5 text-xs text-gray-500 mb-3">
+                          {lead.business_name && (
+                            <div className="flex gap-1.5 min-w-0">
+                              <span className="text-gray-400 whitespace-nowrap">Business Name:</span>
+                              <span className="text-gray-700 truncate">{lead.business_name}</span>
+                            </div>
+                          )}
+                          {lead.opportunity_source && (
+                            <div className="flex gap-1.5 min-w-0">
+                              <span className="text-gray-400 whitespace-nowrap">Opportunity Sour...</span>
+                              <span className="text-gray-700 truncate">{lead.opportunity_source}</span>
+                            </div>
+                          )}
+                          {formattedValue && (
+                            <div className="flex gap-1.5 min-w-0">
+                              <span className="text-gray-400 whitespace-nowrap">Opportunity Value:</span>
+                              <span className="text-gray-700">{formattedValue}</span>
                             </div>
                           )}
                         </div>
 
-                        {lead.notes && (
-                          <div className="mt-2 -mx-3 px-3 py-1.5 bg-amber-50 border-y border-amber-100">
-                            <p className="text-xs text-amber-800 truncate">{lead.notes}</p>
-                          </div>
-                        )}
-
-                        <div className="flex items-center gap-1.5 text-xs text-gray-400 mt-2 pl-1">
-                          <Calendar className="w-3 h-3 flex-shrink-0" />
-                          <span>{formatDate(lead.created_at)}</span>
+                        <div className="flex items-center gap-1.5 pt-2 border-t border-gray-100">
+                          {lead.phone && (
+                            <button onClick={(e) => { e.stopPropagation(); window.open(`tel:${lead.phone}`); }} className="w-6 h-6 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-100" data-testid={`opp-icon-phone-${lead.id}`}>
+                              <Phone className="w-3 h-3 text-gray-400" />
+                            </button>
+                          )}
+                          {lead.email && (
+                            <button onClick={(e) => { e.stopPropagation(); window.open(`mailto:${lead.email}`); }} className="w-6 h-6 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-100" data-testid={`opp-icon-email-${lead.id}`}>
+                              <Mail className="w-3 h-3 text-gray-400" />
+                            </button>
+                          )}
+                          {tagsCount > 0 && (
+                            <button onClick={(e) => { e.stopPropagation(); openEditModal(lead, 'opportunity-details'); }} className="relative w-6 h-6 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-100" data-testid={`opp-icon-tags-${lead.id}`}>
+                              <Tag className="w-3 h-3 text-gray-400" />
+                              <span className="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-[9px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">{tagsCount}</span>
+                            </button>
+                          )}
+                          <button onClick={(e) => { e.stopPropagation(); openEditModal(lead, 'notes'); }} className="relative w-6 h-6 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-100" data-testid={`opp-icon-notes-${lead.id}`}>
+                            <FileText className="w-3 h-3 text-gray-400" />
+                            {notesCount > 0 && <span className="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-[9px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">{notesCount}</span>}
+                          </button>
+                          <button onClick={(e) => { e.stopPropagation(); openEditModal(lead, 'tasks'); }} className="relative w-6 h-6 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-100" data-testid={`opp-icon-tasks-${lead.id}`}>
+                            <CheckCircle2 className="w-3 h-3 text-gray-400" />
+                            {tasksCount > 0 && <span className="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-[9px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">{tasksCount}</span>}
+                          </button>
+                          <button onClick={(e) => { e.stopPropagation(); openEditModal(lead, 'appointments'); }} className="relative w-6 h-6 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-100" data-testid={`opp-icon-appts-${lead.id}`}>
+                            <Calendar className="w-3 h-3 text-gray-400" />
+                            {appointmentsCount > 0 && <span className="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-[9px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">{appointmentsCount}</span>}
+                          </button>
                         </div>
                       </CardContent>
                     </Card>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </div>
