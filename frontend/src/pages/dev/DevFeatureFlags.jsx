@@ -61,6 +61,7 @@ const DevFeatureFlags = () => {
     left_menu_enabled: true,
     coming_soon_enabled: true,
     coming_soon_password: '8487',
+    external_api_enabled: false,
   });
   const [featureFlagsSaving, setFeatureFlagsSaving] = useState(false);
 

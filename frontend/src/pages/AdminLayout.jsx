@@ -6,7 +6,7 @@ import {
   LogOut, Home, Settings, ChevronRight, ChevronDown, Menu, X, BarChart3,
   Bell, Search, DollarSign, ShoppingBag, Gift, FolderTree, Layers, Cloud, User, Sliders, Code,
   Store, Truck, CreditCard, CheckCircle, LayoutGrid, Clock, FileText, UserPlus, Briefcase,
-  Calendar, CalendarOff, Wrench, Shield, BookOpen, PiggyBank, Star, Megaphone, Mail, Zap, MessageCircle, Building2, Box, Globe, Radio as RadioIcon
+  Calendar, CalendarOff, Wrench, Shield, BookOpen, PiggyBank, Star, Megaphone, Mail, Zap, MessageCircle, Building2, Box, Globe, Radio as RadioIcon, Key
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -90,6 +90,10 @@ import InventoryDashboard from './admin/InventoryDashboard';
 import ManufacturersPage from './admin/ManufacturersPage';
 import OrderRecommendationsPage from './admin/OrderRecommendationsPage';
 
+// External Stack API
+import ExternalApiSourcesPage from './admin/ExternalApiSourcesPage';
+import PipelinesPage from './admin/PipelinesPage';
+
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
@@ -112,6 +116,7 @@ const AdminLayout = () => {
     yoycol_enabled: false,
     owner_chat_enabled: false,
     owner_chat_ai_enabled: false,
+    external_api_enabled: false,
   });
 
   // Fetch business settings for Analytics URL
@@ -133,6 +138,7 @@ const AdminLayout = () => {
           yoycol_enabled: Boolean(featureFlagsRes?.data?.yoycol_enabled),
           owner_chat_enabled: Boolean(featureFlagsRes?.data?.owner_chat_enabled),
           owner_chat_ai_enabled: Boolean(featureFlagsRes?.data?.owner_chat_ai_enabled),
+          external_api_enabled: Boolean(featureFlagsRes?.data?.external_api_enabled),
         });
       } catch (error) {
         console.error('Error fetching settings:', error);
@@ -268,6 +274,16 @@ const AdminLayout = () => {
         { path: '/admin/inventory/recommendations', label: 'Order Recs', icon: Truck },
       ],
     },
+    ...(featureFlags.external_api_enabled ? [{
+      id: 'external-api',
+      type: 'accordion',
+      label: 'External API',
+      icon: Globe,
+      children: [
+        { path: '/admin/external-api/sources', label: 'API Sources', icon: Key },
+        { path: '/admin/external-api/pipelines', label: 'Pipelines', icon: Layers },
+      ],
+    }] : []),
     {
       id: 'calendar',
       type: 'single',
@@ -626,6 +642,8 @@ const AdminLayout = () => {
     if (path === '/admin/inventory/recommendations') return <OrderRecommendationsPage />;
     if (path === '/admin/inventory/purchase-orders') return <InventoryDashboard />; // Placeholder for now
     if (path === '/admin/inventory/settings') return <InventoryDashboard />; // Placeholder for now
+    if (path === '/admin/external-api/sources') return <ExternalApiSourcesPage />;
+    if (path === '/admin/external-api/pipelines') return <PipelinesPage />;
     if (path === '/admin/user-management/customers') return <AdminCustomers />;
     if (path.match(/^\/admin\/user-management\/customers\/[^/]+$/)) {
       const customerId = path.split('/').pop();

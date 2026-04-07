@@ -1239,6 +1239,18 @@ from research_library import (
 set_research_library_db(db)
 app.include_router(research_library_router, prefix="/api")
 
+# Include External Stack API and Pipelines routers
+from external_api import (
+    router as external_api_router,
+    pipelines_router,
+    set_database as set_external_api_db,
+    ensure_default_pipeline,
+)
+set_external_api_db(db)
+app.include_router(external_api_router)
+app.include_router(pipelines_router)
+
+
 # Include location generator routers
 from location_generator import (
     dev_router as location_dev_router,
@@ -1413,6 +1425,9 @@ async def startup_event():
 
         await seed_research_articles()
         logger.info("Research library verified/seeded")
+
+        await ensure_default_pipeline()
+        logger.info("Default pipeline verified/seeded")
 
         catalog_sync_result = await sync_pdf_catalog(db)
         logger.info(

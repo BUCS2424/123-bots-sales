@@ -824,6 +824,7 @@ class FeatureFlags(BaseModel):
     coming_soon_enabled: bool = True  # Show coming soon password gate
     coming_soon_password: str = "8487"  # Password to bypass coming soon gate
     quotes_enabled: bool = True  # Show/hide quote system UI everywhere
+    external_api_enabled: bool = False  # Show/hide External Stack API Delivery features
 
 
 @router.get("/feature-flags")
@@ -889,6 +890,7 @@ async def get_public_feature_flags(db=Depends(get_db)):
             "coming_soon_enabled": 1,
             "coming_soon_password": 1,
             "quotes_enabled": 1,
+            "external_api_enabled": 1,
         },
     )
     return {
@@ -908,6 +910,7 @@ async def get_public_feature_flags(db=Depends(get_db)):
         "coming_soon_enabled": bool(settings.get("coming_soon_enabled", True)) if settings else True,
         "coming_soon_password": settings.get("coming_soon_password", "8487") if settings else "8487",
         "quotes_enabled": bool(settings.get("quotes_enabled", True)) if settings else True,
+        "external_api_enabled": bool(settings.get("external_api_enabled", False)) if settings else False,
     }
 
 
