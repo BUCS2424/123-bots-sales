@@ -127,6 +127,19 @@ const buildNewOpportunityDraft = () =>
     associated_objects: [],
     created_at: new Date().toISOString(),
     converted_to_client: false,
+    // New fields from CSV
+    assigned: '',
+    lost_reason_id: '',
+    lost_reason_name: '',
+    engagement_score: '',
+    notes: '',
+    external_opportunity_id: '',
+    external_contact_id: '',
+    pipeline_stage_id: '',
+    pipeline_id: '',
+    days_since_stage_change: '',
+    days_since_status_change: '',
+    days_since_updated: '',
   });
 
 const isValueFilled = (value) => {
@@ -361,6 +374,12 @@ const AdminLeadsKanban = () => {
           notes_timeline: selectedLead.notes_timeline || [],
           payments: selectedLead.payments || [],
           associated_objects: selectedLead.associated_objects || [],
+          // New fields
+          assigned: selectedLead.assigned || '',
+          lost_reason_id: selectedLead.lost_reason_id || '',
+          lost_reason_name: selectedLead.lost_reason_name || '',
+          engagement_score: selectedLead.engagement_score || 0,
+          notes: selectedLead.notes || '',
         };
         response = await axios.post(`${API}/leads/`, createPayload, { headers: tokenHeaders });
       } else {
@@ -1035,6 +1054,79 @@ const AdminLeadsKanban = () => {
                                   ))}
                                 </div>
                               )}
+                            </div>
+                          )}
+
+                          {/* Additional Fields Section */}
+                          <div className="md:col-span-2 border-t pt-4 mt-4">
+                            <h4 className="font-semibold text-gray-700 mb-4">Additional Information</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <Label className="text-sm font-semibold text-gray-700">Assigned To</Label>
+                                <Input value={selectedLead.assigned || ''} onChange={(event) => setLeadField('assigned', event.target.value)} placeholder="Assigned staff member" className="h-12 mt-2" data-testid="opportunity-assigned-input" />
+                              </div>
+                              <div>
+                                <Label className="text-sm font-semibold text-gray-700">Engagement Score</Label>
+                                <Input type="number" value={selectedLead.engagement_score || ''} onChange={(event) => setLeadField('engagement_score', event.target.value)} placeholder="0" className="h-12 mt-2" data-testid="opportunity-engagement-score-input" />
+                              </div>
+                              <div>
+                                <Label className="text-sm font-semibold text-gray-700">Lost Reason</Label>
+                                <Input value={selectedLead.lost_reason_name || ''} onChange={(event) => setLeadField('lost_reason_name', event.target.value)} placeholder="Reason if lost" className="h-12 mt-2" data-testid="opportunity-lost-reason-input" />
+                              </div>
+                              <div>
+                                <Label className="text-sm font-semibold text-gray-700">Followers</Label>
+                                <Input 
+                                  value={(selectedLead.followers || []).join(', ')} 
+                                  onChange={(event) => setLeadField('followers', event.target.value.split(',').map(f => f.trim()).filter(f => f))} 
+                                  placeholder="Comma-separated names" 
+                                  className="h-12 mt-2" 
+                                  data-testid="opportunity-followers-input" 
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <Label className="text-sm font-semibold text-gray-700">Notes</Label>
+                                <textarea 
+                                  value={selectedLead.notes || ''} 
+                                  onChange={(event) => setLeadField('notes', event.target.value)} 
+                                  placeholder="Additional notes about this opportunity..." 
+                                  className="w-full mt-2 p-3 rounded-md border border-gray-300 min-h-[100px]" 
+                                  data-testid="opportunity-notes-input"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* External IDs Section (read-only for imported data) */}
+                          {(selectedLead.external_opportunity_id || selectedLead.external_contact_id || selectedLead.pipeline_id) && (
+                            <div className="md:col-span-2 border-t pt-4 mt-4">
+                              <h4 className="font-semibold text-gray-500 mb-4">External References (Imported)</h4>
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-500">
+                                {selectedLead.external_opportunity_id && (
+                                  <div>
+                                    <span className="font-medium">Opportunity ID:</span> {selectedLead.external_opportunity_id}
+                                  </div>
+                                )}
+                                {selectedLead.external_contact_id && (
+                                  <div>
+                                    <span className="font-medium">Contact ID:</span> {selectedLead.external_contact_id}
+                                  </div>
+                                )}
+                                {selectedLead.pipeline_id && (
+                                  <div>
+                                    <span className="font-medium">Pipeline ID:</span> {selectedLead.pipeline_id}
+                                  </div>
+                                )}
+                                {selectedLead.days_since_stage_change && (
+                                  <div>
+                                    <span className="font-medium">Days Since Stage Change:</span> {selectedLead.days_since_stage_change}
+                                  </div>
+                                )}
+                                {selectedLead.days_since_status_change && (
+                                  <div>
+                                    <span className="font-medium">Days Since Status Change:</span> {selectedLead.days_since_status_change}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           )}
                         </div>

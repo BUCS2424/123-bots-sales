@@ -60,6 +60,18 @@ class LeadCreate(BaseModel):
     notes_timeline: Optional[List[dict]] = None
     payments: Optional[List[dict]] = None
     associated_objects: Optional[List[dict]] = None
+    # New fields from CSV import
+    assigned: Optional[str] = ""
+    lost_reason_id: Optional[str] = ""
+    lost_reason_name: Optional[str] = ""
+    engagement_score: Optional[float] = None
+    external_opportunity_id: Optional[str] = ""
+    external_contact_id: Optional[str] = ""
+    pipeline_stage_id: Optional[str] = ""
+    pipeline_id: Optional[str] = ""
+    days_since_stage_change: Optional[str] = ""
+    days_since_status_change: Optional[str] = ""
+    days_since_updated: Optional[str] = ""
 
 
 class LeadUpdate(BaseModel):
@@ -89,6 +101,18 @@ class LeadUpdate(BaseModel):
     notes_timeline: Optional[List[dict]] = None
     payments: Optional[List[dict]] = None
     associated_objects: Optional[List[dict]] = None
+    # New fields from CSV import
+    assigned: Optional[str] = None
+    lost_reason_id: Optional[str] = None
+    lost_reason_name: Optional[str] = None
+    engagement_score: Optional[float] = None
+    external_opportunity_id: Optional[str] = None
+    external_contact_id: Optional[str] = None
+    pipeline_stage_id: Optional[str] = None
+    pipeline_id: Optional[str] = None
+    days_since_stage_change: Optional[str] = None
+    days_since_status_change: Optional[str] = None
+    days_since_updated: Optional[str] = None
 
 
 class ConvertLeadToClientResponse(BaseModel):
@@ -597,9 +621,7 @@ async def import_opportunities(
     authorization: str = Header(None)
 ):
     """
-    Import opportunities from CSV file.
-    Expected columns: Opportunity Name, Contact Name, phone, email, pipeline, stage, 
-    Lead Value, source, Notes, tags, status
+    Import opportunities from CSV file with ALL fields.
     """
     admin = _require_admin_token(authorization)
     
@@ -635,15 +657,26 @@ async def import_opportunities(
             # Parse Lead Value
             lead_value_str = row.get('Lead Value') or row.get('lead_value') or '0'
             try:
-                lead_value = float(lead_value_str.replace(',', '').replace('$', ''))
+                lead_value = float(str(lead_value_str).replace(',', '').replace('$', '').strip() or '0')
             except (ValueError, TypeError):
                 lead_value = 0.0
+            
+            # Parse Engagement Score
+            engagement_str = row.get('Engagement Score') or '0'
+            try:
+                engagement_score = float(str(engagement_str).replace(',', '').strip() or '0')
+            except (ValueError, TypeError):
+                engagement_score = 0.0
             
             # Parse tags
             tags_str = row.get('tags') or ''
             tags = [t.strip() for t in tags_str.split(',') if t.strip()] if tags_str else []
             
-            # Get status - map "open" to "Open"
+            # Parse followers
+            followers_str = row.get('Followers') or ''
+            followers = [f.strip() for f in followers_str.split(',') if f.strip()] if followers_str else []
+            
+            # Get status - map to proper case
             status_raw = (row.get('status') or 'open').strip().lower()
             if status_raw == 'open':
                 opportunity_status = 'Open'
@@ -654,45 +687,59 @@ async def import_opportunities(
             else:
                 opportunity_status = 'Open'
             
-            # Build the lead/opportunity document
+            # Build the lead/opportunity document with ALL fields
             lead = {
                 "id": str(uuid.uuid4()),
+                # Core contact info
                 "name": (row.get('Contact Name') or row.get('contact_name') or opportunity_name).strip(),
                 "email": (row.get('email') or '').strip(),
                 "phone": (row.get('phone') or '').strip(),
+                # Opportunity details
                 "opportunity_name": opportunity_name,
                 "pipeline": (row.get('pipeline') or '001. Main Leads Pipeline').strip(),
                 "stage": (row.get('stage') or 'New Lead').strip(),
                 "opportunity_status": opportunity_status,
                 "opportunity_value": lead_value,
                 "opportunity_source": (row.get('source') or '').strip(),
-                "business_name": opportunity_name,  # Use opportunity name as business name
+                # Business/Contact details
+                "business_name": opportunity_name,
                 "primary_contact_name": (row.get('Contact Name') or row.get('contact_name') or '').strip(),
                 "primary_email": (row.get('email') or '').strip(),
                 "primary_phone": (row.get('phone') or '').strip(),
-                "notes": (row.get('Notes') or row.get('Followers') or '').strip(),
+                # Assignment & Team
+                "assigned": (row.get('assigned') or '').strip(),
+                "owner_id": admin.get("user_id", ""),
+                "followers": followers,
+                # Notes & Tags
+                "notes": (row.get('Notes') or '').strip(),
                 "tags": tags,
+                # Lost reason
+                "lost_reason_id": (row.get('lost reason ID') or '').strip(),
+                "lost_reason_name": (row.get('lost reason name') or '').strip(),
+                # Engagement
+                "engagement_score": engagement_score,
+                # External IDs (from other systems)
+                "external_opportunity_id": (row.get('Opportunity ID') or '').strip(),
+                "external_contact_id": (row.get('Contact ID') or '').strip(),
+                "pipeline_stage_id": (row.get('Pipeline Stage ID') or '').strip(),
+                "pipeline_id": (row.get('Pipeline ID') or '').strip(),
+                # Time tracking
+                "days_since_stage_change": (row.get('Days Since Last Stage Change Date ') or row.get('Days Since Last Stage Change Date') or '').strip(),
+                "days_since_status_change": (row.get('Days Since Last Status Change Date ') or row.get('Days Since Last Status Change Date') or '').strip(),
+                "days_since_updated": (row.get('Days Since Last Updated ') or row.get('Days Since Last Updated') or '').strip(),
+                # Dates
+                "created_at": (row.get('Created on') or datetime.now(timezone.utc).isoformat()).strip(),
+                "updated_at": (row.get('Updated on') or datetime.now(timezone.utc).isoformat()).strip(),
+                # System fields
                 "source": "csv_import",
                 "status": "opportunity",
-                "owner_id": admin.get("user_id", ""),
-                "followers": [],
                 "additional_contacts": [],
                 "appointments": [],
                 "tasks": [],
                 "notes_timeline": [],
                 "payments": [],
                 "associated_objects": [],
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "updated_at": datetime.now(timezone.utc).isoformat(),
             }
-            
-            # Try to parse original created date
-            created_on = row.get('Created on') or row.get('created_on')
-            if created_on:
-                try:
-                    lead["created_at"] = created_on
-                except:
-                    pass
             
             await _db.leads.insert_one(lead)
             imported += 1
@@ -704,14 +751,14 @@ async def import_opportunities(
         "success": True,
         "imported": imported,
         "skipped": skipped,
-        "errors": errors[:20],  # Limit errors shown
+        "errors": errors[:20],
         "total_errors": len(errors)
     }
 
 
 @router.get("/export/csv")
 async def export_opportunities_csv(authorization: str = Header(None)):
-    """Export all opportunities as CSV"""
+    """Export all opportunities as CSV with ALL fields"""
     _require_admin_token(authorization)
     
     leads = await _db.leads.find(
@@ -722,7 +769,11 @@ async def export_opportunities_csv(authorization: str = Header(None)):
     output = io.StringIO()
     fieldnames = [
         "Opportunity Name", "Contact Name", "phone", "email", "pipeline", "stage",
-        "Lead Value", "source", "Notes", "tags", "status", "Created on"
+        "Lead Value", "source", "assigned", "Created on", "Updated on",
+        "lost reason ID", "lost reason name", "Followers", "Notes", "tags",
+        "Engagement Score", "status", "Opportunity ID", "Contact ID",
+        "Pipeline Stage ID", "Pipeline ID", "Days Since Last Stage Change Date",
+        "Days Since Last Status Change Date", "Days Since Last Updated"
     ]
     writer = csv.DictWriter(output, fieldnames=fieldnames)
     writer.writeheader()
@@ -737,10 +788,23 @@ async def export_opportunities_csv(authorization: str = Header(None)):
             "stage": lead.get("stage", ""),
             "Lead Value": lead.get("opportunity_value", ""),
             "source": lead.get("opportunity_source", ""),
+            "assigned": lead.get("assigned", ""),
+            "Created on": lead.get("created_at", ""),
+            "Updated on": lead.get("updated_at", ""),
+            "lost reason ID": lead.get("lost_reason_id", ""),
+            "lost reason name": lead.get("lost_reason_name", ""),
+            "Followers": ",".join(lead.get("followers", [])),
             "Notes": lead.get("notes", ""),
             "tags": ",".join(lead.get("tags", [])),
+            "Engagement Score": lead.get("engagement_score", ""),
             "status": lead.get("opportunity_status", ""),
-            "Created on": lead.get("created_at", ""),
+            "Opportunity ID": lead.get("external_opportunity_id") or lead.get("id", ""),
+            "Contact ID": lead.get("external_contact_id", ""),
+            "Pipeline Stage ID": lead.get("pipeline_stage_id", ""),
+            "Pipeline ID": lead.get("pipeline_id", ""),
+            "Days Since Last Stage Change Date": lead.get("days_since_stage_change", ""),
+            "Days Since Last Status Change Date": lead.get("days_since_status_change", ""),
+            "Days Since Last Updated": lead.get("days_since_updated", ""),
         })
     
     from fastapi.responses import PlainTextResponse
