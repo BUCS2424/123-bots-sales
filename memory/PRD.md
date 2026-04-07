@@ -267,8 +267,20 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
   - APScheduler for Monday 8 AM inventory reports
   - Sends email with order recommendations to configured recipients
 
+### Completed (April 7, 2026)
+- [x] **Kanban Pipeline Custom Stages Refactoring**
+  - Updated Kanban board to 7 custom pipeline columns: Cold Call, Build Interest, Interested/Waiting, Demo, Proposal Sent, Waiting on Leadership, Closed
+  - Backend `VALID_STATUSES` and `STAGE_MAPPING` updated to support new stages and map legacy statuses
+  - Fixed critical bug: `handleSaveEdit` was resetting status to `'opportunity'` on every edit, now preserves existing column status
+  - Updated Stage dropdown in opportunity modal to use new pipeline stage names
+  - Fixed CSV import to map stages to proper column IDs instead of hardcoded `'opportunity'`
+  - Fixed CSV export to include leads from all new statuses
+  - Changed Kanban layout from 4-column grid to horizontal flex scroll to properly display all 7 columns
+  - Default stage for new leads updated from `'3. Contacted Lead'` to `'Cold Call'`
+  - Testing Agent Iteration 68: PASS (Backend 13/13 100%, Frontend 100%)
+
 ## Prioritized Next Actions
-- **P0 (Now complete):** A2G frontend integration + multi-user booking/calendar controls
+- **P0 (Now complete):** Kanban custom pipeline stages + A2G frontend integration + multi-user booking/calendar controls
 - **P1 (Next):**
   - Generate/publish SEO resource articles per robot product
   - Populate shop catalog and finalize pre-launch readiness
