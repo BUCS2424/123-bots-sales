@@ -263,9 +263,13 @@ const AdminLeadsKanban = () => {
 
   useEffect(() => {
     fetchPipelines();
-    fetchLeads();
     fetchStaffOptions();
-  }, [fetchPipelines, fetchLeads, fetchStaffOptions]);
+  }, [fetchPipelines, fetchStaffOptions]);
+
+  // Fetch leads only after a pipeline is selected (or pipelines loaded)
+  useEffect(() => {
+    fetchLeads();
+  }, [fetchLeads]);
 
   const handleDragStart = (event, lead, fromColumn) => {
     setDraggedLead({ ...lead, fromColumn });

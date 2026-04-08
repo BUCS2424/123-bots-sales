@@ -388,12 +388,11 @@ async def get_all_leads(
     
     query = {}
     if pipeline_id:
-        # Match leads with this pipeline_id OR leads without any pipeline_id (legacy/unassigned)
-        from external_api import _db as ext_db
+        # For the default pipeline, also include leads without pipeline_id (legacy)
         is_default = False
-        if ext_db is not None:
-            dp = await ext_db.pipelines.find_one({"id": pipeline_id, "is_default": True})
-            is_default = dp is not None
+        dp = await db.pipelines.find_one({"id": pipeline_id, "is_default": True})
+        if dp:
+            is_default = True
         
         if is_default:
             query["$or"] = [
