@@ -824,7 +824,7 @@ class FeatureFlags(BaseModel):
     coming_soon_enabled: bool = True  # Show coming soon password gate
     coming_soon_password: str = "8487"  # Password to bypass coming soon gate
     quotes_enabled: bool = True  # Show/hide quote system UI everywhere
-    external_api_enabled: bool = False  # Show/hide External Stack API Delivery features
+    external_api_enabled: bool = True  # Show/hide External Stack API Delivery features
 
 
 @router.get("/feature-flags")

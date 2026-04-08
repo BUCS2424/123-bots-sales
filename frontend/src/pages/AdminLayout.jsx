@@ -116,7 +116,7 @@ const AdminLayout = () => {
     yoycol_enabled: false,
     owner_chat_enabled: false,
     owner_chat_ai_enabled: false,
-    external_api_enabled: false,
+    external_api_enabled: true,
   });
 
   // Fetch business settings for Analytics URL
@@ -138,7 +138,7 @@ const AdminLayout = () => {
           yoycol_enabled: Boolean(featureFlagsRes?.data?.yoycol_enabled),
           owner_chat_enabled: Boolean(featureFlagsRes?.data?.owner_chat_enabled),
           owner_chat_ai_enabled: Boolean(featureFlagsRes?.data?.owner_chat_ai_enabled),
-          external_api_enabled: Boolean(featureFlagsRes?.data?.external_api_enabled),
+          external_api_enabled: featureFlagsRes?.data?.external_api_enabled !== false,
         });
       } catch (error) {
         console.error('Error fetching settings:', error);

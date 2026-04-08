@@ -18,7 +18,7 @@ export const useSiteFeatureFlags = () => {
     left_menu_enabled: true,
     coming_soon_enabled: true,
     coming_soon_password: '8487',
-    external_api_enabled: false,
+    external_api_enabled: true,
   });
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export const useSiteFeatureFlags = () => {
           left_menu_enabled: featureData.left_menu_enabled !== false,
           coming_soon_enabled: featureData.coming_soon_enabled !== false,
           coming_soon_password: featureData.coming_soon_password || '8487',
-          external_api_enabled: Boolean(featureData.external_api_enabled),
+          external_api_enabled: featureData.external_api_enabled !== false,
         });
       } catch (error) {
         // Keep safe defaults
