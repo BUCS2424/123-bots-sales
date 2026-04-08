@@ -117,6 +117,7 @@ const AdminLayout = () => {
     owner_chat_enabled: false,
     owner_chat_ai_enabled: false,
     external_api_enabled: true,
+    inventory_enabled: false,
   });
 
   // Fetch business settings for Analytics URL
@@ -139,6 +140,7 @@ const AdminLayout = () => {
           owner_chat_enabled: Boolean(featureFlagsRes?.data?.owner_chat_enabled),
           owner_chat_ai_enabled: Boolean(featureFlagsRes?.data?.owner_chat_ai_enabled),
           external_api_enabled: featureFlagsRes?.data?.external_api_enabled !== false,
+          inventory_enabled: Boolean(featureFlagsRes?.data?.inventory_enabled),
         });
       } catch (error) {
         console.error('Error fetching settings:', error);
@@ -262,7 +264,7 @@ const AdminLayout = () => {
       label: 'Contacts',
       icon: User,
     },
-    {
+    ...(featureFlags.inventory_enabled ? [{
       id: 'inventory-management',
       type: 'accordion',
       label: 'Inventory Mgmt',
@@ -273,7 +275,7 @@ const AdminLayout = () => {
         { path: '/admin/inventory/manufacturers', label: 'Manufacturers', icon: Building2 },
         { path: '/admin/inventory/recommendations', label: 'Order Recs', icon: Truck },
       ],
-    },
+    }] : []),
     ...(featureFlags.external_api_enabled ? [{
       id: 'external-api',
       type: 'accordion',

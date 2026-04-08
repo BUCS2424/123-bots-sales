@@ -19,6 +19,7 @@ export const useSiteFeatureFlags = () => {
     coming_soon_enabled: true,
     coming_soon_password: '8487',
     external_api_enabled: true,
+    inventory_enabled: false,
   });
 
   useEffect(() => {
@@ -59,6 +60,7 @@ export const useSiteFeatureFlags = () => {
           coming_soon_enabled: featureData.coming_soon_enabled !== false,
           coming_soon_password: featureData.coming_soon_password || '8487',
           external_api_enabled: featureData.external_api_enabled !== false,
+          inventory_enabled: Boolean(featureData.inventory_enabled),
         });
       } catch (error) {
         // Keep safe defaults
