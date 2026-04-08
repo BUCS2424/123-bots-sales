@@ -81,6 +81,7 @@ const DevFeatureFlags = () => {
     { id: 'printful_enabled', name: 'Printful Fulfillment', description: 'Show Fulfillment → Printful in owner dashboard and allow Printful OAuth connection', category: 'Fulfillment' },
     { id: 'yoycol_enabled', name: 'YOYCOL Fulfillment', description: 'Show Fulfillment → YOYCOL in owner dashboard and allow YOYCOL key management', category: 'Fulfillment' },
     { id: 'left_menu_enabled', name: 'Left Menu', description: 'Show accordion category menu on product/shop pages', category: 'Website' },
+    { id: 'external_api_enabled', name: 'External Stack API', description: 'Enable external lead ingestion API with multi-source auth and custom pipelines', category: 'CRM' },
   ];
 
   useEffect(() => {
