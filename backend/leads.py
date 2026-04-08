@@ -407,19 +407,19 @@ async def get_all_leads(
     
     leads = await db.leads.find(query, {"_id": 0}).sort("created_at", -1).to_list(length=1000)
     
-    # Build grouped dict dynamically from the leads' statuses
+    # Group leads by their column status, mapping legacy statuses to valid column IDs
     grouped = {}
     
     for lead in leads:
         status = lead.get("status", "")
         
-        if status not in grouped:
-            # Map from stage field if status isn't a known column ID
-            if not status:
-                stage = lead.get("stage", "")
-                status = _map_stage_to_status(stage)
-            grouped[status] = []
+        # If status is not a recognized column ID, map it from the stage field
+        if status not in VALID_STATUSES:
+            stage = lead.get("stage", "")
+            status = _map_stage_to_status(stage)
         
+        if status not in grouped:
+            grouped[status] = []
         grouped[status].append(lead)
     
     return grouped
