@@ -367,6 +367,7 @@ async def create_lead(lead: LeadCreate, db=Depends(get_db)):
         "converted_to_client": False,
         "converted_customer_id": None,
         "converted_at": None,
+        "pipeline_id": lead.pipeline_id or "",
         "created_at": now,
         "updated_at": now
     }
@@ -379,36 +380,32 @@ async def create_lead(lead: LeadCreate, db=Depends(get_db)):
 @router.get("/")
 async def get_all_leads(
     authorization: Optional[str] = Header(None),
+    pipeline_id: Optional[str] = None,
     db=Depends(get_db)
 ):
-    """Get all leads grouped by pipeline stage for kanban view"""
+    """Get all leads grouped by pipeline stage for kanban view. Optionally filter by pipeline_id."""
     _require_admin_token(authorization)
     
-    leads = await db.leads.find({}, {"_id": 0}).sort("created_at", -1).to_list(length=1000)
+    query = {}
+    if pipeline_id:
+        query["pipeline_id"] = pipeline_id
     
-    # Group by stage (mapped to column IDs)
-    grouped = {
-        "cold_call": [],
-        "build_interest": [],
-        "interested_waiting": [],
-        "demo": [],
-        "proposal_sent": [],
-        "waiting_leadership": [],
-        "closed": []
-    }
+    leads = await db.leads.find(query, {"_id": 0}).sort("created_at", -1).to_list(length=1000)
+    
+    # Build grouped dict dynamically from the leads' statuses
+    grouped = {}
     
     for lead in leads:
-        # First check the status field (for backwards compatibility)
         status = lead.get("status", "")
         
-        # If status is one of our new column IDs, use it directly
-        if status in grouped:
-            grouped[status].append(lead)
-        else:
-            # Otherwise, map from the stage field
-            stage = lead.get("stage", "")
-            column_id = _map_stage_to_status(stage)
-            grouped[column_id].append(lead)
+        if status not in grouped:
+            # Map from stage field if status isn't a known column ID
+            if not status:
+                stage = lead.get("stage", "")
+                status = _map_stage_to_status(stage)
+            grouped[status] = []
+        
+        grouped[status].append(lead)
     
     return grouped
 

@@ -127,7 +127,7 @@ DEFAULT_PIPELINE = {
 }
 
 async def ensure_default_pipeline():
-    """Seed the default pipeline if none exists"""
+    """Seed the default pipeline if none exists, and backfill existing leads with pipeline_id"""
     if _db is None:
         return
     count = await _db.pipelines.count_documents({})
@@ -140,6 +140,17 @@ async def ensure_default_pipeline():
             "updated_at": now,
         }
         await _db.pipelines.insert_one(doc)
+
+    # Backfill: assign existing leads without pipeline_id to the default pipeline
+    default_pipeline = await _db.pipelines.find_one({"is_default": True}, {"_id": 0, "id": 1})
+    if default_pipeline:
+        result = await _db.leads.update_many(
+            {"$or": [{"pipeline_id": {"$exists": False}}, {"pipeline_id": ""}, {"pipeline_id": None}]},
+            {"$set": {"pipeline_id": default_pipeline["id"]}}
+        )
+        if result.modified_count > 0:
+            import logging
+            logging.getLogger("external_api").info(f"Backfilled {result.modified_count} leads with default pipeline_id")
 
 
 @pipelines_router.get("/")

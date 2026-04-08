@@ -232,14 +232,15 @@ const AdminLeadsKanban = () => {
 
   const fetchLeads = useCallback(async () => {
     try {
-      const response = await axios.get(`${API}/leads/`, { headers: tokenHeaders });
+      const params = selectedPipelineId ? { pipeline_id: selectedPipelineId } : {};
+      const response = await axios.get(`${API}/leads/`, { headers: tokenHeaders, params });
       setLeads(response.data);
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to load opportunities', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
-  }, [tokenHeaders]);
+  }, [tokenHeaders, selectedPipelineId]);
 
   const visibleSectionTabs = useMemo(() => {
     return SECTION_TABS.filter((tab) => (tab.id === 'quotes-contracts-esign' ? quotesEnabled : true));
@@ -415,6 +416,7 @@ const AdminLeadsKanban = () => {
           lost_reason_name: selectedLead.lost_reason_name || '',
           engagement_score: selectedLead.engagement_score || 0,
           notes: selectedLead.notes || '',
+          pipeline_id: selectedPipelineId || '',
         };
         response = await axios.post(`${API}/leads/`, createPayload, { headers: tokenHeaders });
       } else {
