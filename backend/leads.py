@@ -380,31 +380,12 @@ async def create_lead(lead: LeadCreate, db=Depends(get_db)):
 @router.get("/")
 async def get_all_leads(
     authorization: Optional[str] = Header(None),
-    pipeline_id: Optional[str] = None,
     db=Depends(get_db)
 ):
-    """Get all leads grouped by pipeline stage for kanban view. Optionally filter by pipeline_id."""
+    """Get all leads grouped by pipeline stage for kanban view"""
     _require_admin_token(authorization)
     
-    query = {}
-    if pipeline_id:
-        # For the default pipeline, also include leads without pipeline_id (legacy)
-        is_default = False
-        dp = await db.pipelines.find_one({"id": pipeline_id, "is_default": True})
-        if dp:
-            is_default = True
-        
-        if is_default:
-            query["$or"] = [
-                {"pipeline_id": pipeline_id},
-                {"pipeline_id": {"$exists": False}},
-                {"pipeline_id": ""},
-                {"pipeline_id": None},
-            ]
-        else:
-            query["pipeline_id"] = pipeline_id
-    
-    leads = await db.leads.find(query, {"_id": 0}).sort("created_at", -1).to_list(length=1000)
+    leads = await db.leads.find({}, {"_id": 0}).sort("created_at", -1).to_list(length=1000)
     
     # Group leads by their column status, mapping legacy statuses to valid column IDs
     grouped = {}

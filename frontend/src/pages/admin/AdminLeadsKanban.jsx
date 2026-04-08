@@ -156,7 +156,7 @@ const AdminLeadsKanban = () => {
   const { quotes_enabled: quotesEnabled } = useSiteFeatureFlags();
   const [pipelines, setPipelines] = useState([]);
   const [selectedPipelineId, setSelectedPipelineId] = useState('');
-  const [leads, setLeads] = useState({});
+  const [allLeads, setAllLeads] = useState({});
   const [loading, setLoading] = useState(true);
   const [draggedLead, setDraggedLead] = useState(null);
   const [dragOverColumn, setDragOverColumn] = useState(null);
@@ -232,15 +232,27 @@ const AdminLeadsKanban = () => {
 
   const fetchLeads = useCallback(async () => {
     try {
-      const params = selectedPipelineId ? { pipeline_id: selectedPipelineId } : {};
-      const response = await axios.get(`${API}/leads/`, { headers: tokenHeaders, params });
-      setLeads(response.data);
+      const response = await axios.get(`${API}/leads/`, { headers: tokenHeaders });
+      setAllLeads(response.data);
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to load opportunities', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
-  }, [tokenHeaders, selectedPipelineId]);
+  }, [tokenHeaders]);
+
+  // Client-side filter: default pipeline shows all leads, other pipelines show only their leads
+  const leads = useMemo(() => {
+    if (!selectedPipelineId || !pipelines.length) return allLeads;
+    const selectedPipeline = pipelines.find(p => p.id === selectedPipelineId);
+    if (!selectedPipeline || selectedPipeline.is_default) return allLeads;
+    const filtered = {};
+    for (const [col, colLeads] of Object.entries(allLeads)) {
+      const matched = colLeads.filter(l => l.pipeline_id === selectedPipelineId);
+      if (matched.length > 0) filtered[col] = matched;
+    }
+    return filtered;
+  }, [allLeads, selectedPipelineId, pipelines]);
 
   const visibleSectionTabs = useMemo(() => {
     return SECTION_TABS.filter((tab) => (tab.id === 'quotes-contracts-esign' ? quotesEnabled : true));
@@ -263,13 +275,9 @@ const AdminLeadsKanban = () => {
 
   useEffect(() => {
     fetchPipelines();
-    fetchStaffOptions();
-  }, [fetchPipelines, fetchStaffOptions]);
-
-  // Fetch leads only after a pipeline is selected (or pipelines loaded)
-  useEffect(() => {
     fetchLeads();
-  }, [fetchLeads]);
+    fetchStaffOptions();
+  }, [fetchPipelines, fetchLeads, fetchStaffOptions]);
 
   const handleDragStart = (event, lead, fromColumn) => {
     setDraggedLead({ ...lead, fromColumn });
@@ -290,10 +298,10 @@ const AdminLeadsKanban = () => {
       return;
     }
 
-    const updated = { ...leads };
-    updated[draggedLead.fromColumn] = updated[draggedLead.fromColumn].filter((item) => item.id !== draggedLead.id);
-    updated[toColumn] = [{ ...draggedLead, status: toColumn }, ...updated[toColumn]];
-    setLeads(updated);
+    const updated = { ...allLeads };
+    updated[draggedLead.fromColumn] = (updated[draggedLead.fromColumn] || []).filter((item) => item.id !== draggedLead.id);
+    updated[toColumn] = [{ ...draggedLead, status: toColumn }, ...(updated[toColumn] || [])];
+    setAllLeads(updated);
 
     try {
       await axios.patch(`${API}/leads/${draggedLead.id}/status`, { status: toColumn }, { headers: tokenHeaders });
