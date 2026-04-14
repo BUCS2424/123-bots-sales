@@ -1429,6 +1429,15 @@ async def startup_event():
         await ensure_default_pipeline()
         logger.info("Default pipeline verified/seeded")
 
+        # Migrate support email from info@ to support@
+        site_settings = await db.admin_settings.find_one({"type": "site"})
+        if site_settings and site_settings.get("support_email") == "info@123bots.com":
+            await db.admin_settings.update_one(
+                {"type": "site"},
+                {"$set": {"support_email": "support@123bots.com"}}
+            )
+            logger.info("Migrated support email to support@123bots.com")
+
         catalog_sync_result = await sync_pdf_catalog(db)
         logger.info(
             "Catalog sync complete | updated=%s | products=%s | categories=%s",
