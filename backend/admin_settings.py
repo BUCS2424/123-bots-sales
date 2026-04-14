@@ -282,7 +282,7 @@ class SiteSettings(BaseModel):
     favicon_url: str = ""
     chatbot_icon_url: str = ""
     admin_email: str = ""
-    support_email: str = "info@123bots.com"
+    support_email: str = "support@123bots.com"
     maintenance_mode: bool = False
     debug_mode: bool = False
     require_account_for_checkout: bool = False
@@ -335,7 +335,7 @@ def _normalized_site_settings(settings: Optional[dict] = None) -> dict:
         "favicon_url": (data.get("favicon_url") or "").strip(),
         "chatbot_icon_url": (data.get("chatbot_icon_url") or "").strip(),
         "admin_email": (data.get("admin_email") or "").strip(),
-        "support_email": raw_support_email or "info@123bots.com",
+        "support_email": raw_support_email or "support@123bots.com",
         "maintenance_mode": bool(data.get("maintenance_mode", False)),
         "debug_mode": bool(data.get("debug_mode", False)),
         "require_account_for_checkout": bool(data.get("require_account_for_checkout", False)),
@@ -1576,7 +1576,7 @@ async def get_public_business_settings(db=Depends(get_db)):
         return {
             "business_name": "123Bots",
             "phone": "",
-            "email": "info@123bots.com",
+            "email": "support@123bots.com",
             "website": "https://123bots.com",
             "address": "",
             "city": "",
@@ -1597,7 +1597,7 @@ async def get_public_business_settings(db=Depends(get_db)):
     return {
         "business_name": settings.get("business_name", "123Bots"),
         "phone": settings.get("phone", ""),
-        "email": settings.get("email", "info@123bots.com"),
+        "email": settings.get("email", "support@123bots.com"),
         "website": settings.get("website", "https://123bots.com"),
         "address": settings.get("address", ""),
         "city": settings.get("city", ""),

@@ -56,7 +56,7 @@ const DevLocationPreview = () => {
     state: 'Alabama',
     zip: '36301',
     phone: '(334) 555-0123',
-    email: 'info@123bots.com',
+    email: 'support@123bots.com',
     hours: [
       { day: 'Monday - Friday', time: '9:00 AM - 6:00 PM' },
       { day: 'Saturday', time: '10:00 AM - 4:00 PM' },

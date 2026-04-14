@@ -127,7 +127,7 @@ export const generateOrganizationSchema = () => ({
     '@type': 'ContactPoint',
     telephone: '+1-877-702-2687',
     contactType: 'sales',
-    email: 'info@123bots.com',
+    email: 'support@123bots.com',
   },
   sameAs: [
     'https://facebook.com/123bots',

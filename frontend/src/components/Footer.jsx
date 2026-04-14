@@ -75,11 +75,11 @@ const Footer = () => {
                 (877) 702-2687
               </a>
               <a 
-                href={`mailto:${supportEmail || 'info@123bots.com'}`}
+                href={`mailto:${supportEmail || 'support@123bots.com'}`}
                 className="flex items-center text-gray-400 hover:text-white transition-colors text-sm"
               >
                 <Mail className="w-4 h-4 mr-2" />
-                {supportEmail || 'info@123bots.com'}
+                {supportEmail || 'support@123bots.com'}
               </a>
             </div>
           </div>

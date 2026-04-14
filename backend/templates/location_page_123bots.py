@@ -37,7 +37,7 @@ def generate_location_page_html(
     logo_url: str = "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png",
     site_name: str = "123Bots",
     phone: str = "(334) 555-0123",
-    email: str = "info@123bots.com",
+    email: str = "support@123bots.com",
     background_image: str = "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png",
     video_url: str = "/videos/butterfly_alpha.webm",
 ) -> str:
