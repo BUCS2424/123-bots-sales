@@ -350,6 +350,29 @@ async def delete_staff_member(staff_id: str):
     return {"message": "Staff member deleted"}
 
 
+class AdminPasswordReset(BaseModel):
+    new_password: str
+
+@router.put("/reset-password/{user_id}")
+async def admin_reset_user_password(user_id: str, data: AdminPasswordReset, authorization: str = Header(None)):
+    """Admin resets any user's password"""
+    from auth import decode_token, is_admin_or_above, get_password_hash
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing authorization token")
+    token_data = decode_token(authorization.split("Bearer ", 1)[1].strip())
+    if not token_data or not is_admin_or_above(token_data.role or ""):
+        raise HTTPException(status_code=403, detail="Admin access required")
+    if len(data.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    hashed = get_password_hash(data.new_password)
+    await db.users.update_one({"id": user_id}, {"$set": {"hashed_password": hashed, "updated_at": datetime.now(timezone.utc).isoformat()}})
+    return {"success": True, "message": f"Password reset for {user.get('email', user_id)}"}
+
+
+
 @router.get("/staff/{staff_id}/permissions")
 async def get_staff_permissions(staff_id: str):
     """Get permissions for a staff member"""

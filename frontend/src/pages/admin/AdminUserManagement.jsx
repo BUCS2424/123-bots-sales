@@ -5,7 +5,7 @@ import {
   Users, UserPlus, Shield, ShoppingBag, Truck, Store, Search,
   Mail, Phone, DollarSign, Edit2, Trash2, ChevronRight, Check,
   Crown, Tag, Percent, Package, Settings, Eye, EyeOff, Save,
-  AlertCircle, Building
+  AlertCircle, Building, KeyRound
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -41,6 +41,9 @@ const AdminUserManagement = () => {
   const [loadingStaff, setLoadingStaff] = useState(true);
   const [staffDialogOpen, setStaffDialogOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState(null);
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
+  const [resetPasswordUser, setResetPasswordUser] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
   const [staffForm, setStaffForm] = useState({
     email: '', name: '', password: '', role: 'sales', phone: ''
   });
@@ -132,6 +135,23 @@ const AdminUserManagement = () => {
       fetchStaff();
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to remove staff member.', variant: 'destructive' });
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!resetPasswordUser || !newPassword) return;
+    if (newPassword.length < 6) {
+      toast({ title: 'Error', description: 'Password must be at least 6 characters.', variant: 'destructive' });
+      return;
+    }
+    try {
+      await axios.put(`${API}/users/reset-password/${resetPasswordUser.id}`, { new_password: newPassword });
+      toast({ title: 'Password Reset', description: `Password updated for ${resetPasswordUser.email}` });
+      setResetPasswordOpen(false);
+      setResetPasswordUser(null);
+      setNewPassword('');
+    } catch (error) {
+      toast({ title: 'Error', description: error.response?.data?.detail || 'Failed to reset password.', variant: 'destructive' });
     }
   };
 
@@ -304,6 +324,9 @@ const AdminUserManagement = () => {
                           </Button>
                           <Button variant="ghost" size="sm" onClick={() => handleEditStaff(member)}>
                             <Edit2 className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => { setResetPasswordUser(member); setNewPassword(''); setResetPasswordOpen(true); }} className="text-amber-500 hover:text-amber-700" data-testid={`reset-password-${member.id}`}>
+                            <KeyRound className="w-4 h-4" />
                           </Button>
                           <Button variant="ghost" size="sm" onClick={() => handleDeleteStaff(member.id)} className="text-red-500 hover:text-red-700">
                             <Trash2 className="w-4 h-4" />
@@ -799,6 +822,24 @@ const AdminUserManagement = () => {
               Save Changes
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reset Password Dialog */}
+      <Dialog open={resetPasswordOpen} onOpenChange={setResetPasswordOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogTitle>Reset Password</DialogTitle>
+          <DialogDescription>Set a new password for {resetPasswordUser?.name || resetPasswordUser?.email}</DialogDescription>
+          <div className="space-y-4 mt-2">
+            <div>
+              <Label>New Password</Label>
+              <Input type="text" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Enter new password" className="mt-1" data-testid="reset-password-input" />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setResetPasswordOpen(false)}>Cancel</Button>
+              <Button onClick={handleResetPassword} data-testid="reset-password-confirm">Reset Password</Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

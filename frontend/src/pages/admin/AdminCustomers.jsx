@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
   Search, Users, Mail, Phone, MapPin, ShoppingBag,
-  DollarSign, Calendar, ChevronRight, UserPlus, LogIn
+  DollarSign, Calendar, ChevronRight, UserPlus, LogIn, KeyRound
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
+import { Dialog, DialogContent, DialogTitle } from '../../components/ui/dialog';
+import { Label } from '../../components/ui/label';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from '../../hooks/use-toast';
 
@@ -23,6 +25,9 @@ const AdminCustomers = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [creatingTestCustomer, setCreatingTestCustomer] = useState(false);
   const [impersonatingCustomerId, setImpersonatingCustomerId] = useState('');
+  const [resetPwOpen, setResetPwOpen] = useState(false);
+  const [resetPwUser, setResetPwUser] = useState(null);
+  const [resetPwValue, setResetPwValue] = useState('');
 
   useEffect(() => {
     fetchCustomers();
@@ -95,6 +100,20 @@ const AdminCustomers = () => {
       });
     } finally {
       setImpersonatingCustomerId('');
+    }
+  };
+
+  const handleResetCustomerPassword = async () => {
+    if (!resetPwUser || !resetPwValue || resetPwValue.length < 6) {
+      toast({ title: 'Error', description: 'Password must be at least 6 characters.', variant: 'destructive' });
+      return;
+    }
+    try {
+      await axios.put(`${API}/users/reset-password/${resetPwUser.user_id || resetPwUser.id}`, { new_password: resetPwValue });
+      toast({ title: 'Password Reset', description: `Password updated for ${resetPwUser.email}` });
+      setResetPwOpen(false);
+    } catch (error) {
+      toast({ title: 'Error', description: error.response?.data?.detail || 'Failed to reset password.', variant: 'destructive' });
     }
   };
 
@@ -261,6 +280,15 @@ const AdminCustomers = () => {
                           <Button
                             variant="outline"
                             size="sm"
+                            onClick={() => { setResetPwUser(customer); setResetPwValue(''); setResetPwOpen(true); }}
+                            className="text-amber-500 hover:text-amber-700"
+                            data-testid={`reset-password-customer-${customer.id}`}
+                          >
+                            <KeyRound className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => handleViewCustomer(customer)}
                             data-testid={`view-customer-button-${customer.id}`}
                           >
@@ -281,6 +309,23 @@ const AdminCustomers = () => {
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={resetPwOpen} onOpenChange={setResetPwOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogTitle>Reset Customer Password</DialogTitle>
+          <p className="text-sm text-gray-500">Set a new password for {resetPwUser?.name || resetPwUser?.email}</p>
+          <div className="space-y-4 mt-2">
+            <div>
+              <Label>New Password</Label>
+              <Input type="text" value={resetPwValue} onChange={(e) => setResetPwValue(e.target.value)} placeholder="Enter new password" className="mt-1" data-testid="reset-customer-password-input" />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setResetPwOpen(false)}>Cancel</Button>
+              <Button onClick={handleResetCustomerPassword} data-testid="reset-customer-password-confirm">Reset Password</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
