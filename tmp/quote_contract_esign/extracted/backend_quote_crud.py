@@ -212,7 +212,7 @@ async def send_quote_email(lead_id: str, quote_id: str, data: EmailQuoteRequest,
     company_phone = settings.get("phone", "(941) 466-4-DME") if settings else "(941) 466-4-DME"
     
     # Get frontend URL for signing link
-    frontend_url = os.environ.get("FRONTEND_URL", "https://bots-crm-preview.preview.emergentagent.com")
+    frontend_url = os.environ.get("FRONTEND_URL", "https://bot-erp-platform.preview.emergentagent.com")
     signing_link = f"{frontend_url}/sign/{quote_id}"
     
     # Format line items for email

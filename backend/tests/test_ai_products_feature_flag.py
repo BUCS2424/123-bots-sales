@@ -9,7 +9,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://bots-crm-preview.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://bot-erp-platform.preview.emergentagent.com')
 
 class TestPublicFeatureFlags:
     """Test public feature flags endpoint"""

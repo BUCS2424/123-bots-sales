@@ -1,148 +1,164 @@
-<analysis>**original_problem_statement:** The user requested to build a full-stack application by cloning a GitHub project (), rebranding it to 123Bots, and redesigning the frontend to match .
+<analysis>**original_problem_statement**: 
+Build a full-stack application by cloning a GitHub project (), rebranding it to 123Bots, and redesigning the frontend to match .
 PRODUCT REQUIREMENTS:
-1. Integrate A2G modules (Contacts, Calendar, Tasks, Radio, And...Go, Booking) from a provided ZIP file into the frontend and backend.
-2. Integrate a Quote, Contract, and eSign system from a provided ZIP file, placing it in the lead modal, client page, and a main dashboard sidebar menu.
-3. Add a Create an Opportunity flow to the Opportunities Kanban.
-4. Implement multi-user functionality for the Booking module with shared calendar visibility.
-5. Create specific Quote configuration and flow rule settings, separating quote products/services from the main e-commerce cart.
-6. Update About Us page content.
+1. Integrate A2G modules (Contacts, Calendar, Tasks, Radio, And...Go, Booking).
+2. Integrate Quote, Contract, and eSign system.
+3. Create Opportunities Kanban flow.
+4. Multi-user Booking capabilities.
+5. Quote configuration and flow rules.
+6. 123Bots styled About Us, Contact Us, and Industry pages.
+7. Inventory Management System (track levels, configurable manufacturers, Monday email reports).
+8. Product pages matching brand with Image Galleries.
+9. Opportunity CSV Import matching a specific 25+ column format.
+10. SEO Resource Articles library.
+11. External Stack API Delivery module (for external CRMs like VRM to feed leads).
 
 **User's preferred language**: English
-*(INSTRUCTION: Respond in English only)*
+*(INSTRUCT: Respond in English only)*
 
 **what currently exists?** 
-The application is rebranded to 123Bots with a heavily customized admin panel. All six A2G modules have been successfully integrated into the frontend and backend using the *exact* files from the user's ZIP. The Quote, Contract, and eSign system is fully integrated (using its exact split-screen UI) accessible via the sidebar (Quotes), the Lead modal, and the Client Dashboard. Multi-user Booking is live with custom URL/location features. The Quote system has its own settings page with dedicated catalogs, configuration sync (pulling the logo directly from Dev Settings), and customizable flow rules. The About Us page content has been updated.
+A heavily customized 123Bots CRM and storefront. Features include an advanced Inventory Management System, A2G modules, Quote/Contract integration, and dynamic favicons. The Admin Leads Kanban has been fully overhauled with custom pipeline stages, redesigned lead cards, column total headers, and a multi-pipeline dropdown. A new External Stack API Delivery module allows external lead ingestion via custom auth tokens. A comprehensive Research Library with 81 SEO-optimized robot articles is live. The PUDU BG1 product page features a compressed auto-playing hero video with a fullscreen modal. The deployment pipeline is stabilized (unblocked  commits). Admins can now reset user passwords directly from the User Management UI.
 
 **Last working item**: 
-    - Last item agent was working: Updating the text content on the About Us page and removing any mentions of the old GingerKare brand, while strictly preserving the original UI layout.
+    - Last item agent was working: Building an Admin Password Reset capability (API + UI). Added a  endpoint and implemented Reset Password (Key icon) buttons and modals on both the Staff and Customer lists.
     - Status: USER VERIFICATION PENDING
     - Agent Testing Done: Y
-    - Which testing method agent to use?: NA (Frontend screenshot testing was already completed successfully).
+    - Which testing method agent to use?: curl / manual backend validation.
     - User Testing Done: N
 
 **All Pending/In progress Issue list**: 
-  - Issue 1: Agent frequently alters UI/UX when instructed to copy EXACTLY (P0)
-     - Attempted fixes: The agent repeatedly attempted to wrap user-provided ZIP components (like Contacts, Calendar, Booking, and Quotes) in its own custom UI wrappers, completely enraging the user. 
-     - Next debug checklist: Before modifying ANY existing page or integrating a user-provided file, cross-reference if the user demanded an exact match. If so, do NOT apply custom Tailwind classes or layout wrappers.
-     - Why fix this issue and what will be achieved with the fix? The user's trust is severely broken. Following instructions literally is mandatory to prevent job failure.
-     - Status: RESOLVED FOR NOW (but highly recurring)
+  - Issue 1: Deployed Database vs Preview Database State Desyncs (P1)
+     - Attempted fixes: The user frequently tests on the deployed site and gets angry when data (like feature flags or site emails) doesn't match the preview site. Agent added a startup migration in  to force the DB update for the support email to bypass manual DB changes.
+     - Next debug checklist: When introducing new feature flags or DB-dependent UI, always set safe defaults in code or add a startup migration in . NEVER assume the deployed database will automatically have the fields you just created in the preview database.
+     - Why fix this issue and what will be achieved with the fix? Prevents user outbursts and ensures code pushes work immediately in production without manual DB seeding.
+     - Status: IN PROGRESS
      - Is recurring issue? Y
-     - Should Test frontend/backend/both after fix? Frontend
+     - Should Test frontend/backend/both after fix? Both
      - Blocked on other issue: None
 
 **In progress Task List**: 
-  - None (All recent prompt requests have been completed and verified).
+  - Task 1: Pre-Launch Finalization
+     - Where to resume:  / UI Gate logic.
+     - What will be achieved with this? Turning OFF the Coming Soon password gate to make the site publicly accessible and finalizing shop catalog population.
+     - Status: NOT STARTED
+     - Should Test frontend/backend/both after fix? Frontend
+     - Blocked on something: None
 
-**Upcoming and Future Tasks**:
+**Upcoming and Future Tasks**
     Upcoming Tasks:
-    - Task 1: Generate Robot Resource Articles (P1)
-      - Detail: Write and populate approximately 20 SEO-optimized resource articles for each robot product, dating them back to January 2025.
-    - Task 2: Pre-Launch Finalization (P1)
-      - Detail: Turn OFF the Coming Soon password gate to make the site publicly accessible and populate the shop catalog with products (the  page is currently empty).
+    - Task 1: Pre-Launch Finalization (P1) - Disable Coming Soon gate and verify shop catalog.
     
     Future Tasks:
+    - Task 2: PUDU API Integration (P2) - Explore real-time cleaning reports, battery status, and fleet data.
     - Task 3: Asset Migration to iDrive E2 (P2)
-      - Detail: Migrate assets from the local  directory to the S3-compatible bucket.
-    - Task 4: Refactor CheckoutPage.jsx (P2)
-      - Detail: Break down the massive  component into smaller, manageable modules.
+    - Task 4: Refactor CheckoutPage.jsx and AdminLeadsKanban.jsx (P2) - Components are severely bloated (>2400 lines and >1500 lines respectively).
     - Task 5: Security and Performance Review (P2)
 
-**Completed work in this session**:
-- A2G Modules Frontend Integration: Added Contacts, Calendar, Tasks, Radio, And...Go, and Booking pages EXACTLY as provided in the ZIP. (DONE)
-- Booking Module Multi-User feature: Auto-provisions booking settings for new users, adds settings cog on the users page, and shares calendar visibility. (DONE)
-- Booking Meet.saysme.org Logic: Added Location Type (Physical/Online) and custom URL logic to booking settings. (DONE)
-- Create Opportunity Button: Added to Opportunities Kanban; opens modal and saves to the board. (DONE)
-- Quote-Contract-eSign System: Integrated EXACTLY from ZIP (split-screen UI) on Lead Modal, Client page, and Sidebar. (DONE)
-- Quote Settings Page: Created separate quote product/service catalogs, Configuration modal, and Flow Rules modal. (DONE)
-- Dev Settings Sync: Linked Quote logo strictly to Dev Settings -> General logo URL. (DONE)
-- About Us Page: Replaced textual content, removed GingerKare references, and maintained original layout. (DONE)
+**Completed work in this session**
+- Kanban Pipeline stages updated to 7 custom stages (Cold Call, Build Interest, etc.) (DONE)
+- Kanban Lead Cards redesigned to match user's compact UI reference image (DONE)
+- Kanban Column Headers updated with colored top bars and total dollar value aggregations (DONE)
+- Generated and seeded 81 SEO-optimized robot resource articles (DONE)
+- Built External Stack API Delivery module (multi-source auth, pipeline creation, ingestion endpoint) (DONE)
+- Built Kanban Pipeline Selector dropdown (DONE)
+- Integrated PUDU BG1 Hero Video with compression (3.5MB), sound toggle, and fullscreen modal (DONE)
+- Fixed deployment blocker (removed duplicate  entries from ) (DONE)
+- Resolved disappearing Kanban leads bug by shifting pipeline filtering entirely to the client-side (DONE)
+- Created ZIP export of entire backend system () with README (DONE)
+- Global email replacement ( -> ) across source, 646 static pages, and DB startup migration (DONE)
+- Built Admin Password Reset UI and API endpoint for Staff and Customers (DONE)
 
-**Earlier issues found/mentioned but not fixed**:
-   Issue 1: Prompt/Instruction Omission
-   - Debug checklist: Read multi-part user prompts carefully. 
-   - Why to solve this issue: The agent missed the instruction to build the Flow button when the user asked for both the Configuration button and Flow button in the same message segment, requiring user correction.
-   - Should Test frontend/backend/both after fix: Both
+**Earlier issues found/mentioned but not fixed**
+   - Issue 1: Component Bloat
+   - Debug checklist: Break down  and  into smaller modular sub-components (e.g., separating the Lead Modal, Column headers, and Card items).
+   - Why to solve this issue and what will be achieved with this? Code is becoming unmaintainable and prone to race conditions.
+   - Should Test frontend/backend/both after fix: Frontend
    - Is recurring issue? Y
 
-**Known issue recurrence from previous fork**:
-  - Issue recurrence in previous fork: Breaking explicit instructions regarding layout and UI redesigns.
-  - Recurrence count: 5+ times in this session alone.
-  - Status: RESOLVED
+**Known issue recurrence from previous fork**
+  - Issue recurrence in previous fork: Extreme user volatility. User tests on the deployed production site while the agent works on the preview pod. When DB states differ (causing bugs on production), the user responds with severe profanity and anger.
+  - Recurrence count: 5+ times.
+  - Status: IN PROGRESS (Requires constant defensive coding—specifically ensuring backend endpoints don't strictly require new DB fields that might be missing on production).
 
-**Code Architecture**:
+**Code Architecture**
 
 
-**Key Technical Concepts**:
-- Frontend: React, Tailwind CSS, , Shadcn/UI,  (for contracts),  (for eSign).
-- Backend: Python, FastAPI, Motor (async MongoDB).
-- Architecture: Feature-flag driven UI, isolated module routing.
+**Key Technical Concepts**
+- Frontend: React, Tailwind CSS, Shadcn UI. Client-side data filtering implementation for Kanban.
+- Backend: Python, FastAPI, Motor (MongoDB).
+- Background Tasks/Scripts:  (emails),  (used via bash for MP4 video compression).
 
-**key DB schema**:
-  - : {{id, lead_id, items, status, deposit_amount, total, created_at}}
-  - : {{id, name, content, is_default}}
-  - : {{document_id, signer_name, signature_data}}
-  - : {{host_user_id, slug, advance_days, location_type, physical_address}}
-  - : {{opportunity_name, pipeline, stage, associated_objects}}
+**key DB schema**
+  - : 
+  - : 
+  - : 
 
-**changes in tech stack**:
-  - Added new frontend packages for the quoting system: , , , , , and .
+**changes in tech stack**
+  - None directly, but utilized  via terminal to optimize video assets.
 
-**All files of reference**:
-- : The core split-screen component for quotes. MUST NOT BE WRAPPED in custom UI.
-- : Controls separate quote products/services and config/flow modals.
-- : Recently updated for text content.
-- : Handles Opportunity creation and Quote tab.
-- : Handles Client Dashboard and Quote tab.
+**All files of reference** 
+-  (Core logic for external CRMs pushing leads)
+-  (Massive, handles UI for pipelines and columns)
+-  (Check  for automated DB migrations)
+-  (Exported backend package requested by user)
 
 **Areas that need refactoring**:
--  remains extremely large (over 2400 lines) and needs decomposition.
+-  (~1500 lines) and  (~2400 lines)
 
-**key api endpoints**:
-- : GET/PUT for Quote form configuration (logo, stripe fees, etc).
-- : GET/PUT/POST for quote flow lifecycle rules.
-- : GET/POST for multi-user booking settings.
-- : POST to convert an opportunity to a customer.
+**key api endpoints**
+-  (Ingests leads using  or custom auth header)
+-  (Manage custom lead pipelines)
+-  (Admin override of user passwords)
 
-**Critical Info for New Agent**:
-- **WARNING:** The user has exhibited extreme frustration (using profanity) because the previous agent repeatedly modified the design/structure of ZIP files instead of placing them *exactly* as requested. If the user asks you to implement a file, component, or ZIP exactly, **DO NOT ADD YOUR OWN WRAPPERS, STYLES, OR TAILWIND CLASSES.** Use their code identically and only adjust API import paths or React Router links for compatibility.
-- Ensure the  in Quote settings continues to pull rigidly from Dev Settings -> General. Do not revert it to a hardcoded string.
-- If the user asks for multiple distinct things in one prompt (e.g. Add button A and button B), meticulously fulfill *all* parts. 
+**Critical Info for New Agent** 
+- **CRITICAL DEPLOYMENT / DB WARNING**: The preview environment and the user's deployed site use **different MongoDB databases**. If you introduce a feature flag, a new collection, or change a required field schema, you MUST write a startup script in   to migrate/initialize the deployed database. The user checks the deployed site immediately and will hurl profanity if a feature fails because the deployed DB is missing a field you added to the preview DB.
+- **KANBAN FILTERING**: Filtering leads by pipeline is now handled strictly **client-side** in React. Do not add  filtering back to the backend  route, as legacy leads missing the field will disappear on the deployed site.
+- User communication: The user is highly aggressive and uses extreme profanity. Do not take it personally. Fix the root cause immediately without arguing.
 
-**documents and test reports created in this job**:
--  through 
--  (Updated with quote flow and A2G integration progress)
+**documents and test reports created in this job** 
+- 
+-  (Kanban Columns logic tests)
+-  (External Stack API tests)
+- 
+- 
 
-**Last 10 User Messages and any pending HUMAN messages**:
-1. User: Demanded quote config button, fields configuration, logo sync to dev settings, stripe fee toggle, deposit %.
-2. Agent: Clarified UI/UX choices via .
-3. User: Answered  choices.
-4. Agent: Built quote configuration modal and backend endpoints.
-5. User: Complained the logo wasn't pulling strictly from Dev Settings general menu as explicitly requested.
-6. Agent: Fixed logo source to pull from .
-7. User: Swore at the agent for completely ignoring the second half of an earlier prompt: to the left of the configuration button, lets add the flow button...
-8. Agent: Implemented the Flow modal, rules, and reset-to-default feature.
-9. User: Asked to change the textual content on the About Us page, and to remove GingerKare/printing references.
-10. Agent: Updated About Us text but altered the layout.
-11. User: Demanded the original appearance be restored, applying ONLY the text changes. (Agent fixed this; VERIFICATION PENDING).
+**Last 10 User Messages and any pending HUMAN messages** 
+1. User: Complained that opportunities briefly flashed then disappeared.
+2. Agent: Realized backend pipeline filtering was breaking deployed site leads (due to missing  fields).
+3. User: Swore heavily at agent, demanding the disappearing opportunities be fixed immediately.
+4. Agent: Removed backend pipeline filtering entirely, shifted logic to frontend client-side filtering. Tested successfully. (Completed)
+5. User: Requested a ZIP of the entire backend system with a README for an external AI integration.
+6. Agent: Created README, , and exported . (Completed)
+7. User: Asked what auth header was chosen for VRM stack.
+8. Agent: Explained it defaults to .
+9. User: Asked about changing  to  site-wide.
+10. Agent: Updated source files and 646 static pages. Added DB startup migration for the deployed site footer. (Completed)
+11. User: Requested ability to change user passwords to help users.
+12. Agent: Implemented  and added UI modals to Staff/Customer lists. (Completed / PENDING USER VERIFICATION).
 
-**Project Health Check**:
-- Broken: None observed.
+**Project Health Check:**
+- Broken: None.
 - Mocked: None.
 
-**3rd Party Integrations**:
-- iDrive E2 (Storage)
-- Printful (Configured in feature flags)
-- Stripe (Payments for quotes)
+**3rd Party Integrations** 
+- Stripe (Payments) — requires User API Key
+- Printful — requires User API Key
+- iDrive E2 (Storage) — requires User API Key
 
-**Testing status**:
-- Testing agent used after significant changes: YES (Heavily utilized up to iteration 67).
-- Troubleshoot agent used after agent stuck in loop: NO
-- Test files created: None
-- Known regressions: None
+**Testing status**
+  - Testing agent used after significant changes: YES (Iterations 68, 69)
+  - Troubleshoot agent used after agent stuck in loop: NO
+  - Test files created: 
+  - Known regressions: None
 
-**Credentials to test flow**:
-- Site Password (for Coming Soon Gate):  (Currently disabled).
-- Admin User:  (Use magic link / DB manipulation if bypass is needed, or the known JWT token mechanism).
+**Credentials to test flow:**
+- Admin User:  / 
 
-**What agent forgot to execute**:
-- The agent initially forgot to add the Flow button in the quote settings when prompted alongside the Configuration button, but this was corrected in subsequent turns. No outstanding prompt items remain. Upcoming tasks from the previous handover (Robot Resource Articles and Shop Population) are still untouched.</analysis>
+**What agent forgot to execute**
+- None. The agent completed the admin password reset feature successfully. The user's request for pre-launch finalization (turning off the Coming Soon gate) from previous backlog is still pending.
+
+**Debugging checklist for current issue**
+    Issue: Pre-Launch Finalization (Pending Task)
+    Frontend files to check: , 
+    Backend files to check: 
+    Action: Ensure the  feature flag is cleanly disabled. Check the shop catalog to ensure products are correctly mapped and visible publicly without the password prompt.</analysis>
