@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { CheckCircle, ArrowRight, Phone, ChevronLeft, ChevronRight, Zap, Volume2, VolumeX, Maximize2, X } from 'lucide-react';
+import { CheckCircle, ArrowRight, Phone, ChevronLeft, ChevronRight, Zap, Volume2, VolumeX, Maximize2, X, Play } from 'lucide-react';
 import { setSeoMetadata, generateProductSchema } from '../lib/seo';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -12,6 +12,7 @@ const ROBOT_PRODUCTS = {
     tagline: 'Professional Commercial Floor Scrubber',
     description: 'The PUDU CC1 PRO is an advanced autonomous floor scrubber designed for commercial spaces. With state-of-the-art LiDAR navigation and AI-powered obstacle avoidance, it delivers consistent, professional-grade cleaning results.',
     image: '/images/bots/pringle-cc1-robot.png',
+    productVideo: '/videos/cc1-pro.mp4',
     features: [
       'Advanced LiDAR Navigation',
       '360° Obstacle Detection',
@@ -345,6 +346,16 @@ const RobotProductPage = () => {
                   <Phone className="w-5 h-5 mr-2" />
                   Call (877) 702-2687
                 </a>
+                {product.productVideo && (
+                  <button
+                    onClick={() => setVideoModalOpen(true)}
+                    className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-full text-center hover:from-blue-500 hover:to-purple-500 transition-all flex items-center justify-center gap-2"
+                    data-testid="watch-video-btn"
+                  >
+                    <Play className="w-5 h-5" />
+                    Watch Video
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -584,7 +595,7 @@ const RobotProductPage = () => {
       <Footer />
 
       {/* Fullscreen Video Modal */}
-      {videoModalOpen && product.heroVideo && (
+      {videoModalOpen && (product.heroVideo || product.productVideo) && (
         <div
           className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
           onClick={() => setVideoModalOpen(false)}
@@ -601,7 +612,7 @@ const RobotProductPage = () => {
           <div className="w-full max-w-6xl mx-4" onClick={(e) => e.stopPropagation()}>
             <video
               ref={modalVideoRef}
-              src={product.heroVideoFull || product.heroVideo}
+              src={product.heroVideoFull || product.heroVideo || product.productVideo}
               autoPlay
               loop
               playsInline
