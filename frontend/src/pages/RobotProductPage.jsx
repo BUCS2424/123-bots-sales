@@ -76,6 +76,7 @@ const ROBOT_PRODUCTS = {
     tagline: 'Compact Sweeping Solution',
     description: 'The PUDU SH1 is perfect for smaller spaces and daily maintenance routines. Its compact design allows it to navigate tight spaces while delivering thorough cleaning performance.',
     image: '/images/bots/robot-pudush.png',
+    productVideo: '/videos/pudu-sh1.mp4',
     features: [
       'Compact Design',
       'Quiet Operation',
