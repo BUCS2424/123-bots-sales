@@ -258,8 +258,8 @@ const HomePage = () => {
               From pristine floors to seamless logistics, our intelligent robots revolutionize commercial spaces. 
               Our <span className="text-blue-400 font-semibold">commercial cleaning bots</span> deliver deeper, more consistent cleaning—
               boosting hygiene standards across hospitals, warehouses, and corporate campuses with 24/7 autonomous operation. 
-              Meanwhile, our <span className="text-purple-400 font-semibold">industrial delivery robots</span> handle payloads from 10kg 
-              to 600kg, streamlining material transport in factories, hotels, and distribution centers. Together, these 
+              Meanwhile, our <span className="text-purple-400 font-semibold">industrial delivery robots</span> handle payloads from 22lbs 
+              to 1322lbs, streamlining material transport in factories, hotels, and distribution centers. Together, these 
               advanced machines enhance safety, maximize efficiency, and deliver significant operational savings.
             </p>
           </div>
