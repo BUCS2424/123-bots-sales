@@ -346,21 +346,27 @@ const RobotProductPage = () => {
                   <Phone className="w-5 h-5 mr-2" />
                   Call (877) 702-2687
                 </a>
-                {product.productVideo && (
-                  <button
-                    onClick={() => setVideoModalOpen(true)}
-                    className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-full text-center hover:from-blue-500 hover:to-purple-500 transition-all flex items-center justify-center gap-2"
-                    data-testid="watch-video-btn"
-                  >
-                    <Play className="w-5 h-5" />
-                    Watch Video
-                  </button>
-                )}
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Vertical Watch Video Button - Fixed to Right Side */}
+      {product.productVideo && (
+        <button
+          onClick={() => setVideoModalOpen(true)}
+          className="fixed right-0 top-1/2 -translate-y-1/2 z-50 bg-gradient-to-b from-blue-600 via-purple-600 to-blue-600 text-white font-bold py-8 px-4 rounded-l-2xl shadow-2xl hover:px-6 transition-all duration-300 group"
+          data-testid="watch-video-btn-vertical"
+          style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+        >
+          <div className="flex flex-col items-center gap-3">
+            <Play className="w-6 h-6 rotate-90 group-hover:scale-110 transition-transform" />
+            <span className="text-lg tracking-wider">WATCH VIDEO</span>
+            <Play className="w-6 h-6 rotate-90 group-hover:scale-110 transition-transform" />
+          </div>
+        </button>
+      )}
 
       {/* Features Section */}
       <section className="py-20 bg-bots-dark">
