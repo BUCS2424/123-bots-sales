@@ -121,9 +121,9 @@ const ROBOT_PRODUCTS = {
     useCases: ['Large Warehouses', 'Shopping Centers', 'Airports', 'Universities', 'Stadiums'],
   },
   'pudu-bg1': {
-    name: 'PUDU BG1',
+    name: 'PUDU BG1 PRO',
     tagline: 'AI-Native Large Scrubber-Dryer Robot',
-    description: 'The world\'s first AI-Native Large Scrubber-Dryer Robot. The PUDU BG1 delivers ultra-long runtime and ultra-high cleaning efficiency with one-pass sweep and scrub capability, perfect for large commercial spaces requiring 24/7 autonomous cleaning.',
+    description: 'The world\'s first AI-Native Large Scrubber-Dryer Robot. The PUDU BG1 PRO delivers ultra-long runtime and ultra-high cleaning efficiency with one-pass sweep and scrub capability, perfect for large commercial spaces requiring 24/7 autonomous cleaning.',
     image: '/images/products/pudu-bg1/bg1-front.jpg',
     heroVideo: '/images/products/pudu-bg1/pudu-bg1-hero-sm.mp4',
     heroVideoFull: '/images/products/pudu-bg1/pudu-bg1-hero.mp4',
