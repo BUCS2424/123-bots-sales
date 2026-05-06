@@ -254,11 +254,13 @@ const HomePage = () => {
           {/* Intro Text */}
           <div className="text-center mb-16">
             <p className="text-white text-lg max-w-4xl mx-auto leading-relaxed">
-              <span className="font-bold">Elevate Your Clean. Automate Your Scrubbing</span><br /><br />
-              Robotic floor scrubbers are redefining floor care. They deliver a deeper, more consistent clean, 
-              creating environments that are demonstrably cleaner, safer, and highly efficient. From hospitals 
-              to corporate campuses, these intelligent machines boost hygiene standards and guarantee significant 
-              operational savings.
+              <span className="font-bold">Transform Your Operations with Autonomous Robotics</span><br /><br />
+              From pristine floors to seamless logistics, our intelligent robots revolutionize commercial spaces. 
+              Our <span className="text-blue-400 font-semibold">commercial cleaning bots</span> deliver deeper, more consistent cleaning—
+              boosting hygiene standards across hospitals, warehouses, and corporate campuses with 24/7 autonomous operation. 
+              Meanwhile, our <span className="text-purple-400 font-semibold">industrial delivery robots</span> handle payloads from 10kg 
+              to 600kg, streamlining material transport in factories, hotels, and distribution centers. Together, these 
+              advanced machines enhance safety, maximize efficiency, and deliver significant operational savings.
             </p>
           </div>
 
