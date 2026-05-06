@@ -356,15 +356,11 @@ const RobotProductPage = () => {
       {product.productVideo && (
         <button
           onClick={() => setVideoModalOpen(true)}
-          className="fixed right-0 top-1/2 -translate-y-1/2 z-50 bg-gradient-to-b from-blue-600 via-purple-600 to-blue-600 text-white font-bold py-8 px-4 rounded-l-2xl shadow-2xl hover:px-6 transition-all duration-300 group"
+          className="fixed right-0 top-1/2 -translate-y-1/2 z-50 bg-gradient-to-b from-blue-600 via-purple-600 to-blue-600 text-white font-bold py-6 px-3 rounded-l-2xl shadow-2xl hover:px-4 transition-all duration-300 group"
           data-testid="watch-video-btn-vertical"
           style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
         >
-          <div className="flex flex-col items-center gap-3">
-            <Play className="w-6 h-6 rotate-90 group-hover:scale-110 transition-transform" />
-            <span className="text-lg tracking-wider">WATCH VIDEO</span>
-            <Play className="w-6 h-6 rotate-90 group-hover:scale-110 transition-transform" />
-          </div>
+          <span className="text-lg tracking-widest">WATCH VIDEO</span>
         </button>
       )}
 
