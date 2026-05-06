@@ -65,9 +65,9 @@ const Header = () => {
         {
           title: 'Industrial Delivery Bots',
           items: [
-            { label: 'FlashBot Max', href: '/products/flashbot-max' },
-            { label: 'Pudu T300', href: '/products/pudu-t300' },
-            { label: 'Pudu T600', href: '/products/pudu-t600' },
+            { label: 'FLASHBOT MAX', href: '/products/flashbot-max' },
+            { label: 'PUDU T300', href: '/products/pudu-t300' },
+            { label: 'PUDU T600', href: '/products/pudu-t600' },
           ],
         },
       ],
