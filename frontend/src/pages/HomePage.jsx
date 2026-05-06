@@ -52,6 +52,33 @@ const PRODUCTS = [
     link: '/products/pudu-mt1',
     color: 'purple',
   },
+  {
+    id: 'flashbot-max',
+    name: 'FLASHBOT MAX',
+    fullName: 'FlashBot Max',
+    image: '/images/bots/flashbot-max.webp',
+    buttonImage: '/images/buttons/button-flashbot-max.png',
+    link: '/products/flashbot-max',
+    color: 'cyan',
+  },
+  {
+    id: 'pudu-t300',
+    name: 'PUDU T300',
+    fullName: 'PUDU T300',
+    image: '/images/bots/pudu-t300.png',
+    buttonImage: '/images/buttons/button-pudu-t300.png',
+    link: '/products/pudu-t300',
+    color: 'indigo',
+  },
+  {
+    id: 'pudu-t600',
+    name: 'PUDU T600',
+    fullName: 'PUDU T600',
+    image: '/images/bots/pudu-t600.png',
+    buttonImage: '/images/buttons/button-pudu-t600.png',
+    link: '/products/pudu-t600',
+    color: 'violet',
+  },
 ];
 
 // Industries served
@@ -227,30 +254,53 @@ const HomePage = () => {
             </p>
           </div>
 
-          {/* Products Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-12 mb-16 max-w-[1800px] mx-auto">
-            {PRODUCTS.map((product, index) => (
-              <Link 
-                key={product.id}
-                to={product.link}
-                className="group text-center animate-fade-in-up"
-                style={{ animationDelay: `${index * 100}ms` }}
-                data-testid={`product-card-${product.id}`}
-              >
-                <div className="relative mb-6">
-                  <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <img 
-                    src={product.image} 
-                    alt={product.fullName}
-                    className="w-full h-64 object-contain mx-auto transform group-hover:scale-110 transition-transform duration-300"
-                  />
-                </div>
-                <h3 className="text-white font-bold text-2xl mb-2">{product.name}</h3>
-                <p className="text-blue-400 text-sm group-hover:text-blue-300 transition-colors">
-                  Click to see more...
-                </p>
-              </Link>
-            ))}
+          {/* Products Grid - Infinite Scroll */}
+          <div className="relative overflow-hidden mb-16">
+            <div className="flex animate-scroll-infinite gap-12">
+              {/* First set of products */}
+              {PRODUCTS.map((product, index) => (
+                <Link 
+                  key={`${product.id}-1`}
+                  to={product.link}
+                  className="group text-center flex-shrink-0 w-64"
+                  data-testid={`product-card-${product.id}`}
+                >
+                  <div className="relative mb-6">
+                    <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <img 
+                      src={product.image} 
+                      alt={product.fullName}
+                      className="w-full h-64 object-contain mx-auto transform group-hover:scale-110 transition-transform duration-300"
+                    />
+                  </div>
+                  <h3 className="text-white font-bold text-2xl mb-2">{product.name}</h3>
+                  <p className="text-blue-400 text-sm group-hover:text-blue-300 transition-colors">
+                    Click to see more...
+                  </p>
+                </Link>
+              ))}
+              {/* Duplicate set for seamless loop */}
+              {PRODUCTS.map((product, index) => (
+                <Link 
+                  key={`${product.id}-2`}
+                  to={product.link}
+                  className="group text-center flex-shrink-0 w-64"
+                >
+                  <div className="relative mb-6">
+                    <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <img 
+                      src={product.image} 
+                      alt={product.fullName}
+                      className="w-full h-64 object-contain mx-auto transform group-hover:scale-110 transition-transform duration-300"
+                    />
+                  </div>
+                  <h3 className="text-white font-bold text-2xl mb-2">{product.name}</h3>
+                  <p className="text-blue-400 text-sm group-hover:text-blue-300 transition-colors">
+                    Click to see more...
+                  </p>
+                </Link>
+              ))}
+            </div>
           </div>
 
           {/* Product Buttons */}

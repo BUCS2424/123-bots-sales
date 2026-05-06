@@ -296,3 +296,21 @@ body,
   opacity: 0.03;
   pointer-events: none;
 }
+
+/* Infinite Scroll Animation for Products */
+@keyframes scroll-infinite {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-infinite {
+  animation: scroll-infinite 40s linear infinite;
+}
+
+.animate-scroll-infinite:hover {
+  animation-play-state: paused;
+}
