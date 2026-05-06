@@ -159,14 +159,25 @@ const Header = () => {
                 <div key={item.label} className="relative group">
                   {(item.items || item.columns) ? (
                     <>
-                      <button
-                        className="flex items-center px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium"
-                        onClick={() => handleDropdownToggle(item.label)}
-                        data-testid={`nav-${item.label.toLowerCase()}`}
-                      >
-                        {item.label}
-                        <ChevronDown className="w-4 h-4 ml-1" />
-                      </button>
+                      {item.href ? (
+                        <Link
+                          to={item.href}
+                          className="flex items-center px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium"
+                          data-testid={`nav-${item.label.toLowerCase()}`}
+                        >
+                          {item.label}
+                          <ChevronDown className="w-4 h-4 ml-1" />
+                        </Link>
+                      ) : (
+                        <button
+                          className="flex items-center px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium"
+                          onClick={() => handleDropdownToggle(item.label)}
+                          data-testid={`nav-${item.label.toLowerCase()}`}
+                        >
+                          {item.label}
+                          <ChevronDown className="w-4 h-4 ml-1" />
+                        </button>
+                      )}
                       {/* Dropdown */}
                       {item.twoColumn ? (
                         <div className="absolute top-full left-0 w-[500px] bg-bots-surface border border-gray-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 mt-1 p-4">
