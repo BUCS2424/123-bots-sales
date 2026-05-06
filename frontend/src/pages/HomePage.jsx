@@ -15,6 +15,7 @@ const PRODUCTS = [
     buttonImage: '/images/buttons/button-pudu-cc1-pro.png',
     link: '/products/pudu-cc1-pro',
     color: 'blue',
+    category: 'cleaning',
   },
   {
     id: 'bg1-pro',
@@ -24,6 +25,7 @@ const PRODUCTS = [
     buttonImage: '/images/buttons/button-pudu-bg1-pro.png',
     link: '/products/pudu-bg1',
     color: 'cyan',
+    category: 'cleaning',
   },
   {
     id: 'ab-kas',
@@ -33,6 +35,7 @@ const PRODUCTS = [
     buttonImage: '/images/buttons/button-avidbot-kas.png',
     link: '/products/ab-kas',
     color: 'green',
+    category: 'cleaning',
   },
   {
     id: 'sh1',
@@ -42,6 +45,7 @@ const PRODUCTS = [
     buttonImage: '/images/buttons/button-pudu-sh1.png',
     link: '/products/pudu-sh1',
     color: 'orange',
+    category: 'cleaning',
   },
   {
     id: 'mt1',
@@ -51,6 +55,7 @@ const PRODUCTS = [
     buttonImage: '/images/buttons/button-pudu-mt1-max.png',
     link: '/products/pudu-mt1',
     color: 'purple',
+    category: 'cleaning',
   },
   {
     id: 'flashbot-max',
@@ -60,6 +65,7 @@ const PRODUCTS = [
     buttonImage: '/images/buttons/button-flashbot-max.png',
     link: '/products/flashbot-max',
     color: 'cyan',
+    category: 'delivery',
   },
   {
     id: 'pudu-t300',
@@ -69,6 +75,7 @@ const PRODUCTS = [
     buttonImage: '/images/buttons/button-pudu-t300.png',
     link: '/products/pudu-t300',
     color: 'indigo',
+    category: 'delivery',
   },
   {
     id: 'pudu-t600',
@@ -78,6 +85,7 @@ const PRODUCTS = [
     buttonImage: '/images/buttons/button-pudu-t600.png',
     link: '/products/pudu-t600',
     color: 'violet',
+    category: 'delivery',
   },
 ];
 
@@ -262,9 +270,20 @@ const HomePage = () => {
                 <Link 
                   key={`${product.id}-1`}
                   to={product.link}
-                  className="group text-center flex-shrink-0 w-64"
+                  className="group text-center flex-shrink-0 w-64 relative"
                   data-testid={`product-card-${product.id}`}
                 >
+                  {/* Category Badge */}
+                  <div className="absolute top-0 right-0 z-10">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      product.category === 'cleaning' 
+                        ? 'bg-blue-600/80 text-white' 
+                        : 'bg-purple-600/80 text-white'
+                    } backdrop-blur-sm`}>
+                      {product.category === 'cleaning' ? '🧹 Cleaning' : '📦 Delivery'}
+                    </span>
+                  </div>
+                  
                   <div className="relative mb-6">
                     <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                     <img 
@@ -284,8 +303,19 @@ const HomePage = () => {
                 <Link 
                   key={`${product.id}-2`}
                   to={product.link}
-                  className="group text-center flex-shrink-0 w-64"
+                  className="group text-center flex-shrink-0 w-64 relative"
                 >
+                  {/* Category Badge */}
+                  <div className="absolute top-0 right-0 z-10">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      product.category === 'cleaning' 
+                        ? 'bg-blue-600/80 text-white' 
+                        : 'bg-purple-600/80 text-white'
+                    } backdrop-blur-sm`}>
+                      {product.category === 'cleaning' ? '🧹 Cleaning' : '📦 Delivery'}
+                    </span>
+                  </div>
+                  
                   <div className="relative mb-6">
                     <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                     <img 
