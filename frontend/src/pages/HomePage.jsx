@@ -17,6 +17,15 @@ const PRODUCTS = [
     color: 'blue',
   },
   {
+    id: 'bg1-pro',
+    name: 'BG1 PRO',
+    fullName: 'PUDU BG1 PRO',
+    image: '/images/bots/pudu-bg1-pro.png',
+    buttonImage: '/images/buttons/button-pudu-bg1-pro.png',
+    link: '/products/pudu-bg1',
+    color: 'cyan',
+  },
+  {
     id: 'ab-kas',
     name: 'AB KAS',
     fullName: 'AVIDBOT KAS',
@@ -200,7 +209,7 @@ const HomePage = () => {
           </div>
 
           {/* Products Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-12">
             {PRODUCTS.map((product, index) => (
               <Link 
                 key={product.id}
