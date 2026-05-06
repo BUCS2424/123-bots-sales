@@ -196,7 +196,7 @@ const HomePage = () => {
         </video>
         <div className="absolute inset-0 bg-bots-dark/70" />
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4">
+        <div className="relative z-10 w-full px-8">
           {/* Intro Text */}
           <div className="text-center mb-16">
             <p className="text-white text-lg max-w-4xl mx-auto leading-relaxed">
@@ -209,7 +209,7 @@ const HomePage = () => {
           </div>
 
           {/* Products Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-12">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-12 mb-16 max-w-[1800px] mx-auto">
             {PRODUCTS.map((product, index) => (
               <Link 
                 key={product.id}
@@ -218,15 +218,15 @@ const HomePage = () => {
                 style={{ animationDelay: `${index * 100}ms` }}
                 data-testid={`product-card-${product.id}`}
               >
-                <div className="relative mb-4">
+                <div className="relative mb-6">
                   <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                   <img 
                     src={product.image} 
                     alt={product.fullName}
-                    className="w-full h-48 object-contain mx-auto transform group-hover:scale-110 transition-transform duration-300"
+                    className="w-full h-64 object-contain mx-auto transform group-hover:scale-110 transition-transform duration-300"
                   />
                 </div>
-                <h3 className="text-white font-bold text-xl mb-2">{product.name}</h3>
+                <h3 className="text-white font-bold text-2xl mb-2">{product.name}</h3>
                 <p className="text-blue-400 text-sm group-hover:text-blue-300 transition-colors">
                   Click to see more...
                 </p>
@@ -235,7 +235,7 @@ const HomePage = () => {
           </div>
 
           {/* Product Buttons */}
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-6">
             {PRODUCTS.map((product) => (
               <Link 
                 key={product.id}
@@ -245,7 +245,7 @@ const HomePage = () => {
                 <img 
                   src={product.buttonImage} 
                   alt={product.fullName}
-                  className="h-12 md:h-16"
+                  className="h-16 md:h-20"
                 />
               </Link>
             ))}
