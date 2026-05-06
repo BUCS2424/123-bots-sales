@@ -44,6 +44,8 @@ import UserPortal from './pages/UserPortal';
 // New 123Bots Pages
 import ProductsPage from './pages/ProductsPage';
 import RobotProductPage from './pages/RobotProductPage';
+import CommercialCleaningBotsPage from './pages/CommercialCleaningBotsPage';
+import IndustrialDeliveryBotsPage from './pages/IndustrialDeliveryBotsPage';
 import IndustryPage from './pages/IndustryPage';
 import ScheduleDemoPage from './pages/ScheduleDemoPage';
 import BuyLeasePage from './pages/BuyLeasePage';
@@ -227,6 +229,8 @@ const AppContent = () => {
                   <Route path="/shop/:categorySlug/:productSlug" element={<ProductDetailPage />} />
                   <Route path="/product/:productId" element={<LegacyProductRedirectPage />} />
                   <Route path="/products" element={<ProductsPage />} />
+                  <Route path="/commercial-cleaning-bots" element={<CommercialCleaningBotsPage />} />
+                  <Route path="/industrial-delivery-bots" element={<IndustrialDeliveryBotsPage />} />
                   <Route path="/products/:productSlug" element={<RobotProductPage />} />
                   <Route path="/industries/:industrySlug" element={<IndustryPage />} />
                   <Route path="/schedule-a-demo" element={<ScheduleDemoPage />} />

@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import { setSeoMetadata, SEO_PRESETS } from '../lib/seo';
+import { setSeoMetadata } from '../lib/seo';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-const PRODUCTS = [
-  // Commercial Cleaning Bots
+const CLEANING_BOTS = [
   {
     id: 'pudu-bg1',
     name: 'PUDU BG1 PRO',
@@ -15,8 +14,6 @@ const PRODUCTS = [
     image: '/images/bots/pudu-bg1-pro.png',
     features: ['One-Pass Sweep & Scrub', 'AI Spot Cleaning', '7.5+ Hour Runtime', '24/7 Operation'],
     color: 'blue',
-    category: 'Commercial Cleaning Bots',
-    categorySlug: 'cleaning',
   },
   {
     id: 'pudu-cc1-pro',
@@ -26,8 +23,6 @@ const PRODUCTS = [
     image: '/images/bots/pringle-cc1-robot.png',
     features: ['LiDAR Navigation', '360° Obstacle Detection', 'Auto Docking', '6+ Hour Battery'],
     color: 'blue',
-    category: 'Commercial Cleaning Bots',
-    categorySlug: 'cleaning',
   },
   {
     id: 'ab-kas',
@@ -37,8 +32,6 @@ const PRODUCTS = [
     image: '/images/bots/avidbot-kas.png',
     features: ['Heavy Duty', 'Large Capacity', 'Smart Mapping', 'Multi-Surface'],
     color: 'green',
-    category: 'Commercial Cleaning Bots',
-    categorySlug: 'cleaning',
   },
   {
     id: 'pudu-mt1',
@@ -48,8 +41,6 @@ const PRODUCTS = [
     image: '/images/bots/nav_product_mt.webp',
     features: ['Extended Range', 'High Capacity', 'Fast Charging', 'Real-time Monitoring'],
     color: 'purple',
-    category: 'Commercial Cleaning Bots',
-    categorySlug: 'cleaning',
   },
   {
     id: 'pudu-sh1',
@@ -59,76 +50,17 @@ const PRODUCTS = [
     image: '/images/bots/robot-pudush.png',
     features: ['Compact Design', 'Quiet Operation', 'Easy Setup', 'Cloud Connected'],
     color: 'orange',
-    category: 'Commercial Cleaning Bots',
-    categorySlug: 'cleaning',
-  },
-  // Industrial Delivery Bots
-  {
-    id: 'flashbot-max',
-    name: 'FlashBot Max',
-    tagline: 'Building Delivery Expert',
-    description: 'Multi-floor autonomous delivery robot with elevator calling and secure compartments for hotels, hospitals, and offices.',
-    image: '/images/bots/flashbot-max.webp',
-    features: ['Multi-Floor Navigation', 'Auto Elevator Calling', 'Secure Compartments', '9-12 Hour Runtime'],
-    color: 'cyan',
-    category: 'Industrial Delivery Bots',
-    categorySlug: 'delivery',
-  },
-  {
-    id: 'pudu-t300',
-    name: 'PUDU T300',
-    tagline: 'Industrial Delivery Powerhouse',
-    description: '300 kg payload capacity with intelligent autonomous operation for factories, warehouses, and logistics centers.',
-    image: '/images/bots/pudu-t300.png',
-    features: ['300 kg Payload', 'Multi-Mode Operation', '12 Hour Runtime', 'IoT Integration'],
-    color: 'indigo',
-    category: 'Industrial Delivery Bots',
-    categorySlug: 'delivery',
-  },
-  {
-    id: 'pudu-t600',
-    name: 'PUDU T600',
-    tagline: 'Heavy-Payload Industrial Champion',
-    description: '600 kg capacity with AI rack recognition and VDA5050 integration for high-density industrial environments.',
-    image: '/images/bots/pudu-t600.png',
-    features: ['600 kg Payload', 'AI Rack Recognition', 'VDA5050 Protocol', 'Fleet Coordination'],
-    color: 'violet',
-    category: 'Industrial Delivery Bots',
-    categorySlug: 'delivery',
   },
 ];
 
-const CATEGORIES = [
-  { label: 'All Products', slug: 'all' },
-  { label: 'Commercial Cleaning Bots', slug: 'cleaning' },
-  { label: 'Industrial Delivery Bots', slug: 'delivery' },
-];
-
-const ProductsPage = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const categoryParam = searchParams.get('category') || 'all';
-  const [selectedCategory, setSelectedCategory] = useState(categoryParam);
-  
+const CommercialCleaningBotsPage = () => {
   useEffect(() => {
     setSeoMetadata({
-      ...SEO_PRESETS.products,
-      title: 'Autonomous Robots | Commercial Cleaning & Industrial Delivery | 123 Bots',
+      title: 'Commercial Cleaning Robots | Autonomous Floor Scrubbers | 123 Bots',
+      description: 'Discover our lineup of AI-powered commercial cleaning robots. Autonomous floor scrubbers designed for hospitals, warehouses, retail spaces, and more.',
+      keywords: 'commercial cleaning robots, floor scrubbers, autonomous cleaners, PUDU robots, industrial floor cleaning',
     });
   }, []);
-
-  useEffect(() => {
-    // Update selected category when URL parameter changes
-    setSelectedCategory(categoryParam);
-  }, [categoryParam]);
-
-  const handleCategoryChange = (category) => {
-    setSelectedCategory(category);
-    setSearchParams(category === 'all' ? {} : { category });
-  };
-
-  const filteredProducts = selectedCategory === 'all' 
-    ? PRODUCTS 
-    : PRODUCTS.filter(p => p.categorySlug === selectedCategory);
 
   const getColorClass = (color) => {
     const colors = {
@@ -136,10 +68,6 @@ const ProductsPage = () => {
       green: 'from-green-500/20 to-transparent border-green-500/30',
       orange: 'from-orange-500/20 to-transparent border-orange-500/30',
       purple: 'from-purple-500/20 to-transparent border-purple-500/30',
-      cyan: 'from-cyan-500/20 to-transparent border-cyan-500/30',
-      indigo: 'from-indigo-500/20 to-transparent border-indigo-500/30',
-      violet: 'from-violet-500/20 to-transparent border-violet-500/30',
-      gray: 'from-gray-500/20 to-transparent border-gray-500/30',
     };
     return colors[color] || colors.blue;
   };
@@ -151,37 +79,22 @@ const ProductsPage = () => {
       {/* Hero Section */}
       <section className="pt-32 pb-16 bg-gradient-to-b from-bots-surface to-bots-dark">
         <div className="max-w-7xl mx-auto px-4 text-center">
+          <span className="inline-block px-4 py-2 bg-blue-600/20 border border-blue-500/30 rounded-full text-blue-400 text-sm font-semibold mb-6">
+            🧹 Commercial Cleaning Solutions
+          </span>
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            Autonomous Robot <span className="text-blue-400">Solutions</span>
+            Commercial <span className="text-blue-400">Cleaning Robots</span>
           </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Discover our complete lineup of AI-powered robots for commercial cleaning and industrial delivery.
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+            Transform your cleaning operations with AI-powered autonomous floor scrubbers. 
+            Designed for hospitals, warehouses, retail spaces, and commercial facilities.
           </p>
-        </div>
-      </section>
-
-      {/* Category Filter */}
-      <section className="py-8 bg-bots-dark border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-wrap justify-center gap-4">
-            {CATEGORIES.map((category) => (
-              <button
-                key={category.slug}
-                onClick={() => setSelectedCategory(category.slug)}
-                className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
-                  selectedCategory === category.slug
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/50 scale-105'
-                    : 'bg-bots-surface text-gray-300 hover:bg-bots-accent hover:text-white border border-gray-700'
-                }`}
-                data-testid={`filter-${category.slug}`}
-              >
-                {category.label}
-              </button>
-            ))}
+          <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-400">
+            <span className="flex items-center">✓ 24/7 Autonomous Operation</span>
+            <span className="flex items-center">✓ Zero Training Required</span>
+            <span className="flex items-center">✓ Consistent Results</span>
+            <span className="flex items-center">✓ Reduce Labor Costs</span>
           </div>
-          <p className="text-center text-gray-400 mt-4">
-            Showing {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'}
-          </p>
         </div>
       </section>
 
@@ -189,7 +102,7 @@ const ProductsPage = () => {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProducts.map((product, index) => (
+            {CLEANING_BOTS.map((product, index) => (
               <Link
                 key={product.id}
                 to={`/products/${product.id}`}
@@ -197,11 +110,6 @@ const ProductsPage = () => {
                 style={{ animationDelay: `${index * 100}ms` }}
                 data-testid={`product-card-${product.id}`}
               >
-                {/* Category Badge */}
-                <div className="absolute top-4 right-4 px-3 py-1 bg-blue-600/80 backdrop-blur-sm rounded-full text-xs font-semibold text-white">
-                  {product.categorySlug === 'cleaning' ? '🧹 Cleaning' : '📦 Delivery'}
-                </div>
-
                 {/* Product Image */}
                 <div className="h-48 flex items-center justify-center mb-6">
                   <img
@@ -236,12 +144,6 @@ const ProductsPage = () => {
               </Link>
             ))}
           </div>
-
-          {filteredProducts.length === 0 && (
-            <div className="text-center py-20">
-              <p className="text-gray-400 text-lg">No products found in this category.</p>
-            </div>
-          )}
         </div>
       </section>
 
@@ -249,23 +151,21 @@ const ProductsPage = () => {
       <section className="py-16 bg-gradient-to-r from-blue-600 to-blue-500">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-white mb-6">
-            Ready to See These Robots in Action?
+            Ready to Transform Your Cleaning Operations?
           </h2>
           <p className="text-white/80 text-lg mb-8">
-            Schedule a free demo at your facility and discover how our robots can transform your operations.
+            Schedule a free demo at your facility and see how our robots deliver spotless results, every time.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/schedule-a-demo"
               className="px-8 py-4 bg-white text-blue-600 font-bold rounded-full hover:bg-gray-100 transition-colors"
-              data-testid="products-cta-demo"
             >
               Schedule a Demo
             </Link>
             <Link
               to="/rent-or-buy-a-cleaning-bot"
               className="px-8 py-4 bg-green-500 text-black font-bold rounded-full hover:bg-green-400 transition-colors"
-              data-testid="products-cta-buy"
             >
               Buy or Lease
             </Link>
@@ -278,4 +178,4 @@ const ProductsPage = () => {
   );
 };
 
-export default ProductsPage;
+export default CommercialCleaningBotsPage;

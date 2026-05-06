@@ -126,15 +126,34 @@ const HomePage = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-bots-dark/80 via-bots-dark/60 to-bots-dark" />
         
         {/* Hero Content */}
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <p className="text-blue-400 font-semibold mb-4 animate-fade-in-down">CHECK OUT OUR</p>
-          <Link 
-            to="/rent-or-buy-a-cleaning-bot"
-            className="inline-block px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold rounded-full text-xl hover:from-blue-500 hover:to-blue-400 transition-all transform hover:scale-105 shadow-lg shadow-blue-500/30 mb-6 animate-fade-in"
-            data-testid="hero-cta-button"
-          >
-            Buy or Lease Program
-          </Link>
+        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
+          <p className="text-blue-400 font-semibold mb-6 animate-fade-in-down text-lg">EXPLORE OUR ROBOT SOLUTIONS</p>
+          
+          {/* Category Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6 animate-fade-in">
+            <Link 
+              to="/commercial-cleaning-bots"
+              className="group relative px-8 py-5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-full text-lg hover:from-blue-500 hover:to-cyan-400 transition-all transform hover:scale-105 shadow-lg shadow-blue-500/30 w-full sm:w-auto"
+              data-testid="hero-cta-cleaning"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-2xl">🧹</span>
+                <span>Commercial Cleaning Bots</span>
+              </div>
+            </Link>
+            
+            <Link 
+              to="/industrial-delivery-bots"
+              className="group relative px-8 py-5 bg-gradient-to-r from-purple-600 to-indigo-500 text-white font-bold rounded-full text-lg hover:from-purple-500 hover:to-indigo-400 transition-all transform hover:scale-105 shadow-lg shadow-purple-500/30 w-full sm:w-auto"
+              data-testid="hero-cta-delivery"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-2xl">📦</span>
+                <span>Industrial Delivery Bots</span>
+              </div>
+            </Link>
+          </div>
+          
           <p className="text-blue-300 text-sm mb-8 animate-fade-in">or continue scrolling down</p>
           
           {/* Scroll Down Indicator */}
