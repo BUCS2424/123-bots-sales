@@ -50,12 +50,26 @@ const Header = () => {
     {
       label: 'PRODUCTS',
       href: '/products',
-      items: [
-        { label: 'PUDU BG1', href: '/products/pudu-bg1' },
-        { label: 'AVIDBOT KAS', href: '/products/ab-kas' },
-        { label: 'PUDU CC1 PRO', href: '/products/pudu-cc1-pro' },
-        { label: 'PUDU MT1 MAX', href: '/products/pudu-mt1' },
-        { label: 'PUDU SH1', href: '/products/pudu-sh1' },
+      twoColumn: true,
+      columns: [
+        {
+          title: 'Commercial Cleaning Bots',
+          items: [
+            { label: 'PUDU BG1 PRO', href: '/products/pudu-bg1' },
+            { label: 'AVIDBOT KAS', href: '/products/ab-kas' },
+            { label: 'PUDU CC1 PRO', href: '/products/pudu-cc1-pro' },
+            { label: 'PUDU MT1 MAX', href: '/products/pudu-mt1' },
+            { label: 'PUDU SH1', href: '/products/pudu-sh1' },
+          ],
+        },
+        {
+          title: 'Industrial Delivery Bots',
+          items: [
+            { label: 'FlashBot Max', href: '/products/flashbot-max' },
+            { label: 'Pudu T300', href: '/products/pudu-t300' },
+            { label: 'Pudu T600', href: '/products/pudu-t600' },
+          ],
+        },
       ],
     },
   ];
@@ -143,7 +157,7 @@ const Header = () => {
             <nav className="hidden lg:flex items-center space-x-1">
               {navigation.map((item) => (
                 <div key={item.label} className="relative group">
-                  {item.items ? (
+                  {(item.items || item.columns) ? (
                     <>
                       <button
                         className="flex items-center px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium"
@@ -154,18 +168,42 @@ const Header = () => {
                         <ChevronDown className="w-4 h-4 ml-1" />
                       </button>
                       {/* Dropdown */}
-                      <div className="absolute top-full left-0 w-56 bg-bots-surface border border-gray-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 mt-1">
-                        {item.items.map((subItem) => (
-                          <Link
-                            key={subItem.label}
-                            to={subItem.href}
-                            className="block px-4 py-3 text-gray-300 hover:text-white hover:bg-blue-500/20 transition-colors first:rounded-t-lg last:rounded-b-lg"
-                            data-testid={`nav-item-${subItem.label.toLowerCase().replace(/\s+/g, '-')}`}
-                          >
-                            {subItem.label}
-                          </Link>
-                        ))}
-                      </div>
+                      {item.twoColumn ? (
+                        <div className="absolute top-full left-0 w-[500px] bg-bots-surface border border-gray-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 mt-1 p-4">
+                          <div className="grid grid-cols-2 gap-6">
+                            {item.columns.map((column, idx) => (
+                              <div key={idx}>
+                                <h3 className="text-blue-400 font-bold text-sm mb-3 pb-2 border-b border-gray-700 whitespace-nowrap">
+                                  {column.title}
+                                </h3>
+                                {column.items.map((subItem) => (
+                                  <Link
+                                    key={subItem.label}
+                                    to={subItem.href}
+                                    className="block px-2 py-2 text-gray-300 hover:text-white hover:bg-blue-500/20 transition-colors rounded"
+                                    data-testid={`nav-item-${subItem.label.toLowerCase().replace(/\s+/g, '-')}`}
+                                  >
+                                    {subItem.label}
+                                  </Link>
+                                ))}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="absolute top-full left-0 w-56 bg-bots-surface border border-gray-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 mt-1">
+                          {item.items.map((subItem) => (
+                            <Link
+                              key={subItem.label}
+                              to={subItem.href}
+                              className="block px-4 py-3 text-gray-300 hover:text-white hover:bg-blue-500/20 transition-colors first:rounded-t-lg last:rounded-b-lg"
+                              data-testid={`nav-item-${subItem.label.toLowerCase().replace(/\s+/g, '-')}`}
+                            >
+                              {subItem.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
                     </>
                   ) : (
                     <Link
@@ -234,7 +272,7 @@ const Header = () => {
             <div className="max-w-7xl mx-auto px-4 py-4">
               {navigation.map((item) => (
                 <div key={item.label} className="border-b border-gray-800 last:border-b-0">
-                  {item.items ? (
+                  {(item.items || item.columns) ? (
                     <>
                       <button
                         className="flex items-center justify-between w-full py-3 text-white font-medium"
@@ -249,15 +287,34 @@ const Header = () => {
                       </button>
                       {activeDropdown === item.label && (
                         <div className="pb-3 pl-4 space-y-2">
-                          {item.items.map((subItem) => (
-                            <Link
-                              key={subItem.label}
-                              to={subItem.href}
-                              className="block py-2 text-gray-400 hover:text-white transition-colors"
-                            >
-                              {subItem.label}
-                            </Link>
-                          ))}
+                          {item.twoColumn ? (
+                            item.columns.map((column, idx) => (
+                              <div key={idx} className="mb-4">
+                                <h3 className="text-blue-400 font-bold text-sm mb-2">
+                                  {column.title}
+                                </h3>
+                                {column.items.map((subItem) => (
+                                  <Link
+                                    key={subItem.label}
+                                    to={subItem.href}
+                                    className="block py-2 text-gray-400 hover:text-white transition-colors"
+                                  >
+                                    {subItem.label}
+                                  </Link>
+                                ))}
+                              </div>
+                            ))
+                          ) : (
+                            item.items.map((subItem) => (
+                              <Link
+                                key={subItem.label}
+                                to={subItem.href}
+                                className="block py-2 text-gray-400 hover:text-white transition-colors"
+                              >
+                                {subItem.label}
+                              </Link>
+                            ))
+                          )}
                         </div>
                       )}
                     </>
