@@ -174,7 +174,7 @@ const ROBOT_PRODUCTS = {
     name: 'FlashBot Max',
     tagline: 'Building Delivery Expert',
     description: 'The FlashBot Max redefines intelligent autonomous delivery across multi-story buildings. Engineered for hotels, hospitals, offices, and residential complexes, this AI-powered robot seamlessly navigates elevators, calls lifts, and delivers goods securely—transforming logistics with contactless efficiency.',
-    image: '/images/bots/flashbot-max.png',
+    image: '/images/bots/flashbot-max.webp',
     features: [
       'Multi-Floor Navigation',
       'Auto Elevator Calling',

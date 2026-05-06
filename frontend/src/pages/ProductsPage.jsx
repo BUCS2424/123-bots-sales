@@ -68,7 +68,7 @@ const PRODUCTS = [
     name: 'FlashBot Max',
     tagline: 'Building Delivery Expert',
     description: 'Multi-floor autonomous delivery robot with elevator calling and secure compartments for hotels, hospitals, and offices.',
-    image: '/images/bots/flashbot-max.png',
+    image: '/images/bots/flashbot-max.webp',
     features: ['Multi-Floor Navigation', 'Auto Elevator Calling', 'Secure Compartments', '9-12 Hour Runtime'],
     color: 'cyan',
     category: 'Industrial Delivery Bots',
