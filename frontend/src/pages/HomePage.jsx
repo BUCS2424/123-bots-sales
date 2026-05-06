@@ -272,20 +272,9 @@ const HomePage = () => {
                 <Link 
                   key={`${product.id}-1`}
                   to={product.link}
-                  className="group text-center flex-shrink-0 w-64 relative"
+                  className="group text-center flex-shrink-0 w-64"
                   data-testid={`product-card-${product.id}`}
                 >
-                  {/* Category Badge */}
-                  <div className="absolute top-0 right-0 z-10">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      product.category === 'cleaning' 
-                        ? 'bg-blue-600/80 text-white' 
-                        : 'bg-purple-600/80 text-white'
-                    } backdrop-blur-sm`}>
-                      {product.category === 'cleaning' ? '🧹 Cleaning' : '📦 Delivery'}
-                    </span>
-                  </div>
-                  
                   <div className="relative mb-6">
                     <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                     <img 
@@ -305,19 +294,8 @@ const HomePage = () => {
                 <Link 
                   key={`${product.id}-2`}
                   to={product.link}
-                  className="group text-center flex-shrink-0 w-64 relative"
+                  className="group text-center flex-shrink-0 w-64"
                 >
-                  {/* Category Badge */}
-                  <div className="absolute top-0 right-0 z-10">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      product.category === 'cleaning' 
-                        ? 'bg-blue-600/80 text-white' 
-                        : 'bg-purple-600/80 text-white'
-                    } backdrop-blur-sm`}>
-                      {product.category === 'cleaning' ? '🧹 Cleaning' : '📦 Delivery'}
-                    </span>
-                  </div>
-                  
                   <div className="relative mb-6">
                     <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                     <img 
