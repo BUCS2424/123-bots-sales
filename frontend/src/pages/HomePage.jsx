@@ -302,23 +302,6 @@ const HomePage = () => {
               ))}
             </div>
           </div>
-
-          {/* Product Buttons */}
-          <div className="flex flex-wrap justify-center gap-6">
-            {PRODUCTS.map((product) => (
-              <Link 
-                key={product.id}
-                to={product.link}
-                className="transform hover:scale-105 transition-transform"
-              >
-                <img 
-                  src={product.buttonImage} 
-                  alt={product.fullName}
-                  className="h-16 md:h-20"
-                />
-              </Link>
-            ))}
-          </div>
         </div>
       </section>
 
