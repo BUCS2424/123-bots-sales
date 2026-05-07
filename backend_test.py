@@ -4,7 +4,7 @@ Comprehensive backend test for Printful OAuth-ready flow
 Tests all endpoints and validates the new OAuth implementation
 
 User credentials: super@amino.com / peptides
-Base URL: https://bot-erp-platform.preview.emergentagent.com
+Base URL: https://robot-commerce.preview.emergentagent.com
 
 Test Requirements:
 1. GET /api/admin-settings/printful-oauth works for authenticated admin and returns configured/client_id/client_secret_masked
@@ -22,7 +22,7 @@ import time
 from typing import Dict, Any, Optional
 
 # Test configuration
-BASE_URL = "https://bot-erp-platform.preview.emergentagent.com"
+BASE_URL = "https://robot-commerce.preview.emergentagent.com"
 ADMIN_EMAIL = "super@amino.com"
 ADMIN_PASSWORD = "peptides"
 

@@ -51,6 +51,15 @@ const CLEANING_BOTS = [
     features: ['Compact Design', 'Quiet Operation', 'Easy Setup', 'Cloud Connected'],
     color: 'orange',
   },
+  {
+    id: 'avidbots-neo',
+    name: 'AVIDBOTS NEO',
+    tagline: 'Next-Gen Autonomous Cleaning Excellence',
+    description: 'Enterprise-grade autonomous floor scrubber with advanced AI navigation, real-time reporting, and unmatched reliability.',
+    image: '/images/bots/avidbots-neo.png',
+    features: ['AI Navigation', 'Real-time Reports', 'Enterprise-Grade', '500+ Deployments'],
+    color: 'blue',
+  },
 ];
 
 const CommercialCleaningBotsPage = () => {
