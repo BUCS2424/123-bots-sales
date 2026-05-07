@@ -88,6 +88,16 @@ const PRODUCTS = [
     category: 'cleaning',
   },
   {
+    id: 'gausium-marvel',
+    name: 'GAUSIUM MARVEL',
+    fullName: 'GAUSIUM MARVEL',
+    image: '/images/bots/gausium-marvel.png',
+    buttonImage: '/images/buttons/button-gausium-marvel.png',
+    link: '/products/gausium-marvel',
+    color: 'slate',
+    category: 'cleaning',
+  },
+  {
     id: 'flashbot-max',
     name: 'FLASHBOT MAX',
     fullName: 'FlashBot Max',

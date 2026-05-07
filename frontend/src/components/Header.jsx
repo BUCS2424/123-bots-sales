@@ -63,6 +63,7 @@ const Header = () => {
             { label: 'PUDU MT1 VAC', href: '/products/pudu-mt1-vac' },
             { label: 'PUDU SH1', href: '/products/pudu-sh1' },
             { label: 'GAUSIUM MIRA', href: '/products/gausium-mira' },
+            { label: 'GAUSIUM MARVEL', href: '/products/gausium-marvel' },
           ],
         },
         {

@@ -95,6 +95,17 @@ const PRODUCTS = [
     category: 'Commercial Cleaning Bots',
     categorySlug: 'cleaning',
   },
+  {
+    id: 'gausium-marvel',
+    name: 'GAUSIUM MARVEL',
+    tagline: 'Large-Space Commercial Floor Cleaner',
+    description: 'Built for warehouses, factories, and large facilities. 120 Ah battery, 80L/70L tanks, 55kg cleaning pressure, sweep & scrub in one pass.',
+    image: '/images/bots/gausium-marvel.png',
+    features: ['5-10 Hour Runtime', '80L/70L Tanks', '55kg Pressure', '3-in-1 Cleaning'],
+    color: 'gray',
+    category: 'Commercial Cleaning Bots',
+    categorySlug: 'cleaning',
+  },
   // Industrial Delivery Bots
   {
     id: 'flashbot-max',
