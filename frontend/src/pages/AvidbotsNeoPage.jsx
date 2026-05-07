@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Download, CheckCircle, Play, Phone, Mail, ChevronDown, ChevronUp } from 'lucide-react';
+import { Download, CheckCircle, Play, Phone, Mail, ChevronDown, ChevronUp, ChevronRight } from 'lucide-react';
 import { setSeoMetadata } from '../lib/seo';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -448,7 +448,7 @@ const AvidbotsNeoPage = () => {
                 </div>
                 <div className="flex justify-between py-3">
                   <span className="text-gray-400">Noise Level</span>
-                  <span className="text-white font-semibold">< 72 dBA</span>
+                  <span className="text-white font-semibold">&lt; 72 dBA</span>
                 </div>
               </div>
             </div>
@@ -575,12 +575,5 @@ const AvidbotsNeoPage = () => {
     </div>
   );
 };
-
-// Add missing ChevronRight import at top
-const ChevronRight = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-  </svg>
-);
 
 export default AvidbotsNeoPage;
