@@ -59,6 +59,7 @@ const Header = () => {
             { label: 'AVIDBOT KAS', href: '/products/ab-kas' },
             { label: 'PUDU CC1 PRO', href: '/products/pudu-cc1-pro' },
             { label: 'PUDU MT1 MAX', href: '/products/pudu-mt1' },
+            { label: 'PUDU MT1 VAC', href: '/products/pudu-mt1-vac' },
             { label: 'PUDU SH1', href: '/products/pudu-sh1' },
           ],
         },
