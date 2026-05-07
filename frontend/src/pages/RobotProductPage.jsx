@@ -101,7 +101,7 @@ const ROBOT_PRODUCTS = {
     name: 'PUDU MT1 MAX',
     tagline: 'Maximum Coverage Floor Cleaner',
     description: 'Maximum cleaning power for maximum results. The MT1 MAX is designed for large facilities that require extensive coverage and consistent cleaning quality.',
-    image: '/images/bots/nav_product_mt.webp',
+    image: '/images/bots/pudu-mt1-max.png',
     features: [
       'Extended Range Coverage',
       'High Capacity Tanks',

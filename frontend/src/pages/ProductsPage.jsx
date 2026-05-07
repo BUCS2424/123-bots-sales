@@ -45,7 +45,7 @@ const PRODUCTS = [
     name: 'PUDU MT1 MAX',
     tagline: 'AI-Powered 3D Perception Robotic Sweeper',
     description: 'Maximum cleaning power with extended range and precision for large-area coverage.',
-    image: '/images/bots/nav_product_mt.webp',
+    image: '/images/bots/pudu-mt1-max.png',
     features: ['Extended Range', 'High Capacity', 'Fast Charging', 'Real-time Monitoring'],
     color: 'purple',
     category: 'Commercial Cleaning Bots',

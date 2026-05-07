@@ -159,7 +159,7 @@ const ROBOT_PRODUCTS = {
   'pudu-cc1-pro': { name: 'PUDU CC1 PRO', image: '/images/bots/pringle-cc1-robot.png' },
   'ab-kas': { name: 'AVIDBOT KAS', image: '/images/bots/avidbot-kas.png' },
   'pudu-sh1': { name: 'PUDU SH1', image: '/images/bots/robot-pudush.png' },
-  'pudu-mt1': { name: 'PUDU MT1 MAX', image: '/images/bots/nav_product_mt.webp' },
+  'pudu-mt1': { name: 'PUDU MT1 MAX', image: '/images/bots/pudu-mt1-max.png' },
 };
 
 const IndustryPage = () => {

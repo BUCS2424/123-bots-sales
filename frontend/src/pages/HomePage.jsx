@@ -51,7 +51,7 @@ const PRODUCTS = [
     id: 'mt1',
     name: 'MT1 MAX',
     fullName: 'PUDU MT1 MAX',
-    image: '/images/bots/nav_product_mt.webp',
+    image: '/images/bots/pudu-mt1-max.png',
     buttonImage: '/images/buttons/button-pudu-mt1-max.png',
     link: '/products/pudu-mt1',
     color: 'purple',
