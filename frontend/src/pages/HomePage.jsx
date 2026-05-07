@@ -275,7 +275,7 @@ const HomePage = () => {
                   className="group text-center flex-shrink-0 w-64"
                   data-testid={`product-card-${product.id}`}
                 >
-                  <div className={`relative ${product.id === 'bg1-pro' ? 'mb-[-2rem]' : 'mb-6'}`}>
+                  <div className={`relative ${product.id === 'bg1-pro' ? 'mb-[-8rem]' : 'mb-6'}`}>
                     <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                     <img 
                       src={product.image} 
@@ -296,7 +296,7 @@ const HomePage = () => {
                   to={product.link}
                   className="group text-center flex-shrink-0 w-64"
                 >
-                  <div className={`relative ${product.id === 'bg1-pro' ? 'mb-[-2rem]' : 'mb-6'}`}>
+                  <div className={`relative ${product.id === 'bg1-pro' ? 'mb-[-8rem]' : 'mb-6'}`}>
                     <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                     <img 
                       src={product.image} 
