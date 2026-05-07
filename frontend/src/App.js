@@ -51,6 +51,13 @@ import GausiumMiraPage from './pages/GausiumMiraPage';
 import GausiumMarvelPage from './pages/GausiumMarvelPage';
 import PuduBg1ProPage from './pages/PuduBg1ProPage';
 import FlashBotMaxPage from './pages/FlashBotMaxPage';
+import PuduCc1ProPage from './pages/PuduCc1ProPage';
+import AvidbotKasPage from './pages/AvidbotKasPage';
+import PuduSh1Page from './pages/PuduSh1Page';
+import PuduMt1MaxPage from './pages/PuduMt1MaxPage';
+import PuduMt1VacPage from './pages/PuduMt1VacPage';
+import PuduT300Page from './pages/PuduT300Page';
+import PuduT600Page from './pages/PuduT600Page';
 import IndustryPage from './pages/IndustryPage';
 import ScheduleDemoPage from './pages/ScheduleDemoPage';
 import BuyLeasePage from './pages/BuyLeasePage';
@@ -240,7 +247,14 @@ const AppContent = () => {
                   <Route path="/products/gausium-mira" element={<GausiumMiraPage />} />
                   <Route path="/products/gausium-marvel" element={<GausiumMarvelPage />} />
                   <Route path="/products/pudu-bg1" element={<PuduBg1ProPage />} />
+                  <Route path="/products/pudu-cc1-pro" element={<PuduCc1ProPage />} />
+                  <Route path="/products/ab-kas" element={<AvidbotKasPage />} />
+                  <Route path="/products/pudu-sh1" element={<PuduSh1Page />} />
+                  <Route path="/products/pudu-mt1" element={<PuduMt1MaxPage />} />
+                  <Route path="/products/pudu-mt1-vac" element={<PuduMt1VacPage />} />
                   <Route path="/products/flashbot-max" element={<FlashBotMaxPage />} />
+                  <Route path="/products/pudu-t300" element={<PuduT300Page />} />
+                  <Route path="/products/pudu-t600" element={<PuduT600Page />} />
                   <Route path="/products/:productSlug" element={<RobotProductPage />} />
                   <Route path="/industries/:industrySlug" element={<IndustryPage />} />
                   <Route path="/schedule-a-demo" element={<ScheduleDemoPage />} />
