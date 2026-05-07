@@ -386,8 +386,8 @@ const AvidbotsNeoPage = () => {
 
             {/* Customer Success */}
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-blue-500/50 transition-all hover:transform hover:scale-105">
-              <div className="aspect-video bg-gradient-to-br from-purple-600/20 to-purple-800/20 flex items-center justify-center">
-                <span className="text-gray-400">[Image: Support Team]</span>
+              <div className="aspect-video bg-gradient-to-br from-purple-600/20 to-purple-800/20">
+                <img src="/images/neo-customer-success.png" alt="Avidbots Customer Success" className="w-full h-full object-cover" />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">Customer Success</h3>
