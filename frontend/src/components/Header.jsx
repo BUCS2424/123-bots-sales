@@ -56,6 +56,7 @@ const Header = () => {
           title: 'Commercial Cleaning Bots',
           items: [
             { label: 'PUDU BG1 PRO', href: '/products/pudu-bg1' },
+            { label: 'AVIDBOTS NEO', href: '/products/avidbots-neo' },
             { label: 'AVIDBOT KAS', href: '/products/ab-kas' },
             { label: 'PUDU CC1 PRO', href: '/products/pudu-cc1-pro' },
             { label: 'PUDU MT1 MAX', href: '/products/pudu-mt1' },

@@ -28,6 +28,16 @@ const PRODUCTS = [
     category: 'cleaning',
   },
   {
+    id: 'avidbots-neo',
+    name: 'AVIDBOTS NEO',
+    fullName: 'AVIDBOTS NEO',
+    image: '/images/bots/avidbots-neo.png',
+    buttonImage: '/images/buttons/button-avidbots-neo.png',
+    link: '/products/avidbots-neo',
+    color: 'blue',
+    category: 'cleaning',
+  },
+  {
     id: 'ab-kas',
     name: 'AB KAS',
     fullName: 'AVIDBOT KAS',
