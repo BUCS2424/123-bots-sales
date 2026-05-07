@@ -266,25 +266,27 @@ const HomePage = () => {
 
           {/* Products Grid - Infinite Scroll */}
           <div className="relative overflow-hidden mb-16">
-            <div className="flex animate-scroll-infinite gap-12 items-end">
+            <div className="flex animate-scroll-infinite gap-12">
               {/* First set of products */}
               {PRODUCTS.map((product, index) => (
                 <Link 
                   key={`${product.id}-1`}
                   to={product.link}
-                  className="group text-center flex-shrink-0 w-64"
+                  className="group text-center flex-shrink-0 w-64 flex flex-col"
                   data-testid={`product-card-${product.id}`}
                 >
-                  <div className="mb-6">
+                  <div className="flex-1 flex flex-col justify-end">
                     <div className="relative">
                       <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                       <img 
                         src={product.image} 
                         alt={product.fullName}
-                        className={`w-full ${product.id === 'bg1-pro' ? 'h-96' : 'h-64'} object-contain mx-auto transform group-hover:scale-110 transition-transform duration-300`}
+                        className={`w-full ${product.id === 'bg1-pro' ? 'h-80' : 'h-64'} object-contain mx-auto transform group-hover:scale-110 transition-transform duration-300`}
                       />
                     </div>
-                    <h3 className="text-white font-bold text-2xl mb-2 mt-4">{product.name}</h3>
+                  </div>
+                  <div className="mt-6">
+                    <h3 className="text-white font-bold text-2xl mb-2">{product.name}</h3>
                     <p className="text-blue-400 text-sm group-hover:text-blue-300 transition-colors">
                       Click to see more...
                     </p>
@@ -296,18 +298,20 @@ const HomePage = () => {
                 <Link 
                   key={`${product.id}-2`}
                   to={product.link}
-                  className="group text-center flex-shrink-0 w-64"
+                  className="group text-center flex-shrink-0 w-64 flex flex-col"
                 >
-                  <div className="mb-6">
+                  <div className="flex-1 flex flex-col justify-end">
                     <div className="relative">
                       <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                       <img 
                         src={product.image} 
                         alt={product.fullName}
-                        className={`w-full ${product.id === 'bg1-pro' ? 'h-96' : 'h-64'} object-contain mx-auto transform group-hover:scale-110 transition-transform duration-300`}
+                        className={`w-full ${product.id === 'bg1-pro' ? 'h-80' : 'h-64'} object-contain mx-auto transform group-hover:scale-110 transition-transform duration-300`}
                       />
                     </div>
-                    <h3 className="text-white font-bold text-2xl mb-2 mt-4">{product.name}</h3>
+                  </div>
+                  <div className="mt-6">
+                    <h3 className="text-white font-bold text-2xl mb-2">{product.name}</h3>
                     <p className="text-blue-400 text-sm group-hover:text-blue-300 transition-colors">
                       Click to see more...
                     </p>
