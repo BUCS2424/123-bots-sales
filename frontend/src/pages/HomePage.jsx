@@ -68,6 +68,16 @@ const PRODUCTS = [
     category: 'cleaning',
   },
   {
+    id: 'mt1-vac',
+    name: 'MT1 VAC',
+    fullName: 'PUDU MT1 VAC',
+    image: '/images/bots/pudu-mt1-vac.png',
+    buttonImage: '/images/buttons/button-pudu-mt1-vac.png',
+    link: '/products/pudu-mt1-vac',
+    color: 'purple',
+    category: 'cleaning',
+  },
+  {
     id: 'flashbot-max',
     name: 'FLASHBOT MAX',
     fullName: 'FlashBot Max',
