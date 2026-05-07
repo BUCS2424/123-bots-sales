@@ -73,6 +73,17 @@ const PRODUCTS = [
     category: 'Commercial Cleaning Bots',
     categorySlug: 'cleaning',
   },
+  {
+    id: 'pudu-mt1-vac',
+    name: 'PUDU MT1 VAC',
+    tagline: 'Advanced Vacuuming Robot',
+    description: 'Intelligent autonomous vacuum cleaner with powerful suction and smart navigation for comprehensive floor cleaning.',
+    image: '/images/bots/pudu-mt1-vac.png',
+    features: ['Powerful Suction', 'Smart Navigation', 'Auto Charging', 'Multi-Surface'],
+    color: 'purple',
+    category: 'Commercial Cleaning Bots',
+    categorySlug: 'cleaning',
+  },
   // Industrial Delivery Bots
   {
     id: 'flashbot-max',
