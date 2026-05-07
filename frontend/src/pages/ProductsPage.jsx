@@ -84,6 +84,17 @@ const PRODUCTS = [
     category: 'Commercial Cleaning Bots',
     categorySlug: 'cleaning',
   },
+  {
+    id: 'gausium-mira',
+    name: 'GAUSIUM MIRA',
+    tagline: 'Award-Winning Compact Autonomous Scrubber',
+    description: 'ISSA 2025 Innovation Winner. Drop & Go deployment, simultaneous sweep & scrub, 660mm narrow aisle navigation for retail.',
+    image: '/images/bots/gausium-mira.webp',
+    features: ['Drop & Go Deploy', '660mm Narrow Aisle', 'One-Pass Clean', 'Self-Cleaning'],
+    color: 'green',
+    category: 'Commercial Cleaning Bots',
+    categorySlug: 'cleaning',
+  },
   // Industrial Delivery Bots
   {
     id: 'flashbot-max',

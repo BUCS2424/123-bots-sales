@@ -78,6 +78,16 @@ const PRODUCTS = [
     category: 'cleaning',
   },
   {
+    id: 'gausium-mira',
+    name: 'GAUSIUM MIRA',
+    fullName: 'GAUSIUM MIRA',
+    image: '/images/bots/gausium-mira.webp',
+    buttonImage: '/images/buttons/button-gausium-mira.png',
+    link: '/products/gausium-mira',
+    color: 'emerald',
+    category: 'cleaning',
+  },
+  {
     id: 'flashbot-max',
     name: 'FLASHBOT MAX',
     fullName: 'FlashBot Max',

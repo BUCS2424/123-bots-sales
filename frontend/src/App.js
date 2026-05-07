@@ -47,6 +47,7 @@ import RobotProductPage from './pages/RobotProductPage';
 import CommercialCleaningBotsPage from './pages/CommercialCleaningBotsPage';
 import IndustrialDeliveryBotsPage from './pages/IndustrialDeliveryBotsPage';
 import AvidbotsNeoPage from './pages/AvidbotsNeoPage';
+import GausiumMiraPage from './pages/GausiumMiraPage';
 import IndustryPage from './pages/IndustryPage';
 import ScheduleDemoPage from './pages/ScheduleDemoPage';
 import BuyLeasePage from './pages/BuyLeasePage';
@@ -233,6 +234,7 @@ const AppContent = () => {
                   <Route path="/commercial-cleaning-bots" element={<CommercialCleaningBotsPage />} />
                   <Route path="/industrial-delivery-bots" element={<IndustrialDeliveryBotsPage />} />
                   <Route path="/products/avidbots-neo" element={<AvidbotsNeoPage />} />
+                  <Route path="/products/gausium-mira" element={<GausiumMiraPage />} />
                   <Route path="/products/:productSlug" element={<RobotProductPage />} />
                   <Route path="/industries/:industrySlug" element={<IndustryPage />} />
                   <Route path="/schedule-a-demo" element={<ScheduleDemoPage />} />
