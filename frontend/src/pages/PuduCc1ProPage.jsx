@@ -86,7 +86,7 @@ const PuduCc1ProPage = () => {
 
             <div className="relative">
               <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-3xl" />
-              <img src="/images/bots/pudu-cc1-pro.png" alt="PUDU CC1 PRO" className="relative z-10 w-full h-auto object-contain transform hover:scale-105 transition-transform duration-500" />
+              <img src="/images/bots/pringle-cc1-robot.png" alt="PUDU CC1 PRO" className="relative z-10 w-full h-auto object-contain transform hover:scale-105 transition-transform duration-500" />
             </div>
           </div>
         </div>
