@@ -275,12 +275,12 @@ const HomePage = () => {
                   className="group text-center flex-shrink-0 w-64"
                   data-testid={`product-card-${product.id}`}
                 >
-                  <div className={`relative ${product.id === 'bg1-pro' ? 'mb-[-8rem]' : 'mb-6'}`}>
+                  <div className="relative h-96 flex items-end justify-center mb-6">
                     <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                     <img 
                       src={product.image} 
                       alt={product.fullName}
-                      className={`w-full ${product.id === 'bg1-pro' ? 'h-96' : 'h-64'} object-contain mx-auto transform group-hover:scale-110 transition-transform duration-300`}
+                      className={`${product.id === 'bg1-pro' ? 'h-96' : 'h-64'} object-contain transform group-hover:scale-110 transition-transform duration-300`}
                     />
                   </div>
                   <h3 className="text-white font-bold text-2xl mb-2">{product.name}</h3>
@@ -296,12 +296,12 @@ const HomePage = () => {
                   to={product.link}
                   className="group text-center flex-shrink-0 w-64"
                 >
-                  <div className={`relative ${product.id === 'bg1-pro' ? 'mb-[-8rem]' : 'mb-6'}`}>
+                  <div className="relative h-96 flex items-end justify-center mb-6">
                     <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
                     <img 
                       src={product.image} 
                       alt={product.fullName}
-                      className={`w-full ${product.id === 'bg1-pro' ? 'h-96' : 'h-64'} object-contain mx-auto transform group-hover:scale-110 transition-transform duration-300`}
+                      className={`${product.id === 'bg1-pro' ? 'h-96' : 'h-64'} object-contain transform group-hover:scale-110 transition-transform duration-300`}
                     />
                   </div>
                   <h3 className="text-white font-bold text-2xl mb-2">{product.name}</h3>
