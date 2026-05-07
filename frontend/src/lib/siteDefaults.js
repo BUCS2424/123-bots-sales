@@ -1,5 +1,5 @@
 export const DEFAULT_SITE_NAME = '123Bots';
-export const DEFAULT_LOGO_URL = 'https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png';
+export const DEFAULT_LOGO_URL = '/images/123bots-logo.png';
 export const DEFAULT_SUPPORT_EMAIL = 'support@123bots.com';
 
 export const buildSiteSettingsState = (payload = {}, loading = false) => ({

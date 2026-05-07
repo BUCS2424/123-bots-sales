@@ -15,7 +15,14 @@ export const SiteSettingsProvider = ({ children }) => {
     const fetchSiteSettings = async () => {
       try {
         const response = await axios.get(`${API_URL}/api/settings/site`);
-        const nextSettings = buildSiteSettingsState(response.data, false);
+        const fetchedSettings = response.data;
+        
+        // Build full URLs for relative paths
+        if (fetchedSettings.logo_url && fetchedSettings.logo_url.startsWith('/')) {
+          fetchedSettings.logo_url = `${API_URL}${fetchedSettings.logo_url}`;
+        }
+        
+        const nextSettings = buildSiteSettingsState(fetchedSettings, false);
 
         if (nextSettings.siteName) {
           document.title = nextSettings.siteName;
