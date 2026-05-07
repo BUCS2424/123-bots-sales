@@ -280,7 +280,7 @@ const HomePage = () => {
                     <img 
                       src={product.image} 
                       alt={product.fullName}
-                      className={`w-full ${product.id === 'bg1-pro' ? 'h-80' : 'h-64'} object-contain mx-auto transform group-hover:scale-110 transition-transform duration-300`}
+                      className={`w-full ${product.id === 'bg1-pro' ? 'h-96' : 'h-64'} object-contain mx-auto transform group-hover:scale-110 transition-transform duration-300`}
                     />
                   </div>
                   <h3 className="text-white font-bold text-2xl mb-2">{product.name}</h3>
@@ -301,7 +301,7 @@ const HomePage = () => {
                     <img 
                       src={product.image} 
                       alt={product.fullName}
-                      className={`w-full ${product.id === 'bg1-pro' ? 'h-80' : 'h-64'} object-contain mx-auto transform group-hover:scale-110 transition-transform duration-300`}
+                      className={`w-full ${product.id === 'bg1-pro' ? 'h-96' : 'h-64'} object-contain mx-auto transform group-hover:scale-110 transition-transform duration-300`}
                     />
                   </div>
                   <h3 className="text-white font-bold text-2xl mb-2">{product.name}</h3>
