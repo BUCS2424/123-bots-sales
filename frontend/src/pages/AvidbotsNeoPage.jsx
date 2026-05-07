@@ -471,7 +471,7 @@ const AvidbotsNeoPage = () => {
                 </div>
                 <div className="flex justify-between py-3">
                   <span className="text-gray-400">Charging Time</span>
-                  <span className="text-white font-semibold">< 3.5 hours (0-90%)</span>
+                  <span className="text-white font-semibold">&lt; 3.5 hours (0-90%)</span>
                 </div>
               </div>
             </div>
