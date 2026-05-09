@@ -236,8 +236,8 @@ const GausiumMiraPage = () => {
             <div className="order-2 md:order-1 relative">
               <div className="absolute inset-0 bg-blue-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
-                <div className="aspect-video bg-gray-800/50 rounded-xl flex items-center justify-center">
-                  <img src="https://images.unsplash.com/photo-1699602048589-0f492f833270?w=800" alt="Self-cleaning system" className="w-full h-full object-cover rounded-xl opacity-70" />
+                <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
+                  <img src="/images/mira-self-cleaning.jpg" alt="Mira Self-Cleaning System" className="w-full h-full object-cover rounded-xl" />
                 </div>
               </div>
             </div>
