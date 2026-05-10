@@ -215,9 +215,17 @@ const PuduCc1ProPage = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-purple-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
-                <div className="aspect-video bg-gray-800/50 rounded-xl flex items-center justify-center">
-                  <Play className="w-16 h-16 text-purple-400" />
-                  <span className="ml-4 text-gray-400">[Video: AI Scrubbing]</span>
+                <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
+                  <video
+                    className="w-full h-full object-cover"
+                    controls
+                    playsInline
+                    preload="metadata"
+                    poster=""
+                  >
+                    <source src="/videos/cc1-pro-ai-scrubbing.mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
                 </div>
               </div>
             </div>
