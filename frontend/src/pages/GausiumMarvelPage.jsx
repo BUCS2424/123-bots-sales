@@ -215,9 +215,15 @@ const GausiumMarvelPage = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-blue-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
-                <div className="aspect-video bg-gray-800/50 rounded-xl flex items-center justify-center">
-                  <Play className="w-16 h-16 text-blue-400" />
-                  <span className="ml-4 text-gray-400">[Video: Sweep & Scrub Demo]</span>
+                <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
+                  <video 
+                    controls 
+                    className="w-full h-full object-cover rounded-xl"
+                    poster="/images/bots/gausium-marvel.png"
+                  >
+                    <source src="/videos/marvel-sweep-scrub.mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
                 </div>
               </div>
             </div>
