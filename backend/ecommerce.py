@@ -694,17 +694,39 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
     # ─── Product Files ─────────────────────────────────────────────────────────
 
     @router.get("/products/{product_id}/files")
-    async def list_product_files(product_id: str):
-        """List files attached to a product. Public files always shown; private files show metadata only."""
+    async def list_product_files(product_id: str, request: Request):
+        """List files attached to a product. Public files always shown with URL. Private files show URL only if caller is admin or has purchased the product."""
         product = await db.products.find_one({"id": product_id}, {"_id": 0, "product_files": 1})
         if not product:
             raise HTTPException(status_code=404, detail="Product not found")
         files = product.get("product_files") or []
-        # Strip url from private files in public listing
+
+        # Determine caller access level
+        caller_has_access = False
+        auth_header = request.headers.get("Authorization", "")
+        token_str = auth_header.replace("Bearer ", "").strip() if auth_header.startswith("Bearer ") else ""
+        token_str = token_str or request.query_params.get("token", "")
+        if token_str:
+            try:
+                token_data = decode_token(token_str)
+                if is_admin_or_above(token_data.role):
+                    caller_has_access = True
+                else:
+                    # Check if user has purchased this product
+                    order = await db.orders.find_one({
+                        "$or": [{"customer_id": token_data.user_id}],
+                        "items.product_id": product_id,
+                        "status": {"$nin": ["cancelled", "refunded"]}
+                    })
+                    if order:
+                        caller_has_access = True
+            except Exception:
+                pass
+
         public_list = []
         for f in files:
             entry = {k: v for k, v in f.items()}
-            if not entry.get("is_public", True):
+            if not entry.get("is_public", True) and not caller_has_access:
                 entry.pop("url", None)  # URL hidden until purchase verified
             public_list.append(entry)
         return {"files": public_list}
