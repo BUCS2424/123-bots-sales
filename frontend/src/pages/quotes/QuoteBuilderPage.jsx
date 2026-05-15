@@ -334,7 +334,7 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
     try {
       const results = await Promise.all([
         api.get('/api/leads/' + leadId),
-        api.get('/api/quotes/catalog/products').catch(() => ({ data: { products: [] } })),
+        api.get('/api/store/products?limit=500&include_hidden=true').catch(() => ({ data: { products: [] } })),
         api.get('/api/quotes/catalog/services').catch(() => ({ data: { services: [] } })),
         api.get('/api/contract-templates').catch(() => ({ data: { templates: [] } })),
         api.get('/api/settings/general').catch(() => ({ data: {} })),
@@ -343,7 +343,20 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
       ]);
       
       setLead(results[0].data);
-      setProducts(results[1].data.products || []);
+      // Map store products (price, sku, category) to quote catalog format
+      const storeProducts = (results[1].data.products || results[1].data || []).map(p => ({
+        id: p.id,
+        name: p.name,
+        description: p.description || '',
+        category: p.category || 'Products',
+        sku: p.sku || '',
+        price_onetime: p.price || 0,
+        price_monthly: 0,
+        price_yearly: 0,
+        is_active: p.is_visible !== false,
+        image: p.image || '',
+      })).filter(p => p.name);
+      setProducts(storeProducts);
       setServices(results[2].data.services || []);
       setContractTemplates(results[3].data.templates || []);
       setCompanySettings(results[4].data || {});
