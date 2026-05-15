@@ -8,8 +8,9 @@ import { Label } from '../../components/ui/label';
 import { Textarea } from '../../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { Checkbox } from '../../components/ui/checkbox';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
 import { toast } from 'sonner';
-import { ArrowLeft, Save, Send, RefreshCw, Plus, Trash2, Package, Wrench, FileText, Eye, ScrollText, Shield, FileCheck, FilePlus, GripVertical, Settings } from 'lucide-react';
+import { ArrowLeft, Save, Send, RefreshCw, Plus, Trash2, Package, Wrench, FileText, Eye, ScrollText, Shield, FileCheck, FilePlus, GripVertical, Settings, Search, ShoppingCart, ExternalLink } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -98,6 +99,160 @@ const SortableLineItem = ({ id, item, index, products, services, onItemChange, o
   );
 };
 
+function CatalogPickerModal({ open, onClose, products, services, onAddItem, formatCurrency, navigate }) {
+  const [tab, setTab] = useState('products');
+  const [search, setSearch] = useState('');
+
+  const filtered = (tab === 'products' ? products : services).filter(item => {
+    const q = search.toLowerCase();
+    return !q || [item.name, item.description, item.category, item.sku].some(v => String(v || '').toLowerCase().includes(q));
+  });
+
+  const grouped = filtered.reduce((acc, item) => {
+    const cat = item.category || 'Uncategorized';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(item);
+    return acc;
+  }, {});
+
+  const handleAdd = (item) => {
+    const type = tab === 'products' ? 'product' : 'service';
+    const billingType = item.price_monthly > 0 ? 'monthly' : item.price_yearly > 0 ? 'yearly' : 'onetime';
+    const price = item.price_onetime || item.price_monthly || item.hourly_rate || 0;
+    onAddItem({
+      item_type: type,
+      item_id: item.id,
+      description: item.name,
+      quantity: 1,
+      unit_price: price,
+      billing_type: billingType,
+      price_onetime: item.price_onetime || 0,
+      price_monthly: item.price_monthly || 0,
+      price_yearly: item.price_yearly || 0,
+      sku: item.sku || '',
+      category: item.category || '',
+    });
+    toast.success(`"${item.name}" added to quote`);
+  };
+
+  const isEmpty = products.length === 0 && services.length === 0;
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col" data-testid="catalog-picker-modal">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <ShoppingCart className="w-5 h-5 text-[#014DB7]" />
+            Add from Catalog
+          </DialogTitle>
+        </DialogHeader>
+
+        {isEmpty ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center gap-4">
+            <Package className="w-12 h-12 text-gray-300" />
+            <div>
+              <p className="font-semibold text-gray-700 mb-1">Your catalog is empty</p>
+              <p className="text-sm text-gray-500 mb-4">Add products and services to your catalog first, then they'll appear here.</p>
+              <Button
+                variant="outline"
+                onClick={() => { onClose(); navigate('/admin/quotes/settings'); }}
+                data-testid="catalog-picker-go-to-catalog"
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Go to Catalog Settings
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="flex gap-2 border-b pb-3">
+              <button
+                onClick={() => setTab('products')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'products' ? 'bg-[#014DB7] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                data-testid="catalog-picker-products-tab"
+              >
+                <Package className="w-4 h-4" /> Products ({products.length})
+              </button>
+              <button
+                onClick={() => setTab('services')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'services' ? 'bg-[#014DB7] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                data-testid="catalog-picker-services-tab"
+              >
+                <Wrench className="w-4 h-4" /> Services ({services.length})
+              </button>
+            </div>
+
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={`Search ${tab}...`}
+                className="pl-9"
+                data-testid="catalog-picker-search"
+              />
+            </div>
+
+            <div className="overflow-y-auto flex-1 space-y-4 pr-1">
+              {Object.keys(grouped).length === 0 ? (
+                <p className="text-center text-gray-400 py-8 text-sm">No {tab} match your search</p>
+              ) : (
+                Object.entries(grouped).map(([cat, items]) => (
+                  <div key={cat}>
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-1 mb-2">{cat}</div>
+                    <div className="space-y-1">
+                      {items.map((item) => {
+                        const displayPrice = item.price_onetime || item.price_monthly || item.hourly_rate || 0;
+                        const billingLabel = item.price_monthly > 0 && !item.price_onetime ? '/mo' : item.price_yearly > 0 && !item.price_onetime ? '/yr' : '';
+                        return (
+                          <div
+                            key={item.id}
+                            className="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-[#014DB7] hover:bg-blue-50/50 transition-colors group"
+                            data-testid={`catalog-picker-item-${item.id}`}
+                          >
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-gray-900 text-sm truncate">{item.name}</p>
+                              {item.description && (
+                                <p className="text-xs text-gray-500 truncate">{item.description}</p>
+                              )}
+                              {item.sku && <p className="text-xs text-gray-400">SKU: {item.sku}</p>}
+                            </div>
+                            <div className="flex items-center gap-3 ml-3 flex-shrink-0">
+                              <div className="text-right">
+                                <p className="font-semibold text-gray-900 text-sm">{formatCurrency(displayPrice)}{billingLabel}</p>
+                                {item.price_monthly > 0 && item.price_onetime > 0 && (
+                                  <p className="text-xs text-blue-500">{formatCurrency(item.price_monthly)}/mo available</p>
+                                )}
+                              </div>
+                              <Button
+                                size="sm"
+                                onClick={() => handleAdd(item)}
+                                className="bg-[#014DB7] hover:bg-[#0140a0] text-white h-8 px-3 opacity-0 group-hover:opacity-100 transition-opacity"
+                                data-testid={`catalog-picker-add-${item.id}`}
+                              >
+                                <Plus className="w-3 h-3 mr-1" /> Add
+                              </Button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="border-t pt-3 flex justify-between items-center text-xs text-gray-500">
+              <span>Click "Add" on any item to add it as a line item</span>
+              <Button variant="outline" size="sm" onClick={onClose}>Done</Button>
+            </div>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
   const { leadId: routeLeadId, quoteId: routeQuoteId } = useParams();
   const leadId = propLeadId || routeLeadId;
@@ -152,6 +307,7 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
 
   const [items, setItems] = useState([{ _id: genItemId(), description: '', quantity: 1, unit_price: 0, item_type: 'custom', billing_type: 'onetime' }]);
   const [previewTab, setPreviewTab] = useState('quote');
+  const [showCatalogPicker, setShowCatalogPicker] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -292,6 +448,10 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
 
   const addLineItem = (type) => {
     setItems([...items, { _id: genItemId(), description: '', quantity: 1, unit_price: 0, item_type: type, billing_type: 'onetime' }]);
+  };
+
+  const addFromCatalogItem = (catalogItem) => {
+    setItems(prev => [...prev, { _id: genItemId(), ...catalogItem }]);
   };
 
   const removeLineItem = (index) => {
@@ -801,11 +961,13 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">Line Items</h3>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => addLineItem('product')} disabled={products.length === 0}>
-                    <Package className="w-3 h-3 mr-1" /> Product
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => addLineItem('service')} disabled={services.length === 0}>
-                    <Wrench className="w-3 h-3 mr-1" /> Service
+                  <Button
+                    size="sm"
+                    className="bg-[#014DB7] hover:bg-[#0140a0] text-white"
+                    onClick={() => setShowCatalogPicker(true)}
+                    data-testid="add-from-catalog-button"
+                  >
+                    <ShoppingCart className="w-3 h-3 mr-1.5" /> Browse Catalog
                   </Button>
                   <Button size="sm" variant="outline" onClick={() => addLineItem('custom')}>
                     <FileText className="w-3 h-3 mr-1" /> Custom
@@ -894,6 +1056,16 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
           </div>
         </div>
       </div>
+
+      <CatalogPickerModal
+        open={showCatalogPicker}
+        onClose={() => setShowCatalogPicker(false)}
+        products={products}
+        services={services}
+        onAddItem={addFromCatalogItem}
+        formatCurrency={formatCurrency}
+        navigate={navigate}
+      />
     </div>
   );
 }
