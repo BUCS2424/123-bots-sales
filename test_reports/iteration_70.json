@@ -1,0 +1,97 @@
+{
+  "summary": "Tested Product File Upload/Download module end-to-end. Fixed critical route ordering bug (GET /api/store/orders/my captured by /orders/{order_id}). Backend: 19/19 tests pass (100%). Frontend: Admin Files tab fully functional (upload area, toggle, download, delete). ProductDetailPage correctly shows public files with Download button and private files with 'Purchase to Unlock'. One critical design bug found: private file URLs stripped from list endpoint even for authenticated purchasers - Download link broken for purchasers of private files.",
+
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "GET /api/store/orders/my",
+        "issue": "FIXED: Route was defined AFTER GET /orders/{order_id}, causing FastAPI to capture 'my' as an order_id and return 404. Moved /orders/my BEFORE /orders/{order_id} in ecommerce.py. Now returns 200 with correct orders list.",
+        "priority": "CRITICAL",
+        "status": "FIXED"
+      }
+    ],
+    "minor": [
+      {
+        "endpoint": "GET /api/store/products/{product_id}/files",
+        "issue": "Strips URL from private files even when called with authenticated admin token or by a user who has purchased the product. The endpoint signature is `async def list_product_files(product_id: str)` - no Request param, so it cannot check auth. This causes private file download links to be broken on ProductDetailPage (hasPurchased=true shows Download button but href=${BACKEND_URL}undefined) and OrderConfirmationPage shows 'Processing...' for private files.",
+        "priority": "HIGH - Needs main agent fix: Add Request param to list_product_files, check auth + purchase, return URL for private files to purchasers"
+      }
+    ]
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "ProductDetailPage - Private file download after purchase",
+        "issue": "When user has purchased product (hasPurchased=true), the Download button is shown for private files BUT the href is `${BACKEND_URL}undefined?token=xxx` because f.url is stripped from list API response. Clicking download will 404.",
+        "affected_selectors": ["[data-testid^='product-file-download-btn-']"],
+        "priority": "HIGH"
+      },
+      {
+        "flow": "OrderConfirmationPage - Private files after purchase",
+        "issue": "OrderConfirmationPage fetches /api/store/products/{id}/files to show download links. Private files have url=undefined (stripped by list endpoint), so they show 'Processing...' lock icon instead of a Download button. Public files work correctly.",
+        "affected_selectors": ["[data-testid='order-downloads-section']"],
+        "priority": "HIGH"
+      }
+    ],
+    "design_issues": [
+      {
+        "screen": "ProductDetailPage - Downloadable Files section",
+        "issues": ["Section visually well designed - shows 'Free Download' (green) for public files, 'After Purchase' (amber) for private, 'Purchase to Unlock' button for locked files. Sign in prompt shown for unauthenticated users with private files. Looks correct."]
+      }
+    ]
+  },
+
+  "test_report_links": [
+    "/app/backend/tests/test_product_file_upload_download.py",
+    "/app/test_reports/pytest/product_file_upload_download_results.xml"
+  ],
+
+  "action_items": [
+    "CRITICAL FIX NEEDED: Modify GET /api/store/products/{product_id}/files endpoint to accept Request parameter and check if user is authenticated + has purchased this product. If so, return private file URLs. This fixes: (1) ProductDetailPage download button after purchase, (2) OrderConfirmationPage showing private file downloads.",
+    "Suggested fix: `async def list_product_files(product_id: str, request: Request)` - extract token from Authorization header, call decode_token, check db.orders for purchase, then include url for private files for purchasers."
+  ],
+
+  "critical_code_review_comments": [
+    "FIXED: Route ordering bug - GET /orders/my was after GET /orders/{order_id}. FastAPI matches first matching route, so 'my' was treated as order_id=my. Fixed by moving /orders/my before /orders/{order_id}.",
+    "BUG: list_product_files endpoint has no Request param - cannot check auth. Private file URLs always stripped. Affects: ProductDetailPage (broken href for purchasers), OrderConfirmationPage (Processing... for private files).",
+    "OK: upload_product_file correctly uses Form(is_public) and stores files in /app/uploads/product-files/{product_id}/",
+    "OK: download_product_file correctly checks auth and purchase for private files. Token can be passed via query param (?token=) for direct download links.",
+    "OK: Admin product editor loads product_files from product.product_files (line 678) - admin gets all files with URLs since loaded from product document directly, not from list endpoint.",
+    "OK: OrderConfirmationPage fetches /api/store/products/{id}/files with auth headers but list endpoint ignores auth - no benefit."
+  ],
+
+  "updated_files": [
+    "/app/backend/ecommerce.py (moved GET /orders/my before GET /orders/{order_id})"
+  ],
+
+  "success_rate": {
+    "backend": "100% (19/19 tests passed)",
+    "frontend": "75% (Admin Files tab: 100%, ProductDetailPage unauthenticated: 100%, Download after purchase: BROKEN due to private file URL stripping)"
+  },
+
+  "test_credentials": {
+    "admin_email": "mel@a2gdesigns.com",
+    "admin_password": "BigDaddy2016!!"
+  },
+
+  "seed_data_creation": "test_manual.txt toggled to Public (was After Purchase) during testing. All TEST_ prefixed files cleaned up via test cleanup.",
+
+  "rca_of_issues": {
+    "route_ordering_bug": {
+      "root_cause": "GET /api/store/orders/my defined at line 1401 (now moved to 1165), after GET /orders/{order_id} at old line 1165. FastAPI uses first-match routing - 'my' matched as order_id parameter.",
+      "impact": "hasPurchased always remained false on ProductDetailPage for all users. Private files always showed 'Purchase to Unlock' even after purchase.",
+      "fix": "Moved /orders/my route before /orders/{order_id} in ecommerce.py"
+    },
+    "private_file_url_stripped": {
+      "root_cause": "list_product_files endpoint (line 696) has no Request param and unconditionally strips URL from private files with `entry.pop('url', None)`. Cannot check auth or purchase status.",
+      "impact": "After purchase, ProductDetailPage shows Download button but href=`${BACKEND_URL}undefined?token=xxx`. OrderConfirmationPage shows 'Processing...' for all private files.",
+      "fix_suggestion": "Add `request: Request` parameter, decode token if present, check db.orders for user purchase, return URL for private files to authenticated purchasers."
+    }
+  },
+
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Product file module mostly working. Route ordering bug for /orders/my was FIXED in ecommerce.py. Remaining critical bug: GET /api/store/products/{id}/files endpoint strips private file URLs even for authenticated purchasers - needs Request param + purchase check. Test product: 1a95914e-8136-4517-ab15-075405207856 (PUDU CC1 PRO). Admin product editor route: /admin/products/{id}. Product store URL: /shop/cc1-pro/pudu-cc1-pro."
+}

@@ -47,6 +47,7 @@ class ProductBase(BaseModel):
     related_products: List[str] = []
     has_options: bool = False
     custom_fields_data: Optional[dict] = None  # Stores values for category custom fields
+    product_files: List[dict] = []  # [{id, name, url, size, content_type, is_public, uploaded_at}]
 
 class ProductCreate(ProductBase):
     pass
@@ -87,6 +88,7 @@ class ProductUpdate(BaseModel):
     related_products: Optional[List[str]] = None
     has_options: Optional[bool] = None
     custom_fields_data: Optional[dict] = None
+    product_files: Optional[List[dict]] = None
 
 class Product(ProductBase):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))

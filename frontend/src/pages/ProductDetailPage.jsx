@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShoppingCart, ArrowLeft, ArrowRight, Shield, Truck, Minus, Plus, CheckCircle, Lock, BadgePercent, Heart, Upload } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, ArrowRight, Shield, Truck, Minus, Plus, CheckCircle, Lock, BadgePercent, Heart, Upload, Download, Globe, File as FileIcon } from 'lucide-react';
 import ButterflyIcon from '../components/icons/ButterflyIcon';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -38,6 +38,8 @@ const ProductDetailPage = () => {
   const [wholesalePriceInfo, setWholesalePriceInfo] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [relatedLoading, setRelatedLoading] = useState(false);
+  const [productFiles, setProductFiles] = useState([]);
+  const [hasPurchased, setHasPurchased] = useState(false);
   const { addToCart } = useCart();
   const { isAuthenticated, user, isWholesale, customerTier } = useAuth();
   const { require_account_for_checkout, pawn_checkout } = useSiteFeatureFlags();
@@ -117,6 +119,40 @@ const ProductDetailPage = () => {
 
     fetchRelatedProducts();
   }, [product?.id]);
+
+  // Fetch product files + check if user has purchased
+  useEffect(() => {
+    if (!product?.id) return;
+    const fetchFiles = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+        const res = await axios.get(`${BACKEND_URL}/api/store/products/${product.id}/files`, { headers });
+        setProductFiles(res.data.files || []);
+      } catch {
+        setProductFiles([]);
+      }
+    };
+    const checkPurchase = async () => {
+      if (!isAuthenticated || !user?.id) return;
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get(`${BACKEND_URL}/api/store/orders/my`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const orders = res.data.orders || res.data || [];
+        const purchased = orders.some(o =>
+          ['paid', 'processing', 'shipped', 'delivered', 'completed'].includes(o.status) &&
+          (o.items || []).some(it => it.product_id === product.id)
+        );
+        setHasPurchased(purchased);
+      } catch {
+        setHasPurchased(false);
+      }
+    };
+    fetchFiles();
+    checkPurchase();
+  }, [product?.id, isAuthenticated, user?.id]);
 
   // Refetch price when quantity changes (for quantity tier discounts)
   useEffect(() => {
@@ -587,6 +623,81 @@ const ProductDetailPage = () => {
             </div>
           </motion.div>
             </div>
+
+          {/* Downloadable Files */}
+          {productFiles.length > 0 && (
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-10"
+              data-testid="product-files-section"
+            >
+              <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center">
+                    <Download className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-800">Downloadable Files</h3>
+                    <p className="text-xs text-slate-500">Files attached to this product</p>
+                  </div>
+                </div>
+                <div className="divide-y divide-slate-100">
+                  {productFiles.map((f) => {
+                    const isAccessible = f.is_public || hasPurchased;
+                    const sizeDisplay = f.size > 1024 * 1024
+                      ? `${(f.size / (1024 * 1024)).toFixed(1)} MB`
+                      : f.size > 1024
+                      ? `${(f.size / 1024).toFixed(0)} KB`
+                      : `${f.size || 0} B`;
+                    const token = localStorage.getItem('token') || '';
+                    return (
+                      <div key={f.id} className="flex items-center gap-4 px-6 py-4" data-testid={`product-file-row-${f.id}`}>
+                        <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
+                          <FileIcon className="w-5 h-5 text-slate-500" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-slate-800 text-sm truncate">{f.name}</p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            {f.is_public ? (
+                              <span className="flex items-center gap-1 text-xs text-green-600 font-medium">
+                                <Globe className="w-3 h-3" /> Free Download
+                              </span>
+                            ) : (
+                              <span className="flex items-center gap-1 text-xs text-amber-600 font-medium">
+                                <Lock className="w-3 h-3" /> After Purchase
+                              </span>
+                            )}
+                            {f.size && <span className="text-xs text-slate-400">· {sizeDisplay}</span>}
+                          </div>
+                        </div>
+                        {isAccessible ? (
+                          <a
+                            href={`${BACKEND_URL}${f.url}${!f.is_public ? `?token=${token}` : ''}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                            data-testid={`product-file-download-btn-${f.id}`}
+                          >
+                            <Download className="w-4 h-4" /> Download
+                          </a>
+                        ) : (
+                          <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-400 text-sm font-medium rounded-lg cursor-not-allowed" data-testid={`product-file-locked-${f.id}`}>
+                            <Lock className="w-4 h-4" /> Purchase to Unlock
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                {!isAuthenticated && productFiles.some(f => !f.is_public) && (
+                  <div className="px-6 py-3 bg-amber-50 border-t border-amber-100 text-xs text-amber-700">
+                    <Link to="/login" className="font-semibold underline">Sign in</Link> to access files included with your purchase.
+                  </div>
+                )}
+              </div>
+            </motion.section>
+          )}
 
             <section className="mt-16" data-testid="related-products-section">
           <div className="flex items-center justify-between mb-6">

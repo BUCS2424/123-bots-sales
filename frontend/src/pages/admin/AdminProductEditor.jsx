@@ -6,7 +6,8 @@ import {
   Bold, Italic, Underline, Strikethrough, Link2, List, ListOrdered,
   AlignLeft, AlignCenter, AlignRight, AlignJustify, Table, Code,
   Heading1, Heading2, Quote, Minus, Maximize2, Info, Loader2, Truck,
-  FileText, Search as SearchIcon, Tag, Package, GripVertical, Sparkles, Wand2, Trash2, Copy
+  FileText, Search as SearchIcon, Tag, Package, GripVertical, Sparkles, Wand2, Trash2, Copy,
+  Lock, Globe, Download, File as FileIcon, CheckCircle2
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -377,6 +378,11 @@ const AdminProductEditor = ({ productId: propProductId }) => {
   const [storageConfigured, setStorageConfigured] = useState(false);
   const [aiProductsEnabled, setAiProductsEnabled] = useState(true);
 
+  // Product Files state
+  const [productFiles, setProductFiles] = useState([]);
+  const [filesUploading, setFilesUploading] = useState(false);
+  const productFileInputRef = useRef(null);
+
   // Form state
   const [formData, setFormData] = useState({
     name: '',
@@ -667,6 +673,11 @@ const AdminProductEditor = ({ productId: propProductId }) => {
         setRelatedProducts(product.related_products);
       }
       
+      // Load product files
+      if (product.product_files && Array.isArray(product.product_files)) {
+        setProductFiles(product.product_files);
+      }
+      
       // Load custom fields data
       if (product.custom_fields_data) {
         setCustomFieldsData(product.custom_fields_data);
@@ -685,8 +696,55 @@ const AdminProductEditor = ({ productId: propProductId }) => {
     setLoading(false);
   };
 
-  const handleSave = async () => {
-    if (!formData.name.trim()) {
+  // Product File handlers
+  const handleProductFileUpload = async (file, isPublic = false) => {
+    if (!productId) {
+      toast({ title: 'Save product first', description: 'Please save the product before uploading files.', variant: 'destructive' });
+      return;
+    }
+    setFilesUploading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('is_public', isPublic);
+      const response = await axios.post(`${API}/store/products/${productId}/files`, formData, {
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
+      });
+      setProductFiles(prev => [...prev, response.data.file]);
+      toast({ title: 'File uploaded', description: `"${file.name}" uploaded successfully.` });
+    } catch (err) {
+      toast({ title: 'Upload failed', description: err.response?.data?.detail || 'Could not upload file.', variant: 'destructive' });
+    }
+    setFilesUploading(false);
+  };
+
+  const handleDeleteProductFile = async (fileId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`${API}/store/products/${productId}/files/${fileId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setProductFiles(prev => prev.filter(f => f.id !== fileId));
+      toast({ title: 'File deleted' });
+    } catch (err) {
+      toast({ title: 'Delete failed', description: err.response?.data?.detail || 'Could not delete file.', variant: 'destructive' });
+    }
+  };
+
+  const handleToggleFilePublic = async (fileId, currentIsPublic) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.patch(`${API}/store/products/${productId}/files/${fileId}`, { is_public: !currentIsPublic }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setProductFiles(prev => prev.map(f => f.id === fileId ? { ...f, is_public: !currentIsPublic } : f));
+    } catch (err) {
+      toast({ title: 'Update failed', variant: 'destructive' });
+    }
+  };
+
+  const handleSave = async () => {    if (!formData.name.trim()) {
       toast({ title: 'Error', description: 'Product name is required', variant: 'destructive' });
       return;
     }
@@ -2093,16 +2151,102 @@ const AdminProductEditor = ({ productId: propProductId }) => {
               <Card>
                 <CardHeader>
                   <CardTitle>Downloadable Files</CardTitle>
-                  <CardDescription>Add files that customers can download after purchase</CardDescription>
+                  <CardDescription>
+                    Attach files to this product. <strong>Public</strong> files are available to anyone. <strong>After Purchase</strong> files are only downloadable by customers who have bought this product.
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
-                    <FileText className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                    <p className="text-gray-500 mb-4">No files attached to this product</p>
-                    <Button variant="outline">
-                      <Upload className="w-4 h-4 mr-2" />
-                      Upload File
-                    </Button>
+                <CardContent className="space-y-4">
+                  {/* Upload area */}
+                  <div
+                    className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors"
+                    onClick={() => productFileInputRef.current?.click()}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      const files = Array.from(e.dataTransfer.files);
+                      files.forEach(f => handleProductFileUpload(f, false));
+                    }}
+                  >
+                    <input
+                      ref={productFileInputRef}
+                      type="file"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => {
+                        Array.from(e.target.files || []).forEach(f => handleProductFileUpload(f, false));
+                        e.target.value = '';
+                      }}
+                    />
+                    {filesUploading ? (
+                      <div className="flex items-center justify-center gap-2 text-blue-600">
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span className="text-sm font-medium">Uploading...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                        <p className="text-sm font-medium text-gray-700">Drop files here or click to upload</p>
+                        <p className="text-xs text-gray-500 mt-1">Any file type · Max 100MB · Multiple allowed</p>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Files list */}
+                  {productFiles.length === 0 ? (
+                    <p className="text-center text-sm text-gray-400 py-4">No files attached yet</p>
+                  ) : (
+                    <div className="space-y-2" data-testid="product-files-list">
+                      {productFiles.map((f) => {
+                        const sizeKB = f.size ? (f.size / 1024).toFixed(1) : '?';
+                        const sizeMB = f.size ? (f.size / (1024 * 1024)).toFixed(2) : '?';
+                        const displaySize = f.size > 1024 * 1024 ? `${sizeMB} MB` : `${sizeKB} KB`;
+                        return (
+                          <div key={f.id} className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 bg-white" data-testid={`product-file-${f.id}`}>
+                            <FileIcon className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-900 truncate">{f.name}</p>
+                              <p className="text-xs text-gray-500">{displaySize} · {f.content_type}</p>
+                            </div>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <button
+                                title={f.is_public ? 'Public — click to make After Purchase only' : 'After Purchase only — click to make Public'}
+                                onClick={() => handleToggleFilePublic(f.id, f.is_public)}
+                                className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
+                                  f.is_public
+                                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                    : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                                }`}
+                                data-testid={`product-file-toggle-${f.id}`}
+                              >
+                                {f.is_public ? <><Globe className="w-3 h-3" /> Public</> : <><Lock className="w-3 h-3" /> After Purchase</>}
+                              </button>
+                              <a
+                                href={`${BACKEND_URL}${f.url}?token=${localStorage.getItem('token') || ''}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-1.5 rounded text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                                title="Download"
+                                data-testid={`product-file-download-${f.id}`}
+                              >
+                                <Download className="w-4 h-4" />
+                              </a>
+                              <button
+                                onClick={() => handleDeleteProductFile(f.id)}
+                                className="p-1.5 rounded text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                title="Delete file"
+                                data-testid={`product-file-delete-${f.id}`}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  <div className="rounded-lg bg-blue-50 border border-blue-200 p-3 text-xs text-blue-700">
+                    <strong>Tip:</strong> Toggle each file between <strong>Public</strong> (anyone can download from the product page) and <strong>After Purchase</strong> (only customers who ordered this product can download).
                   </div>
                 </CardContent>
               </Card>

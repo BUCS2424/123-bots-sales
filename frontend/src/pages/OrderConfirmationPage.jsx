@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   CheckCircle, Home, Package, Truck, Mail, Phone, MapPin, 
   CreditCard, ArrowRight, Download, Clock, 
-  DollarSign, Smartphone, AlertCircle, ExternalLink
+  DollarSign, Smartphone, AlertCircle, ExternalLink, File as FileIcon, Lock, Globe
 } from 'lucide-react';
 import ButterflyIcon from '../components/icons/ButterflyIcon';
 import { getDisplayOptionSummary } from '../lib/productOptions';
@@ -16,6 +16,7 @@ const OrderConfirmationPage = () => {
   const location = useLocation();
   const [order, setOrder] = useState(null);
   const [capturingPayPal, setCapturingPayPal] = useState(false);
+  const [downloadableFiles, setDownloadableFiles] = useState([]); // [{productName, files:[...]}]
 
   useEffect(() => {
     const savedOrder = sessionStorage.getItem('lastOrder');
@@ -23,6 +24,31 @@ const OrderConfirmationPage = () => {
       setOrder(JSON.parse(savedOrder));
     }
   }, []);
+
+  // Fetch downloadable files for all products in the order
+  useEffect(() => {
+    if (!order?.items?.length) return;
+    const token = localStorage.getItem('token') || '';
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const fetchAllFiles = async () => {
+      const results = await Promise.all(
+        order.items.map(async (item) => {
+          try {
+            const res = await fetch(`${API_URL}/api/store/products/${item.product_id}/files`, { headers });
+            if (!res.ok) return null;
+            const data = await res.json();
+            const files = (data.files || []);
+            if (!files.length) return null;
+            return { productName: item.name, productId: item.product_id, files };
+          } catch {
+            return null;
+          }
+        })
+      );
+      setDownloadableFiles(results.filter(Boolean));
+    };
+    fetchAllFiles();
+  }, [order]);
 
   useEffect(() => {
     const maybeCapturePayPal = async () => {
@@ -539,6 +565,68 @@ const OrderConfirmationPage = () => {
         </motion.div>
 
         {/* Action Buttons */}
+        {/* Downloadable Files Section */}
+        {downloadableFiles.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.55 }}
+            className="max-w-2xl mx-auto mb-8"
+            data-testid="order-downloads-section"
+          >
+            <div className="rounded-2xl border border-blue-200 bg-white overflow-hidden shadow-sm">
+              <div className="px-6 py-4 border-b border-blue-100 flex items-center gap-3 bg-blue-50">
+                <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
+                  <Download className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800">Your Downloads</h3>
+                  <p className="text-xs text-slate-500">Files available with your purchase</p>
+                </div>
+              </div>
+              {downloadableFiles.map(({ productName, productId, files }) => (
+                <div key={productId}>
+                  <div className="px-6 py-2 bg-slate-50 border-b border-slate-100">
+                    <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">{productName}</p>
+                  </div>
+                  <div className="divide-y divide-slate-100">
+                    {files.map((f) => {
+                      const token = localStorage.getItem('token') || '';
+                      const sizeDisplay = f.size > 1024 * 1024
+                        ? `${(f.size / (1024 * 1024)).toFixed(1)} MB`
+                        : f.size > 1024 ? `${(f.size / 1024).toFixed(0)} KB` : `${f.size || 0} B`;
+                      return (
+                        <div key={f.id} className="flex items-center gap-4 px-6 py-3" data-testid={`order-file-${f.id}`}>
+                          <FileIcon className="w-5 h-5 text-slate-400 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-slate-800 truncate">{f.name}</p>
+                            {f.size && <p className="text-xs text-slate-400">{sizeDisplay}</p>}
+                          </div>
+                          {f.url ? (
+                            <a
+                              href={`${API_URL}${f.url}?token=${token}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                              data-testid={`order-file-download-${f.id}`}
+                            >
+                              <Download className="w-3.5 h-3.5" /> Download
+                            </a>
+                          ) : (
+                            <span className="flex items-center gap-1.5 px-3 py-1.5 text-slate-400 text-xs">
+                              <Lock className="w-3.5 h-3.5" /> Processing...
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

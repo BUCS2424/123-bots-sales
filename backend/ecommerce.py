@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, Request, UploadFile, File
+from fastapi import APIRouter, HTTPException, Depends, Request, UploadFile, File, Form
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -691,6 +691,177 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
         
         return await _ensure_product_seo_url(product)
 
+    # ─── Product Files ─────────────────────────────────────────────────────────
+
+    @router.get("/products/{product_id}/files")
+    async def list_product_files(product_id: str):
+        """List files attached to a product. Public files always shown; private files show metadata only."""
+        product = await db.products.find_one({"id": product_id}, {"_id": 0, "product_files": 1})
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        files = product.get("product_files") or []
+        # Strip url from private files in public listing
+        public_list = []
+        for f in files:
+            entry = {k: v for k, v in f.items()}
+            if not entry.get("is_public", True):
+                entry.pop("url", None)  # URL hidden until purchase verified
+            public_list.append(entry)
+        return {"files": public_list}
+
+    @router.post("/products/{product_id}/files")
+    async def upload_product_file(
+        product_id: str,
+        is_public: bool = Form(False),
+        file: UploadFile = File(...),
+        current_user: TokenData = Depends(require_admin),
+    ):
+        """Upload a file to a product (admin only)."""
+        from pathlib import Path as PPath
+        product = await db.products.find_one({"id": product_id}, {"_id": 0, "id": 1})
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+
+        content = await file.read()
+        if len(content) > 100 * 1024 * 1024:  # 100MB limit
+            raise HTTPException(status_code=400, detail="File too large (max 100MB)")
+
+        import os as _os
+        ext = _os.path.splitext(file.filename or "")[1]
+        unique_name = f"{uuid.uuid4()}{ext}"
+        upload_dir = PPath(f"/app/uploads/product-files/{product_id}")
+        upload_dir.mkdir(parents=True, exist_ok=True)
+        file_path = upload_dir / unique_name
+        with open(file_path, "wb") as fh:
+            fh.write(content)
+
+        file_record = {
+            "id": str(uuid.uuid4()),
+            "name": file.filename or unique_name,
+            "url": f"/api/store/products/{product_id}/files/download/{unique_name}",
+            "internal_path": f"product-files/{product_id}/{unique_name}",
+            "size": len(content),
+            "content_type": file.content_type or "application/octet-stream",
+            "is_public": is_public,
+            "uploaded_at": datetime.now(timezone.utc).isoformat(),
+        }
+
+        await db.products.update_one(
+            {"id": product_id},
+            {"$push": {"product_files": file_record}, "$set": {"updated_at": datetime.now(timezone.utc)}}
+        )
+        return {"file": file_record}
+
+    @router.delete("/products/{product_id}/files/{file_id}")
+    async def delete_product_file(
+        product_id: str,
+        file_id: str,
+        current_user: TokenData = Depends(require_admin),
+    ):
+        """Delete a file from a product (admin only)."""
+        from pathlib import Path as PPath
+        product = await db.products.find_one({"id": product_id}, {"_id": 0, "product_files": 1})
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+
+        files = product.get("product_files") or []
+        target = next((f for f in files if f.get("id") == file_id), None)
+        if not target:
+            raise HTTPException(status_code=404, detail="File not found")
+
+        # Delete physical file
+        internal_path = target.get("internal_path")
+        if internal_path:
+            fp = PPath(f"/app/uploads/{internal_path}")
+            if fp.exists():
+                fp.unlink()
+
+        await db.products.update_one(
+            {"id": product_id},
+            {"$pull": {"product_files": {"id": file_id}}, "$set": {"updated_at": datetime.now(timezone.utc)}}
+        )
+        return {"success": True}
+
+    @router.patch("/products/{product_id}/files/{file_id}")
+    async def update_product_file(
+        product_id: str,
+        file_id: str,
+        payload: dict,
+        current_user: TokenData = Depends(require_admin),
+    ):
+        """Update file metadata (is_public toggle, rename). Admin only."""
+        product = await db.products.find_one({"id": product_id}, {"_id": 0, "product_files": 1})
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        files = product.get("product_files") or []
+        updated = []
+        for f in files:
+            if f.get("id") == file_id:
+                if "is_public" in payload:
+                    f["is_public"] = bool(payload["is_public"])
+                if "name" in payload and payload["name"]:
+                    f["name"] = str(payload["name"])
+            updated.append(f)
+        await db.products.update_one(
+            {"id": product_id},
+            {"$set": {"product_files": updated, "updated_at": datetime.now(timezone.utc)}}
+        )
+        return {"success": True}
+
+    @router.get("/products/{product_id}/files/download/{filename}")
+    async def download_product_file(
+        product_id: str,
+        filename: str,
+        request: Request,
+    ):
+        """Download a product file. Public files: no auth. Private files: must be logged in + have purchased."""
+        from pathlib import Path as PPath
+        from fastapi.responses import FileResponse as FRResponse
+
+        product = await db.products.find_one({"id": product_id}, {"_id": 0, "product_files": 1})
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+
+        files = product.get("product_files") or []
+        target = next((f for f in files if f.get("internal_path", "").endswith(filename)), None)
+        if not target:
+            raise HTTPException(status_code=404, detail="File not found")
+
+        file_path = PPath(f"/app/uploads/{target['internal_path']}")
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="File not found on disk")
+
+        if not target.get("is_public", True):
+            # Require authentication
+            auth_header = request.headers.get("Authorization", "")
+            token_str = auth_header.replace("Bearer ", "").strip() if auth_header.startswith("Bearer ") else ""
+            # Also allow query param token for direct download links
+            token_str = token_str or request.query_params.get("token", "")
+            if not token_str:
+                raise HTTPException(status_code=401, detail="Authentication required to download this file")
+            try:
+                token_data = decode_token(token_str)
+                user_id = token_data.user_id
+            except Exception:
+                raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+            # Check if user is admin (admins can always download)
+            if not is_admin_or_above(token_data.role):
+                # Check if user has an order containing this product
+                order = await db.orders.find_one({
+                    "customer_id": user_id,
+                    "items.product_id": product_id,
+                    "status": {"$nin": ["cancelled", "refunded"]}
+                })
+                if not order:
+                    raise HTTPException(status_code=403, detail="Purchase required to download this file")
+
+        return FRResponse(
+            path=str(file_path),
+            filename=target.get("name", filename),
+            media_type=target.get("content_type", "application/octet-stream"),
+        )
+
     @router.get("/products/{product_id}/related", response_model=List[Product])
     async def get_related_products(product_id: str, limit: int = 5):
         """Get related products by category (max 5 by default)."""
@@ -990,6 +1161,26 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
         
         orders = await db.orders.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
         return orders
+
+    @router.get("/orders/my")
+    async def get_my_orders(request: Request):
+        """Get orders for the currently logged-in user."""
+        auth_header = request.headers.get("Authorization", "")
+        token_str = auth_header.replace("Bearer ", "").strip() if auth_header.startswith("Bearer ") else ""
+        if not token_str:
+            raise HTTPException(status_code=401, detail="Authentication required")
+        try:
+            token_data = decode_token(token_str)
+        except Exception:
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+        user = await db.users.find_one({"id": token_data.user_id}, {"_id": 0, "email": 1})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        orders = await db.orders.find(
+            {"$or": [{"customer_id": token_data.user_id}, {"customer_email": user["email"]}]},
+            {"_id": 0}
+        ).sort("created_at", -1).to_list(200)
+        return {"orders": orders}
 
     @router.get("/orders/{order_id}", response_model=Order)
     async def get_order(order_id: str, current_user: TokenData = Depends(require_admin)):
