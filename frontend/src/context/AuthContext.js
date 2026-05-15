@@ -2,11 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const FRONTEND_ORIGIN = typeof window !== 'undefined' ? window.location.origin : '';
-const API_BASE = (typeof window !== 'undefined' && window.location.hostname.endsWith('123bots.com'))
-  ? FRONTEND_ORIGIN
-  : BACKEND_URL;
-const API = `${API_BASE}/api`;
+const API = `${BACKEND_URL}/api`;
 const IMPERSONATION_ORIGINAL_TOKEN_KEY = 'impersonation_original_token';
 const IMPERSONATION_ORIGINAL_USER_KEY = 'impersonation_original_user';
 const getTrustedDeviceStorageKey = (email) => `trusted_email_2fa:${String(email || '').trim().toLowerCase()}`;

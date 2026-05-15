@@ -249,9 +249,10 @@ async def health_check():
 from fastapi.responses import Response
 
 @api_router.get("/sitemap.xml")
-async def dynamic_sitemap():
+async def dynamic_sitemap(request: Request):
     """Generate dynamic sitemap with products and articles"""
-    base_url = "https://123bots.com"
+    forwarded_host = request.headers.get("x-forwarded-host") or request.headers.get("host") or "localhost"
+    base_url = f"https://{forwarded_host}"
     
     # Static pages
     static_pages = [

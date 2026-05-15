@@ -18,6 +18,23 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 
 ## What's Been Implemented
 
+### Completed (May 15, 2026)
+- [x] **Product File Upload/Download System**
+  - Admin Product Editor Files tab: drag-and-drop upload, file list, public/private toggle, download/delete
+  - Backend endpoints: upload, list (auth-aware), delete, patch (toggle), download (auth+purchase check)
+  - ProductDetailPage: "Downloadable Files" section (public=download, private=locked until purchase)
+  - OrderConfirmationPage: post-purchase download links section
+  - GET /api/store/orders/my: endpoint for customer order history
+- [x] **Quote Builder — Browse Catalog Picker**
+  - "Browse Catalog" modal in line items: search, category-grouped, hover-add
+  - Products/Services tabs, empty-state with link to catalog settings
+- [x] **P0 Fix: AuthContext.js production hostname bug**
+  - Removed hardcoded `window.location.hostname.endsWith('123bots.com')` detection
+  - All API calls now always use `REACT_APP_BACKEND_URL`
+  - Fixes black screen on 123bots.com production deployment
+- [x] **Sitemap URL fix: hardcoded base_url in server.py**
+  - Replaced `https://123bots.com` with dynamic `x-forwarded-host` header detection
+
 ### Completed (March 25, 2026)
 - [x] **A2G Modules Step 2 (Frontend) integrated into Admin**
   - Tasks page integrated at `/admin/tasks` and placed under **CRM** menu
