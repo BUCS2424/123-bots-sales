@@ -221,12 +221,13 @@ const PuduBg1ProPage = () => {
               <div className="absolute inset-0 bg-blue-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
                 <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
-                  <video 
-                    controls 
+                  <video
+                    controls
+                    playsInline
+                    preload="metadata"
                     className="w-full h-full object-cover rounded-xl"
-                    poster="/images/bots/pudu-bg1-pro.png"
                   >
-                    <source src="/videos/bg1-pro-navigation.mp4" type="video/mp4" />
+                    <source src="/videos/bg1-pro-coverage.mp4" type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
                 </div>
@@ -291,9 +292,16 @@ const PuduBg1ProPage = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-purple-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
-                <div className="aspect-video bg-gray-800/50 rounded-xl flex items-center justify-center">
-                  <Play className="w-16 h-16 text-purple-400" />
-                  <span className="ml-4 text-gray-400">[Video: Large Area Cleaning]</span>
+                <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
+                  <video
+                    controls
+                    playsInline
+                    preload="metadata"
+                    className="w-full h-full object-cover rounded-xl"
+                  >
+                    <source src="/videos/bg1-pro-navigation.mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
                 </div>
               </div>
             </div>
