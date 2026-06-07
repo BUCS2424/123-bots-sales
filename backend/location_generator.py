@@ -52,6 +52,12 @@ STATE_ABBR_MAP = {
     "puerto-rico": "PR",
 }
 
+# Legacy abbreviation aliases — maps old generated suffixes to the correct state slug
+# Puerto Rico was historically generated with "PU" (first 2 chars of slug) before explicit mapping
+ABBR_LEGACY_MAP = {
+    "PU": "puerto-rico",
+}
+
 
 class GenerateStateRequest(BaseModel):
     include_counties: bool = True
@@ -387,6 +393,9 @@ async def serve_generated_page(filename: str):
     if len(parts) == 2:
         abbr = parts[1].upper()
         state_slug = next((slug for slug, code in STATE_ABBR_MAP.items() if code == abbr), None)
+        # Fallback for legacy abbreviations (e.g. "PU" generated before explicit PR mapping)
+        if not state_slug:
+            state_slug = ABBR_LEGACY_MAP.get(abbr)
     if not state_slug or state_slug not in data:
         raise HTTPException(status_code=404, detail="Location page not found")
 
@@ -411,7 +420,11 @@ async def serve_generated_page(filename: str):
         )
         return HTMLResponse(content=html)
 
-    county_match = next((county for county in counties if _slugify(county.replace(" County", "")) == raw_slug), None)
+    county_match = next((
+        county for county in counties
+        if _slugify(county.replace(" Municipality", "").replace(" County", "")) == raw_slug
+        or _slugify(county) == raw_slug
+    ), None)
     if county_match:
         # For county pages, show a subset of cities from the state
         # In a real scenario, you'd filter cities by county
@@ -561,7 +574,7 @@ async def generate_state_pages(state_slug: str, request: Optional[GenerateStateR
     if include_counties:
         for county in counties:
             try:
-                county_slug = _slugify(county.replace(" County", ""))
+                county_slug = _slugify(county.replace(" Municipality", "").replace(" County", ""))
                 location_slug = f"{county_slug}-{state_abbr}"
                 file_path = OUTPUT_DIR / _build_filename(location_slug, location_prefix)
                 html = generate_location_page_html(
