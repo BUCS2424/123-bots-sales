@@ -41,7 +41,7 @@ const ResourcesPage = () => {
         { title: 'Hospital Cleaning ROI Study', type: 'PDF', link: '/brochures/hospital-cleaning-roi-case-study-123bots.pdf' },
         { title: 'Warehouse Efficiency Report', type: 'PDF', link: '/brochures/warehouse-efficiency-report-123bots.pdf' },
         { title: 'Retail Store Success Story', type: 'PDF', link: '/brochures/retail-store-success-case-study-123bots.pdf' },
-        { title: 'Hotel Chain Implementation', type: 'PDF', link: '#' },
+        { title: 'Hotel Chain Implementation', type: 'PDF', link: '/brochures/hotel-chain-implementation-case-study-123bots.pdf' },
       ],
     },
   ];
