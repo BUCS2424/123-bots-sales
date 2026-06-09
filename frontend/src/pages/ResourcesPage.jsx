@@ -38,7 +38,7 @@ const ResourcesPage = () => {
       category: 'Case Studies',
       icon: FileText,
       items: [
-        { title: 'Hospital Cleaning ROI Study', type: 'PDF', link: '#' },
+        { title: 'Hospital Cleaning ROI Study', type: 'PDF', link: '/brochures/hospital-cleaning-roi-case-study-123bots.pdf' },
         { title: 'Warehouse Efficiency Report', type: 'PDF', link: '/brochures/warehouse-efficiency-report-123bots.pdf' },
         { title: 'Retail Store Success Story', type: 'PDF', link: '#' },
         { title: 'Hotel Chain Implementation', type: 'PDF', link: '#' },
