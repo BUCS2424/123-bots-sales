@@ -103,7 +103,8 @@ const ResourcesPage = () => {
                     <li key={idx}>
                       <a
                         href={item.link}
-                        download={item.link !== '#' ? true : undefined}
+                        target={item.link !== '#' ? '_blank' : undefined}
+                        rel="noopener noreferrer"
                         className="flex items-center justify-between p-3 bg-bots-dark rounded-lg hover:bg-bots-accent transition-colors group"
                       >
                         <span className="text-gray-300 group-hover:text-white transition-colors">

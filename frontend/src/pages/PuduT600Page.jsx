@@ -25,7 +25,7 @@ const PuduT600Page = () => {
               <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">Maximum Payload, <span className="text-red-400">Minimum Trips</span></h1>
               <p className="text-xl text-gray-300 mb-8 leading-relaxed">Reduce delivery trips by 50% with 600kg payload capacity. Fleet coordination, rack recognition, and underride variant for seamless warehouse automation.</p>
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <a href="/brochures/123-t600-flyer.pdf" download="123-T600-Flyer.pdf" className="px-8 py-4 bg-red-600 text-white font-bold rounded-full hover:bg-red-500 transition-colors flex items-center justify-center gap-2"><Download className="w-5 h-5" />Download Brochure</a>
+                <a href="/brochures/123-t600-flyer.pdf" target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-red-600 text-white font-bold rounded-full hover:bg-red-500 transition-colors flex items-center justify-center gap-2"><Download className="w-5 h-5" />Download Brochure</a>
                 <Link to="/schedule-a-demo" className="px-8 py-4 bg-bots-surface border-2 border-red-500 text-white font-bold rounded-full hover:bg-red-500/20 transition-colors text-center">Book a Demo</Link>
               </div>
               <div className="flex flex-wrap gap-6 text-sm text-gray-400">

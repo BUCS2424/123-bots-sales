@@ -70,7 +70,8 @@ const PuduBg1ProPage = () => {
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <a
                   href="/brochures/123-bg1-pro-brochure.pdf"
-                  download="123-BG1-Pro-Brochure.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="px-8 py-4 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-500 transition-colors flex items-center justify-center gap-2"
                 >
                   <Download className="w-5 h-5" />
