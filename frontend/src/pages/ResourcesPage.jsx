@@ -39,7 +39,7 @@ const ResourcesPage = () => {
       icon: FileText,
       items: [
         { title: 'Hospital Cleaning ROI Study', type: 'PDF', link: '#' },
-        { title: 'Warehouse Efficiency Report', type: 'PDF', link: '#' },
+        { title: 'Warehouse Efficiency Report', type: 'PDF', link: '/brochures/warehouse-efficiency-report-123bots.pdf' },
         { title: 'Retail Store Success Story', type: 'PDF', link: '#' },
         { title: 'Hotel Chain Implementation', type: 'PDF', link: '#' },
       ],
@@ -103,6 +103,7 @@ const ResourcesPage = () => {
                     <li key={idx}>
                       <a
                         href={item.link}
+                        download={item.link !== '#' ? true : undefined}
                         className="flex items-center justify-between p-3 bg-bots-dark rounded-lg hover:bg-bots-accent transition-colors group"
                       >
                         <span className="text-gray-300 group-hover:text-white transition-colors">
