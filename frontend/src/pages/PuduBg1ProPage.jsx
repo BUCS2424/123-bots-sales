@@ -314,8 +314,8 @@ const PuduBg1ProPage = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-orange-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
-                <div className="aspect-video bg-gray-800/50 rounded-xl flex items-center justify-center">
-                  <span className="text-gray-400 text-center px-4">[Image: Ride-On Platform Demo]</span>
+                <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
+                  <img src="/images/bots/pudu-bg1-ride-on-platform.png" alt="PUDU BG1 PRO Unique Ride-On Platform" className="w-full h-full object-cover rounded-xl" />
                 </div>
               </div>
             </div>
