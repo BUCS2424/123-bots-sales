@@ -359,8 +359,8 @@ const PuduBg1ProPage = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {/* Fleet Management */}
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-blue-500/50 transition-all hover:transform hover:scale-105">
-              <div className="aspect-video bg-gradient-to-br from-blue-600/20 to-blue-800/20 flex items-center justify-center">
-                <span className="text-gray-400">[Image: Fleet Dashboard]</span>
+              <div className="aspect-video overflow-hidden">
+                <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/sy01od6d_fleet-management.png" alt="PUDU BG1 PRO Fleet Management Dashboard" className="w-full h-full object-cover" />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">Fleet Management</h3>
