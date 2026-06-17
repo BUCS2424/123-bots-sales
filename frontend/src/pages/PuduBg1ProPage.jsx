@@ -383,9 +383,9 @@ const PuduBg1ProPage = () => {
                 <p className="text-gray-400 mb-6">
                   Seamless connectivity with building systems. Control elevators, automatic doors, and access gates autonomously. Support for multi-floor operations, pager systems, and 4G/Wi-Fi/Bluetooth connectivity for maximum flexibility.
                 </p>
-                <a href="#" className="text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-2">
+                <Link to="/explore-all-pudu-bg1-features" className="text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-2">
                   Explore Features <ChevronRight className="w-4 h-4" />
-                </a>
+                </Link>
               </div>
             </div>
 

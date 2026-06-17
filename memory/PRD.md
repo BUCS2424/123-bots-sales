@@ -18,6 +18,13 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
 
 ## What's Been Implemented
 
+### Completed (June 17, 2026)
+- [x] **BG1 PRO Features Page — Full Route Integration**
+  - `PuduBg1ProFeaturesPage.jsx` routed at `/explore-all-pudu-bg1-features`
+  - "Explore Features" button on `PuduBg1ProPage.jsx` (IoT Integration section) now links via `<Link>` to the features page
+  - All 12 robot product page URLs added to both the dynamic (`/api/sitemap.xml` in `server.py`) and static (`/frontend/public/sitemap.xml`) sitemaps
+  - `/explore-all-pudu-bg1-features` added to both sitemaps with `priority 0.7`
+
 ### Completed (May 15, 2026)
 - [x] **Product File Upload/Download System**
   - Admin Product Editor Files tab: drag-and-drop upload, file list, public/private toggle, download/delete

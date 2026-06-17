@@ -86,6 +86,18 @@ async def get_sitemap(request: Request):
         ("/privacy", "yearly", "0.3"),
         ("/shipping", "monthly", "0.5"),
         ("/returns", "monthly", "0.5"),
+        ("/products/pudu-bg1", "monthly", "0.8"),
+        ("/products/pudu-cc1-pro", "monthly", "0.8"),
+        ("/products/pudu-sh1", "monthly", "0.8"),
+        ("/products/pudu-mt1", "monthly", "0.8"),
+        ("/products/pudu-mt1-vac", "monthly", "0.8"),
+        ("/products/flashbot-max", "monthly", "0.8"),
+        ("/products/pudu-t300", "monthly", "0.8"),
+        ("/products/pudu-t600", "monthly", "0.8"),
+        ("/products/gausium-mira", "monthly", "0.8"),
+        ("/products/gausium-marvel", "monthly", "0.8"),
+        ("/products/ab-kas", "monthly", "0.8"),
+        ("/explore-all-pudu-bg1-features", "monthly", "0.7"),
     ]
     
     for path, freq, priority in static_pages:

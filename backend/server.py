@@ -266,6 +266,20 @@ async def dynamic_sitemap(request: Request):
         {"loc": "/privacy-policy", "changefreq": "yearly", "priority": "0.3"},
         {"loc": "/shipping-returns", "changefreq": "monthly", "priority": "0.5"},
         {"loc": "/accessibility", "changefreq": "yearly", "priority": "0.3"},
+        # Robot product pages
+        {"loc": "/products/pudu-bg1", "changefreq": "monthly", "priority": "0.8"},
+        {"loc": "/products/pudu-cc1-pro", "changefreq": "monthly", "priority": "0.8"},
+        {"loc": "/products/pudu-sh1", "changefreq": "monthly", "priority": "0.8"},
+        {"loc": "/products/pudu-mt1", "changefreq": "monthly", "priority": "0.8"},
+        {"loc": "/products/pudu-mt1-vac", "changefreq": "monthly", "priority": "0.8"},
+        {"loc": "/products/flashbot-max", "changefreq": "monthly", "priority": "0.8"},
+        {"loc": "/products/pudu-t300", "changefreq": "monthly", "priority": "0.8"},
+        {"loc": "/products/pudu-t600", "changefreq": "monthly", "priority": "0.8"},
+        {"loc": "/products/gausium-mira", "changefreq": "monthly", "priority": "0.8"},
+        {"loc": "/products/gausium-marvel", "changefreq": "monthly", "priority": "0.8"},
+        {"loc": "/products/ab-kas", "changefreq": "monthly", "priority": "0.8"},
+        # Robot feature detail pages
+        {"loc": "/explore-all-pudu-bg1-features", "changefreq": "monthly", "priority": "0.7"},
     ]
     
     # Build XML
