@@ -218,11 +218,11 @@ const PuduMt1MaxPage = () => {
             <div className="order-2 md:order-1 relative">
               <div className="absolute inset-0 bg-green-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
-                <div className="aspect-video bg-gradient-to-br from-green-900/40 to-green-700/20 rounded-xl overflow-hidden flex items-center justify-center">
+                <div className="aspect-video rounded-xl overflow-hidden">
                   <img
-                    src="/images/bots/pudu-mt1-max.png"
-                    alt="PUDU MT1 MAX Autonomous Sweeping Operation"
-                    className="w-full h-full object-contain p-4"
+                    src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/69jfepv8_pudu-mt1-max-8-Hour-Runtime-No-Mid-Shift-Interruptions.jpg"
+                    alt="PUDU MT1 MAX sweeping parking garage at night"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               </div>
