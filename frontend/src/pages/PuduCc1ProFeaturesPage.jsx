@@ -83,7 +83,7 @@ const PuduCc1ProFeaturesPage = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-3xl" />
               <img
-                src="/images/bots/pudu-cc1-pro.png"
+                src="/images/bots/pringle-cc1-robot.png"
                 alt="PUDU CC1 PRO Features Deep Dive"
                 className="relative z-10 w-full h-auto object-contain transform hover:scale-105 transition-transform duration-500"
               />
