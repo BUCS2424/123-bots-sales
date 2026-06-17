@@ -187,10 +187,23 @@ const ScheduleDemoPage = () => {
                   data-testid="demo-form-product"
                 >
                   <option value="">What product are you interested in?*</option>
-                  <option value="PUDU CC1 PRO">PUDU CC1 PRO</option>
-                  <option value="AVIDBOT KAS">AVIDBOT KAS</option>
-                  <option value="PUDU SH1">PUDU SH1</option>
-                  <option value="PUDU MT1 MAX">PUDU MT1 MAX</option>
+                  <optgroup label="── Commercial Cleaning Robots ──">
+                    <option value="Avidbots NEO">Avidbots NEO</option>
+                    <option value="Avidbots KAS">Avidbots KAS</option>
+                    <option value="Gausium Mira">Gausium Mira</option>
+                    <option value="Gausium Marvel">Gausium Marvel</option>
+                    <option value="PUDU BG1 PRO">PUDU BG1 PRO</option>
+                    <option value="PUDU CC1 PRO">PUDU CC1 PRO</option>
+                    <option value="PUDU SH1">PUDU SH1</option>
+                    <option value="PUDU MT1 MAX">PUDU MT1 MAX</option>
+                    <option value="PUDU MT1 VAC">PUDU MT1 VAC</option>
+                    <option value="FlashBot Max">FlashBot Max</option>
+                  </optgroup>
+                  <optgroup label="── Industrial Delivery Robots ──">
+                    <option value="PUDU T300">PUDU T300</option>
+                    <option value="PUDU T600">PUDU T600</option>
+                  </optgroup>
+                  <option value="Multiple Units">Multiple Units / Fleet</option>
                   <option value="Not Sure">Not Sure - Need Consultation</option>
                 </select>
                 
