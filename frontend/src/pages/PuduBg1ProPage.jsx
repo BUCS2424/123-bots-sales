@@ -376,7 +376,7 @@ const PuduBg1ProPage = () => {
             {/* IoT Integration */}
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-blue-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video bg-gradient-to-br from-green-600/20 to-green-800/20 flex items-center justify-center">
-                <span className="text-gray-400">[Image: IoT Connectivity]</span>
+                <img src="/images/bots/pudu-bg1-iot-integration.png" alt="PUDU BG1 PRO IoT Integration" className="w-full h-auto rounded-xl" />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">IoT Integration</h3>
