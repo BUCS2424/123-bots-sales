@@ -401,7 +401,7 @@ class TestOnlineRentalCheckout:
                     "zip_code": "36301"
                 },
                 "billing_type": "monthly",
-                "origin_url": "https://robot-shop-preview.preview.emergentagent.com"
+                "origin_url": "https://pudu-bg1-specs.preview.emergentagent.com"
             }
         )
         assert response.status_code == 200

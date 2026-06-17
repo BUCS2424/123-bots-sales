@@ -7,7 +7,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://robot-shop-preview.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pudu-bg1-specs.preview.emergentagent.com').rstrip('/')
 API_URL = f"{BASE_URL}/api"
 
 
