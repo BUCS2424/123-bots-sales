@@ -236,8 +236,8 @@ const PuduCc1ProPage = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-orange-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
-                <div className="aspect-video bg-gray-800/50 rounded-xl flex items-center justify-center">
-                  <span className="text-gray-400 text-center px-4">[Image: Self-Monitoring Dashboard]</span>
+                <div className="aspect-video rounded-xl overflow-hidden">
+                  <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/pg45n3bq_pudu-cc1-pro-component-self-monitoring.jpg" alt="PUDU CC1 PRO AI Component Self-Monitoring" className="w-full h-full object-cover" />
                 </div>
               </div>
             </div>
