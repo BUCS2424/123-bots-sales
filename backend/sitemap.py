@@ -98,6 +98,7 @@ async def get_sitemap(request: Request):
         ("/products/gausium-marvel", "monthly", "0.8"),
         ("/products/ab-kas", "monthly", "0.8"),
         ("/explore-all-pudu-bg1-features", "monthly", "0.7"),
+        ("/explore-all-pudu-cc1-pro-features", "monthly", "0.7"),
     ]
     
     for path, freq, priority in static_pages:

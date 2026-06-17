@@ -287,7 +287,7 @@ const PuduCc1ProPage = () => {
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">24/7 Autonomous Operation</h3>
                 <p className="text-gray-400 mb-6">Auto-charging, water refill/drain (optional docking station), breakpoint resume, and multi-floor mapping for continuous cleaning.</p>
-                <a href="#" className="text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-2">Explore <ChevronRight className="w-4 h-4" /></a>
+                <Link to="/support" className="text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-2">Get Support <ChevronRight className="w-4 h-4" /></Link>
               </div>
             </div>
 
@@ -298,7 +298,7 @@ const PuduCc1ProPage = () => {
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">IoT & Smart Features</h3>
                 <p className="text-gray-400 mb-6">10.1-inch LCD display, remote monitoring, cleaning heatmaps, and floor cleanliness tracking to optimize energy and water usage.</p>
-                <a href="#" className="text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-2">Get Support <ChevronRight className="w-4 h-4" /></a>
+                <Link to="/explore-all-pudu-cc1-pro-features" className="text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-2">Explore Features <ChevronRight className="w-4 h-4" /></Link>
               </div>
             </div>
           </div>

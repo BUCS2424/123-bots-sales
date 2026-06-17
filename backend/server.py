@@ -280,6 +280,7 @@ async def dynamic_sitemap(request: Request):
         {"loc": "/products/ab-kas", "changefreq": "monthly", "priority": "0.8"},
         # Robot feature detail pages
         {"loc": "/explore-all-pudu-bg1-features", "changefreq": "monthly", "priority": "0.7"},
+        {"loc": "/explore-all-pudu-cc1-pro-features", "changefreq": "monthly", "priority": "0.7"},
     ]
     
     # Build XML

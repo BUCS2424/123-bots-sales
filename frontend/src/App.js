@@ -51,6 +51,7 @@ import GausiumMiraPage from './pages/GausiumMiraPage';
 import GausiumMarvelPage from './pages/GausiumMarvelPage';
 import PuduBg1ProPage from './pages/PuduBg1ProPage';
 import PuduBg1ProFeaturesPage from './pages/PuduBg1ProFeaturesPage';
+import PuduCc1ProFeaturesPage from './pages/PuduCc1ProFeaturesPage';
 import FlashBotMaxPage from './pages/FlashBotMaxPage';
 import PuduCc1ProPage from './pages/PuduCc1ProPage';
 import AvidbotKasPage from './pages/AvidbotKasPage';
@@ -250,6 +251,7 @@ const AppContent = () => {
                   <Route path="/products/pudu-bg1" element={<PuduBg1ProPage />} />
                   <Route path="/explore-all-pudu-bg1-features" element={<PuduBg1ProFeaturesPage />} />
                   <Route path="/products/pudu-cc1-pro" element={<PuduCc1ProPage />} />
+                  <Route path="/explore-all-pudu-cc1-pro-features" element={<PuduCc1ProFeaturesPage />} />
                   <Route path="/products/ab-kas" element={<AvidbotKasPage />} />
                   <Route path="/products/pudu-sh1" element={<PuduSh1Page />} />
                   <Route path="/products/pudu-mt1" element={<PuduMt1MaxPage />} />
