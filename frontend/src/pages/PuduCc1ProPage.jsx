@@ -270,8 +270,8 @@ const PuduCc1ProPage = () => {
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-indigo-500/50 transition-all hover:transform hover:scale-105">
-              <div className="aspect-video bg-gradient-to-br from-indigo-600/20 to-indigo-800/20 flex items-center justify-center">
-                <span className="text-gray-400">[Image: Fleet Dashboard]</span>
+              <div className="aspect-video overflow-hidden">
+                <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/3v6id9mf_pudu-cc1-pro-VSLAM-navigation.jpg" alt="PUDU CC1 PRO VSLAM+ Navigation" className="w-full h-full object-cover" />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">VSLAM+ Navigation</h3>
