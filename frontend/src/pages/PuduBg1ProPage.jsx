@@ -243,7 +243,7 @@ const PuduBg1ProPage = () => {
               <div className="absolute inset-0 bg-green-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
                 <div className="aspect-video bg-gray-800/50 rounded-xl flex items-center justify-center">
-                  <img src="https://images.unsplash.com/photo-1699602048589-0f492f833270?w=800" alt="Autonomous Cleaning Station" className="w-full h-full object-cover rounded-xl opacity-70" />
+                  <img src="/images/bots/pudu-bg1-docking-station.png" alt="PUDU BG1 PRO All-in-One Docking Station" className="w-full h-full object-cover rounded-xl" />
                 </div>
               </div>
             </div>
