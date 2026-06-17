@@ -179,8 +179,8 @@ const PuduCc1ProPage = () => {
             <div className="order-2 md:order-1 relative">
               <div className="absolute inset-0 bg-green-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
-                <div className="aspect-video bg-gray-800/50 rounded-xl flex items-center justify-center">
-                  <img src="https://images.unsplash.com/photo-1622118416167-f4c3d46eda67?w=800" alt="Carpet vacuuming" className="w-full h-full object-cover rounded-xl opacity-70" />
+                <div className="aspect-video rounded-xl overflow-hidden">
+                  <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/clejgrgp_pudu-cc1-pro-powerful-suction-silent-mopping.jpg" alt="PUDU CC1 PRO Powerful Suction Navigation" className="w-full h-full object-cover" />
                 </div>
               </div>
             </div>
