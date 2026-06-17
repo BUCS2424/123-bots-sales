@@ -12,7 +12,7 @@ const ScheduleDemoPage = () => {
     lastName: '',
     email: '',
     phone: '',
-    product: '',
+    products: [],
     contactMethod: 'both',
     notes: '',
     agreedToTerms: false,
@@ -41,7 +41,7 @@ const ScheduleDemoPage = () => {
           email: formData.email,
           phone: formData.phone,
           subject: `Demo Request - ${formData.organization}`,
-          message: `Organization: ${formData.organization}\nProduct Interest: ${formData.product}\nContact Method: ${formData.contactMethod}\nFacility Details: ${formData.notes}`,
+          message: `Organization: ${formData.organization}\nProduct Interest: ${formData.products.join(', ')}\nContact Method: ${formData.contactMethod}\nFacility Details: ${formData.notes}`,
           source: 'demo_request',
         }),
       });
@@ -179,33 +179,54 @@ const ScheduleDemoPage = () => {
                   />
                 </div>
                 
-                <select
-                  required
-                  value={formData.product}
-                  onChange={(e) => setFormData({ ...formData, product: e.target.value })}
-                  className="w-full px-4 py-3 bg-bots-dark border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
-                  data-testid="demo-form-product"
-                >
-                  <option value="">What product are you interested in?*</option>
-                  <optgroup label="── Commercial Cleaning Robots ──">
-                    <option value="Avidbots NEO">Avidbots NEO</option>
-                    <option value="Avidbots KAS">Avidbots KAS</option>
-                    <option value="Gausium Mira">Gausium Mira</option>
-                    <option value="Gausium Marvel">Gausium Marvel</option>
-                    <option value="PUDU BG1 PRO">PUDU BG1 PRO</option>
-                    <option value="PUDU CC1 PRO">PUDU CC1 PRO</option>
-                    <option value="PUDU SH1">PUDU SH1</option>
-                    <option value="PUDU MT1 MAX">PUDU MT1 MAX</option>
-                    <option value="PUDU MT1 VAC">PUDU MT1 VAC</option>
-                    <option value="FlashBot Max">FlashBot Max</option>
-                  </optgroup>
-                  <optgroup label="── Industrial Delivery Robots ──">
-                    <option value="PUDU T300">PUDU T300</option>
-                    <option value="PUDU T600">PUDU T600</option>
-                  </optgroup>
-                  <option value="Multiple Units">Multiple Units / Fleet</option>
-                  <option value="Not Sure">Not Sure - Need Consultation</option>
-                </select>
+                <div className="w-full" data-testid="demo-form-products">
+                  <p className="text-gray-400 text-sm mb-3">Which robot(s) are you interested in?*</p>
+                  <div className="space-y-3">
+                    <p className="text-xs font-semibold text-blue-400 uppercase tracking-widest">Commercial Cleaning Robots</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {['AVIDBOTS NEO','AVIDBOTS KAS','GAUSIUM MIRA','GAUSIUM MARVEL','PUDU BG1 PRO','PUDU CC1 PRO','PUDU SH1','PUDU MT1 MAX','PUDU MT1 VAC','FLASHBOT MAX'].map((robot) => (
+                        <label key={robot} className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors text-sm font-medium uppercase tracking-wide ${formData.products.includes(robot) ? 'border-blue-500 bg-blue-500/10 text-blue-300' : 'border-gray-700 bg-bots-dark text-gray-300 hover:border-gray-500'}`}>
+                          <input
+                            type="checkbox"
+                            className="accent-blue-500"
+                            checked={formData.products.includes(robot)}
+                            onChange={(e) => setFormData({ ...formData, products: e.target.checked ? [...formData.products, robot] : formData.products.filter(p => p !== robot) })}
+                            data-testid={`demo-product-${robot.toLowerCase().replace(/\s+/g,'-')}`}
+                          />
+                          {robot}
+                        </label>
+                      ))}
+                    </div>
+                    <p className="text-xs font-semibold text-orange-400 uppercase tracking-widest mt-3">Industrial Delivery Robots</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {['PUDU T300','PUDU T600'].map((robot) => (
+                        <label key={robot} className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors text-sm font-medium uppercase tracking-wide ${formData.products.includes(robot) ? 'border-orange-500 bg-orange-500/10 text-orange-300' : 'border-gray-700 bg-bots-dark text-gray-300 hover:border-gray-500'}`}>
+                          <input
+                            type="checkbox"
+                            className="accent-orange-500"
+                            checked={formData.products.includes(robot)}
+                            onChange={(e) => setFormData({ ...formData, products: e.target.checked ? [...formData.products, robot] : formData.products.filter(p => p !== robot) })}
+                            data-testid={`demo-product-${robot.toLowerCase().replace(/\s+/g,'-')}`}
+                          />
+                          {robot}
+                        </label>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 mt-1">
+                      {['MULTIPLE UNITS / FLEET','NOT SURE - NEED CONSULTATION'].map((opt) => (
+                        <label key={opt} className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors text-sm font-medium uppercase tracking-wide ${formData.products.includes(opt) ? 'border-gray-400 bg-gray-500/10 text-gray-200' : 'border-gray-700 bg-bots-dark text-gray-400 hover:border-gray-500'}`}>
+                          <input
+                            type="checkbox"
+                            className="accent-gray-400"
+                            checked={formData.products.includes(opt)}
+                            onChange={(e) => setFormData({ ...formData, products: e.target.checked ? [...formData.products, opt] : formData.products.filter(p => p !== opt) })}
+                          />
+                          {opt}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
                 
                 <div className="flex flex-wrap gap-4">
                   <span className="text-gray-400 text-sm">Contact me via:</span>
