@@ -293,7 +293,7 @@ const PuduCc1ProPage = () => {
 
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-indigo-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video overflow-hidden">
-                <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/3b7rklji_pudu-cc1-pro247-autonomous-operation.jpg" alt="PUDU CC1 PRO IoT Smart Features" className="w-full h-full object-cover" />
+                <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/qslij3kb_IoT-smart-features.jpg" alt="PUDU CC1 PRO IoT Smart Features" className="w-full h-full object-cover" />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">IoT & Smart Features</h3>
