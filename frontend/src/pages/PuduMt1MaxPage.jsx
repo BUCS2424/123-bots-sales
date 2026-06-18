@@ -272,23 +272,14 @@ const PuduMt1MaxPage = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-blue-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
-                <div className="aspect-video bg-gradient-to-br from-blue-900/40 to-blue-700/20 rounded-xl overflow-hidden flex items-center justify-center">
+                <div className="aspect-video rounded-xl overflow-hidden">
                   <video
                     controls
                     playsInline
                     preload="metadata"
-                    className="w-full h-full object-cover rounded-xl"
+                    className="w-full h-full object-cover"
                   >
-                    <source src="/videos/mt1-max-spot-cleaning.mp4" type="video/mp4" />
-                    <div className="text-center p-8">
-                      <div className="w-16 h-16 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                      <p className="text-gray-400 text-sm">MT1 MAX Spot Cleaning Demo</p>
-                    </div>
+                    <source src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/yeyrqlat_pudu-mt1-max-2.mp4" type="video/mp4" />
                   </video>
                 </div>
               </div>
