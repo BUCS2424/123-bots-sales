@@ -361,6 +361,12 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - [ ] Optional: "Featured Events" carousel on the homepage (gated by `events_enabled`)
 - [ ] Optional: hide VENUE column on ticket when event has no venue
 
+### Event Center — Phase 2.1 (June 27, 2026)
+- [x] Event paid checkout now supports **both** PayPal modes: **Email (no API keys)** — buyer gets a PayPal payment link to the organizer's email and the ticket is issued (order marked `awaiting_payment`); and **API Keys** — full Orders v2 capture flow. Configured at Admin → Settings → Payments → PayPal → "Email Payment Link".
+- [x] Confirmation page shows a "Pay with PayPal" button + instructions for email-mode orders.
+- [x] **Preview Live Page** button on the Event editor opens `/events/:slug?preview=1` (works for draft events via a `preview` flag on the public detail endpoint; shows a PREVIEW banner).
+- Verified: email-mode register returns payment link + issues ticket (sold increments); preview button confirmed via screenshot.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**

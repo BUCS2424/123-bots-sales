@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { CalendarDays, MapPin, Minus, Plus, Loader2, Ticket, ArrowLeft } from 'lucide-react';
@@ -15,6 +15,8 @@ const inputCls = 'w-full rounded-lg border border-white/10 bg-[#081420] px-3 py-
 const EventDetailPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const isPreview = params.get('preview') === '1';
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState({});            // ticket_type_id -> qty
@@ -25,7 +27,7 @@ const EventDetailPage = () => {
   useEffect(() => {
     (async () => {
       try {
-        const r = await axios.get(`${API}/api/public/events/${slug}`);
+        const r = await axios.get(`${API}/api/public/events/${slug}`, { params: isPreview ? { preview: true } : {} });
         setEvent(r.data);
         setSeoMetadata({ title: `${r.data.title} | 123Bots Events`, description: r.data.short_description || '' });
       } catch {
@@ -55,7 +57,8 @@ const EventDetailPage = () => {
         custom_form_data: formData,
       });
       if (res.data.status === 'completed') {
-        navigate(`/events/confirmation?order=${res.data.order_id}`);
+        const pay = res.data.payment_link ? `&pay=${encodeURIComponent(res.data.payment_link)}` : '';
+        navigate(`/events/confirmation?order=${res.data.order_id}${pay}`);
       } else if (res.data.status === 'pending_payment' && res.data.approval_url) {
         window.location.href = res.data.approval_url;
       }
@@ -73,6 +76,11 @@ const EventDetailPage = () => {
   return (
     <div className="min-h-screen bg-[#050f17]" data-testid="event-detail-page">
       <Header />
+      {isPreview && (
+        <div className="fixed left-0 right-0 top-16 z-40 bg-amber-500 py-1.5 text-center text-xs font-bold text-black" data-testid="preview-banner">
+          PREVIEW MODE — this is how your event page will look. Not visible to the public unless status is On Sale or Live.
+        </div>
+      )}
       {/* Hero */}
       <section className="relative h-[42vh] min-h-[320px] w-full overflow-hidden pt-20">
         {cover ? <img src={cover} alt={event.title} className="absolute inset-0 h-full w-full object-cover" /> : <div className="absolute inset-0 bg-gradient-to-br from-purple-900 to-fuchsia-900" />}

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Save, Plus, Trash2, Upload, Loader2, Image as ImageIcon,
-  Ticket as TicketIcon, ListChecks, GripVertical, QrCode,
+  Ticket as TicketIcon, ListChecks, GripVertical, QrCode, ExternalLink,
 } from 'lucide-react';
 import { eventApi, uploadEventImage, fmtMoneyFull } from './eventApi';
 import { toast } from '../../../hooks/use-toast';
@@ -191,9 +191,16 @@ const EventEditor = ({ eventId }) => {
         <button onClick={() => navigate('/admin/events/list')} className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white" data-testid="editor-back-btn">
           <ArrowLeft className="h-4 w-4" /> Back to Events
         </button>
-        <button onClick={handleSave} disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 px-5 py-2.5 text-sm font-semibold shadow-lg shadow-purple-900/40 transition hover:opacity-90 disabled:opacity-50" data-testid="editor-save-btn">
-          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} {isNew ? 'Create Event' : 'Save Changes'}
-        </button>
+        <div className="flex items-center gap-3">
+          {!isNew && data.slug && (
+            <a href={`/events/${data.slug}?preview=1`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-medium text-white/80 transition hover:bg-white/10" data-testid="editor-preview-btn">
+              <ExternalLink className="h-4 w-4" /> Preview Live Page
+            </a>
+          )}
+          <button onClick={handleSave} disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 px-5 py-2.5 text-sm font-semibold shadow-lg shadow-purple-900/40 transition hover:opacity-90 disabled:opacity-50" data-testid="editor-save-btn">
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} {isNew ? 'Create Event' : 'Save Changes'}
+          </button>
+        </div>
       </div>
 
       <h1 className="mb-6 text-2xl font-black tracking-tight">{isNew ? 'Create An Event' : data.title || 'Edit Event'}</h1>

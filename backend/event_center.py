@@ -554,8 +554,11 @@ async def public_list_events(db=Depends(get_db)):
 
 
 @public_router.get("/{slug}")
-async def public_get_event(slug: str, db=Depends(get_db)):
-    ev = await db.events.find_one({"slug": slug, "status": {"$in": ["on_sale", "live"]}}, {"_id": 0})
+async def public_get_event(slug: str, preview: bool = False, db=Depends(get_db)):
+    query = {"slug": slug}
+    if not preview:
+        query["status"] = {"$in": ["on_sale", "live"]}
+    ev = await db.events.find_one(query, {"_id": 0})
     if not ev:
         raise HTTPException(status_code=404, detail="Event not found")
     if ev.get("venue_id"):
@@ -755,13 +758,31 @@ async def public_register(slug: str, payload: RegisterRequest, request: Request,
         await _issue_tickets_and_email(db, event, order, origin)
         return {"status": "completed", "order_id": order["id"], "order_number": order["order_number"]}
 
-    # paid: create PayPal order
+    # paid: PayPal
     paypal_settings = await db.payment_settings.find_one({"type": "paypal"})
     if not paypal_settings or not paypal_settings.get("is_enabled"):
         raise HTTPException(status_code=503, detail="Online payment is not available. Please contact the organizer.")
-    if paypal_settings.get("setup_mode", "email") != "api_keys":
-        raise HTTPException(status_code=503, detail="PayPal checkout is not configured for online purchase.")
 
+    setup_mode = paypal_settings.get("setup_mode", "email")
+
+    # ---- Email mode (no API keys): generate a PayPal payment link to the organizer's email ----
+    if setup_mode == "email":
+        if not paypal_settings.get("paypal_email"):
+            raise HTTPException(status_code=503, detail="PayPal is not configured. Please contact the organizer.")
+        from durango_payments import _build_paypal_email_payment_link
+        payment_link = _build_paypal_email_payment_link({"order_number": order["order_number"], "total": order["total"]}, paypal_settings)
+        await db.event_orders.update_one({"id": order["id"]}, {"$set": {"payment_status": "awaiting_payment", "payment_method": "paypal_email"}})
+        order["payment_status"] = "awaiting_payment"
+        await _issue_tickets_and_email(db, event, order, origin)
+        return {
+            "status": "completed",
+            "order_id": order["id"],
+            "order_number": order["order_number"],
+            "payment_link": payment_link,
+            "instructions": paypal_settings.get("instructions", "Complete your payment via PayPal and include your order number in the note."),
+        }
+
+    # ---- API keys mode: full PayPal Orders v2 checkout with capture ----
     from durango_payments import _get_paypal_access_token
     import httpx
     access_token, base_url = await _get_paypal_access_token(paypal_settings)

@@ -12,6 +12,7 @@ const EventConfirmationPage = () => {
   const orderId = params.get('order');
   const paypalToken = params.get('token');
   const paypalStatus = params.get('paypal');
+  const payLink = params.get('pay');
   const [state, setState] = useState('loading'); // loading, success, error
   const [data, setData] = useState(null);
 
@@ -21,12 +22,12 @@ const EventConfirmationPage = () => {
       try {
         // First check current order state
         let order = (await axios.get(`${API}/api/public/events/orders/${orderId}`)).data;
-        if (order.order.payment_status !== 'completed' && paypalStatus === 'success') {
+        if (order.order.payment_status !== 'completed' && order.order.payment_status !== 'awaiting_payment' && paypalStatus === 'success') {
           // capture
           const cap = await axios.post(`${API}/api/public/events/orders/${orderId}/capture`, {}, { params: paypalToken ? { paypal_order_id: paypalToken } : {} });
           order = { order: cap.data.order, attendees: cap.data.attendees, event: order.event };
         }
-        if (order.order.payment_status === 'completed') { setData(order); setState('success'); }
+        if (['completed', 'awaiting_payment'].includes(order.order.payment_status)) { setData(order); setState('success'); }
         else { setState('error'); }
       } catch { setState('error'); }
     })();
@@ -57,6 +58,12 @@ const EventConfirmationPage = () => {
               <h1 className="mt-4 text-3xl font-black text-white">You're going! 🎉</h1>
               <p className="mt-2 text-slate-400">Order <span className="font-mono text-purple-300">{data.order.order_number}</span> confirmed. {data.attendees.length} ticket{data.attendees.length !== 1 ? 's' : ''} emailed to <span className="text-white">{data.order.buyer_email}</span>.</p>
             </div>
+            {payLink && data.order.payment_status === 'awaiting_payment' && (
+              <div className="mt-6 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 text-center" data-testid="pay-with-paypal">
+                <p className="text-sm text-amber-200">Your tickets are reserved. Complete your payment via PayPal to confirm.</p>
+                <a href={payLink} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center justify-center gap-2 rounded-xl bg-[#0070ba] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#005c99]" data-testid="pay-paypal-btn">Pay with PayPal</a>
+              </div>
+            )}
             <div className="mt-8 space-y-3">
               {data.attendees.map((a) => (
                 <div key={a.id} className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0a1929] p-5" data-testid={`confirm-ticket-${a.id}`}>
