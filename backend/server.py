@@ -1266,6 +1266,16 @@ set_external_api_db(db)
 app.include_router(external_api_router)
 app.include_router(pipelines_router)
 
+# Include Event Center routers
+from event_center import (
+    router as event_center_router,
+    public_router as event_center_public_router,
+    set_database as set_event_center_db,
+)
+set_event_center_db(db)
+app.include_router(event_center_router)
+app.include_router(event_center_public_router)
+
 
 # Include location generator routers
 from location_generator import (

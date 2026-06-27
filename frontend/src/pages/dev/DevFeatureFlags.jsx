@@ -63,6 +63,7 @@ const DevFeatureFlags = () => {
     coming_soon_password: '8487',
     external_api_enabled: true,
     inventory_enabled: false,
+    events_enabled: false,
   });
   const [featureFlagsSaving, setFeatureFlagsSaving] = useState(false);
 
@@ -84,6 +85,7 @@ const DevFeatureFlags = () => {
     { id: 'left_menu_enabled', name: 'Left Menu', description: 'Show accordion category menu on product/shop pages', category: 'Website' },
     { id: 'external_api_enabled', name: 'External Stack API', description: 'Enable external lead ingestion API with multi-source auth and custom pipelines', category: 'CRM' },
     { id: 'inventory_enabled', name: 'Inventory Management', description: 'Show Inventory Management sidebar with stock levels, manufacturers, and order recommendations', category: 'CRM' },
+    { id: 'events_enabled', name: 'Event Center & Ticketing', description: 'Enable the Event Center: events, venues, custom ticketing, attendees, and public event pages. When OFF, no event features show anywhere.', category: 'Events' },
   ];
 
   useEffect(() => {

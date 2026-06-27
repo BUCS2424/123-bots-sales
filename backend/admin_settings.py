@@ -826,6 +826,7 @@ class FeatureFlags(BaseModel):
     quotes_enabled: bool = True  # Show/hide quote system UI everywhere
     external_api_enabled: bool = True  # Show/hide External Stack API Delivery features
     inventory_enabled: bool = False  # Show/hide Inventory Management sidebar
+    events_enabled: bool = False  # Show/hide Event Center (admin + storefront)
 
 
 @router.get("/feature-flags")
@@ -893,6 +894,7 @@ async def get_public_feature_flags(db=Depends(get_db)):
             "quotes_enabled": 1,
             "external_api_enabled": 1,
             "inventory_enabled": 1,
+            "events_enabled": 1,
         },
     )
     return {
@@ -914,6 +916,7 @@ async def get_public_feature_flags(db=Depends(get_db)):
         "quotes_enabled": bool(settings.get("quotes_enabled", True)) if settings else True,
         "external_api_enabled": bool(settings.get("external_api_enabled", True)) if settings else True,
         "inventory_enabled": bool(settings.get("inventory_enabled", False)) if settings else False,
+        "events_enabled": bool(settings.get("events_enabled", False)) if settings else False,
     }
 
 

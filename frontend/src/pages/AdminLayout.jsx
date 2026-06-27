@@ -6,7 +6,8 @@ import {
   LogOut, Home, Settings, ChevronRight, ChevronDown, Menu, X, BarChart3,
   Bell, Search, DollarSign, ShoppingBag, Gift, FolderTree, Layers, Cloud, User, Sliders, Code,
   Store, Truck, CreditCard, CheckCircle, LayoutGrid, Clock, FileText, UserPlus, Briefcase,
-  Calendar, CalendarOff, Wrench, Shield, BookOpen, PiggyBank, Star, Megaphone, Mail, Zap, MessageCircle, Building2, Box, Globe, Radio as RadioIcon, Key
+  Calendar, CalendarOff, Wrench, Shield, BookOpen, PiggyBank, Star, Megaphone, Mail, Zap, MessageCircle, Building2, Box, Globe, Radio as RadioIcon, Key,
+  Ticket, MapPin, CalendarDays, Plus
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -94,6 +95,16 @@ import OrderRecommendationsPage from './admin/OrderRecommendationsPage';
 import ExternalApiSourcesPage from './admin/ExternalApiSourcesPage';
 import PipelinesPage from './admin/PipelinesPage';
 
+// Event Center
+import EventDashboard from './admin/events/EventDashboard';
+import EventsList from './admin/events/EventsList';
+import EventEditor from './admin/events/EventEditor';
+import EventCategories from './admin/events/EventCategories';
+import EventVenues from './admin/events/EventVenues';
+import EventAttendees from './admin/events/EventAttendees';
+import EventTicketsSales from './admin/events/EventTicketsSales';
+import EventRevenue from './admin/events/EventRevenue';
+
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
@@ -118,6 +129,7 @@ const AdminLayout = () => {
     owner_chat_ai_enabled: false,
     external_api_enabled: true,
     inventory_enabled: false,
+    events_enabled: false,
   });
 
   // Fetch business settings for Analytics URL
@@ -141,6 +153,7 @@ const AdminLayout = () => {
           owner_chat_ai_enabled: Boolean(featureFlagsRes?.data?.owner_chat_ai_enabled),
           external_api_enabled: featureFlagsRes?.data?.external_api_enabled !== false,
           inventory_enabled: Boolean(featureFlagsRes?.data?.inventory_enabled),
+          events_enabled: Boolean(featureFlagsRes?.data?.events_enabled),
         });
       } catch (error) {
         console.error('Error fetching settings:', error);
@@ -284,6 +297,22 @@ const AdminLayout = () => {
       children: [
         { path: '/admin/external-api/sources', label: 'API Sources', icon: Key },
         { path: '/admin/external-api/pipelines', label: 'Pipelines', icon: Layers },
+      ],
+    }] : []),
+    ...(featureFlags.events_enabled ? [{
+      id: 'event-center',
+      type: 'accordion',
+      label: 'Event Center',
+      icon: Ticket,
+      children: [
+        { path: '/admin/events', label: 'Event Dashboard', icon: LayoutDashboard },
+        { path: '/admin/events/tickets-sales', label: 'Tickets & Sales', icon: Ticket },
+        { path: '/admin/events/attendees', label: 'Attendees', icon: Users },
+        { path: '/admin/events/list', label: 'Events', icon: CalendarDays },
+        { path: '/admin/events/categories', label: 'Event Categories', icon: Tag },
+        { path: '/admin/events/new', label: 'Create An Event', icon: Plus },
+        { path: '/admin/events/venues', label: 'Venues / Locations', icon: MapPin },
+        { path: '/admin/events/revenue', label: 'Revenues & Reports', icon: BarChart3 },
       ],
     }] : []),
     {
@@ -581,6 +610,8 @@ const AdminLayout = () => {
   const isActive = (path) => {
     if (path === '/admin/cart') return location.pathname === '/admin/cart';
     if (path === '/admin') return location.pathname === '/admin';
+    if (path === '/admin/events') return location.pathname === '/admin/events';
+    if (path === '/admin/events/new') return location.pathname === '/admin/events/new';
     return location.pathname.startsWith(path);
   };
 
@@ -646,6 +677,30 @@ const AdminLayout = () => {
     if (path === '/admin/inventory/settings') return <InventoryDashboard />; // Placeholder for now
     if (path === '/admin/external-api/sources') return <ExternalApiSourcesPage />;
     if (path === '/admin/external-api/pipelines') return <PipelinesPage />;
+    // Event Center routes
+    if (path.startsWith('/admin/events')) {
+      if (!featureFlagsLoaded) {
+        return (
+          <div className="flex items-center justify-center min-h-[300px]" data-testid="events-feature-flags-loading">
+            <div className="animate-spin w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full"></div>
+          </div>
+        );
+      }
+      if (!featureFlags.events_enabled) return <Navigate to="/admin/cart" replace />;
+      if (path === '/admin/events') return <EventDashboard />;
+      if (path === '/admin/events/list') return <EventsList />;
+      if (path === '/admin/events/new') return <EventEditor />;
+      if (path === '/admin/events/tickets-sales') return <EventTicketsSales />;
+      if (path === '/admin/events/attendees') return <EventAttendees />;
+      if (path === '/admin/events/categories') return <EventCategories />;
+      if (path === '/admin/events/venues') return <EventVenues />;
+      if (path === '/admin/events/revenue') return <EventRevenue />;
+      if (path.match(/^\/admin\/events\/[^/]+$/)) {
+        const eventId = path.split('/').pop();
+        return <EventEditor key={eventId} eventId={eventId} />;
+      }
+      return <EventDashboard />;
+    }
     if (path === '/admin/user-management/customers') return <AdminCustomers />;
     if (path.match(/^\/admin\/user-management\/customers\/[^/]+$/)) {
       const customerId = path.split('/').pop();
