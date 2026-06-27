@@ -118,13 +118,12 @@ const EventDetailPage = () => {
 
       <div className="relative z-10">
         <Header />
-        {isPreview && (
-          <div className="fixed left-0 right-0 top-16 z-40 bg-amber-500 py-1.5 text-center text-xs font-bold text-black" data-testid="preview-banner">
-            PREVIEW MODE — not visible to the public unless status is On Sale or Live.
-          </div>
-        )}
-
         <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 pb-40 pt-28 lg:grid-cols-[minmax(0,360px)_1fr] lg:pt-32">
+          {isPreview && (
+            <div className="col-span-full -mt-6 rounded-xl bg-amber-500 px-4 py-2 text-center text-xs font-bold text-black lg:-mt-8" data-testid="preview-banner">
+              PREVIEW MODE — not visible to the public unless status is On Sale or Live.
+            </div>
+          )}
           {/* LEFT */}
           <div>
             <div className="overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
