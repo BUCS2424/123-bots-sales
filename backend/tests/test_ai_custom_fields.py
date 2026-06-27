@@ -10,7 +10,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pudu-bg1-specs.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://bot-catalog-preview.preview.emergentagent.com')
 
 class TestAICustomFieldsFeature:
     """Test AI Custom Fields generation and integration"""

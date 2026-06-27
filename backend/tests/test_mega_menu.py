@@ -7,7 +7,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pudu-bg1-specs.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://bot-catalog-preview.preview.emergentagent.com')
 
 # Test admin credentials
 ADMIN_EMAIL = "test@emergent.dev"
