@@ -67,6 +67,10 @@ import ResourcesPage from './pages/ResourcesPage';
 import CategoryLandingPage from './pages/CategoryLandingPage';
 import PublicBookingPage from './pages/PublicBookingPage';
 import QuoteSigningPage from './pages/quotes/QuoteSigningPage';
+import EventsPublicPage from './pages/EventsPublicPage';
+import EventDetailPage from './pages/EventDetailPage';
+import EventConfirmationPage from './pages/EventConfirmationPage';
+import TicketViewPage from './pages/TicketViewPage';
 
 // Age Verification
 import AgeVerificationModal from './components/AgeVerificationModal';
@@ -264,6 +268,10 @@ const AppContent = () => {
                   <Route path="/schedule-a-demo" element={<ScheduleDemoPage />} />
                   <Route path="/rent-or-buy-a-cleaning-bot" element={<BuyLeasePage />} />
                   <Route path="/123-bots-resources" element={<ResourcesPage />} />
+                  <Route path="/events" element={<EventsPublicPage />} />
+                  <Route path="/events/confirmation" element={<EventConfirmationPage />} />
+                  <Route path="/events/ticket/:code" element={<TicketViewPage />} />
+                  <Route path="/events/:slug" element={<EventDetailPage />} />
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/booking/:bookingSlug" element={<PublicBookingPage />} />
                     <Route path="/book/:bookingSlug" element={<PublicBookingPage />} />

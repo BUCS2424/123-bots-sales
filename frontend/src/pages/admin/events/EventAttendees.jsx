@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Users, Search, CheckCircle2, Plus, Trash2, Loader2, X, QrCode, Ticket } from 'lucide-react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { Users, Search, CheckCircle2, Plus, Trash2, Loader2, X, QrCode, Ticket, Camera } from 'lucide-react';
+import { Html5Qrcode } from 'html5-qrcode';
 import { eventApi } from './eventApi';
 import { toast } from '../../../hooks/use-toast';
 
@@ -14,6 +15,8 @@ const EventAttendees = () => {
   const [addModal, setAddModal] = useState(null);
   const [verifyCode, setVerifyCode] = useState('');
   const [verifyResult, setVerifyResult] = useState(null);
+  const [scanning, setScanning] = useState(false);
+  const scannerRef = useRef(null);
 
   useEffect(() => { eventApi.listEvents().then((r) => setEvents(r.data || [])).catch(() => {}); }, []);
 
@@ -45,11 +48,49 @@ const EventAttendees = () => {
     catch { toast({ title: 'Error', variant: 'destructive' }); }
   };
 
-  const doVerify = async () => {
-    if (!verifyCode.trim()) return;
-    try { const r = await eventApi.verifyTicket(verifyCode.trim()); setVerifyResult({ ok: true, ...r.data }); }
+  const doVerify = async (codeArg) => {
+    const code = (codeArg || verifyCode).trim();
+    if (!code) return;
+    setVerifyCode(code);
+    try { const r = await eventApi.verifyTicket(code); setVerifyResult({ ok: true, ...r.data }); }
     catch { setVerifyResult({ ok: false }); }
   };
+
+  const stopScan = useCallback(async () => {
+    if (scannerRef.current) {
+      try { await scannerRef.current.stop(); scannerRef.current.clear(); } catch { /* ignore */ }
+      scannerRef.current = null;
+    }
+    setScanning(false);
+  }, []);
+
+  useEffect(() => {
+    if (!scanning) return;
+    let cancelled = false;
+    const start = async () => {
+      try {
+        const html5 = new Html5Qrcode('event-qr-reader');
+        scannerRef.current = html5;
+        await html5.start(
+          { facingMode: 'environment' },
+          { fps: 10, qrbox: 240 },
+          async (decodedText) => {
+            await stopScan();
+            doVerify(decodedText);
+          },
+          () => {}
+        );
+        if (cancelled) await stopScan();
+      } catch (e) {
+        toast({ title: 'Camera error', description: 'Could not start camera. Use manual entry.', variant: 'destructive' });
+        setScanning(false);
+      }
+    };
+    start();
+    return () => { cancelled = true; };
+  }, [scanning, stopScan]); // eslint-disable-line
+
+  useEffect(() => () => { stopScan(); }, [stopScan]);
 
   const statusBadge = (s) => {
     if (s === 'checked_in') return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
@@ -76,8 +117,16 @@ const EventAttendees = () => {
         <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-white/70"><QrCode className="h-4 w-4 text-purple-300" /> Door Check-In — Verify Ticket Code</h2>
         <div className="flex flex-col gap-3 sm:flex-row">
           <input className={`${inputCls} flex-1`} placeholder="Scan or type ticket code (e.g. EVT-XXXX-XX)" value={verifyCode} onChange={(e) => setVerifyCode(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && doVerify()} data-testid="verify-code-input" />
-          <button onClick={doVerify} className="rounded-lg bg-purple-600 px-5 py-2 text-sm font-semibold hover:bg-purple-500" data-testid="verify-btn">Verify</button>
+          <button onClick={() => doVerify()} className="rounded-lg bg-purple-600 px-5 py-2 text-sm font-semibold hover:bg-purple-500" data-testid="verify-btn">Verify</button>
+          <button onClick={() => (scanning ? stopScan() : setScanning(true))} className="inline-flex items-center gap-2 rounded-lg border border-purple-500/40 bg-purple-500/10 px-4 py-2 text-sm font-semibold text-purple-200 hover:bg-purple-500/20" data-testid="scan-toggle-btn">
+            <Camera className="h-4 w-4" /> {scanning ? 'Stop' : 'Scan QR'}
+          </button>
         </div>
+        {scanning && (
+          <div className="mt-3 overflow-hidden rounded-xl border border-white/10 bg-black" data-testid="qr-scanner">
+            <div id="event-qr-reader" className="mx-auto w-full max-w-sm" />
+          </div>
+        )}
         {verifyResult && (
           <div className={`mt-3 rounded-xl border p-4 ${verifyResult.ok ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-red-500/30 bg-red-500/10'}`} data-testid="verify-result">
             {verifyResult.ok ? (

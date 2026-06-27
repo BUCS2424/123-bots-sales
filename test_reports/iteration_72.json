@@ -1,0 +1,38 @@
+{
+  "summary": "Phase 2 Event Center (public ticketing) tested end-to-end. Backend pytest: 7/7 passed — /config/paypal returns enabled:false; public events list contains free-community-meetup; event detail returns Free RSVP $0 ticket + T-shirt select custom field; FREE register creates 2 unique attendees with EVT-XXXXXXXX-XXXX codes, order completed, ticket_types.sold incremented by 2, ticket lookup returns attendee+event+venue and base64 PNG QR data URI; paid path returns HTTP 503 with 'not available'/'not configured' message; admin POST /api/events/attendees/{id}/resend returns success (SMTP wrapped in try/except); GET /api/events/verify/{code} resolves real ticket. Frontend (Playwright) E2E: /events renders events-public-page grid with public-event-free-community-meetup card, EVENTS nav link exists in header DOM (events_enabled=true), event-detail-page loads with ticket-selector + registration-form, qty-plus-* increments, buyer-name/email inputs work, custom-field-* T-shirt select works (S/M/L), cart-total shows 'Free', register-submit-btn labeled 'Get Tickets', click navigates to /events/confirmation?order=... showing confirmation-success with view-ticket-* link, clicking View Ticket renders ticket-render with ticket-qr (data:image/png;base64,...), event title 'FREE COMMUNITY MEETUP', attendee 'TEST_E2E_Buyer', ticket code 'EVT-28C992CF-DF7F' and Status: valid. Admin /admin/events/attendees loads event-attendees-page with door-verify-box; scan-toggle-btn toggles without crashing and shows a graceful 'Camera error — Could not start camera. Use manual entry.' toast in headless (acceptable); manual verify-code-input + verify-btn renders verify-result with 'Allow & Check In' verify-checkin-btn; clicking it sets status to checked_in (confirmed via API, checked_in_at populated) and re-verify shows 'Already Checked In'.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Public Ticket page (/events/ticket/{code})", "issues": ["Venue displays '--' on the concert-style ticket when event has no venue_id (Free Community Meetup has none). Acceptable, but consider hiding the VENUE column when null."]},
+      {"screen": "Site Preview gate", "issues": ["The 'Preview Mode' (123 Bots Preview, password 8487) gate is currently shown on /login despite /app/memory/test_credentials.md stating it is disabled. Bypassable with 8487, but credentials file should be updated."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_event_center_phase2.py",
+    "/app/test_reports/pytest/event_center_phase2_results.xml"
+  ],
+  "action_items": [
+    "Update /app/memory/test_credentials.md: site preview password (8487) appears active again on /login — either disable it or note it as enabled for testing agents.",
+    "Optional: hide the VENUE label on the rendered ticket (/events/ticket/{code}) when event has no venue assigned (currently shows '--').",
+    "Optional: the public events list page (/events) renders the events grid only after dismissing the 'Welcome to 123Bots!' industry modal — modal is properly dismissible and not blocking interactions, but consider deferring it on the public events route."
+  ],
+  "critical_code_review_comments": [
+    "event_center.py public_register: when total <= 0, ticket_types.$.sold is incremented inside _issue_tickets_and_email — verified working. Same incrementor relies on ticket_type_id being present in line_items; OK because we build from server-side tt_map.",
+    "public_register paid path correctly returns 503 with two distinct messages ('Online payment is not available' vs 'PayPal checkout is not configured for online purchase') — good UX.",
+    "_make_qr_data_uri returns a base64 PNG data URI; works in browser <img src> ✓ (verified visually).",
+    "Admin /api/events/attendees endpoint returns a plain list (not a paginated dict) — works fine, but page assumes list.filter; not currently broken since UI iterates with .map.",
+    "GET /api/public/events/ticket/{ticket_code} exposes the full attendee document including email/phone via a public URL knowing only the ticket_code. Consider whether to omit email/phone from the public response (current behavior leaks PII to anyone with the code from a shared image)."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_event_center_phase2.py"
+  ],
+  "success_rate": { "backend": "100%", "frontend": "100%" },
+  "test_credentials": "mel@a2gdesigns.com / BigDaddy2016!! (Super Admin); site preview password 8487 currently REQUIRED on /login despite docs.",
+  "seed_data_creation": "Phase 2 free flow created 1 order (EVO-350111A9) + 1 attendee (TEST_E2E_Buyer, EVT-28C992CF-DF7F, now checked_in) on event 'Free Community Meetup'. Backend pytest created and cleaned up 1 paid event 'TEST_Phase2_Paid_Event' (deleted in teardown) and added 2 attendees on the free event with buyer_email test_buyer@example.com (kept for repeat runs; harmless TEST_ data).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend pytest: /app/backend/tests/test_event_center_phase2.py (7/7 pass). Free event slug: free-community-meetup. Real ticket code from Phase 2 E2E run: EVT-28C992CF-DF7F (status=checked_in). All public testids verified: events-public-page, public-event-{slug}, event-detail-page, ticket-selector, registration-form, qty-plus-{id}, buyer-name-input, buyer-email-input, custom-field-{id}, cart-total, register-submit-btn, confirmation-success, view-ticket-{id}, ticket-render, ticket-qr. Admin testids: event-attendees-page, door-verify-box, verify-code-input, verify-btn, scan-toggle-btn, qr-scanner, verify-result, verify-checkin-btn. Camera scan via html5-qrcode gracefully errors out in headless (toast 'Camera error — Could not start camera. Use manual entry.') — page stays alive. Note site preview gate (password 8487) is active on /login despite test_credentials.md saying disabled.",
+  "rca of the issue": "No production bugs found. Minor PII concern raised on /api/public/events/ticket/{code} (full attendee email/phone returned to anyone with the code). All listed Phase 2 features behave as documented."
+}

@@ -10,13 +10,16 @@ Event Center Module
 Gated entirely by the `events_enabled` feature flag on the frontend.
 Follows the existing module conventions (uuid ids, set_database, dict storage).
 """
-from fastapi import APIRouter, Depends, HTTPException, Header, Query
+from fastapi import APIRouter, Depends, HTTPException, Header, Query, Request
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
 import uuid
 import re
 import secrets
+import io
+import base64
 
 from auth import decode_token, is_admin_or_above
 
@@ -560,3 +563,304 @@ async def public_get_event(slug: str, db=Depends(get_db)):
     if ev.get("category_id"):
         ev["category"] = await db.event_categories.find_one({"id": ev["category_id"]}, {"_id": 0})
     return ev
+
+
+# =============== PHASE 2: TICKETS, QR, PAYPAL, EMAIL ===============
+
+def _make_qr_data_uri(text: str) -> str:
+    import qrcode
+    qr = qrcode.QRCode(version=1, box_size=8, border=2)
+    qr.add_data(text)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+
+
+def _public_origin(request: Request) -> str:
+    fwd_host = request.headers.get("x-forwarded-host")
+    proto = request.headers.get("x-forwarded-proto", "https")
+    if fwd_host:
+        return f"{proto}://{fwd_host}".rstrip("/")
+    return str(request.base_url).rstrip("/")
+
+
+def _build_ticket_html(event: dict, attendee: dict, venue: Optional[dict], origin: str) -> str:
+    qr = _make_qr_data_uri(attendee["ticket_code"])
+    start = event.get("start_datetime")
+    date_str = time_str = ""
+    if start:
+        try:
+            d = datetime.fromisoformat(start.replace("Z", "+00:00"))
+            date_str = d.strftime("%b %d, %Y")
+            time_str = d.strftime("%I:%M %p")
+        except Exception:
+            pass
+    bg = event.get("ticket_background_url") or ""
+    bg_style = (f"background-image:linear-gradient(rgba(10,5,18,0.55),rgba(10,5,18,0.85)),url('{bg}');"
+                "background-size:cover;background-position:center;") if bg else \
+               "background:linear-gradient(135deg,#4c1d95,#a21caf,#0b0712);"
+    tagline = event.get("ticket_tagline") or "PREPARE YOURSELF"
+    venue_name = (venue or {}).get("name", "")
+    ticket_url = f"{origin}/events/ticket/{attendee['ticket_code']}"
+    return f"""
+    <div style="max-width:600px;margin:0 auto;font-family:Arial,Helvetica,sans-serif;">
+      <div style="border-radius:16px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.4);">
+        <div style="{bg_style}padding:28px;color:#fff;position:relative;min-height:230px;">
+          <img src="{qr}" alt="QR" width="92" height="92" style="background:#fff;padding:6px;border-radius:8px;"/>
+          <div style="text-align:right;margin-top:-92px;">
+            <div style="font-size:16px;letter-spacing:4px;">ADMIT ONE</div>
+            <div style="font-size:26px;font-weight:bold;">{attendee.get('ticket_type_name') or 'Ticket'}</div>
+          </div>
+          <div style="margin-top:70px;">
+            <div style="font-size:11px;letter-spacing:3px;opacity:.8;">{tagline}</div>
+            <div style="font-size:30px;font-weight:900;text-transform:uppercase;line-height:1.1;">{event.get('title','')}</div>
+          </div>
+          <table style="margin-top:18px;color:#fff;width:100%;font-size:13px;">
+            <tr>
+              <td><div style="opacity:.6;font-size:10px;text-transform:uppercase;">Date</div>{date_str or '--'}</td>
+              <td><div style="opacity:.6;font-size:10px;text-transform:uppercase;">Time</div>{time_str or '--'}</td>
+              <td><div style="opacity:.6;font-size:10px;text-transform:uppercase;">Venue</div>{venue_name or '--'}</td>
+            </tr>
+          </table>
+        </div>
+        <div style="background:#150f22;color:#fff;padding:18px 28px;border-top:2px dashed rgba(255,255,255,0.2);">
+          <div style="font-size:13px;">Attendee: <strong>{attendee.get('name','')}</strong></div>
+          <div style="font-size:13px;margin-top:4px;">Ticket No. <strong>{attendee['ticket_code']}</strong></div>
+          <div style="margin-top:10px;font-size:12px;opacity:.7;">Present this ticket (QR code) at the door for entry.</div>
+          <a href="{ticket_url}" style="display:inline-block;margin-top:12px;background:#7c3aed;color:#fff;text-decoration:none;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:bold;">View My Ticket</a>
+        </div>
+      </div>
+    </div>
+    """
+
+
+async def _issue_tickets_and_email(db, event: dict, order: dict, origin: str):
+    """Create attendee rows for a paid/free order and email each their ticket."""
+    from email_utils import send_email
+    venue = await db.event_venues.find_one({"id": event.get("venue_id")}, {"_id": 0}) if event.get("venue_id") else None
+    tt_map = {t.get("id"): t for t in event.get("ticket_types", []) or []}
+    created = []
+    for item in order.get("items", []):
+        tt = tt_map.get(item.get("ticket_type_id"), {})
+        for _ in range(int(item.get("quantity", 1))):
+            att = {
+                "id": uuid.uuid4().hex,
+                "event_id": event["id"],
+                "ticket_type_id": item.get("ticket_type_id"),
+                "ticket_type_name": tt.get("name", ""),
+                "name": order.get("buyer_name", ""),
+                "email": order.get("buyer_email", ""),
+                "phone": order.get("buyer_phone", ""),
+                "quantity": 1,
+                "amount_paid": float(tt.get("price", 0) or 0),
+                "custom_form_data": order.get("custom_form_data", {}),
+                "ticket_code": _gen_ticket_code(),
+                "status": "valid",
+                "checked_in_at": None,
+                "order_id": order["id"],
+                "source": "online",
+                "created_at": _now_iso(),
+            }
+            await db.event_attendees.insert_one(dict(att))
+            att.pop("_id", None)
+            created.append(att)
+        if item.get("ticket_type_id"):
+            await db.events.update_one(
+                {"id": event["id"], "ticket_types.id": item["ticket_type_id"]},
+                {"$inc": {"ticket_types.$.sold": int(item.get("quantity", 1))}},
+            )
+    # email each ticket
+    for att in created:
+        try:
+            html = _build_ticket_html(event, att, venue, origin)
+            await send_email(att["email"], f"Your ticket for {event.get('title','')}", html)
+        except Exception as e:
+            print(f"[event_center] ticket email failed: {e}")
+    await db.event_orders.update_one({"id": order["id"]}, {"$set": {"attendee_ids": [a["id"] for a in created]}})
+    return created
+
+
+class RegisterItem(BaseModel):
+    ticket_type_id: str
+    quantity: int = 1
+
+
+class RegisterRequest(BaseModel):
+    buyer_name: str
+    buyer_email: str
+    buyer_phone: str = ""
+    items: List[RegisterItem]
+    custom_form_data: Dict[str, Any] = Field(default_factory=dict)
+
+
+@public_router.get("/config/paypal")
+async def public_paypal_config(db=Depends(get_db)):
+    s = await db.payment_settings.find_one({"type": "paypal"}, {"_id": 0})
+    if not s or not s.get("is_enabled"):
+        return {"enabled": False}
+    is_test = s.get("is_test_mode", True)
+    setup = s.get("setup_mode", "email")
+    if setup == "email":
+        available = bool(s.get("paypal_email"))
+    else:
+        available = bool((s.get("sandbox_client_id") and s.get("sandbox_client_secret")) if is_test
+                         else (s.get("live_client_id") and s.get("live_client_secret")))
+    return {"enabled": True, "available": available, "setup_mode": setup}
+
+
+@public_router.post("/{slug}/register")
+async def public_register(slug: str, payload: RegisterRequest, request: Request, db=Depends(get_db)):
+    event = await db.events.find_one({"slug": slug, "status": {"$in": ["on_sale", "live"]}}, {"_id": 0})
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not available")
+    if not payload.items:
+        raise HTTPException(status_code=400, detail="Select at least one ticket")
+
+    tt_map = {t.get("id"): t for t in event.get("ticket_types", []) or []}
+    total = 0.0
+    line_items = []
+    for it in payload.items:
+        tt = tt_map.get(it.ticket_type_id)
+        if not tt:
+            raise HTTPException(status_code=400, detail="Invalid ticket type")
+        qty = max(1, int(it.quantity))
+        total += float(tt.get("price", 0) or 0) * qty
+        line_items.append({"ticket_type_id": it.ticket_type_id, "ticket_type_name": tt.get("name", ""), "quantity": qty, "price": float(tt.get("price", 0) or 0)})
+
+    order = {
+        "id": uuid.uuid4().hex,
+        "order_number": "EVO-" + secrets.token_hex(4).upper(),
+        "event_id": event["id"],
+        "event_slug": slug,
+        "buyer_name": payload.buyer_name,
+        "buyer_email": payload.buyer_email,
+        "buyer_phone": payload.buyer_phone,
+        "items": line_items,
+        "custom_form_data": payload.custom_form_data,
+        "total": round(total, 2),
+        "payment_status": "pending",
+        "payment_method": "paypal" if total > 0 else "free",
+        "paypal_order_id": None,
+        "attendee_ids": [],
+        "created_at": _now_iso(),
+    }
+    await db.event_orders.insert_one(dict(order))
+    order.pop("_id", None)
+    origin = _public_origin(request)
+
+    if total <= 0:
+        await db.event_orders.update_one({"id": order["id"]}, {"$set": {"payment_status": "completed"}})
+        await _issue_tickets_and_email(db, event, order, origin)
+        return {"status": "completed", "order_id": order["id"], "order_number": order["order_number"]}
+
+    # paid: create PayPal order
+    paypal_settings = await db.payment_settings.find_one({"type": "paypal"})
+    if not paypal_settings or not paypal_settings.get("is_enabled"):
+        raise HTTPException(status_code=503, detail="Online payment is not available. Please contact the organizer.")
+    if paypal_settings.get("setup_mode", "email") != "api_keys":
+        raise HTTPException(status_code=503, detail="PayPal checkout is not configured for online purchase.")
+
+    from durango_payments import _get_paypal_access_token
+    import httpx
+    access_token, base_url = await _get_paypal_access_token(paypal_settings)
+    body = {
+        "intent": "CAPTURE",
+        "purchase_units": [{
+            "reference_id": order["order_number"],
+            "description": f"{event.get('title','Event')} tickets",
+            "amount": {"currency_code": "USD", "value": f"{order['total']:.2f}"},
+        }],
+        "application_context": {
+            "brand_name": "123Bots Events",
+            "shipping_preference": "NO_SHIPPING",
+            "user_action": "PAY_NOW",
+            "return_url": f"{origin}/events/confirmation?order={order['id']}&paypal=success",
+            "cancel_url": f"{origin}/events/{slug}?paypal=cancelled",
+        },
+    }
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        resp = await client.post(f"{base_url}/v2/checkout/orders", json=body,
+                                 headers={"Authorization": f"Bearer {access_token}", "Content-Type": "application/json", "Prefer": "return=representation"})
+    if resp.status_code >= 400:
+        raise HTTPException(status_code=502, detail="Failed to start PayPal checkout")
+    data = resp.json()
+    approval = next((l.get("href") for l in data.get("links", []) if l.get("rel") == "approve"), None)
+    if not approval:
+        raise HTTPException(status_code=502, detail="PayPal approval URL missing")
+    await db.event_orders.update_one({"id": order["id"]}, {"$set": {"paypal_order_id": data.get("id")}})
+    return {"status": "pending_payment", "order_id": order["id"], "approval_url": approval}
+
+
+@public_router.post("/orders/{order_id}/capture")
+async def public_capture_order(order_id: str, paypal_order_id: Optional[str] = Query(None), request: Request = None, db=Depends(get_db)):
+    order = await db.event_orders.find_one({"id": order_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    if order.get("payment_status") == "completed":
+        attendees = await db.event_attendees.find({"order_id": order_id}, {"_id": 0}).to_list(500)
+        return {"status": "completed", "order": order, "attendees": attendees}
+
+    pp_id = paypal_order_id or order.get("paypal_order_id")
+    if not pp_id:
+        raise HTTPException(status_code=400, detail="Missing PayPal order id")
+    paypal_settings = await db.payment_settings.find_one({"type": "paypal"})
+    from durango_payments import _get_paypal_access_token
+    import httpx
+    access_token, base_url = await _get_paypal_access_token(paypal_settings)
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        resp = await client.post(f"{base_url}/v2/checkout/orders/{pp_id}/capture", json={},
+                                 headers={"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"})
+    if resp.status_code >= 400:
+        raise HTTPException(status_code=502, detail="Failed to capture PayPal payment")
+    payload = resp.json()
+    if payload.get("status") != "COMPLETED":
+        raise HTTPException(status_code=400, detail=f"Payment not completed: {payload.get('status')}")
+
+    await db.event_orders.update_one({"id": order_id}, {"$set": {"payment_status": "completed", "paypal_order_id": pp_id}})
+    event = await db.events.find_one({"id": order["event_id"]}, {"_id": 0})
+    origin = _public_origin(request)
+    await _issue_tickets_and_email(db, event, {**order, "payment_status": "completed"}, origin)
+    attendees = await db.event_attendees.find({"order_id": order_id}, {"_id": 0}).to_list(500)
+    return {"status": "completed", "order": {**order, "payment_status": "completed"}, "attendees": attendees}
+
+
+@public_router.get("/orders/{order_id}")
+async def public_get_order(order_id: str, db=Depends(get_db)):
+    order = await db.event_orders.find_one({"id": order_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    attendees = await db.event_attendees.find({"order_id": order_id}, {"_id": 0}).to_list(500)
+    event = await db.events.find_one({"id": order["event_id"]}, {"_id": 0, "title": 1, "slug": 1})
+    return {"order": order, "attendees": attendees, "event": event}
+
+
+@public_router.get("/ticket/{ticket_code}")
+async def public_get_ticket(ticket_code: str, db=Depends(get_db)):
+    att = await db.event_attendees.find_one({"ticket_code": ticket_code}, {"_id": 0})
+    if not att:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    event = await db.events.find_one({"id": att.get("event_id")}, {"_id": 0})
+    venue = await db.event_venues.find_one({"id": event.get("venue_id")}, {"_id": 0}) if event and event.get("venue_id") else None
+    return {
+        "attendee": att,
+        "event": {"title": event.get("title"), "start_datetime": event.get("start_datetime"),
+                  "ticket_background_url": event.get("ticket_background_url"), "ticket_tagline": event.get("ticket_tagline")} if event else {},
+        "venue": {"name": venue.get("name"), "city": venue.get("city")} if venue else None,
+        "qr": _make_qr_data_uri(ticket_code),
+    }
+
+
+@router.post("/attendees/{attendee_id}/resend")
+async def resend_ticket(attendee_id: str, request: Request, authorization: Optional[str] = Header(None), db=Depends(get_db)):
+    _require_admin_token(authorization)
+    att = await db.event_attendees.find_one({"id": attendee_id}, {"_id": 0})
+    if not att:
+        raise HTTPException(status_code=404, detail="Attendee not found")
+    event = await db.events.find_one({"id": att.get("event_id")}, {"_id": 0})
+    venue = await db.event_venues.find_one({"id": event.get("venue_id")}, {"_id": 0}) if event and event.get("venue_id") else None
+    from email_utils import send_email
+    html = _build_ticket_html(event, att, venue, _public_origin(request))
+    await send_email(att["email"], f"Your ticket for {event.get('title','')}", html)
+    return {"success": True}

@@ -14,7 +14,7 @@ const Header = () => {
   const location = useLocation();
   const { cartItems } = useCart();
   const { logoUrl } = useSiteSettings();
-  const { cart_enabled, pawn_checkout } = useSiteFeatureFlags();
+  const { cart_enabled, pawn_checkout, events_enabled } = useSiteFeatureFlags();
 
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -46,6 +46,7 @@ const Header = () => {
       ],
     },
     ...(cart_enabled ? [{ label: 'PARTS', href: '/shop/products?category=parts' }] : []),
+    ...(events_enabled ? [{ label: 'EVENTS', href: '/events' }] : []),
     { label: 'SUPPORT', href: '/contact' },
     {
       label: 'PRODUCTS',
