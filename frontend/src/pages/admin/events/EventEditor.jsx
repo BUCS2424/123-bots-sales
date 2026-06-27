@@ -352,35 +352,24 @@ const EventEditor = ({ eventId }) => {
             <TicketPreview data={data} venue={selectedVenue} />
           </Section>
 
-          {/* Banner / gallery */}
-          <Section title="Event Images" icon={ImageIcon} testid="section-images">
-            <label className={labelCls}>Banner / Cover</label>
+          {/* Event image */}
+          <Section title="Event Image" icon={ImageIcon} testid="section-images">
+            <label className={labelCls}>Cover Image</label>
             <div
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => onDrop(e, 'banner_url')}
               onClick={() => bannerRef.current?.click()}
-              className="mb-4 flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-white/15 bg-[#0f0a1a] p-4 text-center transition hover:border-white/30"
+              className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-white/15 bg-[#0f0a1a] p-6 text-center transition hover:border-white/30"
               data-testid="banner-dropzone"
             >
-              {uploadingKey === 'banner_url' ? <Loader2 className="h-5 w-5 animate-spin text-purple-400" />
-                : data.banner_url ? <img src={data.banner_url} alt="banner" className="h-24 w-full rounded-lg object-cover" />
-                : <span className="text-xs text-white/50"><Upload className="mx-auto mb-1 h-5 w-5" />Drop or click to upload banner</span>}
+              {uploadingKey === 'banner_url' ? <Loader2 className="h-6 w-6 animate-spin text-purple-400" />
+                : data.banner_url ? <img src={data.banner_url} alt="event" className="h-32 w-full rounded-lg object-cover" />
+                : <><Upload className="h-7 w-7 text-purple-300" /><span className="text-xs text-white/50">Drop image or click to upload the event image</span></>}
               <input ref={bannerRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleUpload(e.target.files?.[0], 'banner_url')} data-testid="banner-input" />
             </div>
-
-            <label className={labelCls}>Gallery</label>
-            <div className="grid grid-cols-3 gap-2">
-              {(data.images || []).map((img, i) => (
-                <div key={i} className="group relative overflow-hidden rounded-lg">
-                  <img src={img} alt="" className="h-16 w-full object-cover" />
-                  <button onClick={() => set('images', data.images.filter((_, idx) => idx !== i))} className="absolute right-1 top-1 rounded bg-black/70 p-1 text-red-300 opacity-0 transition group-hover:opacity-100"><Trash2 className="h-3 w-3" /></button>
-                </div>
-              ))}
-              <label className="flex h-16 cursor-pointer items-center justify-center rounded-lg border border-dashed border-white/15 text-white/40 hover:border-white/30" data-testid="gallery-add">
-                {uploadingKey === 'gallery' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-5 w-5" />}
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => handleUpload(e.target.files?.[0], 'gallery')} />
-              </label>
-            </div>
+            {data.banner_url && (
+              <button onClick={() => set('banner_url', '')} className="mt-2 text-xs text-red-300 hover:underline" data-testid="remove-banner-btn">Remove image</button>
+            )}
           </Section>
         </div>
       </div>
