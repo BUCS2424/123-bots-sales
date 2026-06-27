@@ -93,8 +93,8 @@ const Header = () => {
         }`}
         data-testid="main-header"
       >
-        {/* Top Bar */}
-        <div className="bg-bots-surface/80 border-b border-gray-800">
+        {/* Top Bar - hidden on mobile to reduce clutter */}
+        <div className="hidden md:block bg-bots-surface/80 border-b border-gray-800">
           <div className="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center text-sm">
             <a 
               href="tel:8777022687" 
@@ -359,6 +359,17 @@ const Header = () => {
                 >
                   BUY OR LEASE
                 </Link>
+              </div>
+
+              {/* Mobile secondary links (moved from hidden top bar) */}
+              <div className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-gray-800 pt-4 text-sm">
+                {cart_enabled && (
+                  <Link to="/shop" className="text-gray-300 hover:text-white" data-testid="mobile-shop-link">Shop</Link>
+                )}
+                <Link to="/123-bots-resources" className="text-gray-300 hover:text-white" data-testid="mobile-resources-link">Resources</Link>
+                <a href="https://www.facebook.com/123bots" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white" data-testid="mobile-facebook-link">Facebook</a>
+                <Link to="/login" className="text-gray-300 hover:text-white" data-testid="mobile-login-link">Login</Link>
+                <a href="tel:8777022687" className="flex items-center gap-1 text-gray-300 hover:text-white" data-testid="mobile-phone-link"><Phone className="w-3.5 h-3.5" /> (877) 702-2687</a>
               </div>
             </div>
           </div>
