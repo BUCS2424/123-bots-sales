@@ -227,7 +227,7 @@ const EventDetailPage = () => {
 
       {/* Sticky bottom Buy bar */}
       <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-[#0a0a0c]/90 backdrop-blur-md" data-testid="buy-tickets-bar">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-center gap-4 px-6 py-4 sm:justify-between">
           <div className="hidden sm:block">
             <p className="text-sm font-semibold">{event.title}</p>
             <p className="text-xs text-white/50">{fmtDate(event.start_datetime)}{venue ? ` · ${venue.name}` : ''}</p>
@@ -235,7 +235,7 @@ const EventDetailPage = () => {
           <button
             onClick={() => canBuy && setBuyOpen(true)}
             disabled={!canBuy}
-            className={`ml-auto rounded-xl px-8 py-3 text-sm font-bold transition ${canBuy ? 'bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white hover:opacity-90' : 'cursor-not-allowed bg-white/10 text-white/40'}`}
+            className={`w-auto min-w-[220px] rounded-xl px-8 py-3 text-sm font-bold transition sm:ml-auto sm:min-w-0 ${canBuy ? 'bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white hover:opacity-90' : 'cursor-not-allowed bg-white/10 text-white/40'}`}
             data-testid="buy-tickets-btn"
           >
             {salesEnded ? 'Sales Ended' : soldOut ? 'Sold Out' : !hasTickets ? 'Unavailable' : 'Buy Tickets'}
