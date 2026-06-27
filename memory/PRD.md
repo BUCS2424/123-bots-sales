@@ -346,6 +346,21 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - [ ] Door check-in kiosk: camera QR scan (in addition to current manual code verify)
 - [ ] `event_orders` flow + revenue tied to real PayPal payments
 
+### Event Center — Phase 2 (COMPLETED June 27, 2026)
+- [x] Public event pages: list at `/events` (`EventsPublicPage.jsx`), detail at `/events/:slug` (`EventDetailPage.jsx`) with ticket-type quantity selector + custom registration form
+- [x] Registration/checkout: `POST /api/public/events/{slug}/register` — free tickets issue instantly; paid tickets create an `event_orders` record and a **PayPal** order (reuses `durango_payments._get_paypal_access_token`), redirect to approval URL
+- [x] PayPal capture: `/events/confirmation` page (`EventConfirmationPage.jsx`) captures on return and shows issued tickets
+- [x] **QR ticket**: backend generates QR (qrcode lib) encoding the ticket_code; concert-style ticket emailed via existing **SMTP** (`email_utils.send_email`); public ticket view at `/events/ticket/:code` (`TicketViewPage.jsx`)
+- [x] Admin: door check-in now has **camera QR scan** (html5-qrcode) + manual code verify; resend ticket endpoint `POST /api/events/attendees/{id}/resend`
+- [x] Header shows an `EVENTS` nav link when `events_enabled` is on
+- [x] Testing Agent Iteration 72: PASS (Backend 7/7 100%, Frontend 100%)
+- NOTE: PayPal is not yet configured with API keys in this environment — paid checkout returns a graceful 503 until keys are added in Payment Settings. Free ticketing works fully.
+
+### Event Center — Phase 3 (BACKLOG)
+- [ ] Configure PayPal API keys (Payment Settings) to enable live paid ticket sales
+- [ ] Optional: "Featured Events" carousel on the homepage (gated by `events_enabled`)
+- [ ] Optional: hide VENUE column on ticket when event has no venue
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**
