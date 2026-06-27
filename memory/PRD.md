@@ -322,6 +322,30 @@ Clone the GitHub project `https://github.com/BUCS2424/gingerkare-site-cart/tree/
   - Admin UI: `/admin/external-api/sources` and `/admin/external-api/pipelines`
   - Testing Agent Iteration 69: PASS (Backend 15/15, Frontend 100%)
 
+## Event Center & Ticketing — Phase 1 (June 27, 2026)
+Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Flags → "Events"). When OFF, nothing event-related shows; deep-links to `/admin/events/*` redirect to `/admin/cart`.
+
+### Completed (Phase 1)
+- [x] **Backend module** `/app/backend/event_center.py` (wired in `server.py`):
+  - Collections: `event_categories`, `event_venues`, `events`, `event_attendees` (+ `event_orders` reserved for Phase 2)
+  - Categories CRUD, Venues CRUD, Events CRUD (auto slug, ticket_type ids), Dashboard stats (`GET /api/events/dashboard/stats`), Attendees (create w/ generated `EVT-XXXX-XX` ticket code, list, idempotent check-in, verify by code, delete)
+  - Public endpoints scaffolded: `GET /api/public/events`, `GET /api/public/events/{slug}` (used in Phase 2)
+  - Event model includes `ticket_background_url` + `ticket_tagline` for the concert-style ticket
+- [x] **Feature flag** `events_enabled` added to `admin_settings.py` (FeatureFlags + public projection) and `DevFeatureFlags.jsx`
+- [x] **Admin UI** (dark "CUE" purple theme) in `/app/frontend/src/pages/admin/events/`:
+  - EVENT CENTER sidebar accordion: Event Dashboard, Tickets & Sales, Attendees, Events, Event Categories, Create An Event, Venues/Locations, Revenues & Reports
+  - Event Dashboard (stat cards, recharts sales trend, upcoming events panel)
+  - Create/Edit Event editor: details, ticket-type builder, custom registration form builder, drag-n-drop ticket background + banner/gallery uploads (`/api/storage/upload`, folder=events), **live concert-ticket preview** (QR placeholder, ADMIT ONE, price, tagline, date/time/venue)
+  - Events list, Categories, Venues, Attendees (manual add + check-in + door verify box), Tickets & Sales, Revenue & Reports
+- [x] Testing Agent Iteration 71: PASS (Backend 10/10 100%, Frontend 100%)
+
+### Event Center — Phase 2 (BACKLOG / NEXT)
+- [ ] Public event pages: events list at `/events`, event detail at `/events/:slug` with venue, images, ticket types, and the custom registration form
+- [ ] Ticket purchase via **PayPal** (reuse existing `durango_payments.py` PayPal wiring)
+- [ ] Generate **QR code** on the concert-style ticket; email ticket via existing **SMTP** (`email_utils.py`) after purchase
+- [ ] Door check-in kiosk: camera QR scan (in addition to current manual code verify)
+- [ ] `event_orders` flow + revenue tied to real PayPal payments
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**

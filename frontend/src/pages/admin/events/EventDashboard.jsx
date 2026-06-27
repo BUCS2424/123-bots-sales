@@ -106,7 +106,7 @@ const EventDashboard = () => {
           <p className="text-4xl font-black text-white">{(stats?.tickets_sold ?? 0).toLocaleString()}</p>
           <p className="mb-4 text-xs text-white/40">Tickets sold across all events</p>
           <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={256}>
               <BarChart data={trend} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                 <XAxis dataKey="label" tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <Tooltip

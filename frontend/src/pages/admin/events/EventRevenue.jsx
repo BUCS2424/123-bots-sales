@@ -47,7 +47,7 @@ const EventRevenue = () => {
       <div className="mb-6 rounded-2xl border border-white/10 bg-[#150f22] p-6" data-testid="rev-trend-card">
         <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-white/70">Sales Volume — Last 12 Months</h2>
         <div className="h-56 w-full">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={224}>
             <AreaChart data={stats.sales_trend || []} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1">
