@@ -269,12 +269,20 @@ const EventDetailPage = () => {
         )}
       </AnimatePresence>
 
-      {/* Buy Tickets modal */}
+      {/* Buy Tickets bottom sheet */}
       <AnimatePresence>
         {buyOpen && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[90] flex items-end justify-center bg-black/70 sm:items-center" onClick={() => setBuyOpen(false)}>
-            <motion.div initial={{ y: 40 }} animate={{ y: 0 }} exit={{ y: 40 }} className="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-t-3xl border border-white/10 bg-[#141417] sm:rounded-3xl" onClick={(e) => e.stopPropagation()} data-testid="ticket-modal">
-              <div className="sticky top-0 flex items-center justify-between border-b border-white/10 bg-[#141417] px-6 py-4">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[90] flex items-end justify-center bg-black/70" onClick={() => setBuyOpen(false)}>
+            <motion.div
+              initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 32, stiffness: 320 }}
+              drag="y" dragConstraints={{ top: 0, bottom: 0 }} dragElastic={0.25}
+              onDragEnd={(e, info) => { if (info.offset.y > 120) setBuyOpen(false); }}
+              className="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-t-3xl border border-white/10 bg-[#141417] pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_40px_rgba(0,0,0,0.5)]"
+              onClick={(e) => e.stopPropagation()} data-testid="ticket-modal"
+            >
+              <div className="flex justify-center pt-3" data-testid="sheet-handle"><div className="h-1.5 w-12 rounded-full bg-white/25" /></div>
+              <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-[#141417] px-6 py-3">
                 <h3 className="flex items-center gap-2 text-lg font-bold"><Ticket className="h-5 w-5 text-purple-400" /> Get Tickets</h3>
                 <button onClick={() => setBuyOpen(false)} data-testid="ticket-modal-close"><X className="h-5 w-5 text-white/50" /></button>
               </div>
@@ -333,15 +341,17 @@ const EventDetailPage = () => {
                     </div>
                   )}
                 </div>
-                <div className="flex items-center justify-between border-t border-white/10 pt-4">
+              </div>
+              <div className="sticky bottom-0 border-t border-white/10 bg-[#141417] px-6 py-4" data-testid="sheet-footer">
+                <div className="mb-3 flex items-center justify-between">
                   <span className="text-white/50">Total</span>
                   <span className="text-2xl font-black" data-testid="cart-total">{total === 0 ? (ticketCount > 0 ? 'Free' : '$0.00') : fmtMoney(total)}</span>
                 </div>
-                <button onClick={handleRegister} disabled={submitting} className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 py-3 text-sm font-bold shadow-lg shadow-purple-900/40 transition hover:opacity-90 disabled:opacity-50" data-testid="register-submit-btn">
+                <button onClick={handleRegister} disabled={submitting || ticketCount === 0} className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 py-3.5 text-sm font-bold shadow-lg shadow-purple-900/40 transition hover:opacity-90 disabled:opacity-50" data-testid="register-submit-btn">
                   {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                  {total > 0 ? 'Continue to PayPal' : 'Get Tickets'}
+                  {ticketCount === 0 ? 'Select tickets' : total > 0 ? 'Continue to PayPal' : 'Get Tickets'}
                 </button>
-                <p className="text-center text-xs text-white/40">Tickets with a QR code are emailed to you instantly.</p>
+                <p className="mt-2 text-center text-xs text-white/40">Tickets with a QR code are emailed to you instantly.</p>
               </div>
             </motion.div>
           </motion.div>
