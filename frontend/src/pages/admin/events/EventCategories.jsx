@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Plus, Trash2, Pencil, Tag, Loader2, X } from 'lucide-react';
-import { eventApi } from './eventApi';
+import React, { useEffect, useState, useRef } from 'react';
+import { Plus, Trash2, Pencil, Tag, Loader2, X, Upload } from 'lucide-react';
+import { eventApi, uploadEventImage } from './eventApi';
 import { toast } from '../../../hooks/use-toast';
 
 const inputCls = 'w-full rounded-lg border border-white/10 bg-[#0f0a1a] px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-purple-500/50';
@@ -8,13 +8,23 @@ const inputCls = 'w-full rounded-lg border border-white/10 bg-[#0f0a1a] px-3 py-
 const EventCategories = () => {
   const [cats, setCats] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [modal, setModal] = useState(null); // {id?, name, description, color}
+  const [modal, setModal] = useState(null); // {id?, name, description, color, image_url}
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef(null);
 
   const load = () => {
     setLoading(true);
     eventApi.listCategories().then((r) => setCats(r.data || [])).catch(() => {}).finally(() => setLoading(false));
   };
   useEffect(load, []);
+
+  const uploadImg = async (file) => {
+    if (!file) return;
+    setUploading(true);
+    try { const url = await uploadEventImage(file); setModal((m) => ({ ...m, image_url: url })); }
+    catch { toast({ title: 'Upload failed', variant: 'destructive' }); }
+    finally { setUploading(false); }
+  };
 
   const save = async () => {
     if (!modal.name?.trim()) { toast({ title: 'Name required', variant: 'destructive' }); return; }
@@ -38,7 +48,7 @@ const EventCategories = () => {
           <h1 className="text-2xl font-black">Event Categories</h1>
           <p className="text-sm text-white/40">{cats.length} categories</p>
         </div>
-        <button onClick={() => setModal({ name: '', description: '', color: '#7c3aed' })} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 px-4 py-2.5 text-sm font-semibold" data-testid="add-category-btn">
+        <button onClick={() => setModal({ name: '', description: '', color: '#7c3aed', image_url: '' })} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 px-4 py-2.5 text-sm font-semibold" data-testid="add-category-btn">
           <Plus className="h-4 w-4" /> Add Category
         </button>
       </div>
@@ -50,7 +60,7 @@ const EventCategories = () => {
             {cats.map((c) => (
               <div key={c.id} className="flex items-center justify-between rounded-xl border border-white/10 bg-[#150f22] p-4" data-testid={`category-${c.id}`}>
                 <div className="flex items-center gap-3">
-                  <span className="h-8 w-8 rounded-lg" style={{ background: c.color }} />
+                  {c.image_url ? <img src={c.image_url} alt={c.name} className="h-10 w-10 rounded-lg object-cover" /> : <span className="h-10 w-10 rounded-lg" style={{ background: c.color }} />}
                   <div>
                     <p className="font-semibold">{c.name}</p>
                     {c.description && <p className="text-xs text-white/40">{c.description}</p>}
@@ -78,6 +88,22 @@ const EventCategories = () => {
               <div className="flex items-center gap-3">
                 <label className="text-sm text-white/60">Color</label>
                 <input type="color" value={modal.color} onChange={(e) => setModal({ ...modal, color: e.target.value })} className="h-9 w-16 cursor-pointer rounded bg-transparent" />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-white/60">Category Image (shown on the events landing page)</label>
+                <div className="flex items-center gap-3">
+                  {modal.image_url ? (
+                    <div className="relative">
+                      <img src={modal.image_url} alt="" className="h-16 w-24 rounded-lg object-cover" />
+                      <button onClick={() => setModal({ ...modal, image_url: '' })} className="absolute -right-2 -top-2 rounded-full bg-black p-0.5 text-red-300"><X className="h-3.5 w-3.5" /></button>
+                    </div>
+                  ) : (
+                    <button onClick={() => fileRef.current?.click()} className="flex h-16 w-24 items-center justify-center rounded-lg border border-dashed border-white/20 text-white/40 hover:border-white/40" data-testid="category-image-upload">
+                      {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                    </button>
+                  )}
+                  <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => uploadImg(e.target.files?.[0])} />
+                </div>
               </div>
               <button onClick={save} className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 py-2.5 text-sm font-semibold" data-testid="category-save-btn">Save</button>
             </div>

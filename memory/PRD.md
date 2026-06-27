@@ -367,6 +367,14 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - [x] **Preview Live Page** button on the Event editor opens `/events/:slug?preview=1` (works for draft events via a `preview` flag on the public detail endpoint; shows a PREVIEW banner).
 - Verified: email-mode register returns payment link + issues ticket (sold increments); preview button confirmed via screenshot.
 
+### Event Center — Phase 3: Landing Page + Branding (June 27, 2026)
+- [x] **Custom Event Center landing page** (`EventsLandingPage.jsx`): hero, a 3-column row with 2-up **category image tiles that wrap to multiple rows** + an **Upcoming Events** list (thumbnail + date/time/venue/price), and a full-width **3D coverflow slideshow** of event posters with a gold "See All Upcoming Events" CTA (links to `/events?view=list`).
+- [x] **Toggle** `events_landing_enabled` (Dev → Feature Flags → Events): when ON the EVENTS menu opens the landing page; when OFF it opens the standard site-template list. Wrapper `EventsIndexPage.jsx` routes `/events` accordingly (honors `?view=list`).
+- [x] **Category images**: added `image_url` to event categories + upload in the category editor + public `GET /api/public/events/meta/categories`.
+- [x] **Configurable Event Center name** `events_center_name` (Dev → Feature Flags → Events → "Event Center Name" input + Save): renames the admin sidebar accordion and the public landing hero. Verified round-trip (e.g. "CUE Events").
+- [x] **Public event detail page revamped** (TicketWeb style): ambient blurred backdrop, poster, venue block with **embedded Google Map** (no API key) + Venue Info modal + Share, category/title/date, Description with Read more, Event Information (Age Limit / Refund Policy / Additional Info — new optional event fields), and a **bottom-sheet** "Buy Tickets" flow (slide-up, drag-to-dismiss, sticky checkout footer) centered on mobile to clear the chat widget.
+- [x] Header EVENTS link hidden top utility bar on mobile (moved links into hamburger). Preview banner fixed to sit in-flow (no longer overlaps nav).
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**

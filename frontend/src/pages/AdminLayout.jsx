@@ -130,6 +130,7 @@ const AdminLayout = () => {
     external_api_enabled: true,
     inventory_enabled: false,
     events_enabled: false,
+    events_center_name: 'Event Center',
   });
 
   // Fetch business settings for Analytics URL
@@ -154,6 +155,7 @@ const AdminLayout = () => {
           external_api_enabled: featureFlagsRes?.data?.external_api_enabled !== false,
           inventory_enabled: Boolean(featureFlagsRes?.data?.inventory_enabled),
           events_enabled: Boolean(featureFlagsRes?.data?.events_enabled),
+          events_center_name: featureFlagsRes?.data?.events_center_name || 'Event Center',
         });
       } catch (error) {
         console.error('Error fetching settings:', error);
@@ -302,10 +304,10 @@ const AdminLayout = () => {
     ...(featureFlags.events_enabled ? [{
       id: 'event-center',
       type: 'accordion',
-      label: 'Event Center',
+      label: featureFlags.events_center_name || 'Event Center',
       icon: Ticket,
       children: [
-        { path: '/admin/events', label: 'Event Dashboard', icon: LayoutDashboard },
+        { path: '/admin/events', label: `${featureFlags.events_center_name || 'Event'} Dashboard`, icon: LayoutDashboard },
         { path: '/admin/events/tickets-sales', label: 'Tickets & Sales', icon: Ticket },
         { path: '/admin/events/attendees', label: 'Attendees', icon: Users },
         { path: '/admin/events/list', label: 'Events', icon: CalendarDays },

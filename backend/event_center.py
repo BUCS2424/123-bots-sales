@@ -71,12 +71,14 @@ class CategoryCreate(BaseModel):
     name: str
     description: str = ""
     color: str = "#7c3aed"
+    image_url: str = ""
 
 
 class CategoryUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     color: Optional[str] = None
+    image_url: Optional[str] = None
 
 
 class VenueCreate(BaseModel):
@@ -557,6 +559,11 @@ async def public_list_events(db=Depends(get_db)):
         ev["venue"] = venue_map.get(ev.get("venue_id"))
         ev["category"] = cat_map.get(ev.get("category_id"))
     return events
+
+
+@public_router.get("/meta/categories")
+async def public_list_categories(db=Depends(get_db)):
+    return await db.event_categories.find({}, {"_id": 0}).sort("name", 1).to_list(500)
 
 
 @public_router.get("/{slug}")

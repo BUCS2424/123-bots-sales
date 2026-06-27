@@ -64,6 +64,8 @@ const DevFeatureFlags = () => {
     external_api_enabled: true,
     inventory_enabled: false,
     events_enabled: false,
+    events_landing_enabled: false,
+    events_center_name: 'Event Center',
   });
   const [featureFlagsSaving, setFeatureFlagsSaving] = useState(false);
 
@@ -86,6 +88,7 @@ const DevFeatureFlags = () => {
     { id: 'external_api_enabled', name: 'External Stack API', description: 'Enable external lead ingestion API with multi-source auth and custom pipelines', category: 'CRM' },
     { id: 'inventory_enabled', name: 'Inventory Management', description: 'Show Inventory Management sidebar with stock levels, manufacturers, and order recommendations', category: 'CRM' },
     { id: 'events_enabled', name: 'Event Center & Ticketing', description: 'Enable the Event Center: events, venues, custom ticketing, attendees, and public event pages. When OFF, no event features show anywhere.', category: 'Events' },
+    { id: 'events_landing_enabled', name: 'Events Landing Page', description: 'When ON, the EVENTS menu opens the custom immersive Event Center landing page (category tiles + upcoming list + coverflow slideshow). When OFF, it opens the standard site-template events list.', category: 'Events' },
   ];
 
   useEffect(() => {
@@ -666,6 +669,40 @@ const DevFeatureFlags = () => {
                   />
                 </div>
               ))}
+              {category === 'Events' && (
+                <div className="flex flex-col gap-2 rounded-lg bg-purple-50 p-4" data-testid="events-center-name-row">
+                  <p className="font-medium">Event Center Name</p>
+                  <p className="text-sm text-gray-500">Rename the Event Center to anything the client wants (shown in the admin sidebar and on the public landing page).</p>
+                  <div className="mt-1 flex items-center gap-2">
+                    <Input
+                      value={featureFlags.events_center_name || ''}
+                      onChange={(e) => setFeatureFlags((p) => ({ ...p, events_center_name: e.target.value }))}
+                      placeholder="Event Center"
+                      className="max-w-xs"
+                      data-testid="events-center-name-input"
+                    />
+                    <Button
+                      size="sm"
+                      disabled={featureFlagsSaving}
+                      onClick={async () => {
+                        const updated = { ...featureFlags, events_center_name: (featureFlags.events_center_name || '').trim() || 'Event Center' };
+                        setFeatureFlags(updated);
+                        setFeatureFlagsSaving(true);
+                        try {
+                          const token = localStorage.getItem('token');
+                          await axios.put(`${API}/api/admin-settings/feature-flags`, updated, { headers: { Authorization: `Bearer ${token}` } });
+                          toast({ title: 'Saved', description: 'Event Center name updated' });
+                        } catch {
+                          toast({ title: 'Error', description: 'Failed to save name', variant: 'destructive' });
+                        } finally { setFeatureFlagsSaving(false); }
+                      }}
+                      data-testid="events-center-name-save"
+                    >
+                      Save Name
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

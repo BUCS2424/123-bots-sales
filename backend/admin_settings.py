@@ -827,6 +827,8 @@ class FeatureFlags(BaseModel):
     external_api_enabled: bool = True  # Show/hide External Stack API Delivery features
     inventory_enabled: bool = False  # Show/hide Inventory Management sidebar
     events_enabled: bool = False  # Show/hide Event Center (admin + storefront)
+    events_landing_enabled: bool = False  # /events uses the custom landing page instead of the site-template list
+    events_center_name: str = "Event Center"  # Configurable display name for the Event Center
 
 
 @router.get("/feature-flags")
@@ -895,6 +897,8 @@ async def get_public_feature_flags(db=Depends(get_db)):
             "external_api_enabled": 1,
             "inventory_enabled": 1,
             "events_enabled": 1,
+            "events_landing_enabled": 1,
+            "events_center_name": 1,
         },
     )
     return {
@@ -917,6 +921,8 @@ async def get_public_feature_flags(db=Depends(get_db)):
         "external_api_enabled": bool(settings.get("external_api_enabled", True)) if settings else True,
         "inventory_enabled": bool(settings.get("inventory_enabled", False)) if settings else False,
         "events_enabled": bool(settings.get("events_enabled", False)) if settings else False,
+        "events_landing_enabled": bool(settings.get("events_landing_enabled", False)) if settings else False,
+        "events_center_name": (settings.get("events_center_name") if settings else None) or "Event Center",
     }
 
 

@@ -21,6 +21,8 @@ export const useSiteFeatureFlags = () => {
     external_api_enabled: true,
     inventory_enabled: false,
     events_enabled: false,
+    events_landing_enabled: false,
+    events_center_name: 'Event Center',
   });
 
   useEffect(() => {
@@ -63,6 +65,8 @@ export const useSiteFeatureFlags = () => {
           external_api_enabled: featureData.external_api_enabled !== false,
           inventory_enabled: Boolean(featureData.inventory_enabled),
           events_enabled: Boolean(featureData.events_enabled),
+          events_landing_enabled: Boolean(featureData.events_landing_enabled),
+          events_center_name: featureData.events_center_name || 'Event Center',
         });
       } catch (error) {
         // Keep safe defaults
