@@ -68,6 +68,7 @@ import CategoryLandingPage from './pages/CategoryLandingPage';
 import PublicBookingPage from './pages/PublicBookingPage';
 import QuoteSigningPage from './pages/quotes/QuoteSigningPage';
 import EventsIndexPage from './pages/EventsIndexPage';
+import EventCategoryPage from './pages/EventCategoryPage';
 import EventDetailPage from './pages/EventDetailPage';
 import EventConfirmationPage from './pages/EventConfirmationPage';
 import TicketViewPage from './pages/TicketViewPage';
@@ -269,6 +270,7 @@ const AppContent = () => {
                   <Route path="/rent-or-buy-a-cleaning-bot" element={<BuyLeasePage />} />
                   <Route path="/123-bots-resources" element={<ResourcesPage />} />
                   <Route path="/events" element={<EventsIndexPage />} />
+                  <Route path="/events/category/:catSlug" element={<EventCategoryPage />} />
                   <Route path="/events/confirmation" element={<EventConfirmationPage />} />
                   <Route path="/events/ticket/:code" element={<TicketViewPage />} />
                   <Route path="/events/:slug" element={<EventDetailPage />} />
