@@ -147,6 +147,9 @@ class EventCreate(BaseModel):
     is_featured: bool = False
     seo_title: str = ""
     seo_description: str = ""
+    age_limit: str = ""
+    refund_policy: str = ""
+    additional_info: str = ""
 
 
 class EventUpdate(BaseModel):
@@ -169,6 +172,9 @@ class EventUpdate(BaseModel):
     is_featured: Optional[bool] = None
     seo_title: Optional[str] = None
     seo_description: Optional[str] = None
+    age_limit: Optional[str] = None
+    refund_policy: Optional[str] = None
+    additional_info: Optional[str] = None
 
 
 class AttendeeCreate(BaseModel):

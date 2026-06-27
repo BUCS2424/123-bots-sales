@@ -15,7 +15,7 @@ const emptyEvent = {
   status: 'draft', start_datetime: '', end_datetime: '', timezone: 'America/Denver',
   banner_url: '', images: [], ticket_background_url: '', ticket_tagline: 'PREPARE YOURSELF',
   ticket_types: [], custom_form_fields: [], capacity: 0, is_featured: false,
-  seo_title: '', seo_description: '',
+  seo_title: '', seo_description: '', age_limit: '', refund_policy: '', additional_info: '',
 };
 
 // ---- Live concert-style ticket preview ----
@@ -320,6 +320,25 @@ const EventEditor = ({ eventId }) => {
               <button onClick={addField} className="inline-flex items-center gap-2 rounded-lg border border-purple-500/30 bg-purple-500/10 px-4 py-2 text-sm font-medium text-purple-200 transition hover:bg-purple-500/20" data-testid="add-field-btn">
                 <Plus className="h-4 w-4" /> Add Form Field
               </button>
+            </div>
+          </Section>
+
+          {/* Event information */}
+          <Section title="Event Information" icon={ListChecks} testid="section-info">
+            <p className="mb-3 text-xs text-white/40">Shown in the "Event Information" area of the public event page.</p>
+            <div className="space-y-4">
+              <div>
+                <label className={labelCls}>Age Limit</label>
+                <input className={inputCls} value={data.age_limit} onChange={(e) => set('age_limit', e.target.value)} placeholder="e.g. All Ages, 18+, 21+" data-testid="event-age-limit-input" />
+              </div>
+              <div>
+                <label className={labelCls}>Refund Policy</label>
+                <textarea rows={3} className={inputCls} value={data.refund_policy} onChange={(e) => set('refund_policy', e.target.value)} placeholder="e.g. No refunds, exchanges, or transfers on any ticket purchases." data-testid="event-refund-policy-input" />
+              </div>
+              <div>
+                <label className={labelCls}>Additional Information</label>
+                <textarea rows={3} className={inputCls} value={data.additional_info} onChange={(e) => set('additional_info', e.target.value)} placeholder="Doors, parking, accessibility, or any other details." data-testid="event-additional-info-input" />
+              </div>
             </div>
           </Section>
         </div>
