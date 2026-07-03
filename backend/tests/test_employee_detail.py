@@ -6,7 +6,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://bot-catalog-preview.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://botshop-ticketing.preview.emergentagent.com')
 API = f"{BASE_URL}/api"
 
 # Test employee ID provided

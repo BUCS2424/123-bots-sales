@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://bot-catalog-preview.preview.emergentagent.com"
+    BASE_URL = "https://botshop-ticketing.preview.emergentagent.com"
 
 API_URL = f"{BASE_URL}/api"
 
