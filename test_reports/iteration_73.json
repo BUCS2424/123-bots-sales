@@ -1,0 +1,22 @@
+{
+  "summary": "Backend verification of dynamic site logo across all email templates (bug fix). All 14 tests passed: GET list, GET single (6 templates), POST preview (6 templates), and a dynamic-update test that mutates admin site logo and confirms the preview reflects the change (with cleanup). No template contains the legacy 'gingerkare-logo-3-blue.png' URL and no {{site_logo}} placeholder leaks. Logos returned equal current admin_settings type='site' logo_url from GET /api/settings/site.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_email_templates_logo.py",
+    "/app/test_reports/pytest/email_templates_logo_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "email_templates.py: DEFAULT_SITE_LOGO fallback still points to the legacy gingerkare URL. If admin_settings has no 'site' doc or missing logo_url, the legacy logo would resurface. Consider using an empty string or a neutral placeholder as the fallback.",
+    "apply_site_logo only replaces the exact OLD_HARDCODED_LOGO string. If a customized template stored in DB contains a different legacy URL variant, it will remain. Consider a broader img-src regex substitution for stored custom templates."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100%", "frontend": "n/a"},
+  "test_credentials": "mel@a2gdesigns.com / BigDaddy2016!! (admin) - login worked for PUT /api/admin-settings/site",
+  "seed_data_creation": "None persisted. The dynamic-update test temporarily changes site logo_url and restores original in a finally block.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Bug is fully fixed. All 6 templates (order_confirmation, shipping_confirmation, welcome_email, password_reset, order_status_update, abandoned_cart) inject site logo from admin_settings.type='site'.logo_url via get_site_logo() + apply_site_logo() in email_templates.py. Public endpoint used for verification: GET /api/settings/site.",
+  "rca of the issue": "Templates hardcoded the legacy gingerkare logo URL in <img src>. Fix introduced {{site_logo}} placeholder and get_site_logo()/apply_site_logo() helpers in email_templates.py that fetch admin_settings.type='site'.logo_url and inject it in list, single-GET, and preview endpoints."
+}

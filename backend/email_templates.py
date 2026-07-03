@@ -16,6 +16,29 @@ def set_db(database):
     global db
     db = database
 
+# Legacy hardcoded logo that may still exist in previously-saved custom templates
+OLD_HARDCODED_LOGO = "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png"
+DEFAULT_SITE_LOGO = OLD_HARDCODED_LOGO
+
+
+async def get_site_logo():
+    """Fetch the current site logo from General Settings (admin_settings type=site)."""
+    try:
+        settings = await db.admin_settings.find_one({"type": "site"})
+        if settings and settings.get("logo_url"):
+            return settings["logo_url"]
+    except Exception:
+        pass
+    return DEFAULT_SITE_LOGO
+
+
+def apply_site_logo(html: str, logo: str) -> str:
+    """Inject the current site logo, replacing both the {{site_logo}} variable
+    and any leftover legacy hardcoded logo URL."""
+    if not html:
+        return html
+    return html.replace("{{site_logo}}", logo).replace(OLD_HARDCODED_LOGO, logo)
+
 # 123Bots Brand Colors
 # Primary: #ff8c42 (warm orange)
 # Secondary: #9370db (purple)
@@ -40,7 +63,7 @@ DEFAULT_TEMPLATES = {
     <!-- Header -->
     <tr>
       <td style="background: linear-gradient(135deg, #2c1810 0%, #3a1f12 100%); padding: 30px; text-align: center;">
-        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="123Bots" style="height: 60px; margin-bottom: 10px;">
+        <img src="{{site_logo}}" alt="123Bots" style="height: 60px; margin-bottom: 10px;">
         <p style="color: #ffd4b8; margin: 10px 0 0 0; font-size: 14px;">Custom Emporium</p>
       </td>
     </tr>
@@ -106,7 +129,7 @@ DEFAULT_TEMPLATES = {
   </table>
 </body>
 </html>""",
-        "variables": ["customer_name", "order_number", "order_date", "order_total", "order_items", "shipping_address", "order_url", "current_year"]
+        "variables": ["site_logo", "customer_name", "order_number", "order_date", "order_total", "order_items", "shipping_address", "order_url", "current_year"]
     },
     "shipping_confirmation": {
         "name": "Shipping Confirmation",
@@ -122,7 +145,7 @@ DEFAULT_TEMPLATES = {
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
     <tr>
       <td style="background: linear-gradient(135deg, #2c1810 0%, #3a1f12 100%); padding: 30px; text-align: center;">
-        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="123Bots" style="height: 60px; margin-bottom: 10px;">
+        <img src="{{site_logo}}" alt="123Bots" style="height: 60px; margin-bottom: 10px;">
         <p style="color: #ffd4b8; margin: 10px 0 0 0; font-size: 14px;">Your Order is On Its Way!</p>
       </td>
     </tr>
@@ -162,7 +185,7 @@ DEFAULT_TEMPLATES = {
   </table>
 </body>
 </html>""",
-        "variables": ["customer_name", "order_number", "carrier", "tracking_number", "tracking_url", "current_year"]
+        "variables": ["site_logo", "customer_name", "order_number", "carrier", "tracking_number", "tracking_url", "current_year"]
     },
     "welcome_email": {
         "name": "Welcome Email",
@@ -178,7 +201,7 @@ DEFAULT_TEMPLATES = {
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
     <tr>
       <td style="background: linear-gradient(135deg, #2c1810 0%, #3a1f12 100%); padding: 30px; text-align: center;">
-        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="123Bots" style="height: 60px; margin-bottom: 10px;">
+        <img src="{{site_logo}}" alt="123Bots" style="height: 60px; margin-bottom: 10px;">
         <p style="color: #ffd4b8; margin: 10px 0 0 0; font-size: 14px;">Custom Emporium</p>
       </td>
     </tr>
@@ -216,7 +239,7 @@ DEFAULT_TEMPLATES = {
   </table>
 </body>
 </html>""",
-        "variables": ["customer_name", "shop_url", "current_year"]
+        "variables": ["site_logo", "customer_name", "shop_url", "current_year"]
     },
     "password_reset": {
         "name": "Password Reset",
@@ -232,7 +255,7 @@ DEFAULT_TEMPLATES = {
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
     <tr>
       <td style="background: linear-gradient(135deg, #2c1810 0%, #3a1f12 100%); padding: 30px; text-align: center;">
-        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="123Bots" style="height: 60px;">
+        <img src="{{site_logo}}" alt="123Bots" style="height: 60px;">
       </td>
     </tr>
     <tr>
@@ -262,7 +285,7 @@ DEFAULT_TEMPLATES = {
   </table>
 </body>
 </html>""",
-        "variables": ["customer_name", "reset_url", "current_year"]
+        "variables": ["site_logo", "customer_name", "reset_url", "current_year"]
     },
     "order_status_update": {
         "name": "Order Status Update",
@@ -278,7 +301,7 @@ DEFAULT_TEMPLATES = {
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
     <tr>
       <td style="background: linear-gradient(135deg, #2c1810 0%, #3a1f12 100%); padding: 30px; text-align: center;">
-        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="123Bots" style="height: 60px;">
+        <img src="{{site_logo}}" alt="123Bots" style="height: 60px;">
       </td>
     </tr>
     <tr>
@@ -316,7 +339,7 @@ DEFAULT_TEMPLATES = {
   </table>
 </body>
 </html>""",
-        "variables": ["customer_name", "order_number", "new_status", "order_url", "current_year"]
+        "variables": ["site_logo", "customer_name", "order_number", "new_status", "order_url", "current_year"]
     },
     "abandoned_cart": {
         "name": "Abandoned Cart Reminder",
@@ -332,7 +355,7 @@ DEFAULT_TEMPLATES = {
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
     <tr>
       <td style="background: linear-gradient(135deg, #2c1810 0%, #3a1f12 100%); padding: 30px; text-align: center;">
-        <img src="https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png" alt="123Bots" style="height: 60px; margin-bottom: 10px;">
+        <img src="{{site_logo}}" alt="123Bots" style="height: 60px; margin-bottom: 10px;">
         <p style="color: #ffd4b8; margin: 10px 0 0 0; font-size: 14px;">Custom Emporium</p>
       </td>
     </tr>
@@ -371,7 +394,7 @@ DEFAULT_TEMPLATES = {
   </table>
 </body>
 </html>""",
-        "variables": ["customer_name", "cart_items", "cart_url", "current_year"]
+        "variables": ["site_logo", "customer_name", "cart_items", "cart_url", "current_year"]
     }
 }
 
@@ -386,6 +409,7 @@ class EmailTemplateUpdate(BaseModel):
 async def get_email_templates():
     """Get all email templates"""
     templates = []
+    site_logo = await get_site_logo()
     
     for template_id, default_template in DEFAULT_TEMPLATES.items():
         # Check if there's a custom version in the database
@@ -397,7 +421,7 @@ async def get_email_templates():
                 "name": default_template["name"],
                 "description": default_template["description"],
                 "subject": custom.get("subject", default_template["subject"]),
-                "html_content": custom.get("html_content", default_template["html_content"]),
+                "html_content": apply_site_logo(custom.get("html_content", default_template["html_content"]), site_logo),
                 "variables": default_template["variables"],
                 "is_active": custom.get("is_active", True),
                 "is_customized": True,
@@ -409,7 +433,7 @@ async def get_email_templates():
                 "name": default_template["name"],
                 "description": default_template["description"],
                 "subject": default_template["subject"],
-                "html_content": default_template["html_content"],
+                "html_content": apply_site_logo(default_template["html_content"], site_logo),
                 "variables": default_template["variables"],
                 "is_active": True,
                 "is_customized": False,
@@ -427,6 +451,7 @@ async def get_email_template(template_id: str):
     
     default_template = DEFAULT_TEMPLATES[template_id]
     custom = await db.email_templates.find_one({"template_id": template_id})
+    site_logo = await get_site_logo()
     
     if custom:
         return {
@@ -434,7 +459,7 @@ async def get_email_template(template_id: str):
             "name": default_template["name"],
             "description": default_template["description"],
             "subject": custom.get("subject", default_template["subject"]),
-            "html_content": custom.get("html_content", default_template["html_content"]),
+            "html_content": apply_site_logo(custom.get("html_content", default_template["html_content"]), site_logo),
             "variables": default_template["variables"],
             "is_active": custom.get("is_active", True),
             "is_customized": True,
@@ -446,7 +471,7 @@ async def get_email_template(template_id: str):
         "name": default_template["name"],
         "description": default_template["description"],
         "subject": default_template["subject"],
-        "html_content": default_template["html_content"],
+        "html_content": apply_site_logo(default_template["html_content"], site_logo),
         "variables": default_template["variables"],
         "is_active": True,
         "is_customized": False,
@@ -495,9 +520,12 @@ async def preview_email_template(template_id: str):
     
     html_content = custom.get("html_content") if custom else default_template["html_content"]
     subject = custom.get("subject") if custom else default_template["subject"]
+    site_logo = await get_site_logo()
+    html_content = apply_site_logo(html_content, site_logo)
     
     # Sample data for preview
     sample_data = {
+        "site_logo": site_logo,
         "customer_name": "John Doe",
         "order_number": "GK-20240101-ABC123",
         "order_date": "January 1, 2024",
