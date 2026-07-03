@@ -375,6 +375,12 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - [x] **Public event detail page revamped** (TicketWeb style): ambient blurred backdrop, poster, venue block with **embedded Google Map** (no API key) + Venue Info modal + Share, category/title/date, Description with Read more, Event Information (Age Limit / Refund Policy / Additional Info — new optional event fields), and a **bottom-sheet** "Buy Tickets" flow (slide-up, drag-to-dismiss, sticky checkout footer) centered on mobile to clear the chat widget.
 - [x] Header EVENTS link hidden top utility bar on mobile (moved links into hamburger). Preview banner fixed to sit in-flow (no longer overlaps nav).
 
+### Bug Fix — Dynamic Email Template Logo (July 3, 2026)
+- [x] Removed the legacy hardcoded `gingerkare-logo-3-blue.png` from ALL email templates (`email_templates.py`). Replaced with a `{{site_logo}}` variable.
+- [x] Added `get_site_logo()` (reads `admin_settings.type='site'.logo_url`) + `apply_site_logo()` helper; logo injected in GET list, GET single, and POST preview endpoints. `site_logo` added to each template's variables list.
+- [x] Verified via testing_agent (iteration_73.json, 14/14 backend tests pass): all 6 templates now render the current General Settings logo; changing the site logo updates previews live. No hardcoded logo leaks.
+- Note (minor, deferred): `DEFAULT_SITE_LOGO` fallback still references the legacy URL for the edge case where no site settings doc exists (never occurs in practice).
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**
