@@ -381,6 +381,12 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - [x] Verified via testing_agent (iteration_73.json, 14/14 backend tests pass): all 6 templates now render the current General Settings logo; changing the site logo updates previews live. No hardcoded logo leaks.
 - Note (minor, deferred): `DEFAULT_SITE_LOGO` fallback still references the legacy URL for the edge case where no site settings doc exists (never occurs in practice).
 
+### Robot Pages — Advanced Layout Rebuild (July 3, 2026)
+- [x] Rebuilt the 4 remaining "basic" robot pages to the advanced BG1 PRO layout (hero, 3-card feature overview, alternating capability rows with video/image slots, ecosystem, 4-card spec grid, FAQ accordion, CTA): **PuduT300, PuduT600, PuduMt1Vac, AvidbotKas**.
+- [x] Kept accurate specs pulled from existing content; themed each page (T300 cyan, T600 red, MT1 VAC green, KAS blue). All media slots use graceful onError fallbacks to the main product image, and videos use the product image as poster — so pages look complete before final assets arrive.
+- [x] Verified all 4 render correctly via screenshots. Routes: /products/pudu-t300, /products/pudu-t600, /products/pudu-mt1-vac, /products/ab-kas.
+- Media to be supplied by user (see handoff list). All other 8 robot pages already on advanced layout.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**
