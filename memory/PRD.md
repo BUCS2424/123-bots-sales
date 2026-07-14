@@ -387,6 +387,11 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - [x] Verified all 4 render correctly via screenshots. Routes: /products/pudu-t300, /products/pudu-t600, /products/pudu-mt1-vac, /products/ab-kas.
 - Media to be supplied by user (see handoff list). All other 8 robot pages already on advanced layout.
 
+### Bug Fix — Header Cart Button Didn't Open Checkout Drawer (July 14, 2026)
+- [x] Fixed: clicking the header cart icon did nothing. `Header.jsx` held its own local `isCartOpen` useState and passed props to `CartDrawer`, but `CartDrawer` reads `isCartOpen`/`setIsCartOpen` from `CartContext` (useCart) and ignores props — so the button toggled dead state and the drawer never opened.
+- [x] Fix: `Header` now consumes `setIsCartOpen` from `useCart()` and renders `<CartDrawer />` with no props (shared context state).
+- [x] Verified by testing_agent (iteration_74.json, 100% frontend): add product on PDP (/shop/{cat}/{slug}) → header cart-button opens drawer with item → Proceed to Checkout navigates to /checkout. Minor a11y console warning noted (missing Sheet description) — non-blocking.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**
