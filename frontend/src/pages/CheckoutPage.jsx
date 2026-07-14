@@ -2002,7 +2002,7 @@ const CheckoutPage = () => {
                                 data-testid="billing-state"
                               >
                                 {US_STATES.map(state => (
-                                  <option key={state.value} value={state.value}>{state.label}</option>
+                                  <option key={state.value} value={state.value} className="bg-bots-dark text-white">{state.label}</option>
                                 ))}
                               </select>
                             </div>
@@ -2461,11 +2461,11 @@ const CheckoutPage = () => {
                       <select
                         value={recurringInterval}
                         onChange={(e) => setRecurringInterval(parseInt(e.target.value))}
-                        className="w-full p-2 text-sm text-gray-900 border border-blue-500/30 rounded-lg bg-bots-surface focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full p-2 text-sm text-white border border-blue-500/30 rounded-lg bg-bots-surface focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       >
-                        <option value={30} className="text-gray-900">30 days</option>
-                        <option value={60} className="text-gray-900">60 days</option>
-                        <option value={90} className="text-gray-900">90 days</option>
+                        <option value={30} className="bg-bots-dark text-white">30 days</option>
+                        <option value={60} className="bg-bots-dark text-white">60 days</option>
+                        <option value={90} className="bg-bots-dark text-white">90 days</option>
                       </select>
                       <p className="text-xs text-blue-400">You'll receive an invoice - no automatic charges!</p>
                     </div>
