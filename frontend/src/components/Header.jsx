@@ -10,9 +10,8 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const location = useLocation();
-  const { cartItems } = useCart();
+  const { cartItems, setIsCartOpen } = useCart();
   const { logoUrl } = useSiteSettings();
   const { cart_enabled, pawn_checkout, events_enabled } = useSiteFeatureFlags();
 
@@ -377,7 +376,7 @@ const Header = () => {
       </header>
 
       {/* Cart Drawer */}
-      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <CartDrawer />
     </>
   );
 };
