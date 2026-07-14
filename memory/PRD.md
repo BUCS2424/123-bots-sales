@@ -397,6 +397,12 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - [x] Fix: backend `test-connection` now accepts optional credentials in the request body and tests the entered key (falls back to stored key for masked/empty values); frontend `testConnection()` now sends the currently-entered keys. Applies to shippo/easypost/shipstation/stamps.
 - [x] Verified by testing_agent (iteration_75.json, 12/12 backend tests, 100%): PUT persists key (GET returns masked), masked re-submit doesn't overwrite stored key, test-with-body-key returns 200, no-key guard still 400.
 
+### Bug Fix — Checkout Dropdown Contrast (same-color / unreadable) (July 14, 2026)
+- [x] Fixed: the "Set Up Auto-Reorder" interval `<select>` used dark text (`text-gray-900`) on a dark background (invisible); billing-state options lacked a contrast class.
+- [x] Fix: Auto-Reorder select control → `text-white` on `bg-bots-surface`, options → `bg-bots-dark text-white`; billing-state options → `bg-bots-dark text-white` (matching the already-correct shipping-state dropdown).
+- [x] Verified by testing_agent (iteration_76.json, 100% frontend): value renders white (rgb 255,255,255) on dark (rgb 10,25,41); selecting 60/90 days works.
+- Note: testing agent flagged CheckoutPage.jsx is 2502 lines — candidate for splitting into per-step components (backlog).
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**
