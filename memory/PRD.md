@@ -392,6 +392,11 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - [x] Fix: `Header` now consumes `setIsCartOpen` from `useCart()` and renders `<CartDrawer />` with no props (shared context state).
 - [x] Verified by testing_agent (iteration_74.json, 100% frontend): add product on PDP (/shop/{cat}/{slug}) → header cart-button opens drawer with item → Proceed to Checkout navigates to /checkout. Minor a11y console warning noted (missing Sheet description) — non-blocking.
 
+### Bug Fix — Shippo (Shipping) Key Couldn't Be Saved/Tested (July 14, 2026)
+- [x] Root cause: the Shipping Settings "Test" button hit `POST /api/shipping/test-connection/{provider}` which read only the key STORED in the DB, not the key just typed — so a freshly entered Shippo key always returned 400 "Shippo API key not configured" until saved separately, making it feel like nothing saved.
+- [x] Fix: backend `test-connection` now accepts optional credentials in the request body and tests the entered key (falls back to stored key for masked/empty values); frontend `testConnection()` now sends the currently-entered keys. Applies to shippo/easypost/shipstation/stamps.
+- [x] Verified by testing_agent (iteration_75.json, 12/12 backend tests, 100%): PUT persists key (GET returns masked), masked re-submit doesn't overwrite stored key, test-with-body-key returns 200, no-key guard still 400.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**
