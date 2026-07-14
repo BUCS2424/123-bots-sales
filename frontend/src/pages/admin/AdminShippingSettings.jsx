@@ -87,7 +87,17 @@ const AdminShippingSettings = () => {
   const testConnection = async (provider) => {
     setTestingProvider(provider);
     try {
-      const response = await axios.post(`${API}/shipping/test-connection/${provider}`);
+      // Send the currently-entered credentials so a freshly-typed key can be
+      // tested before saving. Backend falls back to stored keys for masked/empty values.
+      const response = await axios.post(`${API}/shipping/test-connection/${provider}`, {
+        shippo_api_key: settings.shippo_api_key,
+        easypost_api_key: settings.easypost_api_key,
+        shipstation_api_key: settings.shipstation_api_key,
+        shipstation_api_secret: settings.shipstation_api_secret,
+        stamps_integration_id: settings.stamps_integration_id,
+        stamps_username: settings.stamps_username,
+        stamps_password: settings.stamps_password,
+      });
       setConnectionStatus(prev => ({
         ...prev,
         [provider]: response.data.success ? 'success' : 'failed'

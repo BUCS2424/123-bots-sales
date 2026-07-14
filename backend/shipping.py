@@ -9,7 +9,7 @@ import httpx
 import logging
 from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Body
 from pydantic import BaseModel, Field
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
@@ -827,36 +827,48 @@ async def update_settings(settings: ShippingSettingsUpdate):
 
 
 @router.post("/test-connection/{provider}")
-async def test_provider_connection(provider: str):
-    """Test connection to a shipping provider"""
+async def test_provider_connection(provider: str, body: Optional[Dict] = Body(default=None)):
+    """Test connection to a shipping provider.
+
+    Accepts optional credentials in the request body so a freshly-typed key can be
+    tested before it is saved. Masked values (starting with the bullet mask) or empty
+    values fall back to the stored settings.
+    """
     settings = await get_shipping_settings()
-    
+    body = body or {}
+
+    def resolve(field: str) -> Optional[str]:
+        val = body.get(field)
+        if val and not str(val).startswith("••••"):
+            return val
+        return settings.get(field)
+
     if provider == "shippo":
-        api_key = settings.get("shippo_api_key")
+        api_key = resolve("shippo_api_key")
         if not api_key:
             raise HTTPException(status_code=400, detail="Shippo API key not configured")
         client = ShippoClient(api_key)
         success = await client.test_connection()
         
     elif provider == "easypost":
-        api_key = settings.get("easypost_api_key")
+        api_key = resolve("easypost_api_key")
         if not api_key:
             raise HTTPException(status_code=400, detail="EasyPost API key not configured")
         client = EasyPostClient(api_key)
         success = await client.test_connection()
         
     elif provider == "shipstation":
-        api_key = settings.get("shipstation_api_key")
-        api_secret = settings.get("shipstation_api_secret")
+        api_key = resolve("shipstation_api_key")
+        api_secret = resolve("shipstation_api_secret")
         if not api_key or not api_secret:
             raise HTTPException(status_code=400, detail="ShipStation credentials not configured")
         client = ShipStationClient(api_key, api_secret)
         success = await client.test_connection()
     
     elif provider == "stamps":
-        integration_id = settings.get("stamps_integration_id")
-        username = settings.get("stamps_username")
-        password = settings.get("stamps_password")
+        integration_id = resolve("stamps_integration_id")
+        username = resolve("stamps_username")
+        password = resolve("stamps_password")
         if not integration_id or not username or not password:
             raise HTTPException(status_code=400, detail="Stamps.com credentials not configured")
         client = StampsClient(integration_id, username, password)

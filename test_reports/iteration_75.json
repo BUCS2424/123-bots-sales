@@ -1,0 +1,25 @@
+{
+  "summary": "Verified shipping settings save + test-connection body-vs-stored key fix. Created 12 pytest cases covering: PUT persists shippo_api_key + GET returns masked value, masked-value PUT does not overwrite stored key, POST /test-connection/shippo with body key returns 200 (the primary fix - no more 400 'not configured' for unsaved keys), no-body+no-stored returns 400, masked body falls back to stored key. Also regression-tested easypost/shipstation/stamps providers. All 12 tests PASS.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_shipping_settings.py",
+    "/app/test_reports/pytest/shipping_settings_body_key_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "shipping.py test-connection resolve() logic is clean; masked-key detection via '••••' prefix is consistent with GET mask format",
+    "PUT /settings strip-masked-key guards correctly avoid overwriting stored credentials when frontend re-submits the form with masked display value",
+    "shipping.py is 1310 lines - consider splitting provider clients into per-file modules for maintainability (not blocking)"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_shipping_settings.py (new)"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "not tested (per request)"},
+  "test_credentials": "N/A - shipping endpoints do not require auth",
+  "seed_data_creation": "None. Autouse fixture resets shipping_settings to empty state before/after each test, so no junk keys are left in the DB.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Test file /app/backend/tests/test_shipping_settings.py can be re-run standalone via `REACT_APP_BACKEND_URL=<url> pytest tests/test_shipping_settings.py`. The autouse _reset_settings fixture wipes shipping credentials before/after every test. All 4 providers (shippo/easypost/shipstation/stamps) support body-key resolution.",
+  "rca of the issue": "Original bug: test-connection endpoint read only stored settings. Fix confirmed working: test_provider_connection() now accepts Body(default=None) and uses resolve(field) helper which prefers body value unless it starts with '••••' mask or is empty. Verified via test_shippo_body_key_returns_200_without_saving passing."
+}
