@@ -61,7 +61,8 @@ const CheckoutPage = () => {
   const [paymentSettings, setPaymentSettings] = useState(null);
   const [cashAppVenmoSettings, setCashAppVenmoSettings] = useState(null);
   const [paypalSettings, setPaypalSettings] = useState(null);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('card'); // 'card', 'cashapp', 'venmo', 'paypal'
+  const [stripeSettings, setStripeSettings] = useState(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('card'); // 'card' (Durango), 'stripe', 'cashapp', 'venmo', 'paypal'
   const [collectJsLoaded, setCollectJsLoaded] = useState(false);
   const [paymentToken, setPaymentToken] = useState(null);
   const [cardData, setCardData] = useState({ cardNumber: false, cardExpiry: false, cardCvv: false });
@@ -406,6 +407,13 @@ const CheckoutPage = () => {
         const data = await paypalRes.json();
         setPaypalSettings(data);
       }
+
+      // Fetch Stripe (card) settings
+      const stripeRes = await fetch(`${API_URL}/api/payments/settings/stripe/public`);
+      if (stripeRes.ok) {
+        const data = await stripeRes.json();
+        setStripeSettings(data);
+      }
     } catch (error) {
       console.error('Error fetching payment settings:', error);
     }
@@ -422,6 +430,78 @@ const CheckoutPage = () => {
       fetchPaymentSettings();
     }
   }, [currentStep, fetchPaymentSettings]);
+
+  // Pick a sensible default payment method based on which gateways are enabled
+  useEffect(() => {
+    const available = {
+      card: !!paymentSettings?.is_enabled,
+      stripe: !!stripeSettings?.is_enabled,
+      cashapp: !!(cashAppVenmoSettings?.is_enabled && cashAppVenmoSettings?.cashapp_available),
+      venmo: !!(cashAppVenmoSettings?.is_enabled && cashAppVenmoSettings?.venmo_available),
+      paypal: !!(paypalSettings?.is_enabled && paypalSettings?.is_available),
+    };
+    // If any gateway is enabled and the current selection isn't available, switch to the first available
+    const anyEnabled = Object.values(available).some(Boolean);
+    if (anyEnabled && !available[selectedPaymentMethod]) {
+      const order = ['card', 'stripe', 'cashapp', 'venmo', 'paypal'];
+      const next = order.find((m) => available[m]);
+      if (next) setSelectedPaymentMethod(next);
+    }
+  }, [paymentSettings, stripeSettings, cashAppVenmoSettings, paypalSettings, selectedPaymentMethod]);
+
+  // Handle return from Stripe hosted checkout (poll status, then confirm)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const stripeSession = params.get('stripe_session');
+    const cancelled = params.get('stripe_cancelled');
+    if (cancelled) {
+      toast({ title: 'Payment Cancelled', description: 'Your Stripe payment was cancelled. You can try again.', variant: 'destructive' });
+      return;
+    }
+    if (!stripeSession) return;
+
+    let attempts = 0;
+    const maxAttempts = 6;
+    setIsProcessing(true);
+    const poll = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/payments/stripe/status/${stripeSession}`);
+        const data = await res.json();
+        if (data.payment_status === 'paid') {
+          if (data.order) {
+            sessionStorage.setItem('lastOrder', JSON.stringify({
+              orderId: data.order.order_number,
+              ...data.order,
+              payment_method: 'stripe',
+              createdAt: data.order.created_at,
+            }));
+          }
+          await markCartCompleted();
+          clearCart();
+          setIsProcessing(false);
+          navigate('/order-confirmation');
+          return;
+        }
+        if (data.status === 'expired') {
+          setIsProcessing(false);
+          toast({ title: 'Payment Expired', description: 'The Stripe session expired. Please try again.', variant: 'destructive' });
+          return;
+        }
+        attempts += 1;
+        if (attempts < maxAttempts) {
+          setTimeout(poll, 2000);
+        } else {
+          setIsProcessing(false);
+          toast({ title: 'Payment Pending', description: 'We could not confirm your payment yet. Check your email for confirmation.', variant: 'destructive' });
+        }
+      } catch (e) {
+        setIsProcessing(false);
+        toast({ title: 'Error', description: 'Unable to verify Stripe payment status.', variant: 'destructive' });
+      }
+    };
+    poll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Load Collect.js when payment settings are available and user reaches payment step (only for card payments)
   useEffect(() => {
@@ -555,8 +635,8 @@ const CheckoutPage = () => {
   };
   
   const validatePayment = () => {
-    // CashApp, Venmo, or PayPal - no card validation needed
-    if (selectedPaymentMethod === 'cashapp' || selectedPaymentMethod === 'venmo' || selectedPaymentMethod === 'paypal') {
+    // Stripe (redirect), CashApp, Venmo, or PayPal - no inline card validation needed
+    if (selectedPaymentMethod === 'stripe' || selectedPaymentMethod === 'cashapp' || selectedPaymentMethod === 'venmo' || selectedPaymentMethod === 'paypal') {
       return true;
     }
     
@@ -672,6 +752,7 @@ const CheckoutPage = () => {
         payment_method: selectedPaymentMethod,
         is_recurring: isRecurringOrder,
         recurring_interval_days: isRecurringOrder ? recurringInterval : null,
+        origin_url: window.location.origin,
         // Include selected shipping rate details
         selected_shipping: selectedShippingRate ? {
           provider: selectedShippingRate.provider,
@@ -807,6 +888,40 @@ const CheckoutPage = () => {
             variant: 'destructive'
           });
         }
+        return;
+      }
+
+      // Handle Stripe hosted checkout (redirect flow)
+      if (selectedPaymentMethod === 'stripe') {
+        const response = await fetch(`${API_URL}/api/payments/orders`, {
+          method: 'POST',
+          headers: authHeaders,
+          body: JSON.stringify(orderData)
+        });
+
+        if (response.status === 401) {
+          toast({
+            title: 'Sign In Required',
+            description: 'Please register or sign in before checkout.',
+            variant: 'destructive'
+          });
+          navigate('/register');
+          return;
+        }
+
+        const result = await response.json();
+
+        if (result.success && result.payment?.redirect_url) {
+          // Redirect to Stripe-hosted checkout; return is handled by the poll effect
+          window.location.href = result.payment.redirect_url;
+          return;
+        }
+
+        toast({
+          title: 'Payment Error',
+          description: result.payment?.message || result.detail || 'Unable to start Stripe checkout. Please try again.',
+          variant: 'destructive'
+        });
         return;
       }
       
@@ -1635,7 +1750,8 @@ const CheckoutPage = () => {
 
                     {/* Payment Method Options */}
                     <div className="grid gap-4 mb-6">
-                      {/* Credit Card Option */}
+                      {/* Credit Card Option (Durango) — shown when Durango enabled, or as demo fallback when no card gateway is configured */}
+                      {(paymentSettings?.is_enabled || !stripeSettings?.is_enabled) && (
                       <button
                         onClick={() => setSelectedPaymentMethod('card')}
                         className={`flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left ${
@@ -1662,6 +1778,37 @@ const CheckoutPage = () => {
                           {selectedPaymentMethod === 'card' && <Check className="w-3 h-3 text-white" />}
                         </div>
                       </button>
+                      )}
+
+                      {/* Stripe Card Option */}
+                      {stripeSettings?.is_enabled && (
+                      <button
+                        onClick={() => setSelectedPaymentMethod('stripe')}
+                        className={`flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left ${
+                          selectedPaymentMethod === 'stripe'
+                            ? 'border-indigo-500 bg-indigo-500/10'
+                            : 'border-gray-700 hover:border-gray-600 bg-bots-surface'
+                        }`}
+                        data-testid="payment-method-stripe"
+                      >
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                          selectedPaymentMethod === 'stripe' ? 'bg-indigo-600' : 'bg-bots-dark'
+                        }`}>
+                          <CreditCard className={`w-6 h-6 ${selectedPaymentMethod === 'stripe' ? 'text-white' : 'text-indigo-400'}`} />
+                        </div>
+                        <div className="flex-1">
+                          <p className={`font-semibold ${selectedPaymentMethod === 'stripe' ? 'text-indigo-400' : 'text-white'}`}>
+                            Credit / Debit Card (Stripe)
+                          </p>
+                          <p className="text-sm text-gray-400">Secure checkout powered by Stripe</p>
+                        </div>
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          selectedPaymentMethod === 'stripe' ? 'border-indigo-500 bg-indigo-600' : 'border-gray-600'
+                        }`}>
+                          {selectedPaymentMethod === 'stripe' && <Check className="w-3 h-3 text-white" />}
+                        </div>
+                      </button>
+                      )}
 
                       {/* CashApp Option */}
                       {cashAppVenmoSettings?.is_enabled && cashAppVenmoSettings?.cashapp_available && (
@@ -1785,6 +1932,28 @@ const CheckoutPage = () => {
                                 </ul>
                               </>
                             )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Stripe info panel - redirect flow */}
+                    {selectedPaymentMethod === 'stripe' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-4 bg-indigo-500/10 border border-indigo-500/30 rounded-xl mb-6"
+                        data-testid="stripe-info-panel"
+                      >
+                        <div className="flex items-start gap-3">
+                          <Shield className="w-5 h-5 text-indigo-400 flex-shrink-0 mt-0.5" />
+                          <div className="text-sm text-indigo-300">
+                            <p className="font-medium">Secure Checkout with Stripe</p>
+                            <ul className="mt-2 space-y-1">
+                              <li>• Click "Place Order" to continue to Stripe's secure payment page</li>
+                              <li>• Enter your card details on Stripe (your card never touches our servers)</li>
+                              <li>• You'll be returned here automatically once payment completes</li>
+                            </ul>
                           </div>
                         </div>
                       </motion.div>
@@ -2060,6 +2229,8 @@ const CheckoutPage = () => {
                       <div className="flex items-center gap-3">
                         {selectedPaymentMethod === 'card' ? (
                           <CreditCard className="w-5 h-5 text-blue-400" />
+                        ) : selectedPaymentMethod === 'stripe' ? (
+                          <CreditCard className="w-5 h-5 text-indigo-400" />
                         ) : selectedPaymentMethod === 'cashapp' ? (
                           <DollarSign className="w-5 h-5 text-green-400" />
                         ) : selectedPaymentMethod === 'paypal' ? (
@@ -2084,6 +2255,16 @@ const CheckoutPage = () => {
                                 : `•••• •••• •••• ${paymentInfo.cardNumber.slice(-4) || '****'}`}
                             </p>
                             <p className="text-sm text-gray-400">{paymentInfo.cardName || 'Card Payment'}</p>
+                          </div>
+                        </>
+                      ) : selectedPaymentMethod === 'stripe' ? (
+                        <>
+                          <div className="w-12 h-8 bg-indigo-600 rounded-md flex items-center justify-center">
+                            <CreditCard className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-white">Credit / Debit Card (Stripe)</p>
+                            <p className="text-sm text-gray-400">Secure Stripe checkout on next step</p>
                           </div>
                         </>
                       ) : selectedPaymentMethod === 'cashapp' ? (
@@ -2281,6 +2462,11 @@ const CheckoutPage = () => {
                     <>
                       <Package className="w-5 h-5" />
                       {selectedPaymentMethod === 'paypal' ? 'Place Order & Continue to PayPal' : 'Place Order & Get Payment Link'}
+                    </>
+                  ) : selectedPaymentMethod === 'stripe' ? (
+                    <>
+                      <Lock className="w-5 h-5" />
+                      Place Order & Continue to Stripe
                     </>
                   ) : (
                     <>

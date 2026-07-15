@@ -10,11 +10,16 @@ from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime, timezone
+import os
 import httpx
 import logging
 import uuid
 from urllib.parse import urlencode
+from dotenv import load_dotenv
 from auth import decode_token
+from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionRequest, CheckoutStatusResponse
+
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -152,11 +157,12 @@ class OrderCreate(BaseModel):
     tax: float
     total: float
     payment_token: Optional[str] = None  # Optional for non-card methods
-    payment_method: str = "card"  # card, cashapp, venmo, paypal
+    payment_method: str = "card"  # card, stripe, cashapp, venmo, paypal
     customer_email: str
     customer_name: str
     source: Optional[str] = "web"  # web, pos
     selected_shipping: Optional[dict] = None  # Selected shipping rate details
+    origin_url: Optional[str] = None  # Frontend origin for building Stripe redirect URLs
 
 
 class Order(BaseModel):
@@ -394,6 +400,33 @@ async def update_stripe_settings(settings: StripeGatewaySettingsUpdate, user_id:
         updated["webhook_secret"] = "••••••••"
 
     return {"message": "Settings updated successfully", "settings": updated}
+
+
+@router.get("/settings/stripe/public")
+async def get_stripe_public_settings():
+    """Public Stripe settings for the checkout (publishable key + enabled flag)."""
+    settings = await db.payment_settings.find_one({"type": "stripe"}, {"_id": 0})
+    if not settings or not settings.get("is_enabled"):
+        return {"is_enabled": False, "publishable_key": None, "is_test_mode": True}
+    return {
+        "is_enabled": True,
+        "publishable_key": settings.get("publishable_key"),
+        "is_test_mode": settings.get("is_test_mode", True),
+    }
+
+
+async def get_stripe_secret_key() -> str:
+    """Resolve the Stripe secret key for the active tenant.
+
+    Prefers the key stored in DB (multi-tenant); falls back to the platform env key.
+    """
+    settings = await db.payment_settings.find_one({"type": "stripe"}, {"_id": 0}) or {}
+    if not settings.get("is_enabled"):
+        raise HTTPException(status_code=503, detail="Stripe gateway is not enabled")
+    secret = settings.get("secret_key") or os.environ.get("STRIPE_API_KEY")
+    if not secret:
+        raise HTTPException(status_code=503, detail="Stripe secret key not configured")
+    return secret
 
 
 # ============ PAYPAL SETTINGS ============
@@ -769,6 +802,77 @@ async def process_payment(payment: PaymentRequest):
         )
 
 
+async def _finalize_stripe_order(session_id: str, checkout_status) -> dict:
+    """Idempotently update the transaction + order based on Stripe checkout status."""
+    txn = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
+    already_paid = txn and txn.get("payment_status") == "paid"
+
+    new_status = checkout_status.payment_status  # 'paid', 'unpaid', 'no_payment_required'
+    session_status = checkout_status.status      # 'open', 'complete', 'expired'
+
+    await db.payment_transactions.update_one(
+        {"session_id": session_id},
+        {"$set": {
+            "payment_status": new_status,
+            "session_status": session_status,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }}
+    )
+
+    order_id = (txn or {}).get("order_id")
+    if order_id and new_status == "paid" and not already_paid:
+        await db.orders.update_one(
+            {"id": order_id},
+            {"$set": {
+                "status": "paid",
+                "payment_status": "captured",
+                "payment_transaction_id": session_id,
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+            }}
+        )
+
+    order = await db.orders.find_one({"id": order_id}, {"_id": 0}) if order_id else None
+    return {
+        "session_id": session_id,
+        "status": session_status,
+        "payment_status": new_status,
+        "order": order,
+    }
+
+
+@router.get("/stripe/status/{session_id}")
+async def get_stripe_status(session_id: str):
+    """Poll Stripe checkout session status and finalize the order (idempotent)."""
+    stripe_secret = await get_stripe_secret_key()
+    stripe_checkout = StripeCheckout(api_key=stripe_secret, webhook_url="")
+    checkout_status = await stripe_checkout.get_checkout_status(session_id)
+    return await _finalize_stripe_order(session_id, checkout_status)
+
+
+@router.post("/stripe/webhook")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhook events (secondary to polling)."""
+    try:
+        stripe_secret = await get_stripe_secret_key()
+    except HTTPException:
+        return {"received": True}
+    body = await request.body()
+    signature = request.headers.get("Stripe-Signature")
+    stripe_checkout = StripeCheckout(api_key=stripe_secret, webhook_url="")
+    try:
+        event = await stripe_checkout.handle_webhook(body, signature)
+    except Exception as e:
+        logger.error(f"Stripe webhook error: {e}")
+        return {"received": True}
+    if getattr(event, "session_id", None):
+        try:
+            status = await stripe_checkout.get_checkout_status(event.session_id)
+            await _finalize_stripe_order(event.session_id, status)
+        except Exception as e:
+            logger.error(f"Stripe webhook finalize error: {e}")
+    return {"received": True}
+
+
 # ============ ORDER MANAGEMENT ============
 
 def generate_order_number():
@@ -916,6 +1020,72 @@ async def create_order(order_data: OrderCreate, request: Request):
             "payment": payment_payload,
         }
     
+    elif order_data.payment_method == "stripe":
+        # Card payment via Stripe hosted checkout (redirect flow)
+        stripe_secret = await get_stripe_secret_key()
+
+        origin = (order_data.origin_url or str(request.base_url)).rstrip("/")
+        host_url = str(request.base_url).rstrip("/")
+        webhook_url = f"{host_url}/api/payments/stripe/webhook"
+
+        order["status"] = "awaiting_payment"
+        order["payment_status"] = "pending"
+        await db.orders.insert_one(order)
+        order.pop("_id", None)
+
+        # Amount is taken from the server-persisted order, never trusted from a separate field
+        amount = float(f"{float(order['total']):.2f}")
+        success_url = f"{origin}/checkout?stripe_session={{CHECKOUT_SESSION_ID}}"
+        cancel_url = f"{origin}/checkout?stripe_cancelled=1"
+        metadata = {
+            "order_id": order_id,
+            "order_number": order_number,
+            "customer_email": order_data.customer_email,
+            "source": "web_checkout",
+        }
+
+        stripe_checkout = StripeCheckout(api_key=stripe_secret, webhook_url=webhook_url)
+        checkout_request = CheckoutSessionRequest(
+            amount=amount,
+            currency="usd",
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata=metadata,
+        )
+        session = await stripe_checkout.create_checkout_session(checkout_request)
+
+        # Record the transaction BEFORE redirect
+        await db.payment_transactions.insert_one({
+            "id": str(uuid.uuid4()),
+            "gateway": "stripe",
+            "session_id": session.session_id,
+            "order_id": order_id,
+            "order_number": order_number,
+            "amount": amount,
+            "currency": "usd",
+            "metadata": metadata,
+            "payment_status": "initiated",
+            "customer_email": order_data.customer_email,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        })
+
+        await db.orders.update_one(
+            {"id": order_id},
+            {"$set": {"payment_session_id": session.session_id}}
+        )
+
+        return {
+            "success": True,
+            "order": order,
+            "payment": {
+                "method": "stripe",
+                "status": "awaiting_payment",
+                "redirect_url": session.url,
+                "session_id": session.session_id,
+                "message": "Redirect customer to Stripe to complete payment",
+            }
+        }
+
     elif order_data.payment_token:
         # Card payment via Durango
         payment_request = PaymentRequest(
