@@ -403,6 +403,13 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - [x] Verified by testing_agent (iteration_76.json, 100% frontend): value renders white (rgb 255,255,255) on dark (rgb 10,25,41); selecting 60/90 days works.
 - Note: testing agent flagged CheckoutPage.jsx is 2502 lines — candidate for splitting into per-step components (backlog).
 
+### Feature — Multi-Gateway Checkout: Stripe wired alongside Durango (July 14, 2026)
+- [x] Stripe now fully wired into the storefront checkout (previously only settings existed; checkout was Durango-only → "Demo Mode"). Both gateways are admin-toggleable per site (Admin → Payments), for multi-tenant cloning.
+- [x] Backend (`durango_payments.py`): `GET /settings/stripe/public`; `get_stripe_secret_key()` (per-tenant DB secret_key, env `STRIPE_API_KEY` fallback); `stripe` branch in `create_order` → emergentintegrations `StripeCheckout` hosted session + `payment_transactions` record + `redirect_url`; idempotent `GET /stripe/status/{session_id}`; `POST /stripe/webhook`. `OrderCreate.origin_url` added. `.env` STRIPE_API_KEY=sk_test_emergent.
+- [x] Frontend (`CheckoutPage.jsx`): fetch stripe public settings; auto-select first enabled gateway; `payment-method-stripe` option + `stripe-info-panel`; redirect flow on Place Order; `?stripe_session=` return polling → order-confirmation; Demo Mode banner only when NO gateway enabled.
+- [x] Verified by testing_agent (iteration_77.json, 100% backend + frontend): real cs_test_ session, redirect to checkout.stripe.com, idempotent polling, no regressions to Durango/CashApp/Venmo/PayPal.
+- Notes (backlog): `durango_payments.py` ~1531 lines (split per-gateway); `stripe/status` has no rate limiting (low risk).
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**
