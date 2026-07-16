@@ -90,7 +90,7 @@ const OrderConfirmationPage = () => {
 
   if (!order) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-purple-50/30 pt-32 pb-20">
+      <div className="min-h-screen bg-bots-dark pt-32 pb-20">
         <div className="max-w-lg mx-auto px-6 text-center">
           <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-bots-surface flex items-center justify-center">
             <Package className="w-10 h-10 text-gray-500" />
@@ -112,7 +112,7 @@ const OrderConfirmationPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-purple-50/30 pt-32 pb-20" data-testid="order-confirmation-page">
+    <div className="min-h-screen bg-bots-dark pt-32 pb-20" data-testid="order-confirmation-page">
       <div className="max-w-4xl mx-auto px-6">
         {/* Success Header - Different for CashApp/Venmo */}
         <motion.div
@@ -477,11 +477,11 @@ const OrderConfirmationPage = () => {
           className={`border rounded-2xl p-6 mb-8 ${
             order.awaiting_payment 
               ? order.payment_method === 'cashapp' 
-                ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200'
+                ? 'bg-green-500/10 border-green-500/30'
                 : order.payment_method === 'paypal'
-                ? 'bg-gradient-to-br from-sky-50 to-blue-50 border-sky-200'
-                : 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200'
-              : 'bg-gradient-to-br from-purple-50 to-amber-50 border-purple-200'
+                ? 'bg-sky-500/10 border-sky-500/30'
+                : 'bg-blue-500/10 border-blue-500/30'
+              : 'bg-purple-500/10 border-purple-500/30'
           }`}
         >
           <h3 className="font-heading text-lg font-bold text-white mb-4">What Happens Next?</h3>
