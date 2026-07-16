@@ -410,6 +410,12 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - [x] Verified by testing_agent (iteration_77.json, 100% backend + frontend): real cs_test_ session, redirect to checkout.stripe.com, idempotent polling, no regressions to Durango/CashApp/Venmo/PayPal.
 - Notes (backlog): `durango_payments.py` ~1531 lines (split per-gateway); `stripe/status` has no rate limiting (low risk).
 
+### Bug Fix — Order Confirmation Page Contrast (July 16, 2026)
+- [x] Fixed: the "What Happens Next?" card used a light gradient background with white text (heading + step titles invisible). The page container was also light (`from-slate-50`) while all cards are dark (`bg-bots-surface`).
+- [x] Fix: card background → dark theme tints (purple/green/sky/blue -500/10); page container (2 spots) → `bg-bots-dark`. Now consistent dark theme, readable text.
+- [x] Verified by testing_agent (iteration_78.json, 100% frontend): both completed (Order Processing/Quality Check/Shipped) and awaiting-payment (Send Payment/We Verify/Order Ships) variants readable (white on dark), page bg rgb(5,15,23).
+- Note (backlog): the CashApp "Complete Your Payment" instructions card still uses a light-green bg — readable but off-theme; candidate for a future dark-theme consistency pass.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**
