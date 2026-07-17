@@ -247,7 +247,9 @@ class ShippoClient:
                     "label_id": data.get("object_id"),
                     "tracking_number": data.get("tracking_number"),
                     "label_url": data.get("label_url"),
-                    "cost": float(data.get("rate", {}).get("amount", 0)) if isinstance(data.get("rate"), dict) else 0
+                    "cost": float(data.get("rate", {}).get("amount", 0)) if isinstance(data.get("rate"), dict) else 0,
+                    "status": data.get("status"),
+                    "messages": data.get("messages") or []
                 }
         except Exception as e:
             logger.error(f"Shippo create_label error: {e}")
@@ -1341,10 +1343,59 @@ async def _fetch_all_rates(settings: dict, rate_request: "ShippingRateRequest") 
     return rates
 
 
+def _extract_provider_messages(messages) -> str:
+    """Flatten a provider 'messages' array into a readable string."""
+    if not messages:
+        return ""
+    parts = []
+    for m in messages:
+        if isinstance(m, dict):
+            parts.append(m.get("text") or m.get("message") or m.get("source") or str(m))
+        else:
+            parts.append(str(m))
+    return "; ".join(p for p in parts if p)
+
+
+async def _record_failed_label(order_id: str, provider: str, selected: dict, error_message: str, label_data: dict = None):
+    """Persist a failed label attempt for admin audit."""
+    now_iso = datetime.now(timezone.utc).isoformat()
+    rec = {
+        "id": (label_data or {}).get("label_id") or str(uuid.uuid4()),
+        "order_id": order_id,
+        "provider": provider,
+        "carrier": selected.get("carrier"),
+        "service": selected.get("service"),
+        "tracking_number": (label_data or {}).get("tracking_number"),
+        "label_url": (label_data or {}).get("label_url"),
+        "cost": (label_data or {}).get("cost"),
+        "status": "failed",
+        "error": error_message,
+        "created_at": now_iso,
+    }
+    await db.shipping_labels.insert_one(rec)
+
+
+async def _mark_shipment_pending(order_id: str, provider: str, error_message: str):
+    """Flag an order as shipment_pending (needs admin review) without marking it shipped."""
+    now_iso = datetime.now(timezone.utc).isoformat()
+    await db.orders.update_one({"id": order_id}, {"$set": {
+        "status": "shipment_pending",
+        "shipping_provider": provider,
+        "shipping_error": error_message,
+        "shipping_error_at": now_iso,
+        "updated_at": now_iso,
+    }})
+
+
 @router.post("/orders/{order_id}/create-label")
 async def create_label_for_order(order_id: str):
     """Send an order to the shipping provider: buy the label using the customer's chosen
-    service, then write the tracking number + status back onto the order."""
+    service, then write the tracking number + status back onto the order.
+
+    Safety: if the label purchase fails (provider error, payment/funding failure, or
+    no tracking number returned) the order is NOT marked shipped. Instead it is set to
+    'shipment_pending' with the error stored so an admin can review it.
+    """
     order = await db.orders.find_one({"id": order_id}, {"_id": 0})
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
@@ -1411,27 +1462,75 @@ async def create_label_for_order(order_id: str):
 
     # Buy the label from the matched rate
     provider = selected["provider"]
-    if provider == "shippo":
-        client = ShippoClient(settings.get("shippo_api_key"))
-        label_data = await client.create_label(selected["rate_id"])
-    elif provider == "easypost":
-        client = EasyPostClient(settings.get("easypost_api_key"))
-        label_data = await client.create_label(selected.get("shipment_id") or selected["rate_id"], selected["rate_id"])
-    elif provider == "shipstation":
-        client = ShipStationClient(settings.get("shipstation_api_key"), settings.get("shipstation_api_secret"))
-        order_data = {
-            "from_address": from_address.model_dump(),
-            "to_address": to_address.model_dump(),
-            "weight": {"value": parcel["weight_oz"], "units": "ounces"},
-            "dimensions": {"length": dims.get("length") or 6, "width": dims.get("width") or 4, "height": dims.get("height") or 2, "units": "inches"},
+    label_data = None
+    try:
+        if provider == "shippo":
+            client = ShippoClient(settings.get("shippo_api_key"))
+            label_data = await client.create_label(selected["rate_id"])
+        elif provider == "easypost":
+            client = EasyPostClient(settings.get("easypost_api_key"))
+            label_data = await client.create_label(selected.get("shipment_id") or selected["rate_id"], selected["rate_id"])
+        elif provider == "shipstation":
+            client = ShipStationClient(settings.get("shipstation_api_key"), settings.get("shipstation_api_secret"))
+            order_data = {
+                "from_address": from_address.model_dump(),
+                "to_address": to_address.model_dump(),
+                "weight": {"value": parcel["weight_oz"], "units": "ounces"},
+                "dimensions": {"length": dims.get("length") or 6, "width": dims.get("width") or 4, "height": dims.get("height") or 2, "units": "inches"},
+            }
+            label_data = await client.create_label(order_data, selected.get("carrier_code"), selected.get("service_code"))
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported provider for label purchase")
+    except HTTPException:
+        raise
+    except Exception as e:
+        error_message = f"Label purchase failed with {provider}: {e}"
+        logger.error(f"[create_label] {error_message} (order {order_id})")
+        await _record_failed_label(order_id, provider, selected, error_message)
+        await _mark_shipment_pending(order_id, provider, error_message)
+        return {
+            "success": False,
+            "shipment_pending": True,
+            "order_id": order_id,
+            "provider": provider,
+            "carrier": selected["carrier"],
+            "service": selected["service"],
+            "error": error_message,
+            "message": "Shipping label could not be purchased (provider error / payment failure). Order set to Shipment Pending for admin review.",
         }
-        label_data = await client.create_label(order_data, selected.get("carrier_code"), selected.get("service_code"))
-    else:
-        raise HTTPException(status_code=400, detail="Unsupported provider for label purchase")
 
+    # Validate the provider response — some providers return HTTP 200 even when the
+    # transaction failed (e.g. Shippo status=ERROR, or no tracking number when the
+    # account has insufficient funds / payment failed).
     now_iso = datetime.now(timezone.utc).isoformat()
+    ship_status = (label_data.get("status") or "").upper()
     tracking_number = label_data.get("tracking_number")
     label_url = label_data.get("label_url")
+    provider_message = _extract_provider_messages(label_data.get("messages"))
+
+    failure_reason = None
+    if provider == "shippo" and ship_status and ship_status != "SUCCESS":
+        failure_reason = provider_message or f"Shippo transaction status: {ship_status or 'UNKNOWN'} (payment or funding may have failed)."
+    elif not tracking_number:
+        failure_reason = provider_message or "Carrier returned no tracking number (payment or funding may have failed)."
+    elif not label_url:
+        failure_reason = provider_message or "Label was not generated (no label URL returned)."
+
+    if failure_reason:
+        logger.warning(f"[create_label] Soft-failure for order {order_id}: {failure_reason}")
+        await _record_failed_label(order_id, provider, selected, failure_reason, label_data)
+        await _mark_shipment_pending(order_id, provider, failure_reason)
+        return {
+            "success": False,
+            "shipment_pending": True,
+            "order_id": order_id,
+            "provider": provider,
+            "carrier": selected["carrier"],
+            "service": selected["service"],
+            "error": failure_reason,
+            "message": "Shipping label could not be purchased (provider error / payment failure). Order set to Shipment Pending for admin review.",
+        }
+
     cost = label_data.get("cost", selected["rate"])
 
     # Store the label record
@@ -1450,7 +1549,7 @@ async def create_label_for_order(order_id: str):
     await db.shipping_labels.insert_one(label)
     label.pop("_id", None)
 
-    # Write back onto the order
+    # Write back onto the order (clears any prior shipment error)
     await db.orders.update_one({"id": order_id}, {"$set": {
         "status": "shipped",
         "shipping_carrier": selected["carrier"],
@@ -1459,6 +1558,8 @@ async def create_label_for_order(order_id: str):
         "tracking_number": tracking_number,
         "shipping_label_url": label_url,
         "shipping_cost_actual": cost,
+        "shipping_error": None,
+        "shipping_error_at": None,
         "shipped_at": now_iso,
         "updated_at": now_iso,
     }})

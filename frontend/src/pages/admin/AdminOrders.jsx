@@ -3,7 +3,7 @@ import axios from 'axios';
 import {
   Search, Eye, Package, Truck, CheckCircle, XCircle, Clock,
   ChevronDown, ChevronUp, MapPin, Mail, Phone, DollarSign, CreditCard,
-  Wallet, RefreshCw, Send, Repeat, Printer, Copy, ExternalLink
+  Wallet, RefreshCw, Send, Repeat, Printer, Copy, ExternalLink, AlertTriangle
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -25,6 +25,7 @@ const orderStatuses = [
   { value: 'awaiting_payment', label: 'Awaiting Payment', icon: Wallet, color: 'bg-orange-100 text-orange-800' },
   { value: 'paid', label: 'Paid', icon: CheckCircle, color: 'bg-green-100 text-green-800' },
   { value: 'processing', label: 'Processing', icon: Package, color: 'bg-blue-100 text-blue-800' },
+  { value: 'shipment_pending', label: 'Shipment Pending', icon: AlertTriangle, color: 'bg-amber-100 text-amber-800' },
   { value: 'shipped', label: 'Shipped', icon: Truck, color: 'bg-purple-100 text-purple-800' },
   { value: 'delivered', label: 'Delivered', icon: CheckCircle, color: 'bg-emerald-100 text-emerald-800' },
   { value: 'cancelled', label: 'Cancelled', icon: XCircle, color: 'bg-red-100 text-red-800' },
@@ -185,7 +186,13 @@ const AdminOrders = () => {
     try {
       const response = await axios.post(`${API}/shipping/orders/${selectedOrder.id}/create-label`, {}, { headers: getAuthHeaders() });
       const d = response.data;
-      if (d.already_shipped) {
+      if (d.success === false || d.shipment_pending) {
+        toast({
+          title: 'Shipment Pending — Review Needed',
+          description: d.error || 'Label purchase failed. Order set to Shipment Pending.',
+          variant: 'destructive'
+        });
+      } else if (d.already_shipped) {
         toast({ title: 'Already Shipped', description: `Tracking: ${d.tracking_number}` });
       } else {
         toast({ title: 'Label Purchased', description: `${d.carrier} ${d.service} • Tracking ${d.tracking_number}` });
@@ -656,14 +663,29 @@ const AdminOrders = () => {
                       )}
                     </div>
                   ) : (
-                    <Button
-                      onClick={handleSendToShippo}
-                      disabled={sendingToShippo}
-                      className="bg-blue-600 hover:bg-blue-700 text-white w-full"
-                      data-testid="send-to-shippo-button"
-                    >
-                      {sendingToShippo ? 'Buying label…' : 'Send to Shippo (buy label & get tracking)'}
-                    </Button>
+                    <>
+                      {selectedOrder.shipping_error && (
+                        <div className="p-3 rounded-lg bg-amber-50 border border-amber-300 text-sm" data-testid="order-shipment-error-banner">
+                          <p className="text-amber-900 font-semibold flex items-center gap-1.5">
+                            <AlertTriangle className="w-4 h-4" /> Shipment Pending — label not purchased
+                          </p>
+                          <p className="text-amber-800 mt-1" data-testid="order-shipment-error-message">{selectedOrder.shipping_error}</p>
+                          <p className="text-amber-700/80 text-xs mt-1">Order was NOT marked shipped. Review the error, fund/fix the provider, then retry below.</p>
+                        </div>
+                      )}
+                      <Button
+                        onClick={handleSendToShippo}
+                        disabled={sendingToShippo}
+                        className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+                        data-testid="send-to-shippo-button"
+                      >
+                        {sendingToShippo
+                          ? 'Buying label…'
+                          : selectedOrder.shipping_error
+                            ? 'Retry — Buy Label'
+                            : 'Send to Shippo (buy label & get tracking)'}
+                      </Button>
+                    </>
                   )}
                   <p className="text-xs text-gray-400">Buys the label with the customer's chosen service (or cheapest available), then writes the tracking number back to this order.</p>
                 </CardContent>

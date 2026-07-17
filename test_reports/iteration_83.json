@@ -1,0 +1,33 @@
+{
+  "summary": "Frontend-only verification of Admin Orders 'Shipment Pending' UI. Both scenarios PASS.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "verification_details": {
+    "pending_order_APS-PENDINGUI": {
+      "list_badge_shows_Shipment_Pending": true,
+      "error_banner_present": true,
+      "banner_heading": "Shipment Pending — label not purchased",
+      "error_message_exact": "Insufficient funds in your Shippo account. Add funds and retry.",
+      "shippo_button_label": "Retry — Buy Label"
+    },
+    "normal_order_ORD-20260717173459-96FA5F": {
+      "error_banner_present": false,
+      "shippo_button_label": "Send to Shippo (buy label & get tracking)"
+    }
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Order detail modal renders 'Shipping $undefined' for the seeded APS-PENDINGUI order (seed missing shipping_cost). Cosmetic seed issue only, not part of Shipment Pending safeguard."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "100%"},
+  "seed_data_creation": "None (used existing seeded APS-PENDINGUI order).",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Shipment Pending UI (amber badge in list, order-shipment-error-banner + order-shipment-error-message in Fulfillment card, send-to-shippo-button toggles between 'Retry — Buy Label' and 'Send to Shippo (buy label & get tracking)') verified working in AdminOrders.jsx."
+}
