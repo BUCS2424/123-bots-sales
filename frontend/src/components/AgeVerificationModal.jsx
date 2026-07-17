@@ -31,6 +31,15 @@ const AgeVerificationModal = () => {
       return;
     }
 
+    // Wait until feature flags are actually loaded before deciding to gate.
+    // This prevents a flash of the gate on load and avoids gating on stale defaults.
+    if (!featureFlags._loaded) {
+      setShowWelcomeModal(false);
+      setShowComingSoon(false);
+      document.body.style.overflow = 'auto';
+      return;
+    }
+
     // If coming soon is disabled, don't show any modals
     if (!COMING_SOON_ENABLED) {
       setShowWelcomeModal(false);
@@ -58,7 +67,7 @@ const AgeVerificationModal = () => {
       setShowComingSoon(true);
       document.body.style.overflow = 'hidden';
     }
-  }, [location.pathname, COMING_SOON_ENABLED]);
+  }, [location.pathname, COMING_SOON_ENABLED, featureFlags._loaded]);
 
   const handleEnterWelcome = () => {
     localStorage.setItem('123Bots_welcomed', 'true');
@@ -67,7 +76,11 @@ const AgeVerificationModal = () => {
     setTimeout(() => {
       setShowWelcomeModal(false);
       setIsExiting(false);
-      setShowComingSoon(true);
+      // Only advance to the password gate when the coming-soon gate is actually enabled
+      setShowComingSoon(COMING_SOON_ENABLED);
+      if (!COMING_SOON_ENABLED) {
+        document.body.style.overflow = 'auto';
+      }
     }, 300);
   };
 

@@ -1,0 +1,16 @@
+{
+  "summary": "Verified all three items: (1) Coming Soon gate does NOT appear for fresh public visitor (coming_soon_enabled=false); homepage loads cleanly, no welcome-modal, no password prompt, verified after reload. (2) Admin Orders /admin/orders shows the new 'Shipment Pending' amber filter tab with count badge (1), and clicking it filters to the seeded APS-PENDINGUI 'Pending UI' order; other tabs (all, shipped, etc.) also present and functional. (3) Backend shipping.py _mark_shipment_pending() confirmed via code review to call send_email(SHIPPING_ALERT_EMAIL='support@123bots.com', ...) at line 1417 in a best-effort try/except.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": ["/app/backend/tests/test_shipment_pending.py"],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "Admin mel@a2gdesigns.com / BigDaddy2016!! worked; login-email-input / login-password-input / login-submit-button testids.",
+  "seed_data_creation": "Used existing seeded APS-PENDINGUI order (status shipment_pending) - visible in All tab (count 10) and Shipment Pending tab (count 1).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Public gate bug fixed; verified via GET /api/settings/feature-flags returning coming_soon_enabled=false and clean browser render. Admin Orders shipment_pending filter tab present with data-testid orders-filter-shipment_pending. Shipping.py _mark_shipment_pending sends admin alert to support@123bots.com via email_utils.send_email (SMTP not configured in preview, best-effort try/except, not executed live).",
+  "rca of the issue": "Previous race condition (site-settings loaded before feature-flags with unsafe default) has been resolved by fetching both in parallel via Promise.allSettled with _loaded flag; AgeVerificationModal now waits until flags are loaded before rendering the gate."
+}

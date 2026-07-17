@@ -267,8 +267,19 @@ const AdminOrders = () => {
     pending: orders.filter(o => o.status === 'pending').length,
     paid: orders.filter(o => o.status === 'paid').length,
     processing: orders.filter(o => o.status === 'processing').length,
+    shipment_pending: orders.filter(o => o.status === 'shipment_pending').length,
     shipped: orders.filter(o => o.status === 'shipped').length,
     delivered: orders.filter(o => o.status === 'delivered').length,
+  };
+
+  const tabLabels = {
+    all: 'All',
+    awaiting_payment: 'Awaiting Payment',
+    paid: 'Paid',
+    processing: 'Processing',
+    shipment_pending: 'Shipment Pending',
+    shipped: 'Shipped',
+    delivered: 'Delivered',
   };
 
   // Get payment method icon
@@ -294,19 +305,31 @@ const AdminOrders = () => {
 
       {/* Status Tabs */}
       <div className="flex flex-wrap gap-2">
-        {['all', 'awaiting_payment', 'paid', 'processing', 'shipped', 'delivered'].map((status) => (
-          <Button
-            key={status}
-            variant={statusFilter === status ? 'default' : 'outline'}
-            onClick={() => setStatusFilter(status)}
-            className={statusFilter === status 
-              ? 'bg-purple-600 hover:bg-purple-700 text-white' 
-              : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-gray-900'}
-          >
-            {status === 'awaiting_payment' ? 'Awaiting Payment' : status.charAt(0).toUpperCase() + status.slice(1)}
-            <Badge className={statusFilter === status ? 'ml-2 bg-white/20' : 'ml-2 bg-purple-100 text-purple-700'}>{orderCounts[status] || 0}</Badge>
-          </Button>
-        ))}
+        {['all', 'awaiting_payment', 'paid', 'processing', 'shipment_pending', 'shipped', 'delivered'].map((status) => {
+          const isActive = statusFilter === status;
+          const isPending = status === 'shipment_pending';
+          return (
+            <Button
+              key={status}
+              variant={isActive ? 'default' : 'outline'}
+              onClick={() => setStatusFilter(status)}
+              data-testid={`orders-filter-${status}`}
+              className={isActive
+                ? (isPending ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-purple-600 hover:bg-purple-700 text-white')
+                : (isPending && orderCounts.shipment_pending > 0
+                    ? 'bg-amber-50 border-amber-300 text-amber-800 hover:bg-amber-100'
+                    : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-gray-900')}
+            >
+              {isPending && <AlertTriangle className="w-4 h-4 mr-1" />}
+              {tabLabels[status] || status}
+              <Badge className={isActive
+                ? 'ml-2 bg-white/20'
+                : (isPending && orderCounts.shipment_pending > 0 ? 'ml-2 bg-amber-200 text-amber-900' : 'ml-2 bg-purple-100 text-purple-700')}>
+                {orderCounts[status] || 0}
+              </Badge>
+            </Button>
+          );
+        })}
       </div>
 
       {/* Search */}

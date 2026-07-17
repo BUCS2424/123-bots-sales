@@ -4,6 +4,7 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const useSiteFeatureFlags = () => {
   const [flags, setFlags] = useState({
+    _loaded: false,
     cart_enabled: true,
     quotes_enabled: true,
     pawn_checkout: true,
@@ -16,7 +17,7 @@ export const useSiteFeatureFlags = () => {
     require_account_for_checkout: false,
     require_email_verification_for_registration: true,
     left_menu_enabled: true,
-    coming_soon_enabled: true,
+    coming_soon_enabled: false,
     coming_soon_password: '8487',
     external_api_enabled: true,
     inventory_enabled: false,
@@ -30,23 +31,26 @@ export const useSiteFeatureFlags = () => {
 
     const fetchFlags = async () => {
       try {
-        // Fetch site settings
-        const response = await fetch(`${API_URL}/api/settings/site`);
-        let siteData = {};
-        if (response.ok) {
-          siteData = await response.json();
-        }
+        // Fetch both in parallel so a slow/failing site-settings request never
+        // blocks (or gates) the feature flags that control the coming-soon gate.
+        const [siteRes, ffRes] = await Promise.allSettled([
+          fetch(`${API_URL}/api/settings/site`),
+          fetch(`${API_URL}/api/settings/feature-flags`),
+        ]);
 
-        // Fetch public feature flags
-        const featureFlagsRes = await fetch(`${API_URL}/api/settings/feature-flags`);
+        let siteData = {};
         let featureData = {};
-        if (featureFlagsRes.ok) {
-          featureData = await featureFlagsRes.json();
+        if (siteRes.status === 'fulfilled' && siteRes.value.ok) {
+          siteData = await siteRes.value.json();
+        }
+        if (ffRes.status === 'fulfilled' && ffRes.value.ok) {
+          featureData = await ffRes.value.json();
         }
 
         if (!active) return;
 
         setFlags({
+          _loaded: true,
           cart_enabled: featureData.cart_enabled !== false,
           quotes_enabled: featureData.quotes_enabled !== false,
           pawn_checkout: featureData.pawn_checkout !== false,
@@ -60,7 +64,7 @@ export const useSiteFeatureFlags = () => {
           require_email_verification_for_registration:
             siteData.require_email_verification_for_registration !== false,
           left_menu_enabled: featureData.left_menu_enabled !== false,
-          coming_soon_enabled: featureData.coming_soon_enabled !== false,
+          coming_soon_enabled: featureData.coming_soon_enabled === true,
           coming_soon_password: featureData.coming_soon_password || '8487',
           external_api_enabled: featureData.external_api_enabled !== false,
           inventory_enabled: Boolean(featureData.inventory_enabled),
@@ -69,7 +73,10 @@ export const useSiteFeatureFlags = () => {
           events_center_name: featureData.events_center_name || 'Event Center',
         });
       } catch (error) {
-        // Keep safe defaults
+        // On error, fail OPEN (never lock the site behind the gate) but mark loaded.
+        if (active) {
+          setFlags((prev) => ({ ...prev, _loaded: true, coming_soon_enabled: false }));
+        }
       }
     };
 

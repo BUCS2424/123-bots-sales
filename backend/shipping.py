@@ -1343,6 +1343,9 @@ async def _fetch_all_rates(settings: dict, rate_request: "ShippingRateRequest") 
     return rates
 
 
+SHIPPING_ALERT_EMAIL = "support@123bots.com"
+
+
 def _extract_provider_messages(messages) -> str:
     """Flatten a provider 'messages' array into a readable string."""
     if not messages:
@@ -1376,7 +1379,8 @@ async def _record_failed_label(order_id: str, provider: str, selected: dict, err
 
 
 async def _mark_shipment_pending(order_id: str, provider: str, error_message: str):
-    """Flag an order as shipment_pending (needs admin review) without marking it shipped."""
+    """Flag an order as shipment_pending (needs admin review) without marking it shipped,
+    and alert an admin by email so a failed/underfunded label doesn't sit unnoticed."""
     now_iso = datetime.now(timezone.utc).isoformat()
     await db.orders.update_one({"id": order_id}, {"$set": {
         "status": "shipment_pending",
@@ -1385,6 +1389,34 @@ async def _mark_shipment_pending(order_id: str, provider: str, error_message: st
         "shipping_error_at": now_iso,
         "updated_at": now_iso,
     }})
+
+    # Best-effort admin alert email (funding/payment failures, provider errors, etc.)
+    try:
+        from email_utils import send_email
+        order = await db.orders.find_one({"id": order_id}, {"_id": 0}) or {}
+        order_number = order.get("order_number", order_id)
+        customer = order.get("customer_name") or order.get("customer_email") or "Unknown customer"
+        total = order.get("total")
+        total_str = f"${total:.2f}" if isinstance(total, (int, float)) else "—"
+        subject = f"⚠️ Shipping label FAILED — order {order_number} needs review"
+        html = (
+            f"<h2 style='color:#b45309;margin:0 0 8px'>Shipping label could not be purchased</h2>"
+            f"<p>An order was automatically set to <strong>Shipment Pending</strong> because the "
+            f"shipping label purchase failed. It was <strong>NOT</strong> marked shipped. Please review "
+            f"(this is often a funding/balance issue with the shipping provider).</p>"
+            f"<table style='border-collapse:collapse;font-size:14px'>"
+            f"<tr><td style='padding:4px 12px 4px 0;color:#666'>Order</td><td><strong>{order_number}</strong></td></tr>"
+            f"<tr><td style='padding:4px 12px 4px 0;color:#666'>Customer</td><td>{customer}</td></tr>"
+            f"<tr><td style='padding:4px 12px 4px 0;color:#666'>Order total</td><td>{total_str}</td></tr>"
+            f"<tr><td style='padding:4px 12px 4px 0;color:#666'>Provider</td><td>{provider}</td></tr>"
+            f"<tr><td style='padding:4px 12px 4px 0;color:#666'>Error</td><td style='color:#b45309'>{error_message}</td></tr>"
+            f"</table>"
+            f"<p style='margin-top:16px'>Open the order in the admin dashboard, resolve the issue "
+            f"(e.g. add funds to the provider account), then use <strong>Retry — Buy Label</strong>.</p>"
+        )
+        await send_email(SHIPPING_ALERT_EMAIL, subject, html)
+    except Exception as e:
+        logger.warning(f"[create_label] Shipment-pending admin alert email skipped for {order_id}: {e}")
 
 
 @router.post("/orders/{order_id}/create-label")
