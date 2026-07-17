@@ -1,0 +1,32 @@
+{
+  "summary": "Tested BUG fix (checkout rates now accepts items and computes real weight/dims from db.products) and FEATURE (Send-to-Shippo create-label endpoint + Admin Orders Fulfillment card). Backend: 5/5 pytest passed. Frontend: Fulfillment card, customer's chosen shipping display, and Send-to-Shippo button render correctly; clicking gracefully returns 502 (no 500 crash, no page break) as expected in preview where Shippo isn't funded.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Order Detail Dialog", "issues": ["Console warning: Missing `Description` or `aria-describedby` for DialogContent (a11y warning, not blocking)"]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_shipping_send_to_shippo.py",
+    "/app/test_reports/pytest/shipping_shippo.xml"
+  ],
+  "action_items": [
+    "(Optional) Add DialogDescription/aria-describedby to the Order Detail Dialog to remove Radix a11y warning.",
+    "(Optional) Consider concurrent (asyncio.gather) provider queries in _fetch_all_rates to shorten worst-case latency when multiple providers are enabled but slow — currently sequential 30s timeouts could stack."
+  ],
+  "critical_code_review_comments": [
+    "shipping.py is 1552 lines — consider splitting each provider client into its own module for maintainability.",
+    "In create_label_for_order the 'matched_customer_choice' boolean rechecks chosen_service against selected['service'] but the earlier loop already guarantees match when chosen_service was set; harmless but redundant.",
+    "compute_parcel_from_items sums heights (total_h += h * qty) but keeps max L/W — this models stacked boxes vertically which may not be accurate for real palletized freight (85 lb PUDU is likely LTL, not parcel). Not a blocker for this PR since Shippo is fine with the values; consider a shipping-class flag later."
+  ],
+  "updated_files": ["/app/backend/tests/test_shipping_send_to_shippo.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "mel@a2gdesigns.com / BigDaddy2016!! (admin)",
+  "seed_data_creation": "Created a TEST order via POST /api/payments/orders (cashapp) with PUDU CC1 PRO item and selected_shipping USPS Priority Mail during the create-label test.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend tests live in /app/backend/tests/test_shipping_send_to_shippo.py (5 tests, all pass). The preview ingress rewrites 5xx JSON bodies to Cloudflare HTML, so assert on status_code only (backend log confirms FastAPI's own 502 detail 'No live rates returned'). Frontend Fulfillment card selector: data-testid='order-fulfillment-card'; button: data-testid='send-to-shippo-button'. Toast may auto-dismiss quickly; look for it right after click.",
+  "rca of the issue": "BUG root cause was in CheckoutPage.jsx sending a hardcoded {weight_oz:8} to /api/shipping/rates/checkout, and the endpoint had no notion of items. Fix: CheckoutRatesRequest now optionally accepts items[]; compute_parcel_from_items() reads db.products and treats shipping_weight as POUNDS (×16 -> oz), and picks max L/W with total H. Verified 85-lb PUDU no longer collapses to 8oz. Real Shippo price change only manifests on production with a funded key."
+}

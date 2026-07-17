@@ -344,7 +344,8 @@ const CheckoutPage = () => {
             phone: shippingInfo.phone,
             email: shippingInfo.email
           },
-          weight_oz: 8, // Default weight
+          weight_oz: undefined, // computed server-side from items below
+          items: cartItems.map((i) => ({ product_id: i.id, quantity: i.quantity })),
           order_subtotal: subtotal
         })
       });

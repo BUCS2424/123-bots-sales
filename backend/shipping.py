@@ -944,13 +944,58 @@ async def get_shipping_rates(request: ShippingRateRequest, product_upcharge: flo
 class CheckoutRatesRequest(BaseModel):
     """Request model for checkout rates"""
     to_address: AddressModel
-    weight_oz: float = 8.0  # Default weight
+    items: Optional[List[Dict]] = None  # [{product_id/id, quantity}] -> weight & dims computed server-side
+    weight_oz: Optional[float] = None   # fallback if items not provided
+    length: Optional[float] = None
+    width: Optional[float] = None
+    height: Optional[float] = None
     order_subtotal: float = 0.0
+
+
+async def compute_parcel_from_items(items: List[Dict], settings: Dict) -> Dict:
+    """Compute real parcel weight (oz) and box dimensions (in) from the cart's products.
+
+    Product weight fields (shipping_weight / weight) are treated as POUNDS.
+    Falls back to a per-item default weight when a product has no weight set.
+    """
+    default_lbs = float(settings.get("default_package_weight_lbs", 1.0) or 1.0)
+    total_weight_lbs = 0.0
+    max_l = max_w = 0.0
+    total_h = 0.0
+    missing_weight = False
+
+    for item in items or []:
+        pid = item.get("product_id") or item.get("id")
+        qty = int(item.get("quantity", 1) or 1)
+        product = None
+        if pid:
+            product = await db.products.find_one({"id": pid}, {"_id": 0}) or await db.products.find_one({"slug": pid}, {"_id": 0})
+
+        wt = None
+        if product:
+            wt = product.get("shipping_weight") or product.get("weight")
+            l = product.get("shipping_length") or 0
+            w = product.get("shipping_width") or 0
+            h = product.get("shipping_height") or 0
+            max_l = max(max_l, float(l or 0))
+            max_w = max(max_w, float(w or 0))
+            total_h += float(h or 0) * qty
+
+        if not wt or float(wt) <= 0:
+            wt = default_lbs
+            missing_weight = True
+        total_weight_lbs += float(wt) * qty
+
+    weight_oz = max(total_weight_lbs * 16.0, 1.0)
+    dims = {}
+    if max_l > 0 and max_w > 0 and total_h > 0:
+        dims = {"length": max_l, "width": max_w, "height": total_h}
+    return {"weight_oz": weight_oz, "dims": dims, "missing_weight": missing_weight}
 
 
 @router.post("/rates/checkout")
 async def get_checkout_rates(request: CheckoutRatesRequest):
-    """Get shipping rates for checkout - queries ALL enabled providers and returns best rates"""
+    """Get shipping rates for checkout - queries ALL enabled providers using REAL weight & box size."""
     settings = await get_shipping_settings()
     
     # Build from address from settings
@@ -963,11 +1008,27 @@ async def get_checkout_rates(request: CheckoutRatesRequest):
         country=settings.get("origin_country", "US"),
         phone=settings.get("origin_phone")
     )
-    
+
+    # Determine real parcel weight + dimensions
+    weight_oz = request.weight_oz
+    length, width, height = request.length, request.width, request.height
+    if request.items:
+        parcel = await compute_parcel_from_items(request.items, settings)
+        weight_oz = parcel["weight_oz"]
+        if parcel["dims"]:
+            length = parcel["dims"]["length"]
+            width = parcel["dims"]["width"]
+            height = parcel["dims"]["height"]
+    if not weight_oz or weight_oz <= 0:
+        weight_oz = 8.0  # last-resort default
+
     rate_request = ShippingRateRequest(
         from_address=from_address,
         to_address=request.to_address,
-        weight_oz=request.weight_oz
+        weight_oz=weight_oz,
+        length=length,
+        width=width,
+        height=height,
     )
     
     all_rates = []
@@ -1248,6 +1309,187 @@ async def get_order_labels(order_id: str):
     for label in labels:
         label.pop("_id", None)
     return labels
+
+
+async def _fetch_all_rates(settings: dict, rate_request: "ShippingRateRequest") -> list:
+    """Query all enabled providers and return a normalized list of rates."""
+    rates = []
+    provider_map = [
+        ("shippo", lambda: ShippoClient(settings.get("shippo_api_key")), settings.get("shippo_enabled") and settings.get("shippo_api_key")),
+        ("easypost", lambda: EasyPostClient(settings.get("easypost_api_key")), settings.get("easypost_enabled") and settings.get("easypost_api_key")),
+        ("shipstation", lambda: ShipStationClient(settings.get("shipstation_api_key"), settings.get("shipstation_api_secret")), settings.get("shipstation_enabled") and settings.get("shipstation_api_key") and settings.get("shipstation_api_secret")),
+    ]
+    for provider, make_client, enabled in provider_map:
+        if not enabled:
+            continue
+        try:
+            raw_rates = await make_client().get_rates(rate_request)
+            for r in raw_rates:
+                rates.append({
+                    "provider": provider,
+                    "carrier": r["carrier"],
+                    "service": r["service"],
+                    "rate": r["rate"],
+                    "estimated_days": r.get("estimated_days"),
+                    "rate_id": r["rate_id"],
+                    "shipment_id": r.get("shipment_id"),
+                    "carrier_code": r.get("carrier_code"),
+                    "service_code": r.get("service_code"),
+                })
+        except Exception as e:
+            logger.warning(f"Could not fetch {provider} rates for label: {e}")
+    return rates
+
+
+@router.post("/orders/{order_id}/create-label")
+async def create_label_for_order(order_id: str):
+    """Send an order to the shipping provider: buy the label using the customer's chosen
+    service, then write the tracking number + status back onto the order."""
+    order = await db.orders.find_one({"id": order_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    if order.get("tracking_number"):
+        return {
+            "success": True,
+            "already_shipped": True,
+            "tracking_number": order.get("tracking_number"),
+            "carrier": order.get("shipping_carrier"),
+            "label_url": order.get("shipping_label_url"),
+            "message": "This order already has a shipping label",
+        }
+
+    settings = await get_shipping_settings()
+    ship = order.get("shipping") or {}
+    to_address = AddressModel(
+        name=order.get("customer_name") or f"{ship.get('firstName','')} {ship.get('lastName','')}".strip() or "Customer",
+        street1=ship.get("address1") or ship.get("street1") or "",
+        street2=ship.get("address2") or ship.get("street2"),
+        city=ship.get("city", ""),
+        state=ship.get("state", ""),
+        zip_code=ship.get("zipCode") or ship.get("zip_code") or "",
+        country=ship.get("country", "US"),
+        phone=ship.get("phone"),
+    )
+    from_address = AddressModel(
+        name=settings.get("origin_name", "123Bots"),
+        street1=settings.get("origin_street1", "") or "7860 Eddins Road",
+        city=settings.get("origin_city", "") or "Dothan",
+        state=settings.get("origin_state", "") or "AL",
+        zip_code=settings.get("origin_zip", "") or "36301",
+        country=settings.get("origin_country", "US"),
+        phone=settings.get("origin_phone"),
+    )
+
+    parcel = await compute_parcel_from_items(order.get("items", []), settings)
+    dims = parcel.get("dims") or {}
+    rate_request = ShippingRateRequest(
+        from_address=from_address,
+        to_address=to_address,
+        weight_oz=parcel["weight_oz"],
+        length=dims.get("length"),
+        width=dims.get("width"),
+        height=dims.get("height"),
+    )
+
+    rates = await _fetch_all_rates(settings, rate_request)
+    if not rates:
+        raise HTTPException(status_code=502, detail="No live rates returned. Check your shipping provider is enabled and funded.")
+
+    # Match the customer's chosen service; otherwise pick cheapest
+    chosen = order.get("selected_shipping") or {}
+    chosen_service = (chosen.get("service") or "").lower()
+    chosen_carrier = (chosen.get("carrier") or "").lower()
+    selected = None
+    if chosen_service:
+        for r in rates:
+            if chosen_service in r["service"].lower() and (not chosen_carrier or chosen_carrier in r["carrier"].lower()):
+                selected = r
+                break
+    if not selected:
+        selected = min(rates, key=lambda r: r["rate"])
+
+    # Buy the label from the matched rate
+    provider = selected["provider"]
+    if provider == "shippo":
+        client = ShippoClient(settings.get("shippo_api_key"))
+        label_data = await client.create_label(selected["rate_id"])
+    elif provider == "easypost":
+        client = EasyPostClient(settings.get("easypost_api_key"))
+        label_data = await client.create_label(selected.get("shipment_id") or selected["rate_id"], selected["rate_id"])
+    elif provider == "shipstation":
+        client = ShipStationClient(settings.get("shipstation_api_key"), settings.get("shipstation_api_secret"))
+        order_data = {
+            "from_address": from_address.model_dump(),
+            "to_address": to_address.model_dump(),
+            "weight": {"value": parcel["weight_oz"], "units": "ounces"},
+            "dimensions": {"length": dims.get("length") or 6, "width": dims.get("width") or 4, "height": dims.get("height") or 2, "units": "inches"},
+        }
+        label_data = await client.create_label(order_data, selected.get("carrier_code"), selected.get("service_code"))
+    else:
+        raise HTTPException(status_code=400, detail="Unsupported provider for label purchase")
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+    tracking_number = label_data.get("tracking_number")
+    label_url = label_data.get("label_url")
+    cost = label_data.get("cost", selected["rate"])
+
+    # Store the label record
+    label = {
+        "id": label_data.get("label_id") or str(uuid.uuid4()),
+        "order_id": order_id,
+        "provider": provider,
+        "carrier": selected["carrier"],
+        "service": selected["service"],
+        "tracking_number": tracking_number,
+        "label_url": label_url,
+        "cost": cost,
+        "status": "created",
+        "created_at": now_iso,
+    }
+    await db.shipping_labels.insert_one(label)
+    label.pop("_id", None)
+
+    # Write back onto the order
+    await db.orders.update_one({"id": order_id}, {"$set": {
+        "status": "shipped",
+        "shipping_carrier": selected["carrier"],
+        "shipping_service": selected["service"],
+        "shipping_provider": provider,
+        "tracking_number": tracking_number,
+        "shipping_label_url": label_url,
+        "shipping_cost_actual": cost,
+        "shipped_at": now_iso,
+        "updated_at": now_iso,
+    }})
+
+    # Best-effort customer shipping notification
+    try:
+        from email_utils import send_email
+        cust_email = order.get("customer_email")
+        if cust_email and tracking_number:
+            await send_email(
+                cust_email,
+                f"Your order {order.get('order_number', order_id)} has shipped",
+                f"<p>Good news! Your order <strong>{order.get('order_number', order_id)}</strong> is on its way.</p>"
+                f"<p><strong>Carrier:</strong> {selected['carrier']} {selected['service']}<br>"
+                f"<strong>Tracking #:</strong> {tracking_number}</p>",
+            )
+    except Exception as e:
+        logger.warning(f"Shipping notification email skipped: {e}")
+
+    return {
+        "success": True,
+        "order_id": order_id,
+        "provider": provider,
+        "carrier": selected["carrier"],
+        "service": selected["service"],
+        "tracking_number": tracking_number,
+        "label_url": label_url,
+        "cost": cost,
+        "matched_customer_choice": bool(chosen_service and selected and chosen_service in selected["service"].lower()),
+        "message": "Label purchased and tracking added to order",
+    }
 
 
 @router.get("/tracking/{tracking_number}")

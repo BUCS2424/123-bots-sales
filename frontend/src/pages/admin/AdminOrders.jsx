@@ -61,6 +61,7 @@ const AdminOrders = () => {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [newStatus, setNewStatus] = useState('');
   const [trackingNumber, setTrackingNumber] = useState('');
+  const [sendingToShippo, setSendingToShippo] = useState(false);
   const [printfulEligibilityByOrder, setPrintfulEligibilityByOrder] = useState({});
   const [printfulEligibilityLoading, setPrintfulEligibilityLoading] = useState(false);
   const [sendingPrintfulOrderId, setSendingPrintfulOrderId] = useState('');
@@ -175,6 +176,28 @@ const AdminOrders = () => {
       setIsDetailOpen(false);
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to update order', variant: 'destructive' });
+    }
+  };
+
+  const handleSendToShippo = async () => {
+    if (!selectedOrder) return;
+    setSendingToShippo(true);
+    try {
+      const response = await axios.post(`${API}/shipping/orders/${selectedOrder.id}/create-label`, {}, { headers: getAuthHeaders() });
+      const d = response.data;
+      if (d.already_shipped) {
+        toast({ title: 'Already Shipped', description: `Tracking: ${d.tracking_number}` });
+      } else {
+        toast({ title: 'Label Purchased', description: `${d.carrier} ${d.service} • Tracking ${d.tracking_number}` });
+      }
+      setTrackingNumber(d.tracking_number || '');
+      const refreshed = await axios.get(`${API}/payments/orders/${selectedOrder.id}`);
+      setSelectedOrder(refreshed.data);
+      fetchOrders();
+    } catch (error) {
+      toast({ title: 'Shipping Failed', description: error.response?.data?.detail || 'Could not create label. Check the provider is enabled & funded.', variant: 'destructive' });
+    } finally {
+      setSendingToShippo(false);
     }
   };
 
@@ -530,6 +553,45 @@ const AdminOrders = () => {
                       <span className="text-purple-600">${selectedOrder.total?.toFixed(2)}</span>
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Fulfillment / Send to Shippo */}
+              <Card data-testid="order-fulfillment-card">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Fulfillment</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Customer's chosen shipping</span>
+                    <span className="font-medium text-right">
+                      {selectedOrder.selected_shipping
+                        ? `${selectedOrder.selected_shipping.carrier || ''} ${selectedOrder.selected_shipping.service || ''}`.trim() || '—'
+                        : '—'}
+                      {selectedOrder.selected_shipping?.rate != null && (
+                        <span className="text-gray-500"> (${Number(selectedOrder.selected_shipping.rate).toFixed(2)})</span>
+                      )}
+                    </span>
+                  </div>
+                  {selectedOrder.tracking_number ? (
+                    <div className="p-3 rounded-lg bg-green-50 border border-green-200 text-sm">
+                      <p className="text-green-800 font-medium">Shipped via {selectedOrder.shipping_carrier} {selectedOrder.shipping_service}</p>
+                      <p className="text-green-700">Tracking: {selectedOrder.tracking_number}</p>
+                      {selectedOrder.shipping_label_url && (
+                        <a href={selectedOrder.shipping_label_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View / Print Label</a>
+                      )}
+                    </div>
+                  ) : (
+                    <Button
+                      onClick={handleSendToShippo}
+                      disabled={sendingToShippo}
+                      className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+                      data-testid="send-to-shippo-button"
+                    >
+                      {sendingToShippo ? 'Buying label…' : 'Send to Shippo (buy label & get tracking)'}
+                    </Button>
+                  )}
+                  <p className="text-xs text-gray-400">Buys the label with the customer's chosen service (or cheapest available), then writes the tracking number back to this order.</p>
                 </CardContent>
               </Card>
 
