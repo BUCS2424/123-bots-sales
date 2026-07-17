@@ -7,7 +7,7 @@ import {
   Bell, Search, DollarSign, ShoppingBag, Gift, FolderTree, Layers, Cloud, User, Sliders, Code,
   Store, Truck, CreditCard, CheckCircle, LayoutGrid, Clock, FileText, UserPlus, Briefcase,
   Calendar, CalendarOff, Wrench, Shield, BookOpen, PiggyBank, Star, Megaphone, Mail, Zap, MessageCircle, Building2, Box, Globe, Radio as RadioIcon, Key,
-  Ticket, MapPin, CalendarDays, Plus
+  Ticket, MapPin, CalendarDays, Plus, FileSignature
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -347,10 +347,14 @@ const AdminLayout = () => {
     },
     ...(quotesEnabled ? [{
       id: 'quotes-contracts-esign',
-      type: 'single',
-      path: '/admin/quotes-contracts-esign',
+      type: 'accordion',
       label: 'Quotes',
       icon: FileText,
+      children: [
+        { path: '/admin/quotes-contracts-esign', label: 'Quote Builder', icon: FileText },
+        { path: '/admin/quotes-contracts-esign/contracts', label: 'Contract Documents', icon: FileSignature },
+        { path: '/admin/quotes/settings', label: 'Quote Settings', icon: Settings },
+      ],
     }] : []),
     {
       id: 'user-management',
@@ -613,6 +617,7 @@ const AdminLayout = () => {
     if (path === '/admin/cart') return location.pathname === '/admin/cart';
     if (path === '/admin') return location.pathname === '/admin';
     if (path === '/admin/events') return location.pathname === '/admin/events';
+    if (path === '/admin/quotes-contracts-esign') return location.pathname === '/admin/quotes-contracts-esign';
     if (path === '/admin/events/new') return location.pathname === '/admin/events/new';
     return location.pathname.startsWith(path);
   };
