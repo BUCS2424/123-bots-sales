@@ -436,6 +436,11 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - [x] Verified by testing_agent (iteration_82.json, frontend 100%): card renders pi_/cs_ with copy + Stripe link for a stripe order, and correctly hides for a non-stripe (Venmo) order. Backend field round-trip curl-verified.
 - Note: live pi_ capture depends on completing a real hosted Stripe checkout (cannot be e2e tested in-tool); the fetch/store path and UI are verified.
 
+### Feature — Shipment-Pending Safeguard on Label Purchase (July 17, 2026)
+- [x] **Failed shipping-label purchases no longer mark an order "shipped."** `shipping.py create_label_for_order` now: (1) wraps the provider purchase in try/except; (2) validates the response even on HTTP 200 — Shippo `status != SUCCESS`, a missing tracking number, or a missing label URL are all treated as failures (covers payment/funding failures that Shippo returns as `status=ERROR` with 200). On any failure it calls `_mark_shipment_pending()` → order `status='shipment_pending'` + `shipping_error`/`shipping_error_at` stored, logs a failed `shipping_labels` record, and returns `{success:false, shipment_pending:true, error}`. Only a genuine success (tracking + label) marks the order shipped and clears the error.
+- [x] **Admin → Orders UI**: new amber "Shipment Pending" status badge; a warning banner (`order-shipment-error-banner`) in the Fulfillment card showing the provider error with a note that the order was NOT shipped; the action button switches to "Retry — Buy Label"; `handleSendToShippo` shows a destructive toast on failure and refreshes.
+- [x] Verified: backend `/app/backend/tests/test_shipment_pending.py` 4/4 PASS (ERROR status, no-tracking, exception, success→shipped). Frontend testing_agent iteration_83.json 100% (badge, banner, retry button, and clean default state for normal orders).
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**
