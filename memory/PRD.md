@@ -447,6 +447,12 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - [x] **Funding-failure admin email** (`shipping.py _mark_shipment_pending`): on any label purchase failure, a best-effort alert email is sent to **support@123bots.com** (`SHIPPING_ALERT_EMAIL`) with order #, customer, provider, and error. (SMTP not configured in preview — send is best-effort/try-except.)
 - [x] Verified: testing_agent iteration_84.json 100% frontend + backend; shipment-pending unit tests 4/4.
 
+### Feature — Contract Documents Easily Accessible in Admin (July 17, 2026)
+- Answered: signed quote contracts are stored **embedded in each quote** (`db.quotes` → `signatures[]`, `signed_at`, `contract_document_ids`); the reusable **contract document templates** live in `db.contract_templates` (`/api/contract-templates`).
+- [x] Made the **Contract Documents** setup page discoverable. The admin sidebar "Quotes" item was a single link straight to the quote builder; it's now an **accordion** with: Quote Builder (`/admin/quotes-contracts-esign`), **Contract Documents** (`/admin/quotes-contracts-esign/contracts` → AdminContractsPage), and Quote Settings (`/admin/quotes/settings`). Added an exact-match in `isActive()` so the builder link isn't highlighted on sub-pages. (`AdminLayout.jsx`)
+- [x] Verified testing_agent iteration_85.json 100%: accordion exposes all 3 links, Contract Documents page lists templates (MSA/NDA/SOW) and full create/edit/delete CRUD works.
+- Minor (non-blocking): 2 unrelated 404 console errors on the Contract Documents page (not the templates API) — left as-is.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**
