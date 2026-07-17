@@ -11,7 +11,7 @@ import { Label } from '../../components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../../components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import { Switch } from '../../components/ui/switch';
 import { toast } from '../../hooks/use-toast';
@@ -418,6 +418,7 @@ const AdminOrders = () => {
           <DialogHeader>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <DialogTitle data-testid="admin-order-dialog-title">Order {selectedOrder?.order_number}</DialogTitle>
+              <DialogDescription className="sr-only">Order details, fulfillment and status</DialogDescription>
               {canShowSendToPrintful && (
                 <Button
                   type="button"

@@ -11,7 +11,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://botshop-ticketing.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://bots-ecommerce-hub.preview.emergentagent.com').rstrip('/')
 
 
 class TestCashAppVenmoPublicSettings:

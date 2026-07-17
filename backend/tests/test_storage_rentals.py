@@ -401,7 +401,7 @@ class TestOnlineRentalCheckout:
                     "zip_code": "36301"
                 },
                 "billing_type": "monthly",
-                "origin_url": "https://botshop-ticketing.preview.emergentagent.com"
+                "origin_url": "https://bots-ecommerce-hub.preview.emergentagent.com"
             }
         )
         assert response.status_code == 200

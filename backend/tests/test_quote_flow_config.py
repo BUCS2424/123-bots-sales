@@ -9,7 +9,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://botshop-ticketing.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://bots-ecommerce-hub.preview.emergentagent.com')
 
 # Test credentials
 ADMIN_EMAIL = "qa-admin-a2g@example.com"
