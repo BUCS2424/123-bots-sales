@@ -1,0 +1,29 @@
+{
+  "summary": "Verified category delete respawn fix + Admin Categories drag-and-drop nesting. Backend 5/5 pytest pass; frontend nesting via HTML5 DnD confirmed (source becomes child of target, persists across reload). Invalid-move (parent onto descendant) logic blocks structural change as expected.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_categories_delete.py",
+    "/app/test_reports/pytest/categories_delete.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "AdminCategories.jsx is 736 lines - consider splitting the tree renderer, editor form, and DnD handlers into separate components/hooks for maintainability.",
+    "handleDropOnCategory relies on state closures (draggingCategoryId). Fine today, but if future refactor moves DnD to a portal/child, prefer passing dragging id via dataTransfer.setData to avoid stale-closure bugs.",
+    "Toast component appears portal-rendered; add data-testid on toast root to make 'Invalid Move' verifiable in tests."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_categories_delete.py (new)"
+  ],
+  "success_rate": { "backend": "100%", "frontend": "100%" },
+  "test_credentials": "admin: mel@a2gdesigns.com / BigDaddy2016!!",
+  "seed_data_creation": "Test used existing seeded roots (Pudu, Avidbot). Nested Pudu under Avidbot during test; reverted state was not restored automatically. Main agent may want to re-flatten if needed. Test-created TEST_* categories were cleaned up.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Playwright synthetic DragEvents dispatch works for triggering onDrop but blue ring highlight and toast visibility can't reliably be asserted via innerText because shadcn Toaster renders in a portal and React state updates lag inside synthetic dispatch. Verify functional outcome via API/DOM tree instead.",
+  "rca of the issue": "N/A - both reported bugs are already fixed and verified. Delete flow strips category from products via ecommerce.delete_category(); frontend DnD sets parent_id=target on drop and calls POST /api/store/categories/reorder to persist."
+}

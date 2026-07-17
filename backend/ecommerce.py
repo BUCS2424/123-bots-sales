@@ -1146,10 +1146,17 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
 
     @router.delete("/categories/{category_id}")
     async def delete_category(category_id: str, current_user: TokenData = Depends(require_admin)):
-        """Delete a category (admin only)"""
-        existing = await db.categories.find_one({"id": category_id}, {"_id": 0, "id": 1, "parent_id": 1})
+        """Delete a category (admin only).
+
+        Also strips the category name from any products that reference it so the
+        auto-create logic (_ensure_top_level_categories) can't respawn it on the
+        next product save/sync. Products left with no category fall back to "General".
+        """
+        existing = await db.categories.find_one({"id": category_id}, {"_id": 0, "id": 1, "name": 1, "parent_id": 1})
         if not existing:
             raise HTTPException(status_code=404, detail="Category not found")
+
+        deleted_name = _normalize_category_name(existing.get("name"))
 
         result = await db.categories.delete_one({"id": category_id})
         if result.deleted_count == 0:
@@ -1163,6 +1170,39 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
                 "updated_at": datetime.now(timezone.utc).isoformat(),
             }}
         )
+
+        # Strip the deleted category name from all products that reference it
+        affected_categories: List[str] = []
+        if deleted_name:
+            escaped_name = re.escape(deleted_name)
+            match_expr = {"$regex": f"^{escaped_name}$", "$options": "i"}
+            products = await db.products.find(
+                {"$or": [{"category": match_expr}, {"categories": match_expr}]},
+                {"_id": 0, "id": 1, "category": 1, "categories": 1},
+            ).to_list(None)
+
+            now_iso = datetime.now(timezone.utc).isoformat()
+            for product in products:
+                remaining = [
+                    c for c in _dedupe_preserve_order(product.get("categories") or [])
+                    if c.lower() != deleted_name.lower()
+                ]
+                primary_category, normalized_categories = _normalize_product_categories(
+                    remaining[0] if remaining else None,
+                    remaining,
+                )
+                await db.products.update_one(
+                    {"id": product.get("id")},
+                    {"$set": {
+                        "category": primary_category,
+                        "categories": normalized_categories,
+                        "updated_at": now_iso,
+                    }},
+                )
+                affected_categories.extend(normalized_categories)
+
+            await _refresh_category_counts(affected_categories)
+
         return {"message": "Category deleted successfully"}
 
     # ============ ORDERS ============

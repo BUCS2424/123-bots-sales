@@ -52,6 +52,7 @@ const AdminCategories = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [expandedIds, setExpandedIds] = useState(new Set());
   const [draggingCategoryId, setDraggingCategoryId] = useState(null);
+  const [dragOverCategoryId, setDragOverCategoryId] = useState(null);
   const [storageConfigured, setStorageConfigured] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [formData, setFormData] = useState(defaultForm);
@@ -313,44 +314,51 @@ const AdminCategories = () => {
   };
 
   const handleDropOnCategory = async (targetCategoryId) => {
-    if (!draggingCategoryId || draggingCategoryId === targetCategoryId) return;
+    const draggingId = draggingCategoryId;
+    setDraggingCategoryId(null);
+    setDragOverCategoryId(null);
 
-    const source = categories.find((item) => item.id === draggingCategoryId);
+    if (!draggingId || draggingId === targetCategoryId) return;
+
+    const source = categories.find((item) => item.id === draggingId);
     const target = categories.find((item) => item.id === targetCategoryId);
     if (!source || !target) return;
 
-    const sourceParentId = asParentId(source.parent_id);
-    const targetParentId = asParentId(target.parent_id);
-
-    const updated = categories.map((item) => ({ ...item }));
-    const updatedSource = updated.find((item) => item.id === source.id);
-    updatedSource.parent_id = targetParentId;
-
-    const resequence = (parentId, insertSource = false) => {
-      const siblings = updated
-        .filter((item) => asParentId(item.parent_id) === parentId && item.id !== updatedSource.id)
-        .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
-
-      if (insertSource) {
-        const targetIndex = siblings.findIndex((item) => item.id === target.id);
-        const insertAt = targetIndex >= 0 ? targetIndex : siblings.length;
-        siblings.splice(insertAt, 0, updatedSource);
+    // Prevent nesting a category into one of its own descendants (would create a cycle)
+    const isDescendantOf = (candidateId, ancestorId) => {
+      let current = categories.find((item) => item.id === candidateId);
+      while (current && current.parent_id) {
+        if (current.parent_id === ancestorId) return true;
+        current = categories.find((item) => item.id === current.parent_id);
       }
-
-      siblings.forEach((item, index) => {
-        item.parent_id = parentId;
-        item.sort_order = index;
-      });
+      return false;
     };
 
-    if (sourceParentId !== targetParentId) {
-      resequence(sourceParentId, false);
+    if (isDescendantOf(targetCategoryId, draggingId)) {
+      toast({
+        title: 'Invalid Move',
+        description: 'You cannot move a category into one of its own subcategories.',
+        variant: 'destructive'
+      });
+      return;
     }
-    resequence(targetParentId, true);
+
+    // Already a direct child of the target — nothing to do
+    if (asParentId(source.parent_id) === targetCategoryId) return;
+
+    const updated = categories.map((item) => ({ ...item }));
+    const updatedSource = updated.find((item) => item.id === draggingId);
+    const targetChildrenCount = updated.filter(
+      (item) => asParentId(item.parent_id) === targetCategoryId && item.id !== draggingId
+    ).length;
+
+    // Nest the dragged category as a subcategory (child) of the target
+    updatedSource.parent_id = targetCategoryId;
+    updatedSource.sort_order = targetChildrenCount;
 
     setCategories(updated);
-    setDraggingCategoryId(null);
-    await persistReorder(updated);
+    setExpandedIds((prev) => new Set(prev).add(targetCategoryId));
+    await persistReorder([updatedSource]);
   };
 
   const handleSaveCategory = async () => {
@@ -399,17 +407,35 @@ const AdminCategories = () => {
     const hasChildren = node.children && node.children.length > 0;
     const isExpanded = expandedIds.has(node.id);
     const isSelected = selectedCategoryId === node.id && editorMode === 'edit';
+    const isDropTarget = dragOverCategoryId === node.id && draggingCategoryId && draggingCategoryId !== node.id;
 
     return (
       <div key={node.id} className="space-y-1">
         <div
           draggable
           onDragStart={() => setDraggingCategoryId(node.id)}
-          onDragOver={(event) => event.preventDefault()}
+          onDragEnd={() => { setDraggingCategoryId(null); setDragOverCategoryId(null); }}
+          onDragOver={(event) => {
+            event.preventDefault();
+            if (draggingCategoryId && draggingCategoryId !== node.id && dragOverCategoryId !== node.id) {
+              setDragOverCategoryId(node.id);
+            }
+          }}
+          onDragLeave={(event) => {
+            event.stopPropagation();
+            setDragOverCategoryId((prev) => (prev === node.id ? null : prev));
+          }}
           onDrop={() => handleDropOnCategory(node.id)}
           onClick={() => selectCategory(node)}
-          className={`group flex items-center gap-2 rounded-md px-2 py-1.5 cursor-pointer transition-colors ${isSelected ? 'bg-purple-100 border border-purple-200' : 'hover:bg-gray-100 border border-transparent'}`}
+          className={`group flex items-center gap-2 rounded-md px-2 py-1.5 cursor-pointer transition-colors ${
+            isDropTarget
+              ? 'bg-blue-100 border border-blue-400 ring-2 ring-blue-300'
+              : isSelected
+                ? 'bg-purple-100 border border-purple-200'
+                : 'hover:bg-gray-100 border border-transparent'
+          }`}
           style={{ marginLeft: `${depth * 14}px` }}
+          title="Drag onto another category to make it a subcategory"
           data-testid={`category-tree-node-${node.id}`}
         >
           <button
@@ -472,7 +498,7 @@ const AdminCategories = () => {
             <CardTitle className="flex items-center gap-2 text-lg">
               <FolderTree className="w-5 h-5 text-[rgb(37, 99, 235)]" /> Categories
             </CardTitle>
-            <CardDescription>Drag and drop items to sort</CardDescription>
+            <CardDescription>Drag a category onto another to nest it as a subcategory</CardDescription>
 
             <div className="relative mt-2">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
