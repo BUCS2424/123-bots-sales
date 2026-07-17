@@ -441,6 +441,12 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - [x] **Admin → Orders UI**: new amber "Shipment Pending" status badge; a warning banner (`order-shipment-error-banner`) in the Fulfillment card showing the provider error with a note that the order was NOT shipped; the action button switches to "Retry — Buy Label"; `handleSendToShippo` shows a destructive toast on failure and refreshes.
 - [x] Verified: backend `/app/backend/tests/test_shipment_pending.py` 4/4 PASS (ERROR status, no-tracking, exception, success→shipped). Frontend testing_agent iteration_83.json 100% (badge, banner, retry button, and clean default state for normal orders).
 
+### Bug Fix + Features — Coming Soon Gate, Pending Filter, Funding Alert (July 17, 2026)
+- [x] **BUG: Coming Soon gate showed even when the toggle was OFF.** Root cause: `useSiteFeatureFlags` fetched `/api/settings/site` first and only applied flags after BOTH requests finished, with an unsafe default `coming_soon_enabled: true` — so any slow/failed site-settings fetch left the gate up. Fix: fetch both endpoints in parallel (`Promise.allSettled`), fail-OPEN default (`coming_soon_enabled: false`), added a `_loaded` flag, and `AgeVerificationModal` now renders nothing until flags load (no flash). `handleEnterWelcome` no longer forces the password gate when Coming Soon is off. Verified testing_agent iteration_84 — no gate for fresh visitor.
+- [x] **Admin Orders "Shipment Pending" filter tab** (`AdminOrders.jsx`): amber tab with count badge (`orders-filter-shipment_pending`) to spot failed labels at a glance; filters to shipment_pending orders.
+- [x] **Funding-failure admin email** (`shipping.py _mark_shipment_pending`): on any label purchase failure, a best-effort alert email is sent to **support@123bots.com** (`SHIPPING_ALERT_EMAIL`) with order #, customer, provider, and error. (SMTP not configured in preview — send is best-effort/try-except.)
+- [x] Verified: testing_agent iteration_84.json 100% frontend + backend; shipment-pending unit tests 4/4.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**
