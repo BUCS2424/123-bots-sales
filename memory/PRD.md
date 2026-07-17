@@ -416,6 +416,13 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - [x] Verified by testing_agent (iteration_78.json, 100% frontend): both completed (Order Processing/Quality Check/Shipped) and awaiting-payment (Send Payment/We Verify/Order Ships) variants readable (white on dark), page bg rgb(5,15,23).
 - Note (backlog): the CashApp "Complete Your Payment" instructions card still uses a light-green bg — readable but off-theme; candidate for a future dark-theme consistency pass.
 
+### Feature — Customer CRUD (Create/Edit/Impersonate/Delete) + Button Contrast (July 16, 2026)
+- [x] Removed the old "Create Test Customer" (fixed test account) and replaced with a real **"Create a Customer"** flow. Backend: `POST/PUT/DELETE /api/admin/customers` (+ existing impersonate), all `require_admin`. A customer = `users` doc (role USER, login) + `customers` doc (same id, storefront metadata) → can purchase across all enabled systems (storefront/storage/pawn); verified the created account can log in.
+- [x] Frontend `AdminCustomers.jsx` fully rewritten: create/edit dialog, delete confirm, impersonate, reset-password; added DialogDescription for a11y.
+- [x] Fixed invisible buttons: invalid Tailwind `bg-[rgb(37, 99, 235)]` (spaces break arbitrary values → no bg, white-on-white) replaced with `bg-blue-600`/`text-blue-600` throughout.
+- [x] Verified by testing_agent (iteration_79.json): backend 11/11, frontend 100% — full lifecycle (create→login→edit→impersonate→delete→404) and button contrast confirmed.
+- Note (backlog): listing uses `/api/store/customers` while CRUD uses `/api/admin/customers` (functional but inconsistent namespacing).
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**

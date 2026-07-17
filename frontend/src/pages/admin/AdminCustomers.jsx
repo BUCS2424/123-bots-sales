@@ -9,7 +9,7 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Card, CardContent } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
-import { Dialog, DialogContent, DialogTitle } from '../../components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../../components/ui/dialog';
 import { Label } from '../../components/ui/label';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from '../../hooks/use-toast';
@@ -372,11 +372,11 @@ const AdminCustomers = () => {
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent className="max-w-lg">
           <DialogTitle>{formMode === 'create' ? 'Create a Customer' : 'Edit Customer'}</DialogTitle>
-          <p className="text-sm text-gray-500">
+          <DialogDescription className="text-sm text-gray-500">
             {formMode === 'create'
               ? 'Creates a login + storefront account that can purchase across all enabled systems.'
               : 'Update this customer\u2019s details. Leave password blank to keep it unchanged.'}
-          </p>
+          </DialogDescription>
           <div className="grid grid-cols-2 gap-3 mt-2">
             {field('name', 'Full Name *', 'text', 'Jane Doe')}
             {field('email', 'Email *', 'email', 'jane@example.com')}
@@ -405,10 +405,10 @@ const AdminCustomers = () => {
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <DialogContent className="max-w-sm">
           <DialogTitle>Delete Customer</DialogTitle>
-          <p className="text-sm text-gray-600">
+          <DialogDescription className="text-sm text-gray-600">
             Are you sure you want to permanently delete <span className="font-semibold">{deleteTarget?.name || deleteTarget?.email}</span>?
             This removes their login and storefront account. This cannot be undone.
-          </p>
+          </DialogDescription>
           <div className="flex justify-end gap-2 mt-4">
             <Button variant="outline" onClick={() => setDeleteTarget(null)}>Cancel</Button>
             <Button
@@ -427,7 +427,7 @@ const AdminCustomers = () => {
       <Dialog open={resetPwOpen} onOpenChange={setResetPwOpen}>
         <DialogContent className="max-w-sm">
           <DialogTitle>Reset Customer Password</DialogTitle>
-          <p className="text-sm text-gray-500">Set a new password for {resetPwUser?.name || resetPwUser?.email}</p>
+          <DialogDescription className="text-sm text-gray-500">Set a new password for {resetPwUser?.name || resetPwUser?.email}</DialogDescription>
           <div className="space-y-4 mt-2">
             <div>
               <Label>New Password</Label>
