@@ -32,7 +32,10 @@ export const TaxExemptCard = ({ entityType, entityId, initialExempt = false, ini
     setReason(initialInfo?.reason || '');
     setExpirationDate(initialInfo?.expiration_date || '');
     setCertFile(initialInfo?.cert_file || null);
-  }, [entityId, initialExempt, initialInfo]);
+    // Only reset when switching to a different entity, so parent re-renders
+    // (new object identity) don't wipe the admin's in-progress edits.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entityId]);
 
   const fullUrl = (url) => (url?.startsWith('http') ? url : `${API}${url}`);
 
