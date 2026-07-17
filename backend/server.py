@@ -863,15 +863,27 @@ class UserUpdate(BaseModel):
     is_active: Optional[bool] = None
 
 
-class TestCustomerResponse(BaseModel):
-    success: bool
-    created: bool
-    message: str
-    user_id: str
-    customer_id: str
-    email: EmailStr
+class CustomerCreate(BaseModel):
     name: str
+    email: EmailStr
     password: str
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zip_code: Optional[str] = None
+
+
+class CustomerAdminUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zip_code: Optional[str] = None
+    is_active: Optional[bool] = None
+    password: Optional[str] = None
 
 @api_router.get("/admin/users", response_model=List[UserResponse])
 async def list_users(current_user: TokenData = Depends(require_admin)):
@@ -922,60 +934,31 @@ async def create_user(user_data: UserCreateAdmin, current_user: TokenData = Depe
     )
 
 
-@api_router.post("/admin/customers/create-test", response_model=TestCustomerResponse)
-async def create_test_customer(current_user: TokenData = Depends(require_admin)):
-    """Create test customer account once; if exists, do not duplicate."""
-    test_email = "customer.test@emergent.dev"
-    test_name = "Test Customer"
-    test_password = "TestCustomer123!"
-    now_iso = datetime.now(timezone.utc).isoformat()
+@api_router.post("/admin/customers")
+async def create_customer(customer_data: CustomerCreate, current_user: TokenData = Depends(require_admin)):
+    """Create a real customer account (login + storefront record) that can purchase across all enabled systems."""
+    email = customer_data.email.lower().strip()
 
-    existing_user = await db.users.find_one({"email": test_email})
-
+    existing_user = await db.users.find_one({"email": email})
     if existing_user:
-        user_id = existing_user["id"]
-        existing_customer = await db.customers.find_one({"email": test_email}, {"_id": 0})
+        raise HTTPException(status_code=400, detail="A customer with this email already exists")
 
-        if not existing_customer:
-            customer_doc = {
-                "id": user_id,
-                "email": test_email,
-                "name": existing_user.get("name") or test_name,
-                "phone": existing_user.get("phone"),
-                "address": existing_user.get("address"),
-                "city": existing_user.get("city"),
-                "state": existing_user.get("state"),
-                "zip_code": existing_user.get("zip_code"),
-                "total_orders": int(existing_user.get("total_orders", 0) or 0),
-                "total_spent": float(existing_user.get("total_spent", 0.0) or 0.0),
-                "created_at": existing_user.get("created_at") or now_iso,
-                "last_order_at": existing_user.get("last_order_at"),
-            }
-            await db.customers.insert_one(customer_doc)
-            customer_id = customer_doc["id"]
-        else:
-            customer_id = existing_customer.get("id", user_id)
-
-        return TestCustomerResponse(
-            success=True,
-            created=False,
-            message="Test customer already exists",
-            user_id=user_id,
-            customer_id=customer_id,
-            email=test_email,
-            name=existing_user.get("name") or test_name,
-            password=test_password,
-        )
-
+    now_iso = datetime.now(timezone.utc).isoformat()
     user_id = str(uuid.uuid4())
+
     new_user = {
         "id": user_id,
-        "email": test_email,
-        "name": test_name,
-        "hashed_password": get_password_hash(test_password),
+        "email": email,
+        "name": customer_data.name,
+        "hashed_password": get_password_hash(customer_data.password),
         "role": UserRole.USER,
         "is_active": True,
         "email_verified": True,
+        "phone": customer_data.phone,
+        "address": customer_data.address,
+        "city": customer_data.city,
+        "state": customer_data.state,
+        "zip_code": customer_data.zip_code,
         "created_at": now_iso,
         "updated_at": now_iso,
         "total_orders": 0,
@@ -985,13 +968,13 @@ async def create_test_customer(current_user: TokenData = Depends(require_admin))
 
     customer_doc = {
         "id": user_id,
-        "email": test_email,
-        "name": test_name,
-        "phone": None,
-        "address": None,
-        "city": None,
-        "state": None,
-        "zip_code": None,
+        "email": email,
+        "name": customer_data.name,
+        "phone": customer_data.phone,
+        "address": customer_data.address,
+        "city": customer_data.city,
+        "state": customer_data.state,
+        "zip_code": customer_data.zip_code,
         "total_orders": 0,
         "total_spent": 0.0,
         "created_at": now_iso,
@@ -999,16 +982,13 @@ async def create_test_customer(current_user: TokenData = Depends(require_admin))
     }
     await db.customers.insert_one(customer_doc)
 
-    return TestCustomerResponse(
-        success=True,
-        created=True,
-        message="Test customer created successfully",
-        user_id=user_id,
-        customer_id=user_id,
-        email=test_email,
-        name=test_name,
-        password=test_password,
-    )
+    return {
+        "success": True,
+        "id": user_id,
+        "email": email,
+        "name": customer_data.name,
+        "message": "Customer created successfully",
+    }
 
 
 @api_router.post("/admin/customers/{customer_id}/impersonate", response_model=Token)
@@ -1047,6 +1027,56 @@ async def impersonate_customer(customer_id: str, current_user: TokenData = Depen
     )
 
     return Token(access_token=access_token, user=user_response)
+
+
+@api_router.put("/admin/customers/{customer_id}")
+async def update_customer(customer_id: str, customer_data: CustomerAdminUpdate, current_user: TokenData = Depends(require_admin)):
+    """Edit a customer account (updates both the login user and the storefront record)."""
+    customer = await db.customers.find_one({"id": customer_id}, {"_id": 0})
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+
+    updates = {k: v for k, v in customer_data.model_dump().items() if v is not None and k != "password"}
+
+    if "email" in updates:
+        updates["email"] = updates["email"].lower().strip()
+        clash = await db.users.find_one({"email": updates["email"], "id": {"$ne": customer_id}})
+        if clash:
+            raise HTTPException(status_code=400, detail="Another account already uses this email")
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    if updates:
+        await db.customers.update_one({"id": customer_id}, {"$set": updates})
+
+    user_updates = dict(updates)
+    user_updates["updated_at"] = now_iso
+    if customer_data.password:
+        if len(customer_data.password) < 6:
+            raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+        user_updates["hashed_password"] = get_password_hash(customer_data.password)
+    await db.users.update_one({"id": customer_id}, {"$set": user_updates})
+
+    updated = await db.customers.find_one({"id": customer_id}, {"_id": 0})
+    return {"success": True, "customer": updated, "message": "Customer updated successfully"}
+
+
+@api_router.delete("/admin/customers/{customer_id}")
+async def delete_customer(customer_id: str, current_user: TokenData = Depends(require_admin)):
+    """Delete a customer account (both the login user and the storefront record)."""
+    customer = await db.customers.find_one({"id": customer_id}, {"_id": 0})
+    user = await db.users.find_one({"id": customer_id}, {"_id": 0})
+    if not customer and not user:
+        raise HTTPException(status_code=404, detail="Customer not found")
+
+    if user and user.get("role") not in (UserRole.USER, None):
+        raise HTTPException(status_code=400, detail="Only customer accounts can be deleted here")
+
+    await db.customers.delete_one({"id": customer_id})
+    await db.users.delete_one({"id": customer_id, "role": UserRole.USER})
+
+    return {"success": True, "message": "Customer deleted successfully"}
+
 
 @api_router.put("/admin/users/{user_id}", response_model=UserResponse)
 async def update_user(user_id: str, user_data: UserUpdate, current_user: TokenData = Depends(require_super_admin)):
