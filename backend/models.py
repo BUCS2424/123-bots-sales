@@ -209,6 +209,9 @@ class Order(OrderBase):
     shipped_at: Optional[datetime] = None
     delivered_at: Optional[datetime] = None
     tracking_number: Optional[str] = None
+    payment_transaction_id: Optional[str] = None
+    stripe_payment_intent_id: Optional[str] = None  # pi_... for Stripe Dashboard cross-reference
+    stripe_session_id: Optional[str] = None  # cs_... Stripe Checkout session
     last_recurring_invoice_at: Optional[datetime] = None  # Track when last invoice was sent
     recurring_invoice_count: Optional[int] = 0  # How many recurring invoices sent
 

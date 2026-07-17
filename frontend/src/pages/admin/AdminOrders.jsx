@@ -3,7 +3,7 @@ import axios from 'axios';
 import {
   Search, Eye, Package, Truck, CheckCircle, XCircle, Clock,
   ChevronDown, ChevronUp, MapPin, Mail, Phone, DollarSign, CreditCard,
-  Wallet, RefreshCw, Send, Repeat, Printer
+  Wallet, RefreshCw, Send, Repeat, Printer, Copy, ExternalLink
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -232,6 +232,16 @@ const AdminOrders = () => {
 
   const getStatusInfo = (status) => {
     return orderStatuses.find(s => s.value === status) || orderStatuses[0];
+  };
+
+  const copyPaymentRef = async (value, label) => {
+    if (!value) return;
+    try {
+      await navigator.clipboard.writeText(value);
+      toast({ title: 'Copied', description: `${label} copied to clipboard.` });
+    } catch (error) {
+      toast({ title: 'Copy Failed', description: 'Could not copy to clipboard.', variant: 'destructive' });
+    }
   };
 
   const filteredOrders = orders.filter(order => {
@@ -475,6 +485,69 @@ const AdminOrders = () => {
                   <p className="text-xl font-bold text-purple-600">${selectedOrder.total?.toFixed(2)}</p>
                 </div>
               </div>
+
+              {/* Payment Reference (Stripe cross-reference) */}
+              {(selectedOrder.stripe_payment_intent_id || selectedOrder.stripe_session_id || selectedOrder.payment_transaction_id) && (
+                <Card data-testid="admin-order-payment-reference-card" className="border-blue-200 bg-blue-50/50">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <CreditCard className="w-4 h-4 text-blue-600" /> Payment Reference
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {selectedOrder.stripe_payment_intent_id && (
+                      <div data-testid="admin-order-stripe-payment-intent-row">
+                        <p className="text-xs text-gray-500 mb-1">Stripe Payment ID (PaymentIntent)</p>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <code className="text-sm font-mono bg-white border border-gray-200 rounded px-2 py-1 text-gray-800 break-all" data-testid="admin-order-stripe-payment-intent-value">
+                            {selectedOrder.stripe_payment_intent_id}
+                          </code>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="h-8"
+                            onClick={() => copyPaymentRef(selectedOrder.stripe_payment_intent_id, 'Payment ID')}
+                            data-testid="copy-stripe-payment-intent-button"
+                          >
+                            <Copy className="w-3.5 h-3.5 mr-1" /> Copy
+                          </Button>
+                          <a
+                            href={`https://dashboard.stripe.com/payments/${selectedOrder.stripe_payment_intent_id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            data-testid="view-in-stripe-link"
+                          >
+                            <Button type="button" size="sm" variant="outline" className="h-8 text-blue-600 border-blue-200 hover:bg-blue-50">
+                              <ExternalLink className="w-3.5 h-3.5 mr-1" /> View in Stripe
+                            </Button>
+                          </a>
+                        </div>
+                      </div>
+                    )}
+                    {(selectedOrder.stripe_session_id || selectedOrder.payment_transaction_id) && (
+                      <div data-testid="admin-order-stripe-session-row">
+                        <p className="text-xs text-gray-500 mb-1">Checkout Session ID</p>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <code className="text-sm font-mono bg-white border border-gray-200 rounded px-2 py-1 text-gray-800 break-all" data-testid="admin-order-stripe-session-value">
+                            {selectedOrder.stripe_session_id || selectedOrder.payment_transaction_id}
+                          </code>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="h-8"
+                            onClick={() => copyPaymentRef(selectedOrder.stripe_session_id || selectedOrder.payment_transaction_id, 'Session ID')}
+                            data-testid="copy-stripe-session-button"
+                          >
+                            <Copy className="w-3.5 h-3.5 mr-1" /> Copy
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Customer Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

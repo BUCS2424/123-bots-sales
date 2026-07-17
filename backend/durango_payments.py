@@ -802,6 +802,34 @@ async def process_payment(payment: PaymentRequest):
         )
 
 
+async def _fetch_stripe_payment_intent_id(session_id: str) -> Optional[str]:
+    """Read-only lookup of the PaymentIntent id (pi_...) for a Checkout Session.
+
+    emergentintegrations' CheckoutStatusResponse does not expose payment_intent,
+    so we retrieve the session directly (read-only) to capture it for admin
+    cross-reference in the Stripe Dashboard.
+    """
+    try:
+        stripe_secret = await get_stripe_secret_key()
+        if not stripe_secret:
+            return None
+        async with httpx.AsyncClient(timeout=15) as client:
+            resp = await client.get(
+                f"https://api.stripe.com/v1/checkout/sessions/{session_id}",
+                headers={"Authorization": f"Bearer {stripe_secret}"},
+            )
+        if resp.status_code != 200:
+            return None
+        data = resp.json()
+        pi = data.get("payment_intent")
+        # payment_intent may be an object when expanded; normally it's a string id
+        if isinstance(pi, dict):
+            return pi.get("id")
+        return pi
+    except Exception:
+        return None
+
+
 async def _finalize_stripe_order(session_id: str, checkout_status) -> dict:
     """Idempotently update the transaction + order based on Stripe checkout status."""
     txn = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
@@ -810,24 +838,46 @@ async def _finalize_stripe_order(session_id: str, checkout_status) -> dict:
     new_status = checkout_status.payment_status  # 'paid', 'unpaid', 'no_payment_required'
     session_status = checkout_status.status      # 'open', 'complete', 'expired'
 
+    # Capture the Stripe PaymentIntent id once the payment is confirmed
+    payment_intent_id = (txn or {}).get("stripe_payment_intent_id")
+    if new_status == "paid" and not payment_intent_id:
+        payment_intent_id = await _fetch_stripe_payment_intent_id(session_id)
+
+    txn_update = {
+        "payment_status": new_status,
+        "session_status": session_status,
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    if payment_intent_id:
+        txn_update["stripe_payment_intent_id"] = payment_intent_id
+
     await db.payment_transactions.update_one(
         {"session_id": session_id},
-        {"$set": {
-            "payment_status": new_status,
-            "session_status": session_status,
-            "updated_at": datetime.now(timezone.utc).isoformat(),
-        }}
+        {"$set": txn_update}
     )
 
     order_id = (txn or {}).get("order_id")
     if order_id and new_status == "paid" and not already_paid:
+        order_update = {
+            "status": "paid",
+            "payment_status": "captured",
+            "payment_transaction_id": session_id,
+            "stripe_session_id": session_id,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }
+        if payment_intent_id:
+            order_update["stripe_payment_intent_id"] = payment_intent_id
         await db.orders.update_one(
             {"id": order_id},
+            {"$set": order_update}
+        )
+    elif order_id and payment_intent_id:
+        # Backfill ids on an already-paid order that was missing them
+        await db.orders.update_one(
+            {"id": order_id, "stripe_payment_intent_id": {"$in": [None, ""]}},
             {"$set": {
-                "status": "paid",
-                "payment_status": "captured",
-                "payment_transaction_id": session_id,
-                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "stripe_payment_intent_id": payment_intent_id,
+                "stripe_session_id": session_id,
             }}
         )
 

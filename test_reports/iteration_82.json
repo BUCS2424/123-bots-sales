@@ -1,0 +1,24 @@
+{
+  "summary": "Frontend-only verification of Admin Orders 'Payment Reference' card on order-detail modal. Logged in as admin, opened seeded APS-TESTPI stripe order, and verified the card renders Stripe Payment ID (pi_test_XYZ) with Copy button, 'View in Stripe' link pointing to https://dashboard.stripe.com/payments/pi_test_XYZ (target=_blank), and Checkout Session ID (cs_test_ABC) with Copy button. Also verified conditional rendering: opened a non-stripe Venmo order (ORD-20260715005528-394CFC) with no stripe ids — the payment-reference card correctly did NOT render. All required data-testid selectors are present and correct.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Order detail modal (APS-TESTPI)", "issues": ["Shipping Address block shows a lone comma ',' because seeded order has no address components — cosmetic only, not part of this task"]},
+      {"screen": "Order detail modal (APS-TESTPI)", "issues": ["Order summary shows 'Shipping $undefined' for the seeded $1.00 test order — cosmetic; unrelated to Payment Reference card feature"]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "AdminOrders.jsx line 528: session card renders under 'stripe_session_id || payment_transaction_id' but the label is hardcoded to 'Checkout Session ID' — if only payment_transaction_id (non-Stripe) is present, the label may be misleading. Consider labeling dynamically based on which id is present."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped per request)", "frontend": "100%"},
+  "test_credentials": "mel@a2gdesigns.com / BigDaddy2016!!",
+  "seed_data_creation": "None — used pre-seeded APS-TESTPI order",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Payment Reference card fully working on Admin Orders detail modal. To open a row's detail modal, click the LAST button in the row (the eye/View button); the first button in the row is the recurring-toggle switch. Selectors verified: admin-order-payment-reference-card, admin-order-stripe-payment-intent-value, admin-order-stripe-session-value, copy-stripe-payment-intent-button, copy-stripe-session-button, view-in-stripe-link."
+}
