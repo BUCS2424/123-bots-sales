@@ -423,6 +423,13 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - [x] Verified by testing_agent (iteration_79.json): backend 11/11, frontend 100% — full lifecycle (create→login→edit→impersonate→delete→404) and button contrast confirmed.
 - Note (backlog): listing uses `/api/store/customers` while CRUD uses `/api/admin/customers` (functional but inconsistent namespacing).
 
+### Bug Fix + Feature — Category Deletion & Drag-Drop Subcategories (July 17, 2026)
+- [x] **Fixed "deleted categories respawn" bug** (`ecommerce.py` `delete_category`): on delete, the category name is now stripped from every product that references it (both `category` and `categories`); products left empty fall back to "General". This stops `_ensure_top_level_categories` from recreating the ghost category on the next product save/sync. Curl-verified: product reference → "General", category does NOT reappear even after a product update.
+- [x] **Drag-and-drop subcategory nesting** (`AdminCategories.jsx`): dragging a category and dropping it directly ONTO another now nests it as a **subcategory** (child, `parent_id = target.id`) instead of reordering as a sibling. Added blue drop-target highlight, auto-expand of the target, and cycle-prevention (can't nest a category into its own descendant → "Invalid Move" toast). Persists via `POST /api/store/categories/reorder`.
+- [x] Verified by testing_agent (iteration_81.json): backend 5/5 pytest pass, frontend nesting persists across reload. 100%/100%.
+- Confirmed: product `shipping_weight` is stored in POUNDS; backend ×16 → ounces for shipping APIs (no change needed).
+- Backlog note (from tester): `AdminCategories.jsx` is ~736 lines — candidate to split tree/editor/DnD into components.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**
