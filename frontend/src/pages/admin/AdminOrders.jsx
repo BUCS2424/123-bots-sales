@@ -527,7 +527,7 @@ const AdminOrders = () => {
                     )}
                     {(selectedOrder.stripe_session_id || selectedOrder.payment_transaction_id) && (
                       <div data-testid="admin-order-stripe-session-row">
-                        <p className="text-xs text-gray-500 mb-1">Checkout Session ID</p>
+                        <p className="text-xs text-gray-500 mb-1">{selectedOrder.stripe_session_id ? 'Checkout Session ID (Stripe)' : 'Transaction ID'}</p>
                         <div className="flex items-center gap-2 flex-wrap">
                           <code className="text-sm font-mono bg-white border border-gray-200 rounded px-2 py-1 text-gray-800 break-all" data-testid="admin-order-stripe-session-value">
                             {selectedOrder.stripe_session_id || selectedOrder.payment_transaction_id}

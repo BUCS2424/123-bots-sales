@@ -430,6 +430,12 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - Confirmed: product `shipping_weight` is stored in POUNDS; backend ×16 → ounces for shipping APIs (no change needed).
 - Backlog note (from tester): `AdminCategories.jsx` is ~736 lines — candidate to split tree/editor/DnD into components.
 
+### Feature — Stripe Payment ID on Admin Order Invoice (July 17, 2026)
+- [x] Captured the Stripe **PaymentIntent id (pi_...)** for paid Stripe checkout orders. `durango_payments._finalize_stripe_order` now calls `_fetch_stripe_payment_intent_id()` (read-only `httpx` GET to `api.stripe.com/v1/checkout/sessions/{id}`) and stores `stripe_payment_intent_id` + `stripe_session_id` on the order and transaction. Added these + `payment_transaction_id` to the `Order` model so they survive the response schema.
+- [x] **Admin → Orders order-detail** now shows a "Payment Reference" card with the Stripe Payment ID (pi_) and Checkout Session ID (cs_), each with a Copy button, plus a "View in Stripe" link to `dashboard.stripe.com/payments/{pi}`. Card only renders when payment ids exist; second-row label is dynamic (Stripe session vs generic Transaction ID for PayPal/other).
+- [x] Verified by testing_agent (iteration_82.json, frontend 100%): card renders pi_/cs_ with copy + Stripe link for a stripe order, and correctly hides for a non-stripe (Venmo) order. Backend field round-trip curl-verified.
+- Note: live pi_ capture depends on completing a real hosted Stripe checkout (cannot be e2e tested in-tool); the fetch/store path and UI are verified.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles
 - **P1 (Next):**
