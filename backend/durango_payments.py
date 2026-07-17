@@ -959,7 +959,23 @@ async def enforce_checkout_feature_flags(request: Request):
 async def create_order(order_data: OrderCreate, request: Request):
     """Create a new order and process payment"""
     token_data = await enforce_checkout_feature_flags(request)
-    
+
+    # Tax exemption: if the buyer (by account or email) is tax exempt, force tax to 0
+    order_tax = order_data.tax
+    order_total = order_data.total
+    try:
+        from tax_exempt import get_tax_exempt_state
+        exempt_state = await get_tax_exempt_state(
+            db,
+            user_id=token_data.user_id if token_data else None,
+            email=order_data.customer_email,
+        )
+        if exempt_state.get("tax_exempt") and (order_tax or 0) > 0:
+            order_total = round((order_total or 0) - (order_tax or 0), 2)
+            order_tax = 0.0
+    except Exception:
+        pass
+
     # Generate order number
     order_number = generate_order_number()
     order_id = str(uuid.uuid4())
@@ -973,8 +989,8 @@ async def create_order(order_data: OrderCreate, request: Request):
         "billing": order_data.billing or order_data.shipping,
         "subtotal": order_data.subtotal,
         "shipping_cost": order_data.shipping_cost,
-        "tax": order_data.tax,
-        "total": order_data.total,
+        "tax": order_tax,
+        "total": order_total,
         "status": "pending",
         "payment_status": "pending",
         "payment_method": order_data.payment_method,
@@ -1140,7 +1156,7 @@ async def create_order(order_data: OrderCreate, request: Request):
         # Card payment via Durango
         payment_request = PaymentRequest(
             payment_token=order_data.payment_token,
-            amount=order_data.total,
+            amount=order["total"],
             order_id=order_number,
             customer_email=order_data.customer_email,
             customer_name=order_data.customer_name,

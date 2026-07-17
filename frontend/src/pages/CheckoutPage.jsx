@@ -105,6 +105,7 @@ const CheckoutPage = () => {
   // Tax settings state
   const [taxSettings, setTaxSettings] = useState({ tax_enabled: true, tax_rates: [], combined_rate: 0 });
   const [loadingTaxSettings, setLoadingTaxSettings] = useState(true);
+  const [customerTaxExempt, setCustomerTaxExempt] = useState(false);
   
   // Shipping rates state
   const [shippingRates, setShippingRates] = useState([]);
@@ -252,6 +253,23 @@ const CheckoutPage = () => {
     fetchTaxSettings();
   }, []);
 
+  // Check if the logged-in customer is tax exempt
+  useEffect(() => {
+    const fetchExempt = async () => {
+      if (!token) { setCustomerTaxExempt(false); return; }
+      try {
+        const res = await fetch(`${API_URL}/api/tax-exempt/me`, { headers: { Authorization: `Bearer ${token}` } });
+        if (res.ok) {
+          const data = await res.json();
+          setCustomerTaxExempt(Boolean(data.tax_exempt));
+        }
+      } catch (e) {
+        setCustomerTaxExempt(false);
+      }
+    };
+    fetchExempt();
+  }, [token]);
+
   // Fetch local pickup settings on mount
   useEffect(() => {
     const fetchLocalPickupSettings = async () => {
@@ -275,7 +293,7 @@ const CheckoutPage = () => {
   // Shipping is $0 for local pickup
   const shippingCost = deliveryMethod === 'pickup' ? 0 : (selectedShippingRate?.rate_with_upcharge || selectedShippingRate?.rate || (subtotal > 100 ? 0 : 15));
   const taxRate = taxSettings.combined_rate / 100; // Convert percentage to decimal
-  const tax = discountedSubtotal * taxRate;
+  const tax = customerTaxExempt ? 0 : discountedSubtotal * taxRate;
   const total = discountedSubtotal + shippingCost + tax;
   
   // Apply discount code handler
@@ -2613,10 +2631,10 @@ const CheckoutPage = () => {
                     Est. {selectedShippingRate.estimated_days} business day{selectedShippingRate.estimated_days > 1 ? 's' : ''}
                   </p>
                 )}
-                <div className="flex justify-between text-gray-400">
-                  <span>Tax {taxSettings.combined_rate > 0 ? `(${taxSettings.combined_rate.toFixed(2)}%)` : ''}</span>
-                  <span className="font-mono text-white">
-                    {taxSettings.combined_rate > 0 ? `$${tax.toFixed(2)}` : '$0.00'}
+                <div className="flex justify-between text-gray-400" data-testid="checkout-tax-line">
+                  <span>{customerTaxExempt ? 'Tax (Exempt)' : `Tax ${taxSettings.combined_rate > 0 ? `(${taxSettings.combined_rate.toFixed(2)}%)` : ''}`}</span>
+                  <span className={`font-mono ${customerTaxExempt ? 'text-emerald-400' : 'text-white'}`}>
+                    {customerTaxExempt ? '$0.00' : (taxSettings.combined_rate > 0 ? `$${tax.toFixed(2)}` : '$0.00')}
                   </span>
                 </div>
                 <div className="pt-4 border-t border-gray-700">

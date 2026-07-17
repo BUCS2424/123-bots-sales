@@ -25,7 +25,9 @@ import {
   Download,
   Tag,
   FileText,
+  ShieldCheck,
 } from 'lucide-react';
+import { TaxExemptCard } from '../../components/TaxExemptCard';
 import { Card, CardContent } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -53,6 +55,7 @@ const DEFAULT_COLUMNS = [
 
 const SECTION_TABS = [
   { id: 'opportunity-details', label: 'Opportunity Details', icon: UserRound },
+  { id: 'tax-exempt', label: 'Tax Exempt', icon: ShieldCheck },
   { id: 'appointments', label: 'Book/Update Appointment', icon: Calendar },
   { id: 'quotes-contracts-esign', label: 'Quotes', icon: FileSignature },
   { id: 'tasks', label: 'Tasks', icon: CheckCircle2 },
@@ -1188,6 +1191,18 @@ const AdminLeadsKanban = () => {
                           )}
                         </div>
                       </div>
+                    </div>
+                  )}
+
+                  {activeSection === 'tax-exempt' && (
+                    <div className="space-y-4" data-testid="opportunity-tax-exempt-section">
+                      <TaxExemptCard
+                        entityType="lead"
+                        entityId={selectedLead.id}
+                        initialExempt={selectedLead.tax_exempt}
+                        initialInfo={selectedLead.tax_exempt_info}
+                        onSaved={(updated) => updated && setSelectedLead((prev) => ({ ...prev, tax_exempt: updated.tax_exempt, tax_exempt_info: updated.tax_exempt_info }))}
+                      />
                     </div>
                   )}
 

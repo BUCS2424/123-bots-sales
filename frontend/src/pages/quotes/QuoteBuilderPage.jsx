@@ -5,6 +5,7 @@ import { useSiteFeatureFlags } from '../../hooks/useSiteFeatureFlags';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
+import { Switch } from '../../components/ui/switch';
 import { Textarea } from '../../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { Checkbox } from '../../components/ui/checkbox';
@@ -308,6 +309,8 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
   const [items, setItems] = useState([{ _id: genItemId(), description: '', quantity: 1, unit_price: 0, item_type: 'custom', billing_type: 'onetime' }]);
   const [previewTab, setPreviewTab] = useState('quote');
   const [showCatalogPicker, setShowCatalogPicker] = useState(false);
+  const [taxRatePercent, setTaxRatePercent] = useState(0);
+  const [quoteTaxExempt, setQuoteTaxExempt] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -340,9 +343,17 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
         api.get('/api/settings/general').catch(() => ({ data: {} })),
         api.get('/api/quotes/config').catch(() => ({ data: { config: {}, business_info: {} } })),
         api.get('/api/quotes/flow-config').catch(() => ({ data: { config: {} } })),
+        api.get('/api/admin-settings/tax').catch(() => ({ data: {} })),
       ]);
       
       setLead(results[0].data);
+      const leadData = results[0].data || {};
+      // Combined active sales tax rate (%)
+      const taxData = results[7]?.data || {};
+      const combinedRate = (taxData.tax_enabled === false ? [] : (taxData.tax_rates || []))
+        .filter(r => r.active !== false)
+        .reduce((sum, r) => sum + (parseFloat(r.rate) || 0), 0);
+      setTaxRatePercent(combinedRate);
       // Map store products (price, sku, category) to quote catalog format
       const storeProducts = (results[1].data.products || results[1].data || []).map(p => ({
         id: p.id,
@@ -374,8 +385,10 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
           setContractTemplateId(existingQuote.contract_template_id || '');
           setSelectedDocumentIds(existingQuote.contract_document_ids || []);
           setItems(existingQuote.items?.length > 0 ? existingQuote.items.map((it, i) => ({ ...it, _id: it._id || `item-load-${i}` })) : [{ _id: genItemId(), description: '', quantity: 1, unit_price: 0, item_type: 'custom', billing_type: 'onetime' }]);
+          setQuoteTaxExempt(existingQuote.tax_exempt ?? Boolean(leadData.tax_exempt));
         }
       } else {
+        setQuoteTaxExempt(Boolean(leadData.tax_exempt));
         const defaultTemplate = (results[3].data.templates || []).find(t => t.is_default);
         if (defaultTemplate) {
           setContractTemplateId(defaultTemplate.id);
@@ -403,12 +416,13 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
   };
 
   const totals = calculateTotals();
+  const taxAmount = quoteTaxExempt ? 0 : totals.combined * (taxRatePercent / 100);
   const STRIPE_RATE = 0.029;
   const STRIPE_FLAT = 0.30;
   const ccFee = (amount) => amount > 0 ? (amount * STRIPE_RATE) + STRIPE_FLAT : 0;
   const stripeFeesEnabled = quoteFormConfig.charge_stripe_fees !== false;
   const stripeFeeAmount = stripeFeesEnabled ? ccFee(totals.combined) : 0;
-  const totalWithFees = totals.combined + stripeFeeAmount;
+  const totalWithFees = totals.combined + taxAmount + stripeFeeAmount;
   const depositType = quoteFormConfig.deposit_type === 'flat' ? 'flat' : 'percent';
   const rawDepositValue = Number(quoteFormConfig.deposit_value || 0);
   const depositAmount = Math.min(
@@ -499,7 +513,11 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
         contract_template_name: template?.name || '',
         contract_document_ids: allDocumentIds,
         items,
-        total: totals.combined,
+        subtotal: totals.combined,
+        tax_exempt: quoteTaxExempt,
+        tax_rate: quoteTaxExempt ? 0 : taxRatePercent,
+        tax_amount: taxAmount,
+        total: totals.combined + taxAmount,
         total_onetime: totals.onetime,
         total_monthly: totals.monthly,
         total_yearly: totals.yearly
@@ -742,6 +760,14 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
                       <span className="font-medium">{formatCurrency(totals.combined)}</span>
                     </div>
                   </div>
+                  <div className="flex justify-between text-sm" data-testid="quote-preview-tax-line">
+                    <span className="text-gray-500">
+                      {quoteTaxExempt ? 'Sales Tax (Exempt)' : `Sales Tax${taxRatePercent > 0 ? ` (${taxRatePercent.toFixed(2)}%)` : ''}`}
+                    </span>
+                    <span className={`font-medium ${quoteTaxExempt ? 'text-emerald-600' : 'text-gray-600'}`}>
+                      {quoteTaxExempt ? '$0.00' : formatCurrency(taxAmount)}
+                    </span>
+                  </div>
                   {stripeFeesEnabled && (
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-500">Credit Card Processing Fee (2.9% + $0.30)</span>
@@ -879,6 +905,19 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
                     className="mt-1"
                     data-testid="quote-name-input"
                   />
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-lg border border-emerald-200 bg-emerald-50" data-testid="quote-tax-exempt-row">
+                  <div>
+                    <Label className="text-sm font-semibold text-emerald-800">Tax Exempt</Label>
+                    <p className="text-xs text-emerald-700/80 mt-0.5">
+                      {quoteTaxExempt
+                        ? 'No sales tax will be charged on this quote.'
+                        : taxRatePercent > 0
+                          ? `Sales tax of ${taxRatePercent.toFixed(2)}% applies. Toggle on to exempt.`
+                          : 'No tax rate configured.'}
+                    </p>
+                  </div>
+                  <Switch checked={quoteTaxExempt} onCheckedChange={setQuoteTaxExempt} data-testid="quote-tax-exempt-toggle" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>

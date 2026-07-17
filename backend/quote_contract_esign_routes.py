@@ -87,6 +87,10 @@ class QuoteCreate(BaseModel):
     contract_template_name: Optional[str] = ""
     contract_document_ids: List[str] = []
     items: List[QuoteItem]
+    subtotal: float = 0.0
+    tax_exempt: bool = False
+    tax_rate: float = 0.0
+    tax_amount: float = 0.0
     total: float = 0.0
     total_onetime: float = 0.0
     total_monthly: float = 0.0

@@ -5,7 +5,7 @@ import {
   ArrowLeft, User, Mail, Phone, MapPin, Package, DollarSign, Calendar,
   Plus, Edit2, Trash2, Star, CreditCard, Truck, FileText, ChevronDown,
   ChevronUp, Copy, ExternalLink, Clock, CheckCircle, XCircle, AlertCircle,
-  Home, Building, Save, X, MessageSquare, LogIn
+  Home, Building, Save, X, MessageSquare, LogIn, ShieldCheck
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -20,6 +20,7 @@ import { toast } from '../../hooks/use-toast';
 import { useAuth } from '../../context/AuthContext';
 import QuoteBuilderPage from '../quotes/QuoteBuilderPage';
 import { useSiteFeatureFlags } from '../../hooks/useSiteFeatureFlags';
+import { TaxExemptCard } from '../../components/TaxExemptCard';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -511,7 +512,7 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className={`grid w-full ${quotesEnabled ? 'grid-cols-5' : 'grid-cols-4'} lg:w-auto lg:inline-flex`}>
+        <TabsList className={`grid w-full ${quotesEnabled ? 'grid-cols-6' : 'grid-cols-5'} lg:w-auto lg:inline-flex`}>
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <User className="w-4 h-4" /> Overview
           </TabsTrigger>
@@ -523,6 +524,9 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
           </TabsTrigger>
           <TabsTrigger value="invoices" className="flex items-center gap-2">
             <FileText className="w-4 h-4" /> Invoices
+          </TabsTrigger>
+          <TabsTrigger value="tax-exempt" className="flex items-center gap-2" data-testid="customer-tax-exempt-tab-trigger">
+            <ShieldCheck className="w-4 h-4" /> Tax Exempt
           </TabsTrigger>
           {quotesEnabled && (
             <TabsTrigger value="quotes-contracts-esign" className="flex items-center gap-2" data-testid="customer-quotes-contracts-tab-trigger">
@@ -818,6 +822,21 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="tax-exempt" data-testid="customer-tax-exempt-tab-content">
+          {customerData?.customer?.id && (
+            <TaxExemptCard
+              entityType="customer"
+              entityId={customerData.customer.id}
+              initialExempt={customerData.customer.tax_exempt}
+              initialInfo={customerData.customer.tax_exempt_info}
+              onSaved={(updated) => updated && setCustomerData((prev) => ({
+                ...prev,
+                customer: { ...prev.customer, tax_exempt: updated.tax_exempt, tax_exempt_info: updated.tax_exempt_info },
+              }))}
+            />
+          )}
         </TabsContent>
 
         {quotesEnabled && (

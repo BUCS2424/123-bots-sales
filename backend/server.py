@@ -1203,6 +1203,11 @@ from storage import get_storage_router
 storage_router = get_storage_router(db, require_admin, require_super_admin)
 app.include_router(storage_router)
 
+# Include tax-exempt router (lead/customer tax exemption + cert upload)
+from tax_exempt import get_tax_exempt_router
+tax_exempt_router = get_tax_exempt_router(db, require_admin, require_auth)
+app.include_router(tax_exempt_router)
+
 # Include AI product generator router
 from ai_product import get_ai_product_router
 ai_product_router = get_ai_product_router(require_admin)

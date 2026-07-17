@@ -1126,7 +1126,9 @@ async def get_customer_dashboard(customer_id: str):
             "created_at": customer.get("created_at"),
             "customer_type": settings.get("customer_type", "retail") if settings else "retail",
             "custom_discount_percentage": settings.get("custom_discount_percentage") if settings else None,
-            "notes": settings.get("notes") if settings else None
+            "notes": settings.get("notes") if settings else None,
+            "tax_exempt": bool(customer.get("tax_exempt")),
+            "tax_exempt_info": customer.get("tax_exempt_info"),
         },
         "stats": {
             "total_orders": total_orders,
