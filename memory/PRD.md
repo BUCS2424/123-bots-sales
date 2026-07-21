@@ -454,6 +454,7 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - Minor (non-blocking): 2 unrelated 404 console errors on the Contract Documents page (not the templates API) — left as-is.
 
 ### Feature — Tax Exemption for Leads, Customers & Quotes (July 17, 2026)
+
 - [x] New **tax-exempt module** (`backend/tax_exempt.py`, `/api/tax-exempt`): `POST /upload-cert` (image/PDF ≤25MB → `/api/uploads/tax-certs/`), `PUT /lead/{id}`, `PUT /customer/{id}` (writes both `customers` + `users`), `GET /me`, and `get_tax_exempt_state()` helper.
 - [x] Reusable **`TaxExemptCard.jsx`**: toggle + info box, certificate number, reason/notes, expiration date, and **drag-and-drop cert upload** with **View / Print / Download** (audit-ready). Added to the **Lead/Opportunity** detail (new "Tax Exempt" section tab) and the **Customer Dashboard** (new "Tax Exempt" tab). Dashboard endpoint (`user_management.py`) now returns `tax_exempt` + `tax_exempt_info`.
 - [x] **Quote builder**: fetches the configured tax rate, shows a **Sales Tax line** and a per-quote **Tax Exempt** toggle (defaults to the lead's exempt status); tax becomes $0 when exempt. Persists `tax_exempt/tax_rate/tax_amount/subtotal` (QuoteCreate model updated).
@@ -461,11 +462,27 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - [x] Verified: testing_agent iteration_86.json 100% (backend 7/7, Lead + Customer + Quote UI); storefront enforcement curl-verified (exempt 9→0/109→100; non-exempt unchanged).
 - Note: in PREVIEW the tax settings are currently disabled (tax_enabled=false, tax_rates=[]), so the sales-tax line computes $0 until a rate is enabled; production has rates configured. Cert files use local `/app/uploads` (consider migrating to object storage for production durability — roadmap iDrive E2).
 
+### Feature — Custom Shipping Field on Quotes, Orders & Invoices (July 21, 2026)
+- [x] **Quotes** (`QuoteCreate.shipping_cost`, nullable): admin-only "Shipping" card in Quote Builder right column with a dollar input + "Calculate" button. Blank input = field hidden everywhere (preview totals, Quote Summary card, customer signing page); a value is added **after tax** into the stored `total` and shown as a line item in both admin previews and the customer-facing `/sign/:quoteId` page.
+- [x] **Calculate Shipping dialog** (Quote Builder + Admin Orders): destination address form → `POST /api/shipping/rates/checkout` (reuses the existing storefront rate-shopping endpoint) → carrier rate options rendered, click-to-fill. Falls back to mock USPS rates when no live carrier key (Shippo/EasyPost/ShipStation) is configured — expected in this environment.
+- [x] **Quote Products & Services catalog** (`QuoteCatalogItem`) gained `shipping_weight/length/width/height` fields (Products tab only) + a **"Sync from Store"** button (`POST /api/quotes/catalog/products/sync-from-store`) that idempotently pulls real storefront products (price, SKU, shipping dims) into the per-admin quote catalog, so quote line items can auto-calculate real shipping.
+- [x] `shipping.py compute_parcel_from_items()` now also falls back to `db.quote_products` (not just `db.products`) when resolving an item's weight/dimensions for a rate quote.
+- [x] **Orders**: new `PATCH /api/payments/orders/{order_id}/shipping` lets admin override the shipping cost post-purchase; recalculates `total = subtotal + tax + shipping_cost`. `AdminOrders.jsx` order-detail Shipping row got inline Edit → Calculate/manual entry → Save/Cancel.
+- [x] **Invoices**: `convert_quote_to_invoice` now carries `shipping_cost`/`tax_amount`/`subtotal` into the generated invoice record.
+- [x] Verified by testing_agent (iteration_87.json): backend 44/44 (9 new + 35 regression), frontend 100% — hidden-when-blank, positioned-after-tax, admin-entry/customer-visible, calculator+override, per-order recalculation, and sync idempotency all confirmed working.
+- Minor/non-blocking (pre-existing, unrelated): a demo store product line item shows $0.00 price when added via Browse Catalog; `QuoteSigningPage` header shows "For undefined undefined" for leads missing first_name/last_name (should fall back to primary_contact_name/company_name).
+
 ## Prioritized Next Actions
-- **P0 (Now complete):** Kanban + External Stack API + SEO Articles
+- **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices
 - **P1 (Next):**
   - Pre-launch: disable Coming Soon gate, populate shop catalog
+  - Configure SMTP/Resend for shipping-failure + quote email delivery
+  - Fix QuoteSigningPage "For undefined undefined" fallback (use primary_contact_name/company_name)
 - **P2 (Backlog):**
   - Checkout refactor + legacy component cleanup
   - Asset migration to iDrive E2
   - Security/performance review
+  - Robot page media (blocked — needs user assets)
+  - PUDU live fleet API integration
+  - Signed contract archive/search page
+  - Bulk tax exemption from Admin Customers; tax-exemption sales reporting export
