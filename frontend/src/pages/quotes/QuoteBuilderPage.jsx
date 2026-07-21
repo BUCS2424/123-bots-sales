@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Checkbox } from '../../components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
 import { toast } from 'sonner';
-import { ArrowLeft, Save, Send, RefreshCw, Plus, Trash2, Package, Wrench, FileText, Eye, ScrollText, Shield, FileCheck, FilePlus, GripVertical, Settings, Search, ShoppingCart, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Save, Send, RefreshCw, Plus, Trash2, Package, Wrench, FileText, Eye, ScrollText, Shield, FileCheck, FilePlus, GripVertical, Settings, Search, ShoppingCart, ExternalLink, Truck, Loader2 } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -311,6 +311,11 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
   const [showCatalogPicker, setShowCatalogPicker] = useState(false);
   const [taxRatePercent, setTaxRatePercent] = useState(0);
   const [quoteTaxExempt, setQuoteTaxExempt] = useState(false);
+  const [shippingCost, setShippingCost] = useState('');
+  const [shippingDialogOpen, setShippingDialogOpen] = useState(false);
+  const [shipAddress, setShipAddress] = useState({ street1: '', city: '', state: '', zip_code: '' });
+  const [shippingRates, setShippingRates] = useState([]);
+  const [calcLoadingShipping, setCalcLoadingShipping] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -344,6 +349,7 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
         api.get('/api/quotes/config').catch(() => ({ data: { config: {}, business_info: {} } })),
         api.get('/api/quotes/flow-config').catch(() => ({ data: { config: {} } })),
         api.get('/api/admin-settings/tax').catch(() => ({ data: {} })),
+        api.get('/api/quotes/catalog/products').catch(() => ({ data: { products: [] } })),
       ]);
       
       setLead(results[0].data);
@@ -354,7 +360,7 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
         .filter(r => r.active !== false)
         .reduce((sum, r) => sum + (parseFloat(r.rate) || 0), 0);
       setTaxRatePercent(combinedRate);
-      // Map store products (price, sku, category) to quote catalog format
+      // Map store products (price, sku, category, shipping dims) to quote catalog format
       const storeProducts = (results[1].data.products || results[1].data || []).map(p => ({
         id: p.id,
         name: p.name,
@@ -366,8 +372,23 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
         price_yearly: 0,
         is_active: p.is_visible !== false,
         image: p.image || '',
+        shipping_weight: p.shipping_weight || 0,
       })).filter(p => p.name);
-      setProducts(storeProducts);
+      // Merge in curated Quote Products catalog entries not already covered by SKU match
+      const storeSkus = new Set(storeProducts.map(p => p.sku).filter(Boolean));
+      const quoteCatalogProducts = (results[8].data.products || []).filter(p => !(p.sku && storeSkus.has(p.sku))).map(p => ({
+        id: p.id,
+        name: p.name,
+        description: p.description || '',
+        category: p.category || 'General',
+        sku: p.sku || '',
+        price_onetime: p.price_onetime || 0,
+        price_monthly: p.price_monthly || 0,
+        price_yearly: p.price_yearly || 0,
+        is_active: p.is_active !== false,
+        shipping_weight: p.shipping_weight || 0,
+      }));
+      setProducts([...storeProducts, ...quoteCatalogProducts]);
       setServices(results[2].data.services || []);
       setContractTemplates(results[3].data.templates || []);
       setCompanySettings(results[4].data || {});
@@ -386,6 +407,7 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
           setSelectedDocumentIds(existingQuote.contract_document_ids || []);
           setItems(existingQuote.items?.length > 0 ? existingQuote.items.map((it, i) => ({ ...it, _id: it._id || `item-load-${i}` })) : [{ _id: genItemId(), description: '', quantity: 1, unit_price: 0, item_type: 'custom', billing_type: 'onetime' }]);
           setQuoteTaxExempt(existingQuote.tax_exempt ?? Boolean(leadData.tax_exempt));
+          setShippingCost(existingQuote.shipping_cost != null ? String(existingQuote.shipping_cost) : '');
         }
       } else {
         setQuoteTaxExempt(Boolean(leadData.tax_exempt));
@@ -397,6 +419,12 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
         const requiredDocs = (results[3].data.templates || []).filter(t => t.is_required).map(t => t.id);
         setSelectedDocumentIds(requiredDocs);
       }
+      setShipAddress({
+        street1: leadData.address || '',
+        city: leadData.city || '',
+        state: leadData.state || '',
+        zip_code: leadData.zip_code || '',
+      });
     } catch (error) {
       toast.error('Failed to load data');
     } finally {
@@ -417,12 +445,13 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
 
   const totals = calculateTotals();
   const taxAmount = quoteTaxExempt ? 0 : totals.combined * (taxRatePercent / 100);
+  const shippingAmount = shippingCost === '' || shippingCost === null || isNaN(parseFloat(shippingCost)) ? 0 : parseFloat(shippingCost);
   const STRIPE_RATE = 0.029;
   const STRIPE_FLAT = 0.30;
   const ccFee = (amount) => amount > 0 ? (amount * STRIPE_RATE) + STRIPE_FLAT : 0;
   const stripeFeesEnabled = quoteFormConfig.charge_stripe_fees !== false;
   const stripeFeeAmount = stripeFeesEnabled ? ccFee(totals.combined) : 0;
-  const totalWithFees = totals.combined + taxAmount + stripeFeeAmount;
+  const totalWithFees = totals.combined + taxAmount + shippingAmount + stripeFeeAmount;
   const depositType = quoteFormConfig.deposit_type === 'flat' ? 'flat' : 'percent';
   const rawDepositValue = Number(quoteFormConfig.deposit_value || 0);
   const depositAmount = Math.min(
@@ -517,7 +546,8 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
         tax_exempt: quoteTaxExempt,
         tax_rate: quoteTaxExempt ? 0 : taxRatePercent,
         tax_amount: taxAmount,
-        total: totals.combined + taxAmount,
+        shipping_cost: shippingCost === '' ? null : shippingAmount,
+        total: totals.combined + taxAmount + shippingAmount,
         total_onetime: totals.onetime,
         total_monthly: totals.monthly,
         total_yearly: totals.yearly
@@ -535,6 +565,41 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
       toast.error(error.response?.data?.detail || 'Failed to save quote');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleCalculateShipping = async () => {
+    if (!shipAddress.street1 || !shipAddress.city || !shipAddress.state || !shipAddress.zip_code) {
+      toast.error('Please enter a complete destination address');
+      return;
+    }
+    setCalcLoadingShipping(true);
+    setShippingRates([]);
+    try {
+      const shipItems = items
+        .filter(i => i.item_type === 'product' && i.item_id)
+        .map(i => ({ product_id: i.item_id, quantity: i.quantity || 1 }));
+      const res = await api.post('/api/shipping/rates/checkout', {
+        to_address: {
+          name: clientName || 'Customer',
+          street1: shipAddress.street1,
+          city: shipAddress.city,
+          state: shipAddress.state,
+          zip_code: shipAddress.zip_code,
+          country: 'US',
+        },
+        items: shipItems,
+        order_subtotal: totals.combined,
+      });
+      const rates = res.data?.rates || [];
+      setShippingRates(rates);
+      if (rates.length === 0) {
+        toast.error('No carrier rates returned. Enter shipping manually or check Shipping Settings.');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to calculate shipping rates');
+    } finally {
+      setCalcLoadingShipping(false);
     }
   };
 
@@ -768,6 +833,12 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
                       {quoteTaxExempt ? '$0.00' : formatCurrency(taxAmount)}
                     </span>
                   </div>
+                  {shippingAmount > 0 && (
+                    <div className="flex justify-between text-sm" data-testid="quote-preview-shipping-line">
+                      <span className="text-gray-500">Shipping</span>
+                      <span className="font-medium text-gray-600">{formatCurrency(shippingAmount)}</span>
+                    </div>
+                  )}
                   {stripeFeesEnabled && (
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-500">Credit Card Processing Fee (2.9% + $0.30)</span>
@@ -947,6 +1018,34 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
               </div>
             </div>
 
+            {/* Shipping Card (admin-only; hidden from customer preview when empty) */}
+            <div className="bg-white rounded-2xl shadow-lg p-6" data-testid="quote-shipping-card">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                  <Truck className="w-5 h-5 text-[#014DB7]" /> Shipping
+                </h3>
+              </div>
+              <p className="text-xs text-gray-500 mb-3">Admin-only entry. Added to the total after tax. Leave blank to hide this line from the client.</p>
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={shippingCost}
+                    onChange={(e) => setShippingCost(e.target.value)}
+                    placeholder="Not set"
+                    className="pl-6"
+                    data-testid="quote-shipping-cost-input"
+                  />
+                </div>
+                <Button type="button" variant="outline" onClick={() => setShippingDialogOpen(true)} data-testid="quote-shipping-calculate-button">
+                  <Truck className="w-4 h-4 mr-1.5" /> Calculate
+                </Button>
+              </div>
+            </div>
+
             {/* Contract Documents Card */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Contract Documents</h3>
@@ -1088,6 +1187,12 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
                     <span className="opacity-80">Subtotal</span>
                     <span className="font-medium">{formatCurrency(totals.combined)}</span>
                   </div>
+                  {shippingAmount > 0 && (
+                    <div className="flex justify-between text-sm mt-1" data-testid="quote-summary-shipping-line">
+                      <span className="opacity-70">Shipping</span>
+                      <span className="font-medium">{formatCurrency(shippingAmount)}</span>
+                    </div>
+                  )}
                   {stripeFeesEnabled && (
                     <div className="flex justify-between text-sm mt-1">
                       <span className="opacity-70">CC Processing Fee (2.9% + $0.30)</span>
@@ -1118,6 +1223,72 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
         formatCurrency={formatCurrency}
         navigate={navigate}
       />
+
+      <Dialog open={shippingDialogOpen} onOpenChange={setShippingDialogOpen}>
+        <DialogContent data-testid="quote-shipping-calc-dialog">
+          <DialogHeader>
+            <DialogTitle>Calculate Shipping</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-xs text-gray-500">
+              Pulls live carrier rates using the weight/dimensions of the products in this quote. Services and custom line items are ignored.
+            </p>
+            <div>
+              <Label>Destination Street Address</Label>
+              <Input
+                value={shipAddress.street1}
+                onChange={(e) => setShipAddress({ ...shipAddress, street1: e.target.value })}
+                data-testid="quote-shipping-street-input"
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <Label>City</Label>
+                <Input value={shipAddress.city} onChange={(e) => setShipAddress({ ...shipAddress, city: e.target.value })} data-testid="quote-shipping-city-input" />
+              </div>
+              <div>
+                <Label>State</Label>
+                <Input value={shipAddress.state} onChange={(e) => setShipAddress({ ...shipAddress, state: e.target.value })} data-testid="quote-shipping-state-input" />
+              </div>
+              <div>
+                <Label>Zip</Label>
+                <Input value={shipAddress.zip_code} onChange={(e) => setShipAddress({ ...shipAddress, zip_code: e.target.value })} data-testid="quote-shipping-zip-input" />
+              </div>
+            </div>
+            <Button type="button" onClick={handleCalculateShipping} disabled={calcLoadingShipping} className="w-full bg-[#014DB7]" data-testid="quote-shipping-get-rates-button">
+              {calcLoadingShipping ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Truck className="w-4 h-4 mr-2" />}
+              Get Rates
+            </Button>
+
+            {shippingRates.length > 0 && (
+              <div className="border rounded-lg divide-y max-h-56 overflow-y-auto" data-testid="quote-shipping-rate-options">
+                {shippingRates.map((rate, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setShippingCost(String(Number(rate.rate_with_upcharge ?? rate.rate).toFixed(2)));
+                      setShippingDialogOpen(false);
+                    }}
+                    className="w-full flex items-center justify-between px-3 py-2 text-sm hover:bg-gray-50 text-left"
+                    data-testid={`quote-shipping-rate-option-${idx}`}
+                  >
+                    <span>
+                      <span className="font-medium text-gray-900">{rate.carrier} {rate.service}</span>
+                      {rate.estimated_days && <span className="text-xs text-gray-400 ml-1">({rate.estimated_days}d)</span>}
+                    </span>
+                    <span className="font-semibold text-[#014DB7]">{formatCurrency(rate.rate_with_upcharge ?? rate.rate)}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="flex justify-end gap-2 pt-1">
+              <Button variant="outline" onClick={() => setShippingDialogOpen(false)} data-testid="quote-shipping-dialog-close-button">Close</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

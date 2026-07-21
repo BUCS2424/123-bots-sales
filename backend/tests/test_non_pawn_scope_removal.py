@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 load_dotenv('/app/backend/.env')
 
 # Use the public preview URL
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://bots-ecommerce-hub.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://bot-admin-hub-4.preview.emergentagent.com')
 
 # Admin credentials
 ADMIN_EMAIL = "mel@a2gdesigns.com"

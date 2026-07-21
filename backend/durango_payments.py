@@ -1412,6 +1412,32 @@ async def get_order(order_id: str):
     return order
 
 
+class OrderShippingUpdate(BaseModel):
+    shipping_cost: float
+
+
+@router.patch("/orders/{order_id}/shipping")
+async def update_order_shipping_cost(order_id: str, payload: OrderShippingUpdate):
+    """Admin override for an order's shipping cost. Recalculates total as subtotal + tax + shipping."""
+    order = await db.orders.find_one({"$or": [{"id": order_id}, {"order_number": order_id}]}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    new_shipping = round(float(payload.shipping_cost), 2)
+    new_total = round(float(order.get("subtotal", 0) or 0) + float(order.get("tax", 0) or 0) + new_shipping, 2)
+
+    await db.orders.update_one(
+        {"$or": [{"id": order_id}, {"order_number": order_id}]},
+        {"$set": {
+            "shipping_cost": new_shipping,
+            "total": new_total,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }},
+    )
+    updated_order = await db.orders.find_one({"$or": [{"id": order_id}, {"order_number": order_id}]}, {"_id": 0})
+    return updated_order
+
+
 @router.patch("/orders/{order_id}/status")
 async def update_order_status(order_id: str, status: str):
     """Update order status (admin) - handles inventory and accounting when order is paid"""

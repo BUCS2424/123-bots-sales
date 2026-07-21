@@ -972,6 +972,8 @@ async def compute_parcel_from_items(items: List[Dict], settings: Dict) -> Dict:
         product = None
         if pid:
             product = await db.products.find_one({"id": pid}, {"_id": 0}) or await db.products.find_one({"slug": pid}, {"_id": 0})
+            if not product:
+                product = await db.quote_products.find_one({"id": pid}, {"_id": 0})
 
         wt = None
         if product:

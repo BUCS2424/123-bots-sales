@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Package, Wrench, TrendingUp, Plus, Pencil, Trash2, Search, Settings, Workflow } from 'lucide-react';
+import { ArrowLeft, Package, Wrench, TrendingUp, Plus, Pencil, Trash2, Search, Settings, Workflow, RefreshCw } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../components/ui/dialog';
+import { toast } from 'sonner';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -19,6 +20,10 @@ const emptyItem = {
   price_monthly: 0,
   price_yearly: 0,
   is_active: true,
+  shipping_weight: 0,
+  shipping_length: 0,
+  shipping_width: 0,
+  shipping_height: 0,
 };
 
 export default function QuoteCatalogSettingsPage() {
@@ -33,6 +38,7 @@ export default function QuoteCatalogSettingsPage() {
   const [form, setForm] = useState(emptyItem);
   const [configOpen, setConfigOpen] = useState(false);
   const [flowOpen, setFlowOpen] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [quoteConfig, setQuoteConfig] = useState({
     show_from_business_name: true,
     show_from_address: true,
@@ -137,8 +143,25 @@ export default function QuoteCatalogSettingsPage() {
       price_monthly: Number(item.price_monthly || 0),
       price_yearly: Number(item.price_yearly || 0),
       is_active: item.is_active !== false,
+      shipping_weight: Number(item.shipping_weight || 0),
+      shipping_length: Number(item.shipping_length || 0),
+      shipping_width: Number(item.shipping_width || 0),
+      shipping_height: Number(item.shipping_height || 0),
     });
     setOpen(true);
+  };
+
+  const syncFromStore = async () => {
+    setSyncing(true);
+    try {
+      const res = await axios.post(`${API}/quotes/catalog/products/sync-from-store`, {}, { headers });
+      toast.success(`Synced ${res.data.created} new, updated ${res.data.updated} existing products from the store catalog`);
+      await loadData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to sync products from store');
+    } finally {
+      setSyncing(false);
+    }
   };
 
   const saveItem = async () => {
@@ -207,8 +230,14 @@ export default function QuoteCatalogSettingsPage() {
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <Input className="pl-9" placeholder="Search products" value={query} onChange={(e) => setQuery(e.target.value)} data-testid="quotes-products-search-input" />
             </div>
-            <Button onClick={openCreate} data-testid="quotes-products-add-button"><Plus className="w-4 h-4 mr-2" /> Add Product</Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" onClick={syncFromStore} disabled={syncing} data-testid="quotes-products-sync-button">
+                <RefreshCw className={`w-4 h-4 mr-2 ${syncing ? 'animate-spin' : ''}`} /> {syncing ? 'Syncing…' : 'Sync from Store'}
+              </Button>
+              <Button onClick={openCreate} data-testid="quotes-products-add-button"><Plus className="w-4 h-4 mr-2" /> Add Product</Button>
+            </div>
           </div>
+          <p className="text-xs text-gray-500">"Sync from Store" pulls your live storefront products (price, SKU, and shipping weight/dimensions) into this quote catalog so shipping can be auto-calculated on quotes.</p>
           <div className="rounded-xl border bg-white overflow-hidden" data-testid="quotes-products-table-wrap">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 text-left">
@@ -218,6 +247,7 @@ export default function QuoteCatalogSettingsPage() {
                   <th className="px-4 py-3">One-time</th>
                   <th className="px-4 py-3">Monthly</th>
                   <th className="px-4 py-3">Yearly</th>
+                  <th className="px-4 py-3">Ship Wt (lb)</th>
                   <th className="px-4 py-3 text-right">Actions</th>
                 </tr>
               </thead>
@@ -229,6 +259,7 @@ export default function QuoteCatalogSettingsPage() {
                     <td className="px-4 py-3">${Number(item.price_onetime || 0).toFixed(2)}</td>
                     <td className="px-4 py-3">${Number(item.price_monthly || 0).toFixed(2)}</td>
                     <td className="px-4 py-3">${Number(item.price_yearly || 0).toFixed(2)}</td>
+                    <td className="px-4 py-3">{Number(item.shipping_weight || 0) > 0 ? Number(item.shipping_weight).toFixed(1) : '—'}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="inline-flex gap-2">
                         <Button variant="outline" size="sm" onClick={() => openEdit(item)} data-testid={`quotes-product-edit-${item.id}`}><Pencil className="w-4 h-4" /></Button>
@@ -347,6 +378,29 @@ export default function QuoteCatalogSettingsPage() {
                 <Input type="number" value={form.price_yearly} onChange={(e) => setForm({ ...form, price_yearly: Number(e.target.value || 0) })} data-testid="quotes-catalog-item-yearly-input" />
               </div>
             </div>
+            {activeTab === 'products' && (
+              <div className="space-y-2 pt-1 border-t">
+                <Label className="text-xs text-gray-500 uppercase">Shipping (used to auto-calculate quote shipping)</Label>
+                <div className="grid grid-cols-4 gap-3">
+                  <div>
+                    <Label className="text-xs">Weight (lb)</Label>
+                    <Input type="number" step="0.1" value={form.shipping_weight} onChange={(e) => setForm({ ...form, shipping_weight: Number(e.target.value || 0) })} data-testid="quotes-catalog-item-shipping-weight-input" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Length (in)</Label>
+                    <Input type="number" step="0.1" value={form.shipping_length} onChange={(e) => setForm({ ...form, shipping_length: Number(e.target.value || 0) })} data-testid="quotes-catalog-item-shipping-length-input" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Width (in)</Label>
+                    <Input type="number" step="0.1" value={form.shipping_width} onChange={(e) => setForm({ ...form, shipping_width: Number(e.target.value || 0) })} data-testid="quotes-catalog-item-shipping-width-input" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Height (in)</Label>
+                    <Input type="number" step="0.1" value={form.shipping_height} onChange={(e) => setForm({ ...form, shipping_height: Number(e.target.value || 0) })} data-testid="quotes-catalog-item-shipping-height-input" />
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="outline" onClick={() => setOpen(false)} data-testid="quotes-catalog-item-cancel-button">Cancel</Button>
               <Button onClick={saveItem} data-testid="quotes-catalog-item-save-button">Save</Button>

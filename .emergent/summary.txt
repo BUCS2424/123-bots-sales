@@ -1,161 +1,398 @@
-<analysis>**original_problem_statement**: 
-Build a full-stack application by cloning a GitHub project, rebranding it to 123Bots, and redesigning the frontend.
-PRODUCT REQUIREMENTS:
-1. Integrate A2G modules, Quote/Contract/eSign system, Opportunities Kanban, Inventory Management, and External Stack API Delivery.
-2. Build an advanced Storefront displaying Commercial Cleaning Bots and Industrial Delivery Bots.
-3. Product file delivery system and Location Page generator.
-4. Build a comprehensive Event Center for custom ticketing, venue management, QR check-ins, and public event landing pages.
-5. Provide multi-tenant ready checkout with selectable payment gateways (Durango and Stripe) and automated shipping label management.
+<analysis>original_problem_statement:  
+Build and rebrand a full-stack robot-commerce/CRM application as **123Bots**, including CRM, quotes/contracts/eSign, storefront, checkout/payment/shipping, Event Center, inventory, product delivery, and related admin tooling.
 
-**User's preferred language**: English (INSTRUCT next agent to respond in English only)
+Recent explicit product requirements completed in this trajectory:
+- Prevent deleted categories from reappearing; enable category nesting by drag/drop.
+- Capture Stripe PaymentIntent and Checkout Session IDs on orders for administrator cross-reference.
+- Prevent failed shipping-label purchases from marking orders shipped; show shipment-pending state and alert support.
+- Add a Shipment Pending orders filter and fix the Coming Soon gate when disabled.
+- Make reusable quote contract document templates easy to access from Admin.
+- Add tax-exempt handling across leads, customers, quotes, invoices/orders/storefront checkout, with certificate storage and audit access.
 
-**what currently exists?** 
-A fully featured 123Bots CRM, an advanced storefront with robot product pages, Event Center, Quote Builder, and a complete product file system. A multi-gateway checkout is live, supporting Durango Direct, Stripe, PayPal, CashApp, and Venmo. Live shipping integration (Shippo/Stamps) is wired to fetch real-time checkout rates based on actual product dimensions/weight (stored in pounds) and allows admins to auto-purchase labels directly from the order dashboard. A modularized CRM ZIP package is also available for the user to clone to other apps.
+**User's preferred language**: English. Next agent must respond in English only.
 
-**Last working item**: 
-    - Last item agent was working: Fixing a bug where deleted categories keep respawning, and implementing a drag-and-drop feature in the Admin Categories dashboard to allow merging categories into subcategories. 
-    - Status: IN PROGRESS
-    - Agent Testing Done: N
-    - Which testing method agent to use? testing agent
-    - User Testing Done: N
+---
 
-**All Pending/In progress Issue list**: 
-  - Issue 1: Deleted categories respawn/re-appear (P0)
-     - Attempted fixes: Agent investigated backend and identified 's  recreates any category that is still referenced by a product when products are synced/updated.
-     - Next debug checklist: Modify the  endpoint in  to strip the deleted category's name/ID from any associated products ().
-     - Why fix this issue and what will be achieved with the fix? Stops ghost categories from returning, preventing client frustration.
-     - Status: IN PROGRESS
-     - Is recurring issue? Y
-     - Should Test frontend/backend/both after fix? both
-     - Blocked on other issue: None
+## what currently exists?
+123Bots is a React/FastAPI/MongoDB system with:
+- Storefront, checkout, multi-provider payments, shipping-label workflows, robot catalog, CRM, leads/opportunities, customer dashboards, quotes, eSign contract templates, inventory, Events, and admin settings.
+- Tax exemption now supported for Leads/Opportunities and Customers, with exemption certificate metadata/file upload, audit-friendly file viewing/downloading/printing, quote tax calculations, and server-side storefront order-tax enforcement.
+- Quote contract templates are available in the Admin sidebar through **Quotes → Contract Documents**.
+- Shipment-label provider failures create , retain failure details, do not mark orders shipped, and are visible/retryable in Admin Orders.
+- Coming Soon gate correctly respects the server-side  flag.
 
-  - Issue 2: Remaining Image/Video Placeholders across 4 newly rebuilt Robot Pages (P1)
-     - Attempted fixes: Agent provided a specific checklist of media filenames and paths to the user.
-     - Next debug checklist: Await user uploads to  and  and swap fallback placeholders if required.
-     - Why fix this issue and what will be achieved with the fix? Completes UI for the robot pages.
-     - Status: BLOCKED (Awaiting user uploads)
-     - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? Frontend
-     - Blocked on other issue: None
+---
 
-**In progress Task List**: 
-  - Task 1: Drag-and-drop subcategories in Admin Categories (P0)
-     - Where to resume: . Implement drag-and-drop capabilities (e.g., using  which is already installed) so the user can drag one category into another to merge/create subcategories.
-     - What will be achieved with this? Allows nested hierarchy in product categories.
-     - Status: NOT STARTED
-     - Should Test frontend/backend/both after fix? both
-     - Blocked on something: Needs the category deletion bug fixed first so hierarchy logic is stable.
+## Last working item
+- **Last item agent was working:** Tax-exempt implementation for CRM leads/customers, quote calculations, and storefront orders. The agent added data capture, certificate uploads, tax lines in quotes, per-quote override, checkout display, and server-side enforcement that removes submitted tax for exempt customers.
+- **Status:** USER VERIFICATION PENDING
+- **Agent Testing Done:** Y
+- **Which testing method agent used:** Both backend/manual API tests and frontend testing agent.
+- **User Testing Done:** N
 
-**Upcoming and Future Tasks**
-    Upcoming Tasks:
-    - Task 1: Pre-Launch Finalization (P1) - Disable Coming Soon gate ( feature flag) and verify shop catalog.
-    
-    Future Tasks:
-    - Task 2: PUDU API Integration (P2) - Explore real-time cleaning reports, battery status, and fleet data.
-    - Task 3: Asset Migration to iDrive E2 (P2)
-    - Task 4: Refactor 12 massive hardcoded Robot Product Pages into a single dynamic template component driven by JSON config (P2).
+Reasoning/status:
+- Backend enforcement was manually tested with an exempt and non-exempt customer: exempt orders were saved at  and reduced total; non-exempt orders retained tax.
+- Testing agent report  passed the Lead, Customer, Quote, certificate upload, and related backend UI/API flows.
+- The user has not yet confirmed their desired operational workflow in preview/production.
 
-**Completed work in this session**
-- Fixed password reset email template (dynamically fetches logo instead of hardcoded link). (DONE)
-- Rebuilt remaining 4 Robot product pages (, , , ) to match the advanced BG1 layout. (DONE)
-- Packaged the full CRM system (kanban, quotes, calendar, bookings) into an installable  with an integration guide. (DONE)
-- Fixed Header Cart button failing to open the Cart Drawer (Context API state bug). (DONE)
-- Fixed Shippo API Key Test Connection validating stored key instead of user input key. (DONE)
-- Integrated Stripe Gateway into the storefront checkout alongside Durango, configurable via admin panel. (DONE)
-- Fixed CSS contrast issues on Checkout page dropdowns and Order Confirmation page. (DONE)
-- Implemented full Customer CRUD (Create, Edit, Impersonate, Delete) in the Admin Customers panel, replacing the mock Create Test Customer button. (DONE)
-- Fixed checkout shipping rate bug: rates now accurately compute based on cart item weight (lbs converted to oz) rather than a hardcoded 8oz. (DONE)
-- Added Send to Shippo functionality in Admin Orders to automatically purchase the customer's chosen shipping label. (DONE)
+---
 
-**Earlier issues found/mentioned but not fixed**
-   - Issue 1: Configure Engine search string bug (User mentioned this but subsequently asked the agent to disregard it entirely as it was for another app).
+## All Pending/In progress Issue list
 
-**Known issue recurrence from previous fork**
-  - Issue recurrence in previous fork: User frustration with the live production site having bugs.
-  - Recurrence count: 3
-  - Status: RESOLVED
-  - Note: User is easily frustrated when bugs occur on the deployed app. Agent clarified the PREVIEW vs. PRODUCTION workflow. Remember to always ask if the issue is seen in Preview or Production, and remind them that changes made by the AI are built in Preview and must be redeployed by the user to reflect on Production.
+### Issue 1: Verify tax-exempt workflow in the user’s actual operational flow — P0
+- **Attempted fixes:** Full implementation completed and test-agent verified.
+- **Next debug checklist:**
+  1. Test an actual customer who is logged in at storefront checkout.
+  2. Mark the relevant Customer and/or linked Lead as exempt.
+  3. Upload a valid certificate document/image.
+  4. Create a quote and confirm configured tax rate appears, or /bin/bash if exempt.
+  5. Complete a real/payment-test order and verify order/invoice tax is /bin/bash.
+  6. If reported on production, make changes in preview then user must redeploy.
+- **Why fix/verify:** Ensures identity matching between storefront account email, Customer record, Lead record, and tax exemption data works for the user’s real business records.
+- **Status:** USER VERIFICATION PENDING
+- **Is recurring issue?:** N
+- **Should Test frontend/backend/both after fix?:** Both
+- **Blocked on other issue:** None
 
-**Code Architecture**
+### Issue 2: Shipping funding-failure alert may not send until outbound SMTP is configured — P1
+- **Attempted fixes:** Failure alerts were implemented to target  when a label purchase fails. Shipment failure detection and UI were tested.
+- **Potential gap:** Earlier logs indicated SMTP was not configured, so the code can attempt the alert but email delivery may not occur until SMTP/Resend settings are configured.
+- **Next debug checklist:**
+  1. Inspect email settings and outbound SMTP/Resend configuration.
+  2. Trigger a controlled shipping-label failure.
+  3. Confirm receipt at .
+  4. Verify retries do not generate unmanageable duplicate alerts.
+- **Why fix:** Prevents failed Shippo/provider funding transactions from going unnoticed.
+- **Status:** TESTING PENDING for real email delivery
+- **Is recurring issue?:** N
+- **Should Test frontend/backend/both after fix?:** Backend/integration
+- **Blocked on other issue:** Email provider configuration/credentials.
+
+### Issue 3: Robot-page media placeholders await user assets — P2
+- **Attempted fixes:** Four robot pages were rebuilt with fallback placeholders.
+- **Next debug checklist:** User needs to provide final images/videos for  and , then replace fallbacks and frontend-test visual layout.
+- **Why fix:** Completes public product experience.
+- **Status:** BLOCKED
+- **Is recurring issue?:** N
+- **Should Test frontend/backend/both after fix?:** Frontend
+- **Blocked on other issue:** User-provided media assets.
+
+---
+
+## In progress Task List
+No coding task is currently in progress.
+
+### Task 1: User verification of tax-exemption feature — P0
+- **Where to resume:** Lead/Customer Tax Exempt tabs, Quote Builder tax section, and Checkout.
+- **What will be achieved:** Confirmation that tax exemptions match the user’s real process and records.
+- **Status:** TESTING PENDING
+- **Should Test frontend/backend/both after fix?:** Both
+- **Blocked on something:** Awaiting user verification.
+
+---
+
+## Upcoming and Future Tasks
+
+### Upcoming Tasks
+1. **P1 — Pre-launch storefront verification**
+   - Confirm shop catalog and real products are loaded.
+   - Confirm public storefront remains accessible with Coming Soon disabled.
+   - File areas: feature flags/site settings, storefront catalog, checkout.
+
+2. **P1 — Configure and verify email delivery**
+   - Configure SMTP/Resend so shipping failure alerts and quote-related email flows actually deliver.
+   - Relevant files: , shipping failure alert logic in , admin notification settings.
+
+### Future Tasks
+1. **P2 — PUDU API integration**
+   - Real-time fleet status, battery state, cleaning reports.
+
+2. **P2 — Asset migration to iDrive E2**
+   - Requires user credentials and integration planning.
+
+3. **P2 — Refactor robot product pages**
+   - Consolidate roughly 12 large hardcoded robot page components into a config-driven dynamic template.
+
+4. **P2 — Tax-exemption reporting**
+   - Suggested in prior finish: export exempt vs taxable sales for accounting/tax filing.
+
+5. **P2 — Bulk tax exemption**
+   - Suggested: bulk-mark multiple customers tax-exempt from Admin Customers.
+
+6. **P2 — Signed contract archive**
+   - Suggested: searchable page for completed signed quote contracts, signer, signature date, and downloadable copy.
+
+---
+
+## Completed work in this session
+- Category deletion fix: removes deleted category references from products and falls back to General so categories do not respawn.
+- Drag/drop category nesting in Admin Categories.
+- Stripe PaymentIntent () and Checkout Session () persistence/display/copy links in Admin Orders.
+- Shipment Pending safeguard, failure details, retry UI, and Admin Orders status/filter.
+- Support alert attempt for label-purchase failures.
+- Coming Soon feature-flag loading/gate behavior corrected.
+- Quotes sidebar converted into accessible navigation including Contract Documents.
+- Tax exemption feature across Leads, Customers, Quotes, Checkout, and server-side order handling.
+
+### Recently completed
+- Tax Exemption module — DONE, agent-tested; user confirmation pending.
+- Admin Contract Documents navigation — DONE, testing-agent verified.
+- Shipment Pending safeguards/filter and Coming Soon gate correction — DONE, testing-agent verified.
+
+---
+
+## Earlier issues found/mentioned but not fixed
+1. **Email delivery for shipping-failure alerts**
+   - Debug checklist: confirm SMTP/Resend configuration, force controlled provider failure, validate receipt.
+   - Why to solve: alert code alone is insufficient if no mail service is configured.
+   - Should Test frontend/backend/both after fix: Backend/integration.
+   - Is recurring issue?: N.
+
+2. **Final robot imagery/video**
+   - Debug checklist: obtain user assets and replace page fallback media.
+   - Why to solve: visual completion of robot product pages.
+   - Should Test frontend/backend/both after fix: Frontend.
+   - Is recurring issue?: N.
+
+---
+
+## Known issue recurrence from previous fork
+- **Issue recurrence in previous fork:** User had prior frustration caused by preview-versus-production differences.
+- **Recurrence count:** 3 historically.
+- **Status:** RESOLVED operationally, but must remain a process guard.
+- Any future reported bug must first be clarified as preview versus production. Production changes require user redeployment from preview; do not claim a preview fix has reached production.
+
+---
+
+## Code Architecture
 
 
-**Key Technical Concepts**
-- Frontend: React, Tailwind CSS, Shadcn UI, dnd-kit.
-- Backend: Python, FastAPI, Motor (MongoDB).
-- Payments: Durango Direct (Collect.js), Stripe via internal .
-- Shipping: Shippo API.
+---
 
-**key DB schema**
-  - : id, name, slug, parent_id.
-  - : id, name, weight, shipping_weight (Stored in POUNDS), shipping_length, shipping_width, shipping_height.
-  - : tracking_number, label_url, cost, carrier.
+## Key Technical Concepts
+- **Frontend:** React, React Router, Tailwind, Shadcn UI, dnd-kit, Axios.
+- **Backend:** FastAPI, Motor/MongoDB, Pydantic.
+- **Authentication:** Existing JWT/custom auth.
+- **Payments:** Durango Direct, Stripe through , PayPal/CashApp/Venmo paths.
+- **Shipping:** Shippo and other provider abstractions; labels only mark shipped after validated tracking/success.
+- **Quotes/eSign:** Quote records store contract template/document association and signature state.
+- **Tax:** Tax settings live in Admin Settings; quote frontend reads configured tax settings; order backend enforces exemption independently of submitted client totals.
 
-**changes in tech stack**
-  - Added internal  for Stripe payment processing.
+---
 
-**All files of reference** 
--  (Focus for the category delete bug)
--  (Focus for the drag-and-drop feature)
--  
+## key DB schema
+- : uid=0(root) gid=0(root) groups=0(root), , , , .
+- : uid=0(root) gid=0(root) groups=0(root), , , shipping dimensions/weight.
+- : customer fields, totals, , , payment IDs, shipment/error fields.
+  - Relevant fields added/used: , , , , shipment state/status.
+- : CRM lead/opportunity data plus tax-exemption fields.
+-  / customer records: customer profile and tax-exemption fields.
+- : quote items, totals, tax/exemption details, contract template/document IDs, signatures.
+- : reusable documents attached to quotes.
+- :
+  - tax document: , , , calculated .
+  - feature-flag data including .
+- : carrier, tracking number, label URL, cost, lifecycle status.
+- Tax-exempt metadata includes: exemption boolean, certificate number, reason/notes, expiration date, uploaded certificate file metadata/URL.
+
+---
+
+## changes in tech stack
+- No platform-wide stack migration.
+- Existing Stripe  use remains required; do not replace it with direct Stripe SDK flow without integration guidance.
+- New internal module: .
+
+---
+
+## All files of reference
+
+### Updated/created in this session
+- 
+  - New tax exemption endpoints, certificate upload/storage and entity exemption data access/update.
+- 
+  - Registers tax-exemption router; customer/dashboard support adjusted.
+- 
+  - Enforces customer tax exemption server-side before charging/saving order totals; Stripe ID handling was added earlier in session.
+- 
+  - Quote tax/exemption fields persist.
+- 
+  - Customer dashboard response includes tax exemption information.
+- 
+  - Label purchase success validation, shipment-pending persistence, failure details and alert attempt.
+- 
+  - Delete-category cleanup to prevent respawning.
+- 
+  - Order response/payment ID fields.
+- 
+  - Reusable tax exemption UI/card with certificate management.
+- 
+  - Lead/Opportunity Tax Exempt tab.
+- 
+  - Customer Tax Exempt tab.
+- 
+  - Tax calculation/display and per-quote exemption control.
+- 
+  - Customer exemption lookup/display and zero-tax calculation.
+- 
+  - Payment references, shipment pending details/retry, shipment-pending filter.
+- 
+  - Quotes accordion and Contract Documents navigation.
+- 
+  - Safe parallel flag/settings loading.
+- 
+  - Waits for loaded flags and does not force password gate when disabled.
+- 
+  - Updated after completed work.
+
+### Other important files
+-  — tax settings API and public feature flags.
+-  — outbound email implementation/configuration.
+-  — contract template CRUD screen.
+-  through  — key testing-agent reports.
+
+---
+
+## Areas that need refactoring
+- Twelve robot product page components are large and largely hardcoded; a config-driven reusable robot template remains a P2 item.
+-  is very large (~1200+ lines); tax enhancements were added in place to minimize scope, but it would benefit from later extraction of totals/tax/editor sections.
+- , , and  are large and contain multiple unrelated admin flows.
+- Confirm uploaded development test certificate assets are not left orphaned on persistent storage. Development records were reset, but a storage cleanup audit is prudent.
+
+---
+
+## key api endpoints
+- 
+- Category reorder/nesting endpoint used by Admin Categories.
 - 
 - 
-
-**Areas that need refactoring**:
-- 12 distinct  files for robots, each ~600 lines long. Should be consolidated into a single component taking JSON config (P2).
-
-**key api endpoints**
 - 
 - 
 - 
-
-**Critical Info for New Agent** 
-- **PREVIEW VS PRODUCTION**: The app is live. You are in PREVIEW. Always remind yourself and the user that changes are made in PREVIEW and require a redeploy to hit PRODUCTION.
-- **WEIGHT METRIC**: Product weights () in the database are stored in **POUNDS (lbs)**. The backend computes this and multiplies by 16 to pass ounces to shipping provider APIs.
-- **STRIPE**: The Stripe integration uses the internal  library (). Do not attempt to use  directly if changes are required.
-
-**documents and test reports created in this job** 
 - 
--  to 
+- Quote endpoints under , including quote creation/update and contract-template operations.
+- Lead endpoints under .
+- Customer dashboard/profile endpoints under user management.
+- New tax-exempt router endpoints in :
+  - Current-user exemption lookup.
+  - Lead/customer tax-exempt update.
+  - Certificate upload and serving.
+  - Consult router definitions before extending exact paths.
+
+---
+
+## Critical Info for New Agent
+- Do not assume UI screenshot harness failures mean the app is broken: this agent’s screenshot tool repeatedly stalled at  loading, while testing-agent verification passed cleanly. Use testing agent for meaningful UI verification.
+- For any future production report, first ask whether it is preview or production. Code changes only occur in preview and need redeployment.
+- Storefront tax exemption is enforced in the backend, not only in the browser. This is essential; do not weaken it by trusting submitted frontend tax values.
+- Exemption matching relies on current authenticated user/customer email/records; validate real-account identity mapping if user reports exemption not applying.
+- Tax settings were reported by the tester as currently  and with no tax rates. Tax-exempt flows work, but quote/checkout tax calculations cannot show a non-zero configured rate until the administrator enables/configures taxes in Admin Settings.
+- Shipping failure alerts are only deliverable if outbound mail is configured.
+- Shipping weight remains stored in **pounds**, converted to ounces when calling carrier APIs.
+- Stripe order processing uses ; preserve that integration path.
+
+---
+
+## documents and test reports created in this job
+Supporting documents/test reports:
+- 
+- 
+- 
+- 
+- 
+- 
 - 
 
-**Last 10 User Messages and any pending HUMAN messages** 
-1. User: take the create test customer out, and wire it correctly, to create edit, impersonate and delete...
-2. User: call it create a customer
-3. User: and fix the contrasting buttons, they have white text and white backgrounds
-4. Agent: (Completed customer CRUD and fixed button contrast)
-5. User: what can we accomplish with the shippo and other shipping gateways? is there a way to sutomate the shipping from the cart dashboard...
-6. Agent: (Explained capabilities and offered choices on automation logic)
-7. User: 1 a i see the order, then click to send to shippo... 2 give me the choices that the customer chose. also, lets check the weight and box sizes... getting crazy cheap number
-8. Agent: (Fixed hardcoded 8oz weight bug -> fetches actual lbs. Added Send to Shippo functionality)
-9. User: The Configure Engine was for another app, disregard that
-10. User: lets make the categories drag n drop into one another in the cart, so i can make subcategories... also, as i try to delete a category, it keeps coming back... and weight is now pounds NOT ounces correct? (PENDING)
+No newly created standalone  documentation was reported beyond PRD updates.
 
-**Project Health Check:**
-- Broken: Categories respawn after deletion if products still reference them.
+---
 
-**3rd Party Integrations** 
-- Stripe (Payments) — requires User API Key. (Integrated via Emergent LLM Integrations)
-- Durango (Payments) — requires User Credentials.
-- Shippo (Shipping) — requires User API Key.
-- Printful — requires User API Key.
-- iDrive E2 (Storage) — requires User API Key.
-- PayPal — Configured.
+## Last 10 User Messages and any pending HUMAN messages
+Latest to oldest:
+1. **“i want to add a tax exempt toggle and info box…”**
+   - Completed and agent-tested; user verification pending.
+2. **Detailed tax-exemption choices**
+   - Requested both Lead/Customer and per-quote support; certificate number/reason/expiration/upload; storefront-wide enforcement.
+   - Implemented and tested.
+3. **“im talking about the contract documents to set up and add to use”**
+   - Completed: Quotes sidebar now includes Contract Documents template management.
+4. **“where are the contracts kept for the quote?”**
+   - Answered and access improved.
+5. **Requested Shipment Pending filter, low-balance alert, Coming Soon gate fix**
+   - Implemented and testing-agent verified; real email delivery remains dependent on SMTP configuration.
+6. **Requested shipping payment failure safeguard**
+   - Implemented and verified.
+7. **Requested Stripe payment ID on invoice/admin view**
+   - Implemented and verified.
+8. **Requested category drag/drop nesting and deletion-respawn fix**
+   - Implemented and verified.
+9. **Clarified Configure Engine issue should be disregarded**
+   - No action required.
+10. **Requested Send to Shippo from order admin and corrected shipping dimensions/weight**
+   - Completed earlier.
 
-**Testing status**
-  - Testing agent used after significant changes: YES (extensively through iteration 80).
-  - Troubleshoot agent used after agent stuck in loop: NO
-  - Test files created: none new.
-  - Known regressions: none.
+Pending human input:
+- Confirm whether tax exemption works correctly for a real lead/customer and actual checkout/quote.
+- Provide SMTP/Resend configuration if they expect support email alerts to physically arrive.
+- Provide production redeployment after preview feature validation if applicable.
+- Provide robot media assets if final placeholder replacement is desired.
 
-**Credentials to test flow:**
-- Admin User:  / 
-- Site Password (If Preview gate blocks UI): 
+---
 
-**What agent forgot to execute**
-- The agent was in the middle of executing the Category Deletion bug fix and the Drag-and-Drop Subcategory feature requested in the final user message.
+## Project Health Check
 
-**Debugging checklist for current issue**
-    Issue: Deleted categories keep coming back
-    Backend files to check: 
-    -  (Look at  at line 1147 and  at line 80).
-    Next Steps: When deleting a category, you must also update all products that reference that category to remove the reference so  doesn't recreate it on the next product sync. Ensure  allows for drag-and-drop merging (parent-child relationship). Run the  post-implementation.</analysis>
+### Broken
+- No confirmed broken code paths after testing-agent iteration 86.
+
+### Mocked / Requires configuration
+- Shipping funding-failure email alert delivery may be non-functional until SMTP/Resend is configured.
+- Tax calculation is configured but current tax settings were observed as disabled/no rates, so nonzero tax needs admin configuration.
+- Robot pages retain placeholders until user supplies final images/videos.
+- PUDU live fleet integration and iDrive E2 migration are not implemented.
+
+---
+
+## 3rd Party Integrations
+- **Stripe Payments** — integrated through ; requires user/provider Stripe credentials. Does **not** use Emergent LLM Key.
+- **Durango Direct / Collect.js** — requires user-provided merchant credentials. Does not use Emergent LLM Key.
+- **PayPal** — configured payment path; requires provider configuration. Does not use Emergent LLM Key.
+- **CashApp/Venmo** — configured payment paths; provider/business configuration required. Does not use Emergent LLM Key.
+- **Shippo** — shipping rates and labels; requires user API key/account funding. Does not use Emergent LLM Key.
+- **Stamps/ShipStation providers** — shipping provider integrations; require user credentials. Does not use Emergent LLM Key.
+- **Printful** — requires user API key. Does not use Emergent LLM Key.
+- **iDrive E2** — planned storage integration; requires user API key. Does not use Emergent LLM Key.
+- **SMTP/Resend-style email delivery** — application has email utilities; requires mail provider configuration. Does not use Emergent LLM Key.
+- No LLM integration is relevant to the latest tax-exemption work.
+
+---
+
+## Testing status
+- **Testing agent used after significant changes:** YES.
+- **Troubleshoot agent used after agent stuck in loop:** NO.
+- **Test files created:** A focused shipment-pending backend test was created during work; verify whether it was removed during cleanup before relying on it.
+- **Relevant reports:**
+  - Iteration 81: categories delete/nesting.
+  - Iteration 82: Stripe payment reference UI.
+  - Iteration 83: Shipment Pending UI.
+  - Iteration 84: Coming Soon + shipment filter + related verification.
+  - Iteration 85: Contract Documents navigation/template CRUD.
+  - Iteration 86: Tax exemption end-to-end UI/API coverage.
+- **Known regressions:** None confirmed. Screenshot harness spinner behavior was a testing-tool artifact, not reproduced by testing agent.
+
+---
+
+## Credentials to test flow
+Read  before testing any authenticated flow. Historic admin credentials were:
+- Admin: 
+- Password: 
+- Previous site password/gate value: 
+
+Do not rely on historical credentials without confirming the current credentials file.
+
+---
+
+## What agent forgot to execute
+- Real outbound email delivery test for the Shippo/provider payment-failure alert was not completed because SMTP was apparently not configured.
+- User-level validation of the new tax exemption feature has not occurred.
+- Final checkout test with enabled real tax settings/rates was not performed; only explicit submitted tax enforcement was tested.
+- Final robot media replacement remains blocked on user assets.
+</analysis>

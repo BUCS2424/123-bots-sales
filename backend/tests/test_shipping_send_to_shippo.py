@@ -4,7 +4,7 @@ import uuid
 import requests
 import pytest
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://bots-ecommerce-hub.preview.emergentagent.com").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://bot-admin-hub-4.preview.emergentagent.com").rstrip("/")
 API = f"{BASE_URL}/api"
 
 PUDU_PRODUCT_ID = "1a95914e-8136-4517-ab15-075405207856"

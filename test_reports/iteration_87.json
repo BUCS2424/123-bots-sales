@@ -1,0 +1,41 @@
+{
+  "summary": "Tested new Shipping feature on Quotes/Invoices/Orders end-to-end. Backend: 9 new tests + 35 regression tests all passing (44/44). Frontend (Playwright): Quote Builder shipping card (blank=hidden, filled=shown in preview+summary after tax, total increases), Calculate dialog + fallback USPS rates + rate selection, save/reload persistence, customer signing page shipping line (shown/hidden correctly), Quote Products & Services 'Sync from Store' + Ship Wt column + shipping dims fields (Products tab only, absent on Services tab), and Admin Orders inline shipping edit (Calculate + Save recalculates Total immediately, persists via PATCH). All flows working correctly with expected fallback USPS mock rates (no live carrier key configured, as documented).",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "QuoteBuilderPage / QuoteSigningPage", "issues": ["Line item 'PUDU CC1 PRO' pulled from store catalog shows $0.00 unit price when added via Browse Catalog in Quote Builder — this is pre-existing store product pricing data, not a shipping-feature bug, but worth flagging since it makes shipping-only totals look odd in the demo/test data."]},
+      {"screen": "QuoteSigningPage", "issues": ["Signing page header shows 'For undefined undefined' when the underlying lead lacks first_name/last_name (only has primary_contact_name). Pre-existing issue unrelated to shipping feature — surfaced because my test lead was created via API without first_name/last_name."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_quote_order_shipping.py",
+    "/app/test_reports/pytest/quote_order_shipping_results.xml",
+    "/app/test_reports/pytest/quote_shipping_regression_results.xml"
+  ],
+  "action_items": [
+    "No blocking issues found for the shipping feature itself. Optional: consider populating price_onetime for the 'PUDU CC1 PRO' quote-catalog entry (currently $0.00) so demo quotes look correct; unrelated to this feature.",
+    "Optional: QuoteSigningPage 'For {first_name} {last_name}' fallback should use lead.primary_contact_name or lead.company_name when first_name/last_name are empty, to avoid 'For undefined undefined' for leads not created via the standard lead form."
+  ],
+  "critical_code_review_comments": [
+    "quote_contract_esign_routes.py sync-from-store: idempotency verified — 2nd run produced created=0 (matches by SKU or name per user), good design.",
+    "shipping.py compute_parcel_from_items() correctly falls back to db.quote_products by id when a product_id isn't found in db.products — confirmed working for catalog-only quote line items.",
+    "durango_payments.py PATCH /orders/{order_id}/shipping recalculates total = subtotal+tax+shipping_cost correctly and matches on id OR order_number — good UX flexibility. No validation preventing negative shipping_cost server-side (relies on frontend `min=0`); low-risk but worth a server-side floor check.",
+    "QuoteBuilderPage.jsx shippingAmount/handleSave logic correctly sends shipping_cost=null (not 0) when input is blank, so the backend/UI 'hidden when blank, not $0' requirement is met throughout (preview, summary, sign page, invoice conversion).",
+    "AdminOrders.jsx order-shipping Calculate reuses the same /api/shipping/rates/checkout endpoint as Quote Builder — consistent, DRY implementation across the two Shipping Calculate features."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_quote_order_shipping.py"
+  ],
+  "success_rate": {"backend": "100% (44/44)", "frontend": "100% (all shipping UI flows verified)"},
+  "test_credentials": "Admin mel@a2gdesigns.com / BigDaddy2016!! (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "Created and cleaned up TEST_ prefixed leads/quotes via API and UI during testing (all deleted at end). Restored two demo orders (ORD-20260717173459-96FA5F, ORD-20260717173428-CB47A8) back to their original shipping_cost=$150.00/total=$5150.00 after using them to test the Admin Orders shipping edit flow (Calculate -> free-shipping rate selected -> Save, then manual $12.34 -> Save).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Feature fully verified both backend (pytest backend/tests/test_quote_order_shipping.py) and frontend (Playwright, manual verification via screenshots). Note: the review_request's suggested direct URL '/admin/quotes-contracts-esign/{leadId}/new' does NOT match an actual route in AdminLayout.jsx (it falls through to the Dashboard) — the real Quote Builder route is '/admin/leads/{leadId}/quote/new' and '/admin/leads/{leadId}/quote/{quoteId}' (see AdminLayout.jsx getCurrentPage(), lines ~658-669). Worth a doc/URL correction if this misleads future agents. Pre-existing unrelated test file backend/tests/test_shipment_pending.py fails to import ('No module named shipping') when run outside the pytest.ini rootdir context — not touched, flagging for visibility only.",
+  "rca_of_the_issue": "No bugs found in the shipping feature itself; all documented behaviors (hidden-when-blank, positioned after tax, admin-only entry with customer visibility, calculator with manual override, per-order override recalculating total, sync-from-store idempotency) matched the implementation exactly."
+}

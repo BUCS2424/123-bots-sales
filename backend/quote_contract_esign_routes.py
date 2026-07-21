@@ -52,6 +52,10 @@ class QuoteCatalogItem(BaseModel):
     price_monthly: Optional[float] = 0
     price_yearly: Optional[float] = 0
     is_active: bool = True
+    shipping_weight: Optional[float] = 0
+    shipping_length: Optional[float] = 0
+    shipping_width: Optional[float] = 0
+    shipping_height: Optional[float] = 0
 
 
 class QuoteFormConfigUpdate(BaseModel):
@@ -91,6 +95,7 @@ class QuoteCreate(BaseModel):
     tax_exempt: bool = False
     tax_rate: float = 0.0
     tax_amount: float = 0.0
+    shipping_cost: Optional[float] = None
     total: float = 0.0
     total_onetime: float = 0.0
     total_monthly: float = 0.0
@@ -408,6 +413,50 @@ async def delete_quote_catalog_product(product_id: str, current_user=Depends(get
     return {"success": True}
 
 
+@router.post("/quotes/catalog/products/sync-from-store")
+async def sync_quote_catalog_products_from_store(current_user=Depends(get_current_user)):
+    """Pull real store products into this admin's quote-products catalog, carrying over
+    price + shipping weight/dimensions so quote line items can auto-calculate shipping."""
+    store_products = await db.products.find({}, {"_id": 0}).to_list(5000)
+    now = datetime.now(timezone.utc).isoformat()
+    created = 0
+    updated = 0
+    for p in store_products:
+        sku = (p.get("sku") or "").strip()
+        name = p.get("name") or ""
+        if not name:
+            continue
+        match_query = {"user_id": current_user["id"]}
+        if sku:
+            match_query["sku"] = sku
+        else:
+            match_query["name"] = name
+        fields = {
+            "name": name,
+            "description": p.get("description") or "",
+            "category": p.get("category") or "General",
+            "sku": sku,
+            "price_onetime": p.get("price") or 0,
+            "shipping_weight": p.get("shipping_weight") or 0,
+            "shipping_length": p.get("shipping_length") or 0,
+            "shipping_width": p.get("shipping_width") or 0,
+            "shipping_height": p.get("shipping_height") or 0,
+            "is_active": p.get("is_visible", True) is not False,
+            "updated_at": now,
+            "source_product_id": p.get("id"),
+        }
+        existing = await db.quote_products.find_one(match_query, {"_id": 0})
+        if existing:
+            await db.quote_products.update_one({"id": existing["id"]}, {"$set": fields})
+            updated += 1
+        else:
+            doc = {**fields, "id": str(uuid.uuid4()), "user_id": current_user["id"], "created_at": now,
+                   "price_monthly": 0, "price_yearly": 0}
+            await db.quote_products.insert_one(doc)
+            created += 1
+    return {"success": True, "created": created, "updated": updated, "total_store_products": len(store_products)}
+
+
 @router.get("/quotes/catalog/services")
 async def get_quote_catalog_services(current_user=Depends(get_current_user)):
     services = await db.quote_services.find({"user_id": current_user["id"]}, {"_id": 0}).sort("name", 1).to_list(2000)
@@ -599,6 +648,9 @@ async def convert_quote_to_invoice(lead_id: str, quote_id: str, current_user=Dep
         "invoice_number": f"INV-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:6].upper()}",
         "status": "draft",
         "items": quote.get("items", []),
+        "subtotal": quote.get("subtotal", 0),
+        "tax_amount": quote.get("tax_amount", 0),
+        "shipping_cost": quote.get("shipping_cost"),
         "total": quote.get("total", 0),
         "created_at": datetime.now(timezone.utc).isoformat(),
         "updated_at": datetime.now(timezone.utc).isoformat(),

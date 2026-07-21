@@ -257,7 +257,8 @@ const QuoteSigningPage = () => {
   const STRIPE_RATE = 0.029;
   const STRIPE_FLAT = 0.30;
   const ccFee = (amount) => amount > 0 ? (amount * STRIPE_RATE) + STRIPE_FLAT : 0;
-  const totalWithFees = calcTotal + ccFee(calcTotal);
+  const shippingAmount = Number(quote.shipping_cost || 0);
+  const totalWithFees = calcTotal + shippingAmount + ccFee(calcTotal);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -414,6 +415,12 @@ const QuoteSigningPage = () => {
                     <span className="text-gray-600">Subtotal:</span>
                     <span className="font-medium">{formatCurrency(calcTotal)}</span>
                   </div>
+                  {shippingAmount > 0 && (
+                    <div className="flex justify-between text-sm" data-testid="quote-sign-shipping-line">
+                      <span className="text-gray-600">Shipping:</span>
+                      <span className="font-medium">{formatCurrency(shippingAmount)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500">Credit Card Processing Fee (2.9% + $0.30):</span>
                     <span className="font-medium text-gray-600">{formatCurrency(ccFee(calcTotal))}</span>

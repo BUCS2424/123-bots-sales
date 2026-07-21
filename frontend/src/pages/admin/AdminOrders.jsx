@@ -66,6 +66,11 @@ const AdminOrders = () => {
   const [printfulEligibilityByOrder, setPrintfulEligibilityByOrder] = useState({});
   const [printfulEligibilityLoading, setPrintfulEligibilityLoading] = useState(false);
   const [sendingPrintfulOrderId, setSendingPrintfulOrderId] = useState('');
+  const [editingShipping, setEditingShipping] = useState(false);
+  const [shippingInput, setShippingInput] = useState('');
+  const [calculatingShipping, setCalculatingShipping] = useState(false);
+  const [shippingRateOptions, setShippingRateOptions] = useState([]);
+  const [savingShipping, setSavingShipping] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -208,11 +213,76 @@ const AdminOrders = () => {
     }
   };
 
+  const handleEditShippingClick = () => {
+    setShippingInput(String(Number(selectedOrder?.shipping_cost || 0)));
+    setShippingRateOptions([]);
+    setEditingShipping(true);
+  };
+
+  const handleCancelEditShipping = () => {
+    setEditingShipping(false);
+    setShippingRateOptions([]);
+  };
+
+  const handleCalculateShippingRates = async () => {
+    if (!selectedOrder) return;
+    setCalculatingShipping(true);
+    setShippingRateOptions([]);
+    try {
+      const shipTo = selectedOrder.shipping || {};
+      const shipAddr = selectedOrder.shipping_address || {};
+      const res = await axios.post(`${API}/shipping/rates/checkout`, {
+        to_address: {
+          name: selectedOrder.customer_name || 'Customer',
+          street1: shipTo.address1 || shipAddr.address || '',
+          street2: shipTo.address2 || '',
+          city: shipTo.city || shipAddr.city || '',
+          state: shipTo.state || shipAddr.state || '',
+          zip_code: shipTo.zipCode || shipAddr.zip_code || '',
+          country: 'US',
+        },
+        items: (selectedOrder.items || []).map(i => ({ product_id: i.product_id, quantity: i.quantity || 1 })),
+        order_subtotal: selectedOrder.subtotal || 0,
+      }, { headers: getAuthHeaders() });
+      const rates = res.data?.rates || [];
+      setShippingRateOptions(rates);
+      if (rates.length === 0) {
+        toast({ title: 'No rates found', description: 'Enter a shipping amount manually.', variant: 'destructive' });
+      }
+    } catch (error) {
+      toast({ title: 'Calculation Failed', description: error.response?.data?.detail || 'Could not fetch carrier rates.', variant: 'destructive' });
+    } finally {
+      setCalculatingShipping(false);
+    }
+  };
+
+  const handleSaveShipping = async () => {
+    if (!selectedOrder) return;
+    const cost = parseFloat(shippingInput);
+    if (isNaN(cost) || cost < 0) {
+      toast({ title: 'Invalid amount', description: 'Enter a valid shipping cost.', variant: 'destructive' });
+      return;
+    }
+    setSavingShipping(true);
+    try {
+      const res = await axios.patch(`${API}/payments/orders/${selectedOrder.id}/shipping`, { shipping_cost: cost }, { headers: getAuthHeaders() });
+      setSelectedOrder(res.data);
+      setEditingShipping(false);
+      setShippingRateOptions([]);
+      toast({ title: 'Shipping Updated', description: `Shipping set to $${cost.toFixed(2)}. Total recalculated.` });
+      fetchOrders();
+    } catch (error) {
+      toast({ title: 'Error', description: error.response?.data?.detail || 'Failed to update shipping', variant: 'destructive' });
+    } finally {
+      setSavingShipping(false);
+    }
+  };
+
   const handleToggleRecurring = async (order, isRecurring) => {
     try {
       await axios.put(`${API}/store/orders/${order.id}/recurring?is_recurring=${isRecurring}&interval_days=30`);
-      toast({ 
-        title: isRecurring ? 'Recurring Enabled' : 'Recurring Disabled', 
+      toast({
+        title: isRecurring ? 'Recurring Enabled' : 'Recurring Disabled',
         description: isRecurring ? 'Customer will receive invoices for this order' : 'Recurring invoices disabled' 
       });
       fetchOrders();
@@ -644,10 +714,45 @@ const AdminOrders = () => {
                       <span className="text-gray-500">Subtotal</span>
                       <span>${selectedOrder.subtotal?.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between items-center text-sm" data-testid="order-shipping-row">
                       <span className="text-gray-500">Shipping</span>
-                      <span>{selectedOrder.shipping_cost === 0 ? 'FREE' : `$${selectedOrder.shipping_cost?.toFixed(2)}`}</span>
+                      {!editingShipping ? (
+                        <div className="flex items-center gap-2">
+                          <span>{selectedOrder.shipping_cost === 0 ? 'FREE' : `$${Number(selectedOrder.shipping_cost || 0).toFixed(2)}`}</span>
+                          <Button variant="ghost" size="sm" className="h-6 px-2 text-xs text-blue-600" onClick={handleEditShippingClick} data-testid="edit-order-shipping-button">Edit</Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <div className="relative">
+                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
+                            <Input type="number" step="0.01" value={shippingInput} onChange={(e) => setShippingInput(e.target.value)} className="w-24 h-8 text-sm pl-5" data-testid="order-shipping-input" />
+                          </div>
+                          <Button variant="outline" size="sm" className="h-8" disabled={calculatingShipping} onClick={handleCalculateShippingRates} data-testid="calculate-order-shipping-button">
+                            {calculatingShipping ? 'Calculating…' : 'Calculate'}
+                          </Button>
+                          <Button size="sm" className="h-8 bg-purple-600 hover:bg-purple-700" disabled={savingShipping} onClick={handleSaveShipping} data-testid="save-order-shipping-button">
+                            {savingShipping ? 'Saving…' : 'Save'}
+                          </Button>
+                          <Button variant="ghost" size="sm" className="h-8" onClick={handleCancelEditShipping} data-testid="cancel-order-shipping-button">Cancel</Button>
+                        </div>
+                      )}
                     </div>
+                    {editingShipping && shippingRateOptions.length > 0 && (
+                      <div className="p-2 rounded-lg border bg-gray-50 space-y-1" data-testid="order-shipping-rate-options">
+                        {shippingRateOptions.map((rate, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setShippingInput(String(Number(rate.rate_with_upcharge ?? rate.rate).toFixed(2)))}
+                            className="w-full flex justify-between text-xs px-2 py-1.5 rounded hover:bg-white border border-transparent hover:border-gray-200"
+                            data-testid={`order-shipping-rate-option-${idx}`}
+                          >
+                            <span>{rate.carrier} {rate.service}</span>
+                            <span className="font-medium">${Number(rate.rate_with_upcharge ?? rate.rate).toFixed(2)}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-500">Tax</span>
                       <span>${selectedOrder.tax?.toFixed(2)}</span>
