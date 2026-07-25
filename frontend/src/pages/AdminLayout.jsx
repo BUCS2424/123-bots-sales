@@ -7,7 +7,7 @@ import {
   Bell, Search, DollarSign, ShoppingBag, Gift, FolderTree, Layers, Cloud, User, Sliders, Code,
   Store, Truck, CreditCard, CheckCircle, LayoutGrid, Clock, FileText, UserPlus, Briefcase,
   Calendar, CalendarOff, Wrench, Shield, BookOpen, PiggyBank, Star, Megaphone, Mail, Zap, MessageCircle, Building2, Box, Globe, Radio as RadioIcon, Key,
-  Ticket, MapPin, CalendarDays, Plus, FileSignature, Compass, Sparkles
+  Ticket, MapPin, CalendarDays, Plus, FileSignature, Compass, Sparkles, Anchor
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -109,6 +109,7 @@ import EventRevenue from './admin/events/EventRevenue';
 import ToursChartersDashboard from './admin/tours-charters/ToursChartersDashboard';
 import ActivityCategories from './admin/tours-charters/ActivityCategories';
 import Activities from './admin/tours-charters/Activities';
+import CharterCompanies from './admin/tours-charters/CharterCompanies';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -333,6 +334,8 @@ const AdminLayout = () => {
         { path: '/admin/tours-charters', label: 'Dashboard', icon: LayoutDashboard },
         { path: '/admin/tours-charters/categories', label: 'Categories', icon: Tag },
         { path: '/admin/tours-charters/activities', label: 'Activities', icon: Sparkles },
+        { path: '/admin/tours-charters/charter-companies', label: 'Charter Companies', icon: Building2 },
+        { external: true, href: 'https://partner.fareharbor.com/login', label: 'Fare Harbor', icon: Anchor },
       ],
     }] : []),
     {
@@ -738,6 +741,7 @@ const AdminLayout = () => {
       if (!featureFlags.activity_marketplace_enabled) return <Navigate to="/admin/cart" replace />;
       if (path === '/admin/tours-charters/categories') return <ActivityCategories />;
       if (path === '/admin/tours-charters/activities') return <Activities />;
+      if (path === '/admin/tours-charters/charter-companies') return <CharterCompanies />;
       return <ToursChartersDashboard />;
     }
     if (path === '/admin/user-management/customers') return <AdminCustomers />;
@@ -993,6 +997,7 @@ const AdminLayout = () => {
                             href={child.href}
                             target="_blank"
                             rel="noopener noreferrer"
+                            data-testid={`admin-sidebar-external-${child.label.toLowerCase().replace(/\s+/g, '-')}`}
                             className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm text-gray-400 hover:bg-white/10 hover:text-white"
                           >
                             <child.icon className="w-4 h-4 flex-shrink-0" />
@@ -1134,6 +1139,7 @@ const AdminLayout = () => {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={() => setMobileMenuOpen(false)}
+                                data-testid={`admin-mobile-sidebar-external-${child.label.toLowerCase().replace(/\s+/g, '-')}`}
                                 className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm text-gray-400 hover:bg-white/10 hover:text-white"
                               >
                                 <child.icon className="w-4 h-4 flex-shrink-0" />

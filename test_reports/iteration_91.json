@@ -1,0 +1,35 @@
+{
+  "summary": "First functional verification of the Activity Information+SEO accordion (Activities.jsx) and brand-new Charter Companies admin page + Fare Harbor sidebar link. Backend: added test_activity_seo_and_charter_companies.py (7 new tests: SEO field create/update/default persistence via admin+public endpoints, charter company full-field CRUD, delete-blocked-with-linked-activity, delete-allowed-when-empty). Ran alongside the existing test_tours_charters_marketplace.py regression suite: 38/38 passed. Frontend (Playwright): confirmed sidebar 'Tours / Charters' accordion expands with exact order Dashboard/Categories/Activities/Charter Companies/Fare Harbor; 'Fare Harbor' link has target=_blank, href=https://partner.fareharbor.com/login, opens in a genuinely new tab without navigating the admin app away; Activity editor Sheet's 'Activity Information' and 'SEO' accordions both render and expand correctly (defaultValue=['info','seo']), filled Title/Charter Company/Category, then SEO Page Title + Meta Description + robots dropdown 'No Index, No Follow' - char counters (19/70, 39/160) and the Google-style SERP preview all live-updated correctly; saved activity and verified via API that seo_title/seo_description/seo_robots persisted exactly as entered; on the public /activities/view/:alias page confirmed document.title, meta[name=description], and meta[name=robots]='noindex, nofollow' all reflect the entered SEO fields, and the fareharbor-lightframe-script tag (src=fareharbor.com/embeds/api/v1) is present on the detail page AND on /activities (directory) and /activities/company/:slug (both use the same useActivityMarketplaceGate hook, confirming the shared gate fires everywhere). NEW Charter Companies page: verified block/list view toggle, search-by-name filter, status filter (all/active/inactive) all work correctly; created a new charter company with all fields (name, status, description, email, phone, website, commission 12.5%, FareHarbor shortname) via the right-side Sheet modal and confirmed it appeared in the list with correct badge/commission/shortname; edited it (renamed, commission to 20%, set Inactive) and confirmed the change persisted after a full page reload; attempted to delete 'Blue Dream Charters' (2 linked activities at the time) and got the correct 'Cannot delete: N activity(ies) still belong to this seller' error toast with no deletion; deleted the empty throwaway company successfully. Regression: Activities search/seller-filter/view-toggle and Categories page still work; no console errors observed on the Charter Companies page. All test-created data (1 activity, 1 seller) was cleaned up afterward and DB verified restored to the exact original seed state (1 seller 'Blue Dream Charters' with 1 activity 'Sunset Sail').",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_tours_charters_marketplace.py",
+    "/app/backend/tests/test_activity_seo_and_charter_companies.py",
+    "/app/test_reports/pytest/tours_charters_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Activities.jsx Accordion (info+seo) is complete, well-formed JSX with no structural issues - the prior handoff's concern about 'possibly malformed JSX' is unfounded; both accordion sections render, expand, and all documented fields/data-testids are present and functional.",
+    "CharterCompanies.jsx is a clean, complete CRUD page mirroring the Activities.jsx UX pattern (block/list toggle, search+status filter, right-side Sheet modal) - no issues found.",
+    "AdminLayout.jsx sidebar correctly reuses the existing external-link child pattern (same as Analytics) for the Fare Harbor item, placed after Charter Companies as required, target=_blank + rel=noopener confirmed.",
+    "activityMarketplaceShared.js's useActivityMarketplaceGate hook is correctly reused by all 4 public activity pages (ActivitiesDirectoryPage, ActivitiesByCompanyPage/ActivityListPage, ActivityDetailPage) ensuring the FareHarbor script + feature-flag gate fires everywhere from one shared source - good DRY practice.",
+    "Backend DELETE /api/tours-charters/sellers/{id} correctly returns 400 with a descriptive message when activity_count > 0, and the frontend correctly surfaces this via e.response?.data?.detail in the error toast."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_activity_seo_and_charter_companies.py"
+  ],
+  "success_rate": {"backend": "100% (38/38)", "frontend": "100% (all specified flows verified)"},
+  "test_credentials": "Admin mel@a2gdesigns.com / BigDaddy2016!! (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "Created and fully cleaned up: 1 test activity (TEST Playwright SEO Activity, via UI) and 1 test charter company (TEST Playwright Charter Co, via UI, renamed/edited then deleted) plus multiple TEST_-prefixed pytest fixtures (auto-cleaned via fixture teardown). Final DB state verified restored to exactly the original seed: 1 seller 'Blue Dream Charters' (1 linked activity), 1 activity 'Sunset Sail', 1 category 'Boat Charters'. Feature flag activity_marketplace_enabled confirmed left ON.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "This session verified: (1) the previously-untested Activity Information+SEO accordion in Activities.jsx - fully functional, no malformed JSX, SEO fields persist end-to-end from admin form -> DB -> public page meta tags; (2) the brand-new Charter Companies admin page - full CRUD, filters, view toggle, delete-block-with-linked-activity all working; (3) the brand-new Fare Harbor external sidebar link - correct order, correct new-tab behavior. Combined with iterations 88-90 (base marketplace, FareHarbor booking drawer, field refinement), the entire Tours/Charters module is now fully verified across 4 testing passes with zero blocking bugs found in any pass. test_activity_seo_and_charter_companies.py is a new regression file that can be run alongside test_tours_charters_marketplace.py going forward.",
+  "rca_of_the_issue": "No bugs found this session. All previously-flagged-as-unverified functionality (accordion+SEO) and all newly-built functionality (Charter Companies page, Fare Harbor link) work exactly as specified."
+}
