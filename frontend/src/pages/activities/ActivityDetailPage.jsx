@@ -22,7 +22,18 @@ const ActivityDetailPage = () => {
     axios.get(`${API}/api/public/tours-charters/activities/${slug}`)
       .then((r) => {
         setActivity(r.data);
-        setSeoMetadata({ title: `${r.data.title} | 123Bots`, description: r.data.description?.slice(0, 160) || 'Book this activity.' });
+        const robotsMap = {
+          index_follow: 'index, follow',
+          index_nofollow: 'index, nofollow',
+          noindex_follow: 'noindex, follow',
+          noindex_nofollow: 'noindex, nofollow',
+        };
+        setSeoMetadata({
+          title: r.data.seo_title || r.data.title,
+          description: r.data.seo_description || r.data.description?.slice(0, 160) || 'Book this activity.',
+          robots: robotsMap[r.data.seo_robots] || 'index, follow',
+          canonicalPath: `/activities/view/${r.data.alias}`,
+        });
       })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));

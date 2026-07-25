@@ -1,398 +1,323 @@
 <analysis>original_problem_statement:  
-Build and rebrand a full-stack robot-commerce/CRM application as **123Bots**, including CRM, quotes/contracts/eSign, storefront, checkout/payment/shipping, Event Center, inventory, product delivery, and related admin tooling.
+Build/rebrand a full-stack React/FastAPI/MongoDB commerce/CRM product as 123Bots. Recent work expanded it with a feature-flagged **Activity & Charter Marketplace** (Tours / Charters) intended for cloning to another client: multi-seller activity directory, categories, activities, public browsing, booking-provider support, and later commission/billing/analytics.
 
-Recent explicit product requirements completed in this trajectory:
-- Prevent deleted categories from reappearing; enable category nesting by drag/drop.
-- Capture Stripe PaymentIntent and Checkout Session IDs on orders for administrator cross-reference.
-- Prevent failed shipping-label purchases from marking orders shipped; show shipment-pending state and alert support.
-- Add a Shipment Pending orders filter and fix the Coming Soon gate when disabled.
-- Make reusable quote contract document templates easy to access from Admin.
-- Add tax-exempt handling across leads, customers, quotes, invoices/orders/storefront checkout, with certificate storage and audit access.
+PRODUCT REQUIREMENTS for current module:
+- A feature toggle must globally control all Tours / Charters admin and public UI. Toggle ON shows all related UI/routes; OFF hides sidebar/public menu and redirects/gates relevant URLs.
+- Admin sidebar section is named **Tours / Charters**, with Dashboard, Categories, Activities.
+- Public top navigation contains **ACTIVITIES**, with:
+  - All Activities/category image-table directory.
+  - By Charter Company/company image-table directory.
+- Activity data requires exact fields:
+  - Title
+  - Alias
+  - Tags
+  - Status: Published/Unpublished
+  - Priority numeric ordering
+  - Multiple Categories
+  - Featured toggle
+- Every modal in this module should be a **right-side slide-out Sheet**, not a centered modal.
+- Activity list must support block/list views and filtering by charter company, activity title, and categories.
+- Activities support generic external booking URLs and FareHarbor Lightframe booking.
+- FareHarbor JS must load on every public activity-module page:
+  
+- Current requested enhancement: Activity slideout must organize fields into an **Activity Information** accordion and an **SEO** accordion. SEO needs Google-style search preview, SEO metadata fields, and Index/Follow dropdown.
 
 **User's preferred language**: English. Next agent must respond in English only.
 
----
+**what currently exists?**
+- Existing 123Bots CRM, storefront, checkout, shipping, eSign, quotes, tax exemption, events, inventory, and admin features.
+- Tours / Charters module was built and testing-agent verified through iteration 90:
+  - Feature flag backend/public handling.
+  - Admin Dashboard/Categories/Activities.
+  - Seller tenants, activity categories, activities CRUD.
+  - Public category/company/activity directory and detail pages.
+  - Admin right-side Sheets for category/activity/seller flows.
+  - Generic external bookings and FareHarbor booking Sheet/iframe.
+  - Block/list activity views with client-side filtering.
+  - Activity schema refined with title, alias, tags, published status, priority, multi-categories, and featured.
+- SEO backend fields and shared FareHarbor script injection were just started.
+- The current final change partially transformed the Activity edit Sheet into accordions; it has **not been compiled or tested** after the latest edit.
 
-## what currently exists?
-123Bots is a React/FastAPI/MongoDB system with:
-- Storefront, checkout, multi-provider payments, shipping-label workflows, robot catalog, CRM, leads/opportunities, customer dashboards, quotes, eSign contract templates, inventory, Events, and admin settings.
-- Tax exemption now supported for Leads/Opportunities and Customers, with exemption certificate metadata/file upload, audit-friendly file viewing/downloading/printing, quote tax calculations, and server-side storefront order-tax enforcement.
-- Quote contract templates are available in the Admin sidebar through **Quotes → Contract Documents**.
-- Shipment-label provider failures create , retain failure details, do not mark orders shipped, and are visible/retryable in Admin Orders.
-- Coming Soon gate correctly respects the server-side  flag.
+**Last working item**:
+- Last item agent was working: Reorganizing the Activities admin slideout to place current activity fields under an “Activity Information” accordion and adding an SEO accordion, while ensuring public activity pages load FareHarbor Lightframe JS and activity SEO metadata correctly.
+- Status: IN PROGRESS
+- Agent Testing Done: N for the latest accordion/SEO enhancement. Earlier module revisions were fully tested in iteration 90.
+- Which testing method agent to use?: Frontend testing agent + backend/manual curl. This touches form persistence, public SEO rendering, and client script behavior.
+- User Testing Done: N
 
----
+**All Pending/In progress Issue list**:
 
-## Last working item
-- **Last item agent was working:** Tax-exempt implementation for CRM leads/customers, quote calculations, and storefront orders. The agent added data capture, certificate uploads, tax lines in quotes, per-quote override, checkout display, and server-side enforcement that removes submitted tax for exempt customers.
-- **Status:** USER VERIFICATION PENDING
-- **Agent Testing Done:** Y
-- **Which testing method agent used:** Both backend/manual API tests and frontend testing agent.
-- **User Testing Done:** N
+Issue 1: Complete and validate the Activity Information + SEO accordion slideout — P0  
+- Attempted fixes:
+  - Added/imported accordion components in .
+  - Added SEO fields to backend activity models.
+  - Began wrapping the Activity form fields in .
+  - Began adding an  accordion section.
+- Next debug checklist:
+  1. Inspect  around the Activity Sheet JSX modified in the final search/replace.
+  2. Verify JSX nesting and that all existing booking/category/image controls remain inside Activity Information.
+  3. Ensure SEO section includes SEO title, SEO description, canonical URL if desired, and index/follow controls represented as a robots setting.
+  4. Confirm fields populate on edit and persist via create/update.
+  5. Verify labels, controls, results preview, and all interactive controls use unique .
+  6. Run frontend compile, one smoke screenshot, then .
+- Why fix this issue and what will be achieved with the fix?: Delivers the user’s precise requested activity-management workflow and prevents the latest partial JSX refactor from introducing a broken admin page.
+- Status: IN PROGRESS
+- Is recurring issue?: N
+- Should Test frontend/backend/both after fix?: Both
+- Blocked on other issue: No
 
-Reasoning/status:
-- Backend enforcement was manually tested with an exempt and non-exempt customer: exempt orders were saved at  and reduced total; non-exempt orders retained tax.
-- Testing agent report  passed the Lead, Customer, Quote, certificate upload, and related backend UI/API flows.
-- The user has not yet confirmed their desired operational workflow in preview/production.
+Issue 2: FareHarbor External API/FHDN importer is not implemented because required partner credentials/access have not been provided — P1  
+- Attempted fixes:
+  - Agent researched FareHarbor and called .
+  - Implemented the non-credentialed FareHarbor Lightframe embed flow.
+- Next debug checklist:
+  1. Ask user for confirmation that they have FareHarbor External API partner access.
+  2. Obtain required credentials through approved secure configuration:  and .
+  3. Do not code direct integration without following the integration playbook.
+  4. Build seller/FHDN search/import only after access and API scope are confirmed.
+- Why fix this issue and what will be achieved with the fix?: Enables sellers/FHDN inventory to be searched and imported directly rather than manually entered.
+- Status: BLOCKED
+- Is recurring issue?: N
+- Should Test frontend/backend/both after fix?: Both/integration
+- Blocked on other issue: User-provided FareHarbor partner/API access credentials.
 
----
+Issue 3: The user has not defined the final Featured visual treatment — P2  
+- Attempted fixes: Current admin has featured star/badge and boolean persistence.
+- Next debug checklist: Ask for desired public featured placement/design once the base activity editor/SEO structure is accepted.
+- Why fix this issue and what will be achieved with the fix?: Determines homepage/directory prominence and how featured content should be displayed.
+- Status: NOT STARTED
+- Is recurring issue?: N
+- Should Test frontend/backend/both after fix?: Frontend
+- Blocked on other issue: User design decision.
 
-## All Pending/In progress Issue list
+**In progress Task List**:
 
-### Issue 1: Verify tax-exempt workflow in the user’s actual operational flow — P0
-- **Attempted fixes:** Full implementation completed and test-agent verified.
-- **Next debug checklist:**
-  1. Test an actual customer who is logged in at storefront checkout.
-  2. Mark the relevant Customer and/or linked Lead as exempt.
-  3. Upload a valid certificate document/image.
-  4. Create a quote and confirm configured tax rate appears, or /bin/bash if exempt.
-  5. Complete a real/payment-test order and verify order/invoice tax is /bin/bash.
-  6. If reported on production, make changes in preview then user must redeploy.
-- **Why fix/verify:** Ensures identity matching between storefront account email, Customer record, Lead record, and tax exemption data works for the user’s real business records.
-- **Status:** USER VERIFICATION PENDING
-- **Is recurring issue?:** N
-- **Should Test frontend/backend/both after fix?:** Both
-- **Blocked on other issue:** None
+Task 1: Finalize current Activity editor accordion/SEO feature — P0  
+- Where to resume:
+  - 
+  - 
+  - 
+  - 
+  - 
+- What will be achieved with this?: A structured right-sheet activity editor with requested Activity Information and SEO sections, persisted metadata, and public SEO/FareHarbor behavior.
+- Status: IN PROGRESS
+- Should Test frontend/backend/both after fix?: Both
+- Blocked on something: No.
 
-### Issue 2: Shipping funding-failure alert may not send until outbound SMTP is configured — P1
-- **Attempted fixes:** Failure alerts were implemented to target  when a label purchase fails. Shipment failure detection and UI were tested.
-- **Potential gap:** Earlier logs indicated SMTP was not configured, so the code can attempt the alert but email delivery may not occur until SMTP/Resend settings are configured.
-- **Next debug checklist:**
-  1. Inspect email settings and outbound SMTP/Resend configuration.
-  2. Trigger a controlled shipping-label failure.
-  3. Confirm receipt at .
-  4. Verify retries do not generate unmanageable duplicate alerts.
-- **Why fix:** Prevents failed Shippo/provider funding transactions from going unnoticed.
-- **Status:** TESTING PENDING for real email delivery
-- **Is recurring issue?:** N
-- **Should Test frontend/backend/both after fix?:** Backend/integration
-- **Blocked on other issue:** Email provider configuration/credentials.
+Task 2: FareHarbor FHDN/API import integration — P1  
+- Where to resume: Await API partner access, then use the FareHarbor integration playbook before changes.
+- What will be achieved with this?: Search/import FareHarbor sellers/items into the Activity marketplace.
+- Status: BLOCKED
+- Should Test frontend/backend/both after fix?: Both/integration
+- Blocked on something: FareHarbor external API credentials and partner authorization.
 
-### Issue 3: Robot-page media placeholders await user assets — P2
-- **Attempted fixes:** Four robot pages were rebuilt with fallback placeholders.
-- **Next debug checklist:** User needs to provide final images/videos for  and , then replace fallbacks and frontend-test visual layout.
-- **Why fix:** Completes public product experience.
-- **Status:** BLOCKED
-- **Is recurring issue?:** N
-- **Should Test frontend/backend/both after fix?:** Frontend
-- **Blocked on other issue:** User-provided media assets.
+**Upcoming and Future Tasks**
 
----
+Upcoming Tasks:
+1. P1 — Complete current SEO accordion and verify SEO preview/persistence/public robots metadata.
+2. P1 — Obtain FareHarbor API partner credentials/access and implement approved FHDN search/import flow.
+3. P1 — Define and build seller tenant management beyond quick-add, if required: seller profile, branding, uploaded imagery, booking account details, and commission settings.
+4. P1 — Add commission/revenue-share tracking, bookings ingestion, billing, and marketplace analytics. User explicitly stated module billing means tracking revenue share from seller bookings, not 123Bots subscription billing.
 
-## In progress Task List
-No coding task is currently in progress.
+Future Tasks:
+1. P2 — Native activity booking via 123Bots cart/checkout, selectable per activity alongside external booking.
+2. P2 — Define public Featured activities look and placement.
+3. P2 — Subcategories and advanced taxonomy/tag management UI.
+4. P2 — Public activity filtering/search refinements and pagination as inventory grows.
+5. P2 — Clone/extract Tours/Charters module for the next client after features stabilize.
+6. P2 — Original backlog: email delivery configuration, robot assets, PUDU API, iDrive E2 migration, dynamic robot product-page refactor, bulk tax exemption/reporting, signed contract archive.
 
-### Task 1: User verification of tax-exemption feature — P0
-- **Where to resume:** Lead/Customer Tax Exempt tabs, Quote Builder tax section, and Checkout.
-- **What will be achieved:** Confirmation that tax exemptions match the user’s real process and records.
-- **Status:** TESTING PENDING
-- **Should Test frontend/backend/both after fix?:** Both
-- **Blocked on something:** Awaiting user verification.
+**Completed work in this session**
+- Tours / Charters feature flag with admin sidebar/public navigation gating.
+- Tours / Charters admin Dashboard, Categories, Activities CRUD wireframe.
+- Seller tenant and activity backend models/APIs.
+- Public All Activities, category listings, By Charter Company, activity listing/detail routes.
+- Generic booking URL and FareHarbor Lightframe iframe booking drawer.
+- Right-side Sheets for Tours/Charters modals.
+- Activity block/list views and filters by company/title/category.
+- Activity fields refined: title, alias, tags, status, priority, categories, featured.
+- FareHarbor script injection was added to shared public activity gating flow.
+- Earlier commercial/CRM work remains completed and verified: tax-exempt workflows, quote contract navigation, shipping safeguards, category nesting/deletion fixes, Stripe payment reference persistence.
 
----
+- Recently completed:
+  - Activity field precision update — agent-tested in .
+  - FareHarbor booking drawer/right-side Sheet conversion — agent-tested in iteration 89.
+  - Initial Activity & Charter Marketplace wireframe/full basic flow — agent-tested in iteration 88.
 
-## Upcoming and Future Tasks
+**Earlier issues found/mentioned but not fixed**
+- FareHarbor API/FHDN direct search/import awaits partner API access and credentials.
+- Featured appearance has not been designed; only data/state/badge exists.
+- Earlier SMTP delivery configuration for shipping funding-failure alerts remains pending.
+- Final robot imagery/video remains blocked on user-provided assets.
+- Tax exemption real production/workflow validation remains user-verification pending.
 
-### Upcoming Tasks
-1. **P1 — Pre-launch storefront verification**
-   - Confirm shop catalog and real products are loaded.
-   - Confirm public storefront remains accessible with Coming Soon disabled.
-   - File areas: feature flags/site settings, storefront catalog, checkout.
+**Known issue recurrence from previous fork**
+- Issue recurrence in previous fork: Preview vs production confusion.
+- Recurrence count: 3 historically.
+- Status: Process guard required.
+- The user has deployed production. Any future reported issue must be clarified first as preview versus production. Preview code changes require redeployment for production; do not imply preview work is live.
 
-2. **P1 — Configure and verify email delivery**
-   - Configure SMTP/Resend so shipping failure alerts and quote-related email flows actually deliver.
-   - Relevant files: , shipping failure alert logic in , admin notification settings.
-
-### Future Tasks
-1. **P2 — PUDU API integration**
-   - Real-time fleet status, battery state, cleaning reports.
-
-2. **P2 — Asset migration to iDrive E2**
-   - Requires user credentials and integration planning.
-
-3. **P2 — Refactor robot product pages**
-   - Consolidate roughly 12 large hardcoded robot page components into a config-driven dynamic template.
-
-4. **P2 — Tax-exemption reporting**
-   - Suggested in prior finish: export exempt vs taxable sales for accounting/tax filing.
-
-5. **P2 — Bulk tax exemption**
-   - Suggested: bulk-mark multiple customers tax-exempt from Admin Customers.
-
-6. **P2 — Signed contract archive**
-   - Suggested: searchable page for completed signed quote contracts, signer, signature date, and downloadable copy.
-
----
-
-## Completed work in this session
-- Category deletion fix: removes deleted category references from products and falls back to General so categories do not respawn.
-- Drag/drop category nesting in Admin Categories.
-- Stripe PaymentIntent () and Checkout Session () persistence/display/copy links in Admin Orders.
-- Shipment Pending safeguard, failure details, retry UI, and Admin Orders status/filter.
-- Support alert attempt for label-purchase failures.
-- Coming Soon feature-flag loading/gate behavior corrected.
-- Quotes sidebar converted into accessible navigation including Contract Documents.
-- Tax exemption feature across Leads, Customers, Quotes, Checkout, and server-side order handling.
-
-### Recently completed
-- Tax Exemption module — DONE, agent-tested; user confirmation pending.
-- Admin Contract Documents navigation — DONE, testing-agent verified.
-- Shipment Pending safeguards/filter and Coming Soon gate correction — DONE, testing-agent verified.
-
----
-
-## Earlier issues found/mentioned but not fixed
-1. **Email delivery for shipping-failure alerts**
-   - Debug checklist: confirm SMTP/Resend configuration, force controlled provider failure, validate receipt.
-   - Why to solve: alert code alone is insufficient if no mail service is configured.
-   - Should Test frontend/backend/both after fix: Backend/integration.
-   - Is recurring issue?: N.
-
-2. **Final robot imagery/video**
-   - Debug checklist: obtain user assets and replace page fallback media.
-   - Why to solve: visual completion of robot product pages.
-   - Should Test frontend/backend/both after fix: Frontend.
-   - Is recurring issue?: N.
-
----
-
-## Known issue recurrence from previous fork
-- **Issue recurrence in previous fork:** User had prior frustration caused by preview-versus-production differences.
-- **Recurrence count:** 3 historically.
-- **Status:** RESOLVED operationally, but must remain a process guard.
-- Any future reported bug must first be clarified as preview versus production. Production changes require user redeployment from preview; do not claim a preview fix has reached production.
-
----
-
-## Code Architecture
+**Code Architecture**
 
 
----
+**Key Technical Concepts**
+- Frontend: React, React Router, Tailwind, Shadcn UI/Radix Sheet and Accordion, Axios, Lucide.
+- Backend: FastAPI, Motor/MongoDB, Pydantic.
+- Module gating:  feature flag exposed publicly and consumed by .
+- Marketplace hierarchy: Seller tenant → Activities; Activities → multiple categories/tags.
+- Booking: generic external links or FareHarbor Lightframe iframe.
+- SEO: existing project utility in , being extended for activity-specific title/description/robots handling.
+- Existing authentication: custom JWT; read  before authenticated testing.
 
-## Key Technical Concepts
-- **Frontend:** React, React Router, Tailwind, Shadcn UI, dnd-kit, Axios.
-- **Backend:** FastAPI, Motor/MongoDB, Pydantic.
-- **Authentication:** Existing JWT/custom auth.
-- **Payments:** Durango Direct, Stripe through , PayPal/CashApp/Venmo paths.
-- **Shipping:** Shippo and other provider abstractions; labels only mark shipped after validated tracking/success.
-- **Quotes/eSign:** Quote records store contract template/document association and signature state.
-- **Tax:** Tax settings live in Admin Settings; quote frontend reads configured tax settings; order backend enforces exemption independently of submitted client totals.
-
----
-
-## key DB schema
-- : uid=0(root) gid=0(root) groups=0(root), , , , .
-- : uid=0(root) gid=0(root) groups=0(root), , , shipping dimensions/weight.
-- : customer fields, totals, , , payment IDs, shipment/error fields.
-  - Relevant fields added/used: , , , , shipment state/status.
-- : CRM lead/opportunity data plus tax-exemption fields.
--  / customer records: customer profile and tax-exemption fields.
-- : quote items, totals, tax/exemption details, contract template/document IDs, signatures.
-- : reusable documents attached to quotes.
+**key DB schema**
 - :
-  - tax document: , , , calculated .
-  - feature-flag data including .
-- : carrier, tracking number, label URL, cost, lifecycle status.
-- Tax-exempt metadata includes: exemption boolean, certificate number, reason/notes, expiration date, uploaded certificate file metadata/URL.
+  - 
+  - 
+- :
+  - uid=0(root) gid=0(root) groups=0(root), , , , , , , timestamps.
+- :
+  - seller/company fields, FareHarbor shortname, activity relation.
+- :
+  - uid=0(root) gid=0(root) groups=0(root), , , legacy  compatibility may remain in old test data, , , , , , , , , , descriptions, booking configuration.
+  - FareHarbor-related: , , effective shortname derived from seller/activity.
+  - Newly being added: , , robots/index-follow field; inspect exact resulting model names before continuing.
+- Other established collections: users/customers, leads, quotes, orders, contract_templates, shipping_labels, products, categories.
 
----
+**changes in tech stack**
+- No stack migration.
+- FareHarbor is a new planned/partially integrated third-party provider:
+  - Lightframe frontend script/iframe use was implemented.
+  - External API/FHDN is not implemented and requires FareHarbor partner credentials.
+- Existing Stripe continues through ; preserve it.
 
-## changes in tech stack
-- No platform-wide stack migration.
-- Existing Stripe  use remains required; do not replace it with direct Stripe SDK flow without integration guidance.
-- New internal module: .
+**All files of reference**
+Created/updated for Tours/Charters:
+-  — marketplace Pydantic models and CRUD/public endpoints; latest SEO fields added here.
+-  — adds and publicly exposes .
+-  — registers marketplace router.
+-  — Tours / Charters admin navigation/routing gated by flag.
+-  — toggle UI.
+-  — default/loading state includes activity marketplace flag.
+-  — gated ACTIVITIES top navigation/dropdown.
+-  — activity public routes.
+-  — marketplace admin API client.
+-  — dashboard cards.
+-  — categories management Sheet.
+-  — key current file; activity editor, filters/views, Sheets, currently partially refactored into accordions.
+-  — public feature gate and FareHarbor script injection.
+- 
+- 
+- 
+-  — booking drawer and SEO metadata.
+-  — SEO helper extended for robots handling.
+-  — was updated after iteration 87; needs update after ongoing Tours/Charters work at next finish.
 
----
+Other important files:
+- 
+- 
+-  — reference for Google-style SEO preview design.
+- , , .
 
-## All files of reference
+**Areas that need refactoring**
+-  has accumulated CRUD, filter/view controls, seller quick-add, image upload, booking configuration, and editor logic. After current feature stabilizes, split editor Sheet and list/filter view into components.
+-  will need modularization when FHDN importer, commission, bookings, billing, and analytics arrive.
+- Ensure old / records are handled intentionally during future migration; current UI moved toward /.
+- Confirm latest SEO field naming is consistent from Pydantic model through API client to public SEO utility.
 
-### Updated/created in this session
-- 
-  - New tax exemption endpoints, certificate upload/storage and entity exemption data access/update.
-- 
-  - Registers tax-exemption router; customer/dashboard support adjusted.
-- 
-  - Enforces customer tax exemption server-side before charging/saving order totals; Stripe ID handling was added earlier in session.
-- 
-  - Quote tax/exemption fields persist.
-- 
-  - Customer dashboard response includes tax exemption information.
-- 
-  - Label purchase success validation, shipment-pending persistence, failure details and alert attempt.
-- 
-  - Delete-category cleanup to prevent respawning.
-- 
-  - Order response/payment ID fields.
-- 
-  - Reusable tax exemption UI/card with certificate management.
-- 
-  - Lead/Opportunity Tax Exempt tab.
-- 
-  - Customer Tax Exempt tab.
-- 
-  - Tax calculation/display and per-quote exemption control.
-- 
-  - Customer exemption lookup/display and zero-tax calculation.
-- 
-  - Payment references, shipment pending details/retry, shipment-pending filter.
-- 
-  - Quotes accordion and Contract Documents navigation.
-- 
-  - Safe parallel flag/settings loading.
-- 
-  - Waits for loaded flags and does not force password gate when disabled.
-- 
-  - Updated after completed work.
+**key api endpoints**
+Inspect  for exact routes. Existing concepts include:
+- Admin category CRUD/list APIs.
+- Seller CRUD/list APIs.
+- Activity CRUD/list APIs.
+- Dashboard stats endpoint.
+- Public categories, sellers, activity listings, and activity detail by alias/slug.
+- Feature flags:
+  - 
+  - public-safe  or equivalent router path per current project registration.
+- Existing FareHarbor external API is not yet proxied by this app.
 
-### Other important files
--  — tax settings API and public feature flags.
--  — outbound email implementation/configuration.
--  — contract template CRUD screen.
--  through  — key testing-agent reports.
+**Critical Info for New Agent**
+- Do not claim FareHarbor FHDN/API integration exists. Only FareHarbor Lightframe booking UI/script integration has been implemented.
+- The FareHarbor external API requires partner access and app/user headers. User has not supplied these. Since it is a third-party integration, call  before implementation and collect the required credentials.
+- The current latest edit is unverified and may have malformed JSX due to large search-replace wrapping. Prioritize compile inspection before any additional feature work.
+- User specifically stated **all module modals must slide from the right**. Keep using  for future Tours/Charters editing flows.
+- Toggle semantics are strict: when activity marketplace toggle is disabled, all associated admin/public navigation and routes must hide/gate.
+- Public FareHarbor script is injected through shared activity page gate, intended to cover all activity public pages.
+- Testing agent reports:
+  - Iteration 88: 21/21 backend tests + complete initial module flows pass.
+  - Iteration 89: 26/26 backend tests + FareHarbor sheet/booking regressions pass.
+  - Iteration 90: activity field precision changes pass; it called out alias generation edge case and an SEO suffix duplication pattern. The agent attempted to address these before the current work; verify actual behavior.
+- Preserve  coverage on all new interactive SEO accordion controls.
 
----
-
-## Areas that need refactoring
-- Twelve robot product page components are large and largely hardcoded; a config-driven reusable robot template remains a P2 item.
--  is very large (~1200+ lines); tax enhancements were added in place to minimize scope, but it would benefit from later extraction of totals/tax/editor sections.
-- , , and  are large and contain multiple unrelated admin flows.
-- Confirm uploaded development test certificate assets are not left orphaned on persistent storage. Development records were reset, but a storage cleanup audit is prudent.
-
----
-
-## key api endpoints
-- 
-- Category reorder/nesting endpoint used by Admin Categories.
-- 
-- 
-- 
-- 
-- 
-- 
-- Quote endpoints under , including quote creation/update and contract-template operations.
-- Lead endpoints under .
-- Customer dashboard/profile endpoints under user management.
-- New tax-exempt router endpoints in :
-  - Current-user exemption lookup.
-  - Lead/customer tax-exempt update.
-  - Certificate upload and serving.
-  - Consult router definitions before extending exact paths.
-
----
-
-## Critical Info for New Agent
-- Do not assume UI screenshot harness failures mean the app is broken: this agent’s screenshot tool repeatedly stalled at  loading, while testing-agent verification passed cleanly. Use testing agent for meaningful UI verification.
-- For any future production report, first ask whether it is preview or production. Code changes only occur in preview and need redeployment.
-- Storefront tax exemption is enforced in the backend, not only in the browser. This is essential; do not weaken it by trusting submitted frontend tax values.
-- Exemption matching relies on current authenticated user/customer email/records; validate real-account identity mapping if user reports exemption not applying.
-- Tax settings were reported by the tester as currently  and with no tax rates. Tax-exempt flows work, but quote/checkout tax calculations cannot show a non-zero configured rate until the administrator enables/configures taxes in Admin Settings.
-- Shipping failure alerts are only deliverable if outbound mail is configured.
-- Shipping weight remains stored in **pounds**, converted to ounces when calling carrier APIs.
-- Stripe order processing uses ; preserve that integration path.
-
----
-
-## documents and test reports created in this job
-Supporting documents/test reports:
-- 
-- 
+**documents and test reports created in this job**
 - 
 - 
 - 
 - 
 - 
 
-No newly created standalone  documentation was reported beyond PRD updates.
-
----
-
-## Last 10 User Messages and any pending HUMAN messages
-Latest to oldest:
-1. **“i want to add a tax exempt toggle and info box…”**
-   - Completed and agent-tested; user verification pending.
-2. **Detailed tax-exemption choices**
-   - Requested both Lead/Customer and per-quote support; certificate number/reason/expiration/upload; storefront-wide enforcement.
-   - Implemented and tested.
-3. **“im talking about the contract documents to set up and add to use”**
-   - Completed: Quotes sidebar now includes Contract Documents template management.
-4. **“where are the contracts kept for the quote?”**
-   - Answered and access improved.
-5. **Requested Shipment Pending filter, low-balance alert, Coming Soon gate fix**
-   - Implemented and testing-agent verified; real email delivery remains dependent on SMTP configuration.
-6. **Requested shipping payment failure safeguard**
-   - Implemented and verified.
-7. **Requested Stripe payment ID on invoice/admin view**
-   - Implemented and verified.
-8. **Requested category drag/drop nesting and deletion-respawn fix**
-   - Implemented and verified.
-9. **Clarified Configure Engine issue should be disregarded**
-   - No action required.
-10. **Requested Send to Shippo from order admin and corrected shipping dimensions/weight**
-   - Completed earlier.
+**Last 10 User Messages and any pending HUMAN messages**
+1. “Now all that info will be on its own card and accordion… Activity information… next section SEO… Google preview… index/follow dropdown… FareHarbor JS on all public component pages.” — IN PROGRESS; latest edit not tested.
+2. “Fields exact: title, Alias, tags, status published/unpublished, priority, multiple categories, Featured.” — DONE and test-agent verified iteration 90.
+3. “Activities will have a block or list filter view… charter company, activity name and categories.” — DONE; screenshot-smoke verified. No testing-agent report after the standalone filter request, but subsequent iteration 90 covered broader activity behavior.
+4. “FareHarbor API / FHDN search/import; JS fires and booking opens full right-side public slideout.” — Lightframe drawer done/tested; FHDN API search/import BLOCKED on credentials.
+5. “Rule, any modals will be slide out from the right.” — DONE for current module.
+6. “Toggle ON everything associated shows; toggle OFF everything associated hidden.” — DONE/tested iteration 88.
+7. Marketplace architecture clarification: Tours / Charters admin section and ACTIVITIES public directory/company navigation. — DONE basic wireframe.
+8. User chose feature name “Activity & Charter Marketplace”; revenue is seller booking commission/revenue share, supports external and native booking eventually. — Future work.
+9. Initial marketplace request using ReserveSTJ/FareHarbor/TZ Portfolio inspiration. — Basic directory module done.
+10. Previous shipping quote feature request. — Completed/tested iteration 87.
 
 Pending human input:
-- Confirm whether tax exemption works correctly for a real lead/customer and actual checkout/quote.
-- Provide SMTP/Resend configuration if they expect support email alerts to physically arrive.
-- Provide production redeployment after preview feature validation if applicable.
-- Provide robot media assets if final placeholder replacement is desired.
+- FareHarbor External API partner access and credentials.
+- Desired final public Featured design.
+- Potential exact SEO screenshot field list if visual requirements need to mirror uploaded image more precisely.
 
----
+**Project Health Check:**
+Broken:
+- No confirmed broken feature before the latest untested accordion change.
+- Latest Activity editor JSX/form needs immediate compile/test validation.
 
-## Project Health Check
+Mocked / Requires configuration:
+- FareHarbor FHDN/API import requires partner credentials/access.
+- FareHarbor test activity uses demo/placeholder settings only.
+- Commission, booking ingestion, billing, and analytics are wireframe/future scope.
+- Existing SMTP delivery depends on mail configuration.
+- Existing tax rates were previously observed disabled/no rates.
+- Robot media pages await final assets.
 
-### Broken
-- No confirmed broken code paths after testing-agent iteration 86.
+**3rd Party Integrations**
+- FareHarbor Lightframe Embed — implemented frontend script/iframe; no user API key required for embedded booking links. Does not use Emergent LLM Key.
+- FareHarbor External API/FHDN — not implemented; requires user/FareHarbor partner  and  access. Does not use Emergent LLM Key.
+- Stripe Payments — existing through ; provider credentials required. Does not use Emergent LLM Key.
+- Durango Direct / Collect.js — existing, requires merchant credentials. Does not use Emergent LLM Key.
+- PayPal/CashApp/Venmo — existing provider configuration. Does not use Emergent LLM Key.
+- Shippo/EasyPost/etc. — existing shipping services, provider credentials required. Does not use Emergent LLM Key.
+- SMTP/Resend-style mail — existing mail utility; provider configuration required. Does not use Emergent LLM Key.
+- No LLM integration applies to current work.
 
-### Mocked / Requires configuration
-- Shipping funding-failure email alert delivery may be non-functional until SMTP/Resend is configured.
-- Tax calculation is configured but current tax settings were observed as disabled/no rates, so nonzero tax needs admin configuration.
-- Robot pages retain placeholders until user supplies final images/videos.
-- PUDU live fleet integration and iDrive E2 migration are not implemented.
+**Testing status**
+- Testing agent used after significant changes: YES.
+- Latest reports:
+  - Iteration 87: shipping quote/orders/invoices 44/44 backend plus frontend pass.
+  - Iteration 88: Activity Marketplace initial module 21/21 backend plus frontend pass.
+  - Iteration 89: FareHarbor booking/right-side Sheet 26/26 backend plus frontend pass.
+  - Iteration 90: field precision update passed.
+- Troubleshoot agent used after agent stuck in loop: NO.
+- Test files created: testing agent used its test suite; inspect report for paths if needed.
+- Known regressions:
+  - Latest accordion/SEO work was not tested.
+  - Potential legacy alias/SEO suffix behavior should be manually checked as follow-up.
 
----
-
-## 3rd Party Integrations
-- **Stripe Payments** — integrated through ; requires user/provider Stripe credentials. Does **not** use Emergent LLM Key.
-- **Durango Direct / Collect.js** — requires user-provided merchant credentials. Does not use Emergent LLM Key.
-- **PayPal** — configured payment path; requires provider configuration. Does not use Emergent LLM Key.
-- **CashApp/Venmo** — configured payment paths; provider/business configuration required. Does not use Emergent LLM Key.
-- **Shippo** — shipping rates and labels; requires user API key/account funding. Does not use Emergent LLM Key.
-- **Stamps/ShipStation providers** — shipping provider integrations; require user credentials. Does not use Emergent LLM Key.
-- **Printful** — requires user API key. Does not use Emergent LLM Key.
-- **iDrive E2** — planned storage integration; requires user API key. Does not use Emergent LLM Key.
-- **SMTP/Resend-style email delivery** — application has email utilities; requires mail provider configuration. Does not use Emergent LLM Key.
-- No LLM integration is relevant to the latest tax-exemption work.
-
----
-
-## Testing status
-- **Testing agent used after significant changes:** YES.
-- **Troubleshoot agent used after agent stuck in loop:** NO.
-- **Test files created:** A focused shipment-pending backend test was created during work; verify whether it was removed during cleanup before relying on it.
-- **Relevant reports:**
-  - Iteration 81: categories delete/nesting.
-  - Iteration 82: Stripe payment reference UI.
-  - Iteration 83: Shipment Pending UI.
-  - Iteration 84: Coming Soon + shipment filter + related verification.
-  - Iteration 85: Contract Documents navigation/template CRUD.
-  - Iteration 86: Tax exemption end-to-end UI/API coverage.
-- **Known regressions:** None confirmed. Screenshot harness spinner behavior was a testing-tool artifact, not reproduced by testing agent.
-
----
-
-## Credentials to test flow
-Read  before testing any authenticated flow. Historic admin credentials were:
+**Credentials to test flow:**
+Read  before any authenticated testing.
 - Admin: 
 - Password: 
-- Previous site password/gate value: 
+- Super admin exists in credentials file as well.
+- Do not modify credentials unless necessary; no credentials were created during current work.
 
-Do not rely on historical credentials without confirming the current credentials file.
-
----
-
-## What agent forgot to execute
-- Real outbound email delivery test for the Shippo/provider payment-failure alert was not completed because SMTP was apparently not configured.
-- User-level validation of the new tax exemption feature has not occurred.
-- Final checkout test with enabled real tax settings/rates was not performed; only explicit submitted tax enforcement was tested.
-- Final robot media replacement remains blocked on user assets.
-</analysis>
+**What agent forgot to execute**
+- Did not run frontend compile/lint, screenshot, API persistence tests, or testing agent after the final Accordion/SEO JSX changes.
+- Did not update  after the ongoing Tours/Charters module work and current SEO request.
+- Did not finish the planned FareHarbor FHDN importer because credentials were unavailable; this is correctly blocked, not a coding omission.
+- Must inspect full test report 90 if continuing its listed low-priority observations.</analysis>

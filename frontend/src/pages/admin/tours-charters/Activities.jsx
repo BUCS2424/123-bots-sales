@@ -1,15 +1,24 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Plus, Trash2, Pencil, Sparkles, Loader2, X, Upload, Building2, Link2, ShoppingCart, Anchor, Search, LayoutGrid, List as ListIcon, Star, Hash } from 'lucide-react';
+import { Plus, Trash2, Pencil, Sparkles, Loader2, X, Upload, Building2, Link2, ShoppingCart, Anchor, Search, LayoutGrid, List as ListIcon, Star, Hash, Info, Globe } from 'lucide-react';
 import { toursChartersApi, uploadTourImage } from './toursChartersApi';
 import { toast } from '../../../hooks/use-toast';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../../../components/ui/sheet';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '../../../components/ui/accordion';
 
 const inputCls = 'w-full rounded-lg border border-white/10 bg-[#061a1f] px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-teal-500/50';
 const emptyActivity = {
   title: '', alias: '', seller_id: '', category_ids: [], tags: [], images: [],
   description: '', price_display: '', duration: '', status: 'published', priority: 0, featured: false,
   booking_type: 'external_link', booking_provider: 'generic', booking_url: '', fareharbor_shortname: '', fareharbor_item_pk: '',
+  seo_title: '', seo_description: '', seo_robots: 'index_follow',
 };
+const ROBOTS_OPTIONS = [
+  { value: 'index_follow', label: 'Index, Follow (recommended)' },
+  { value: 'index_nofollow', label: 'Index, No Follow' },
+  { value: 'noindex_follow', label: 'No Index, Follow' },
+  { value: 'noindex_nofollow', label: 'No Index, No Follow' },
+];
+const accordionItemCls = 'rounded-xl border border-white/10 bg-[#061a1f]/60 px-4 border-b-0 mb-3 last:mb-0';
 
 const Activities = () => {
   const [activities, setActivities] = useState([]);
@@ -235,7 +244,14 @@ const Activities = () => {
             <SheetHeader>
               <SheetTitle className="flex items-center gap-2 text-white"><Sparkles className="h-5 w-5 text-teal-300" /> {modal.id ? 'Edit' : 'New'} Activity</SheetTitle>
             </SheetHeader>
-            <div className="mt-4 space-y-3">
+            <div className="mt-4">
+            <Accordion type="multiple" defaultValue={['info', 'seo']}>
+              <AccordionItem value="info" className={accordionItemCls} data-testid="activity-accordion-info">
+                <AccordionTrigger className="text-white hover:no-underline">
+                  <span className="flex items-center gap-2 text-sm font-semibold"><Info className="h-4 w-4 text-teal-300" /> Activity Information</span>
+                </AccordionTrigger>
+                <AccordionContent>
+                <div className="space-y-3">
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-white/60">Title</label>
                 <input className={inputCls} placeholder="e.g. Sunset Sail" value={modal.title} onChange={(e) => setModal({ ...modal, title: e.target.value })} data-testid="activity-title-input" />
@@ -371,11 +387,64 @@ const Activities = () => {
                   </div>
                 )}
               </div>
+                </div>
+                </AccordionContent>
+              </AccordionItem>
 
-              <button onClick={save} disabled={saving} className="w-full rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 py-2.5 text-sm font-semibold disabled:opacity-50" data-testid="activity-save-btn">
-                {saving ? 'Saving...' : 'Save Activity'}
-              </button>
+              <AccordionItem value="seo" className={accordionItemCls} data-testid="activity-accordion-seo">
+                <AccordionTrigger className="text-white hover:no-underline">
+                  <span className="flex items-center gap-2 text-sm font-semibold"><Globe className="h-4 w-4 text-teal-300" /> SEO</span>
+                </AccordionTrigger>
+                <AccordionContent>
+                <div className="space-y-3">
+                  <div>
+                    <div className="mb-1.5 flex items-center justify-between">
+                      <label className="text-xs font-medium text-white/60">Page Title</label>
+                      <span className="text-xs text-white/30">{modal.seo_title.length}/70 characters</span>
+                    </div>
+                    <input className={inputCls} placeholder={modal.title || 'Page title for search engines'} maxLength={70} value={modal.seo_title} onChange={(e) => setModal({ ...modal, seo_title: e.target.value })} data-testid="activity-seo-title-input" />
+                  </div>
+
+                  <div>
+                    <div className="mb-1.5 flex items-center justify-between">
+                      <label className="text-xs font-medium text-white/60">Meta Description</label>
+                      <span className="text-xs text-white/30">{modal.seo_description.length}/160 characters</span>
+                    </div>
+                    <textarea className={inputCls} rows={3} maxLength={160} placeholder="Short description shown under the title in search results" value={modal.seo_description} onChange={(e) => setModal({ ...modal, seo_description: e.target.value })} data-testid="activity-seo-description-input" />
+                  </div>
+
+                  <div>
+                    <label className="mb-1.5 block text-xs font-medium text-white/60">URL Handle</label>
+                    <div className="flex items-center rounded-lg border border-white/10 bg-[#061a1f] px-3 py-2 text-sm">
+                      <span className="text-white/30">/activities/view/</span>
+                      <span className="text-white">{modal.alias || 'auto-generated-from-title'}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="mb-1.5 block text-xs font-medium text-white/60">Search Engine Indexing</label>
+                    <select className={inputCls} value={modal.seo_robots} onChange={(e) => setModal({ ...modal, seo_robots: e.target.value })} data-testid="activity-seo-robots-select">
+                      {ROBOTS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-white/60"><Search className="h-3.5 w-3.5" /> Search Result Preview</label>
+                    <div className="rounded-lg bg-white p-4" data-testid="activity-seo-serp-preview">
+                      <p className="truncate text-base text-[#1a0dab]">{modal.seo_title || modal.title || 'Activity Title'}</p>
+                      <p className="truncate text-sm text-[#006621]">123bots.com/activities/view/{modal.alias || 'auto-generated-from-title'}</p>
+                      <p className="mt-0.5 line-clamp-2 text-sm text-[#545454]">{modal.seo_description || modal.description || 'A meta description will appear here once you add one.'}</p>
+                    </div>
+                  </div>
+                </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
             </div>
+
+            <button onClick={save} disabled={saving} className="mt-4 w-full rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 py-2.5 text-sm font-semibold disabled:opacity-50" data-testid="activity-save-btn">
+              {saving ? 'Saving...' : 'Save Activity'}
+            </button>
           </SheetContent>
         </Sheet>
       )}

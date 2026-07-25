@@ -4,7 +4,7 @@ import re
 import pytest
 import requests
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://bot-admin-hub-4.preview.emergentagent.com").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://activity-seo-preview.preview.emergentagent.com").rstrip("/")
 OLD_LOGO_MARKER = "gingerkare-logo-3-blue.png"
 
 TEMPLATE_IDS = [

@@ -50,6 +50,7 @@ export const setSeoMetadata = ({
   twitterCard = 'summary_large_image',
   jsonLd,
   noIndex = false,
+  robots,
   author,
 }) => {
   // Title
@@ -62,11 +63,11 @@ export const setSeoMetadata = ({
   setOrCreateMeta('meta[name="keywords"]', { name: 'keywords' }, keywords);
   setOrCreateMeta('meta[name="author"]', { name: 'author' }, author || SITE_NAME);
   
-  // Robots
+  // Robots - pass an explicit `robots` string (e.g. from a per-page SEO dropdown) to override the noIndex shorthand
   setOrCreateMeta(
     'meta[name="robots"]', 
     { name: 'robots' }, 
-    noIndex ? 'noindex, nofollow' : 'index, follow'
+    robots || (noIndex ? 'noindex, nofollow' : 'index, follow')
   );
 
   // Open Graph

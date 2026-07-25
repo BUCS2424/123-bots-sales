@@ -56,7 +56,7 @@ def _require_admin_token(authorization: Optional[str]) -> dict:
 
 def slugify(text: str) -> str:
     text = (text or "").lower().strip()
-    text = re.sub(r"[^a-z0-9\s-]", "", text)
+    text = re.sub(r"[^a-z0-9\s-]", "-", text)
     text = re.sub(r"[\s-]+", "-", text)
     return text.strip("-")[:80] or uuid.uuid4().hex[:8]
 
@@ -138,6 +138,9 @@ class ActivityCreate(BaseModel):
     booking_url: str = ""
     fareharbor_shortname: str = ""  # overrides the seller's default shortname if set
     fareharbor_item_pk: str = ""
+    seo_title: str = ""
+    seo_description: str = ""
+    seo_robots: str = "index_follow"  # index_follow | index_nofollow | noindex_follow | noindex_nofollow
 
 
 class ActivityUpdate(BaseModel):
@@ -158,6 +161,9 @@ class ActivityUpdate(BaseModel):
     booking_url: Optional[str] = None
     fareharbor_shortname: Optional[str] = None
     fareharbor_item_pk: Optional[str] = None
+    seo_title: Optional[str] = None
+    seo_description: Optional[str] = None
+    seo_robots: Optional[str] = None
 
 
 # =============== CATEGORIES ===============
