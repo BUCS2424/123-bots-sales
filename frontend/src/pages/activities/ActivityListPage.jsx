@@ -66,12 +66,12 @@ const ActivityListPage = ({ mode }) => {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {activities.map((a, i) => (
               <motion.div key={a.id} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}>
-                <Link to={`/activities/view/${a.slug}`} className="group block overflow-hidden rounded-2xl border border-white/10 bg-[#0b1f24] transition hover:border-teal-500/50" data-testid={`public-activity-${a.slug}`}>
+                <Link to={`/activities/view/${a.alias}`} className="group block overflow-hidden rounded-2xl border border-white/10 bg-[#0b1f24] transition hover:border-teal-500/50" data-testid={`public-activity-${a.alias}`}>
                   <div className="relative h-44 bg-gradient-to-br from-teal-900/40 to-cyan-900/30">
-                    {a.images?.[0] ? <img src={a.images[0]} alt={a.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <div className="flex h-full items-center justify-center text-white/20"><Sparkles className="h-12 w-12" /></div>}
+                    {a.images?.[0] ? <img src={a.images[0]} alt={a.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <div className="flex h-full items-center justify-center text-white/20"><Sparkles className="h-12 w-12" /></div>}
                   </div>
                   <div className="p-5">
-                    <h3 className="text-xl font-bold text-white">{a.name}</h3>
+                    <h3 className="text-xl font-bold text-white">{a.title}</h3>
                     <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-400"><Building2 className="h-3.5 w-3.5" /> {a.seller_name}</p>
                     <div className="mt-3 flex items-center justify-between text-sm text-slate-400">
                       <span>{a.price_display || 'Price TBD'}</span>

@@ -22,7 +22,7 @@ const ActivityDetailPage = () => {
     axios.get(`${API}/api/public/tours-charters/activities/${slug}`)
       .then((r) => {
         setActivity(r.data);
-        setSeoMetadata({ title: `${r.data.name} | 123Bots`, description: r.data.description?.slice(0, 160) || 'Book this activity.' });
+        setSeoMetadata({ title: `${r.data.title} | 123Bots`, description: r.data.description?.slice(0, 160) || 'Book this activity.' });
       })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));
@@ -49,10 +49,10 @@ const ActivityDetailPage = () => {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
               <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0b1f24]">
                 <div className="relative h-72 bg-gradient-to-br from-teal-900/40 to-cyan-900/30">
-                  {activity.images?.[0] ? <img src={activity.images[0]} alt={activity.name} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-white/20"><Sparkles className="h-16 w-16" /></div>}
+                  {activity.images?.[0] ? <img src={activity.images[0]} alt={activity.title} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-white/20"><Sparkles className="h-16 w-16" /></div>}
                 </div>
                 <div className="p-8">
-                  <h1 className="text-3xl font-black text-white">{activity.name}</h1>
+                  <h1 className="text-3xl font-black text-white">{activity.title}</h1>
                   {activity.seller && (
                     <Link to={`/activities/company/${activity.seller.slug}`} className="mt-2 inline-flex items-center gap-1.5 text-sm text-teal-300 hover:text-teal-200" data-testid="activity-detail-seller-link">
                       <Building2 className="h-4 w-4" /> {activity.seller.name}
@@ -110,12 +110,12 @@ const ActivityDetailPage = () => {
           <SheetContent side="right" className="w-full sm:max-w-2xl bg-[#061a1f] border-white/10 text-white p-0 flex flex-col" data-testid="activity-booking-drawer">
             <SheetHeader className="p-4 border-b border-white/10">
               <SheetTitle className="flex items-center gap-2 text-white">
-                <Anchor className="h-4 w-4 text-teal-300" /> Book {activity.name}
+                <Anchor className="h-4 w-4 text-teal-300" /> Book {activity.title}
               </SheetTitle>
             </SheetHeader>
             {activity.effective_fareharbor_shortname && (
               <iframe
-                title={`Book ${activity.name} on FareHarbor`}
+                title={`Book ${activity.title} on FareHarbor`}
                 src={`https://fareharbor.com/embeds/book/${activity.effective_fareharbor_shortname}/${activity.fareharbor_item_pk ? `items/${activity.fareharbor_item_pk}/` : ''}?full-items=yes`}
                 className="flex-1 w-full border-0"
                 data-testid="activity-booking-iframe"

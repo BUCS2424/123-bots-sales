@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Plus, Trash2, Pencil, Sparkles, Loader2, X, Upload, Building2, Link2, ShoppingCart, Anchor, Search, LayoutGrid, List as ListIcon } from 'lucide-react';
+import { Plus, Trash2, Pencil, Sparkles, Loader2, X, Upload, Building2, Link2, ShoppingCart, Anchor, Search, LayoutGrid, List as ListIcon, Star, Hash } from 'lucide-react';
 import { toursChartersApi, uploadTourImage } from './toursChartersApi';
 import { toast } from '../../../hooks/use-toast';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../../../components/ui/sheet';
 
 const inputCls = 'w-full rounded-lg border border-white/10 bg-[#061a1f] px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-teal-500/50';
 const emptyActivity = {
-  name: '', seller_id: '', category_ids: [], tags: [], images: [],
-  description: '', price_display: '', duration: '', booking_type: 'external_link',
-  booking_provider: 'generic', booking_url: '', fareharbor_shortname: '', fareharbor_item_pk: '',
+  title: '', alias: '', seller_id: '', category_ids: [], tags: [], images: [],
+  description: '', price_display: '', duration: '', status: 'published', priority: 0, featured: false,
+  booking_type: 'external_link', booking_provider: 'generic', booking_url: '', fareharbor_shortname: '', fareharbor_item_pk: '',
 };
 
 const Activities = () => {
@@ -78,7 +78,7 @@ const Activities = () => {
   };
 
   const save = async () => {
-    if (!modal.name?.trim()) { toast({ title: 'Activity name required', variant: 'destructive' }); return; }
+    if (!modal.title?.trim()) { toast({ title: 'Title required', variant: 'destructive' }); return; }
     if (!modal.seller_id) { toast({ title: 'Select a charter company', variant: 'destructive' }); return; }
     setSaving(true);
     try {
@@ -90,15 +90,15 @@ const Activities = () => {
     finally { setSaving(false); }
   };
 
-  const del = async (id, name) => {
-    if (!window.confirm(`Delete activity "${name}"?`)) return;
+  const del = async (id, title) => {
+    if (!window.confirm(`Delete activity "${title}"?`)) return;
     await toursChartersApi.deleteActivity(id); toast({ title: 'Deleted' }); load();
   };
 
   const catName = (id) => categories.find((c) => c.id === id)?.name || '';
 
   const filteredActivities = activities.filter((a) => {
-    if (searchQuery.trim() && !a.name.toLowerCase().includes(searchQuery.trim().toLowerCase())) return false;
+    if (searchQuery.trim() && !a.title.toLowerCase().includes(searchQuery.trim().toLowerCase())) return false;
     if (filterSellerId && a.seller_id !== filterSellerId) return false;
     if (filterCategoryId && !a.category_ids?.includes(filterCategoryId)) return false;
     return true;
@@ -121,7 +121,7 @@ const Activities = () => {
       <div className="mb-5 flex flex-wrap items-center gap-2" data-testid="activities-filter-bar">
         <div className="relative min-w-[220px] flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
-          <input className={`${inputCls} pl-9`} placeholder="Search activity name..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} data-testid="activities-search-input" />
+          <input className={`${inputCls} pl-9`} placeholder="Search by title..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} data-testid="activities-search-input" />
         </div>
         <select className={`${inputCls} w-auto min-w-[170px]`} value={filterSellerId} onChange={(e) => setFilterSellerId(e.target.value)} data-testid="activities-filter-seller-select">
           <option value="">All Charter Companies</option>
@@ -154,10 +154,13 @@ const Activities = () => {
             {filteredActivities.map((a) => (
               <div key={a.id} className="flex items-center gap-4 border-b border-white/5 p-3 last:border-b-0 hover:bg-white/5" data-testid={`activity-row-${a.id}`}>
                 <div className="h-12 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-white/5">
-                  {a.images?.[0] ? <img src={a.images[0]} alt={a.name} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-white/20"><Sparkles className="h-5 w-5" /></div>}
+                  {a.images?.[0] ? <img src={a.images[0]} alt={a.title} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-white/20"><Sparkles className="h-5 w-5" /></div>}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold">{a.name}</p>
+                  <p className="flex items-center gap-1.5 truncate font-semibold">
+                    {a.featured && <Star className="h-3.5 w-3.5 flex-shrink-0 fill-amber-400 text-amber-400" data-testid={`activity-featured-star-${a.id}`} />}
+                    {a.title}
+                  </p>
                   <p className="flex items-center gap-1 truncate text-xs text-white/40"><Building2 className="h-3 w-3" /> {a.seller_name}</p>
                 </div>
                 <div className="hidden flex-wrap gap-1 sm:flex">
@@ -165,14 +168,17 @@ const Activities = () => {
                     <span key={cid} className="rounded-full bg-teal-500/15 px-2 py-0.5 text-xs text-teal-300">{catName(cid)}</span>
                   ))}
                 </div>
-                <span className="hidden w-28 flex-shrink-0 text-xs text-white/40 md:block">{a.price_display || 'Price TBD'}</span>
+                <span className={`hidden w-24 flex-shrink-0 rounded-full px-2 py-0.5 text-center text-xs md:block ${a.status === 'unpublished' ? 'bg-white/5 text-white/40' : 'bg-emerald-500/15 text-emerald-300'}`} data-testid={`activity-status-${a.id}`}>
+                  {a.status === 'unpublished' ? 'Unpublished' : 'Published'}
+                </span>
+                <span className="hidden w-20 flex-shrink-0 text-xs text-white/40 lg:block">Priority: {a.priority ?? 0}</span>
                 <span className="flex w-28 flex-shrink-0 items-center gap-1 text-xs text-white/40">
                   {a.booking_type === 'native_checkout' ? <ShoppingCart className="h-3 w-3" /> : a.booking_provider === 'fareharbor' ? <Anchor className="h-3 w-3" /> : <Link2 className="h-3 w-3" />}
                   {a.booking_type === 'native_checkout' ? 'In-App' : a.booking_provider === 'fareharbor' ? 'FareHarbor' : 'External'}
                 </span>
                 <div className="flex flex-shrink-0 gap-1">
                   <button onClick={() => { setModal({ ...emptyActivity, ...a }); setTagInput(''); }} className="rounded-lg p-1.5 text-white/60 hover:bg-white/10" data-testid={`activity-edit-${a.id}`}><Pencil className="h-3.5 w-3.5" /></button>
-                  <button onClick={() => del(a.id, a.name)} className="rounded-lg p-1.5 text-red-300 hover:bg-red-500/10" data-testid={`activity-delete-${a.id}`}><Trash2 className="h-3.5 w-3.5" /></button>
+                  <button onClick={() => del(a.id, a.title)} className="rounded-lg p-1.5 text-red-300 hover:bg-red-500/10" data-testid={`activity-delete-${a.id}`}><Trash2 className="h-3.5 w-3.5" /></button>
                 </div>
               </div>
             ))}
@@ -181,18 +187,26 @@ const Activities = () => {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" data-testid="activities-block-view">
             {filteredActivities.map((a) => (
               <div key={a.id} className="overflow-hidden rounded-xl border border-white/10 bg-[#0b1f24]" data-testid={`activity-${a.id}`}>
-                <div className="h-32 w-full bg-white/5">
-                  {a.images?.[0] ? <img src={a.images[0]} alt={a.name} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-white/20"><Sparkles className="h-8 w-8" /></div>}
+                <div className="relative h-32 w-full bg-white/5">
+                  {a.images?.[0] ? <img src={a.images[0]} alt={a.title} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-white/20"><Sparkles className="h-8 w-8" /></div>}
+                  {a.featured && (
+                    <span className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-amber-500/90 px-2 py-0.5 text-xs font-semibold text-black" data-testid={`activity-featured-badge-${a.id}`}>
+                      <Star className="h-3 w-3 fill-black" /> Featured
+                    </span>
+                  )}
+                  <span className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-xs font-medium ${a.status === 'unpublished' ? 'bg-black/60 text-white/60' : 'bg-emerald-500/90 text-black'}`} data-testid={`activity-status-${a.id}`}>
+                    {a.status === 'unpublished' ? 'Unpublished' : 'Published'}
+                  </span>
                 </div>
                 <div className="p-4">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <p className="font-semibold">{a.name}</p>
+                      <p className="font-semibold">{a.title}</p>
                       <p className="flex items-center gap-1 text-xs text-white/40"><Building2 className="h-3 w-3" /> {a.seller_name}</p>
                     </div>
                     <div className="flex gap-1">
                       <button onClick={() => { setModal({ ...emptyActivity, ...a }); setTagInput(''); }} className="rounded-lg p-1.5 text-white/60 hover:bg-white/10" data-testid={`activity-edit-${a.id}`}><Pencil className="h-3.5 w-3.5" /></button>
-                      <button onClick={() => del(a.id, a.name)} className="rounded-lg p-1.5 text-red-300 hover:bg-red-500/10" data-testid={`activity-delete-${a.id}`}><Trash2 className="h-3.5 w-3.5" /></button>
+                      <button onClick={() => del(a.id, a.title)} className="rounded-lg p-1.5 text-red-300 hover:bg-red-500/10" data-testid={`activity-delete-${a.id}`}><Trash2 className="h-3.5 w-3.5" /></button>
                     </div>
                   </div>
                   {a.category_ids?.length > 0 && (
@@ -203,7 +217,7 @@ const Activities = () => {
                     </div>
                   )}
                   <div className="mt-3 flex items-center justify-between text-xs text-white/40">
-                    <span>{a.price_display || 'Price TBD'}</span>
+                    <span className="flex items-center gap-1"><Hash className="h-3 w-3" /> Priority {a.priority ?? 0}</span>
                     <span className="flex items-center gap-1">
                       {a.booking_type === 'native_checkout' ? <ShoppingCart className="h-3 w-3" /> : a.booking_provider === 'fareharbor' ? <Anchor className="h-3 w-3" /> : <Link2 className="h-3 w-3" />}
                       {a.booking_type === 'native_checkout' ? 'In-App Checkout' : a.booking_provider === 'fareharbor' ? 'FareHarbor' : 'External Booking'}
@@ -222,7 +236,38 @@ const Activities = () => {
               <SheetTitle className="flex items-center gap-2 text-white"><Sparkles className="h-5 w-5 text-teal-300" /> {modal.id ? 'Edit' : 'New'} Activity</SheetTitle>
             </SheetHeader>
             <div className="mt-4 space-y-3">
-              <input className={inputCls} placeholder="Activity name (e.g. Sunset Sail)" value={modal.name} onChange={(e) => setModal({ ...modal, name: e.target.value })} data-testid="activity-name-input" />
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-white/60">Title</label>
+                <input className={inputCls} placeholder="e.g. Sunset Sail" value={modal.title} onChange={(e) => setModal({ ...modal, title: e.target.value })} data-testid="activity-title-input" />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-white/60">Alias</label>
+                <input className={inputCls} placeholder="Auto-generated from title if left blank" value={modal.alias} onChange={(e) => setModal({ ...modal, alias: e.target.value })} data-testid="activity-alias-input" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-white/60">Status</label>
+                  <div className="flex gap-2">
+                    <button type="button" onClick={() => setModal({ ...modal, status: 'published' })} className={`flex-1 rounded-lg border px-3 py-2 text-xs ${modal.status === 'published' ? 'border-emerald-400 bg-emerald-500/20 text-emerald-200' : 'border-white/15 text-white/50'}`} data-testid="activity-status-published-btn">
+                      Published
+                    </button>
+                    <button type="button" onClick={() => setModal({ ...modal, status: 'unpublished' })} className={`flex-1 rounded-lg border px-3 py-2 text-xs ${modal.status === 'unpublished' ? 'border-white/40 bg-white/10 text-white' : 'border-white/15 text-white/50'}`} data-testid="activity-status-unpublished-btn">
+                      Unpublished
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-white/60">Priority (display order, lower shows first)</label>
+                  <input type="number" className={inputCls} value={modal.priority} onChange={(e) => setModal({ ...modal, priority: parseInt(e.target.value, 10) || 0 })} data-testid="activity-priority-input" />
+                </div>
+              </div>
+
+              <label className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-sm">
+                <input type="checkbox" checked={modal.featured} onChange={(e) => setModal({ ...modal, featured: e.target.checked })} className="h-4 w-4 accent-amber-400" data-testid="activity-featured-checkbox" />
+                <Star className="h-4 w-4 text-amber-400" /> Featured (visual treatment TBD)
+              </label>
 
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-white/60">Charter Company (Seller)</label>

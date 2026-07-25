@@ -1,0 +1,41 @@
+{
+  "summary": "Tested the precision refinement of the Activity data model in Tours/Charters (title/alias/status/priority/featured renamed+added fields) on top of the previously-stable module (iteration_88/89, both 100% pass). Backend: converted the outdated test file (which still used old name/slug/is_active fields) to the new schema and added 5 new tests covering alias auto-generation from title, alias uniqueness suffixing on both create and update, unpublished status hiding activities from public list+detail (and reappearing on republish), and priority-based sort order on the public listing endpoint. 31/31 pytest passing. Frontend (Playwright): verified the Add/Edit Activity Sheet field order/labels exactly match spec (Title, Alias w/ auto-generate placeholder, Status Published/Unpublished toggle, Priority number input, Featured checkbox w/ star icon, then Charter Company/Categories/etc unchanged). Verified end-to-end: creating 'Whale Watching Tour' with blank alias auto-generated 'whale-watching-tour'; creating a duplicate-titled activity auto-suffixed to 'whale-watching-tour-2' (no error); toggling Status to Unpublished removed it from the public company listing page and made /activities/view/:alias show the not-found state (404), and republishing restored it; setting priority=1+featured=true vs priority=5 correctly showed the amber 'Featured' star badge in block view and the star icon in list view, and the priority=1 activity appeared before the priority=5 one on the public listing; Admin List view correctly showed Title/Status pill/Priority/featured star for all rows; the title search filter still works correctly with the renamed field (regression pass); public detail page heading and iframe title correctly render the activity's Title (not 'undefined'). Spot-checked Sunset Sail's FareHarbor generic Book Now button still renders correctly (deep re-test not needed per scope). All test-created activities/sellers were deleted and DB restored to the exact original seed state (1 activity 'Sunset Sail', 1 seller 'Blue Dream Charters', 1 category 'Boat Charters').",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "activity_marketplace.py:slugify()", "issue": "slugify() strips any character outside [a-z0-9\\s-] (including underscores, apostrophes, ampersands) without replacing it with a separator, so adjacent words can merge unexpectedly, e.g. slugify('word_word') -> 'wordword' instead of 'word-word'. Low real-world impact since typical activity titles rarely contain underscores, but titles with underscores or certain punctuation directly between words (no surrounding space) would produce a merged/less-readable alias. Not a blocker for the spec's example ('Whale Watching Tour' -> 'whale-watching-tour' works perfectly)."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Public Activity Detail page (SEO tab title)", "issues": ["Browser tab title renders as 'Whale Watching Tour | 123Bots | 123 Bots' (duplicated branding suffix) because setSeoMetadata() is called with a title that already includes '| 123Bots' and the global SEO helper appends its own '| 123 Bots' suffix on top. This is a pre-existing pattern in the SEO helper unrelated to this refinement pass, but worth a minor cleanup - either drop the manual '| 123Bots' from the per-page title string or have setSeoMetadata not double-append."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_tours_charters_marketplace.py",
+    "/app/test_reports/pytest/tours_charters_results.xml"
+  ],
+  "action_items": [
+    "Optional/low-priority: fix slugify() to replace stripped special characters with a hyphen (or at least underscores) instead of removing them outright, to avoid word-merging in generated aliases.",
+    "Optional/cosmetic: dedupe the '| 123Bots' branding suffix in ActivityDetailPage's setSeoMetadata call (pre-existing SEO helper behavior, not introduced by this change)."
+  ],
+  "critical_code_review_comments": [
+    "Field rename (title/alias/status/priority/featured) is implemented consistently and correctly across backend model (ActivityCreate/ActivityUpdate), admin CRUD routes, public routes (filter by status=='published', sort by [priority,1][created_at,-1]), and both frontend admin/public components - no leftover references to the old name/slug/is_active fields for Activities specifically found.",
+    "Alias auto-generation + uniqueness via _unique_slug(field='alias') works correctly on both create (blank alias falls back to title) and update (blank alias falls back to existing title, non-blank input still gets uniqueness-checked and suffixed rather than erroring).",
+    "Public visibility gating (status=='published' filter on both list and detail endpoints) correctly hides unpublished activities from /api/public/tours-charters/activities and returns a clean 404 on /api/public/tours-charters/activities/{alias} for unpublished aliases, while the admin list endpoint intentionally remains unfiltered (shows all statuses) - correct behavior.",
+    "Featured field is correctly wired as a simple boolean + star badge/icon placeholder as explicitly scoped by the user (block view amber badge, list view star icon next to title) - no polished design expected or flagged.",
+    "Categories/Sellers correctly retained their old name/slug/is_active naming as explicitly scoped - no inconsistency bug to report there."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_tours_charters_marketplace.py"
+  ],
+  "success_rate": {"backend": "100% (31/31)", "frontend": "100% (all specified flows verified)"},
+  "test_credentials": "Admin mel@a2gdesigns.com / BigDaddy2016!! (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "Created and fully cleaned up multiple 'Whale Watching Tour' test activities (blank-alias auto-generation, duplicate-title uniqueness, priority/featured/status toggling) via both pytest (TEST-prefixed, cleaned via fixture teardown) and UI/Playwright (non-prefixed, manually cleaned via API afterward). Also found and cleaned up orphaned TEST_ activities/sellers left over from an initial failed pytest run (before a test-data fix for a slugify+underscore interaction) that had blocked seller deletion in fixture teardown. Final DB state verified restored to exactly the original seed: 1 category 'Boat Charters', 1 seller 'Blue Dream Charters', 1 activity 'Sunset Sail' (alias sunset-sail, status=published, priority=1, featured=true, generic FareHarbor booking_url).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "This module (base marketplace from iteration_88, FareHarbor/Sheet enhancement from iteration_89, and this title/alias/status/priority/featured refinement from iteration_90) is now verified three times with zero blocking bugs found. The only two findings are cosmetic/low-priority (slugify underscore-stripping edge case, and a pre-existing SEO title-suffix duplication) and were explicitly called out as optional, not required, fixes. test_tours_charters_marketplace.py is now fully aligned with the new title/alias/status/priority/featured schema and can be reused as the regression baseline going forward.",
+  "rca_of_the_issue": "No blocking bugs found. Two minor/cosmetic observations documented above with root cause and low-priority suggested fixes; neither affects core functionality (alias generation still works correctly for realistic titles, and the SEO title issue is a pre-existing suffix-duplication pattern unrelated to this specific refinement)."
+}

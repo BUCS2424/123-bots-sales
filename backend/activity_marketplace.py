@@ -65,12 +65,12 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-async def _unique_slug(db, collection: str, base: str, exclude_id: Optional[str] = None) -> str:
+async def _unique_slug(db, collection: str, base: str, field: str = "slug", exclude_id: Optional[str] = None) -> str:
     slug = slugify(base)
     candidate = slug
     i = 1
     while True:
-        query = {"slug": candidate}
+        query = {field: candidate}
         if exclude_id:
             query["id"] = {"$ne": exclude_id}
         existing = await db[collection].find_one(query, {"_id": 0, "id": 1})
@@ -121,7 +121,8 @@ class SellerUpdate(BaseModel):
 
 
 class ActivityCreate(BaseModel):
-    name: str
+    title: str
+    alias: str = ""  # URL alias; auto-generated from title if left blank
     seller_id: str
     category_ids: List[str] = Field(default_factory=list)
     tags: List[str] = Field(default_factory=list)
@@ -129,6 +130,9 @@ class ActivityCreate(BaseModel):
     description: str = ""
     price_display: str = ""  # free-text e.g. "$150 / person" until native pricing exists
     duration: str = ""
+    status: str = "published"  # published | unpublished
+    priority: int = 0  # controls display order on the public activities page (lower shows first)
+    featured: bool = False  # visual treatment TBD
     booking_type: str = "external_link"  # external_link | native_checkout
     booking_provider: str = "generic"  # generic | fareharbor (only relevant when booking_type=external_link)
     booking_url: str = ""
@@ -137,7 +141,8 @@ class ActivityCreate(BaseModel):
 
 
 class ActivityUpdate(BaseModel):
-    name: Optional[str] = None
+    title: Optional[str] = None
+    alias: Optional[str] = None
     seller_id: Optional[str] = None
     category_ids: Optional[List[str]] = None
     tags: Optional[List[str]] = None
@@ -145,12 +150,14 @@ class ActivityUpdate(BaseModel):
     description: Optional[str] = None
     price_display: Optional[str] = None
     duration: Optional[str] = None
+    status: Optional[str] = None
+    priority: Optional[int] = None
+    featured: Optional[bool] = None
     booking_type: Optional[str] = None
     booking_provider: Optional[str] = None
     booking_url: Optional[str] = None
     fareharbor_shortname: Optional[str] = None
     fareharbor_item_pk: Optional[str] = None
-    is_active: Optional[bool] = None
 
 
 # =============== CATEGORIES ===============
@@ -262,7 +269,7 @@ async def list_activities(
         query["seller_id"] = seller_id
     if category_id:
         query["category_ids"] = category_id
-    activities = await db.activities.find(query, {"_id": 0}).sort("created_at", -1).to_list(2000)
+    activities = await db.activities.find(query, {"_id": 0}).sort([("priority", 1), ("created_at", -1)]).to_list(2000)
     sellers = {s["id"]: s for s in await db.activity_sellers.find({}, {"_id": 0}).to_list(1000)}
     for a in activities:
         seller = sellers.get(a.get("seller_id"))
@@ -278,8 +285,7 @@ async def create_activity(payload: ActivityCreate, authorization: Optional[str] 
         raise HTTPException(status_code=400, detail="Seller tenant not found")
     doc = payload.model_dump()
     doc["id"] = str(uuid.uuid4())
-    doc["slug"] = await _unique_slug(db, "activities", payload.name)
-    doc["is_active"] = True
+    doc["alias"] = await _unique_slug(db, "activities", payload.alias.strip() or payload.title, field="alias")
     doc["created_at"] = _now_iso()
     doc["updated_at"] = doc["created_at"]
     await db.activities.insert_one(doc)
@@ -293,6 +299,12 @@ async def update_activity(activity_id: str, payload: ActivityUpdate, authorizati
     updates = {k: v for k, v in payload.model_dump().items() if v is not None}
     if not updates:
         raise HTTPException(status_code=400, detail="No fields to update")
+    if "alias" in updates:
+        base = updates["alias"].strip() or updates.get("title") or ""
+        if not base:
+            existing = await db.activities.find_one({"id": activity_id}, {"_id": 0, "title": 1})
+            base = existing.get("title", "") if existing else ""
+        updates["alias"] = await _unique_slug(db, "activities", base, field="alias", exclude_id=activity_id)
     updates["updated_at"] = _now_iso()
     result = await db.activities.update_one({"id": activity_id}, {"$set": updates})
     if result.matched_count == 0:
@@ -315,7 +327,7 @@ async def delete_activity(activity_id: str, authorization: Optional[str] = Heade
 async def dashboard_stats(authorization: Optional[str] = Header(None), db=Depends(get_db)):
     _require_admin_token(authorization)
     total_activities = await db.activities.count_documents({})
-    active_activities = await db.activities.count_documents({"is_active": True})
+    active_activities = await db.activities.count_documents({"status": "published"})
     total_categories = await db.activity_categories.count_documents({})
     total_sellers = await db.activity_sellers.count_documents({})
     active_sellers = await db.activity_sellers.count_documents({"is_active": True})
@@ -337,7 +349,7 @@ async def dashboard_stats(authorization: Optional[str] = Header(None), db=Depend
 async def public_list_categories(db=Depends(get_db)):
     cats = await db.activity_categories.find({"is_active": True}, {"_id": 0}).sort("sort_order", 1).to_list(500)
     for c in cats:
-        c["activity_count"] = await db.activities.count_documents({"category_ids": c["id"], "is_active": True})
+        c["activity_count"] = await db.activities.count_documents({"category_ids": c["id"], "status": "published"})
     return cats
 
 
@@ -345,7 +357,7 @@ async def public_list_categories(db=Depends(get_db)):
 async def public_list_sellers(db=Depends(get_db)):
     sellers = await db.activity_sellers.find({"is_active": True}, {"_id": 0}).sort("name", 1).to_list(1000)
     for s in sellers:
-        s["activity_count"] = await db.activities.count_documents({"seller_id": s["id"], "is_active": True})
+        s["activity_count"] = await db.activities.count_documents({"seller_id": s["id"], "status": "published"})
     return sellers
 
 
@@ -355,7 +367,7 @@ async def public_list_activities(
     category_slug: Optional[str] = Query(None),
     db=Depends(get_db),
 ):
-    query = {"is_active": True}
+    query = {"status": "published"}
     if seller_slug:
         seller = await db.activity_sellers.find_one({"slug": seller_slug}, {"_id": 0, "id": 1})
         if not seller:
@@ -366,7 +378,7 @@ async def public_list_activities(
         if not category:
             return []
         query["category_ids"] = category["id"]
-    activities = await db.activities.find(query, {"_id": 0}).sort("created_at", -1).to_list(2000)
+    activities = await db.activities.find(query, {"_id": 0}).sort([("priority", 1), ("created_at", -1)]).to_list(2000)
     sellers = {s["id"]: s for s in await db.activity_sellers.find({}, {"_id": 0}).to_list(1000)}
     for a in activities:
         seller = sellers.get(a.get("seller_id"))
@@ -375,9 +387,9 @@ async def public_list_activities(
     return activities
 
 
-@public_router.get("/activities/{slug}")
-async def public_get_activity(slug: str, db=Depends(get_db)):
-    activity = await db.activities.find_one({"slug": slug, "is_active": True}, {"_id": 0})
+@public_router.get("/activities/{alias}")
+async def public_get_activity(alias: str, db=Depends(get_db)):
+    activity = await db.activities.find_one({"alias": alias, "status": "published"}, {"_id": 0})
     if not activity:
         raise HTTPException(status_code=404, detail="Activity not found")
     seller = await db.activity_sellers.find_one({"id": activity.get("seller_id")}, {"_id": 0})

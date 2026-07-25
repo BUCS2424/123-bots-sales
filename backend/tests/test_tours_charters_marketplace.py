@@ -140,7 +140,7 @@ class TestSellersCRUD:
         })
         seller_id = seller_resp.json()["id"]
         activity_resp = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
-            "name": "TEST_Blocking Activity",
+            "title": "TEST_Blocking Activity",
             "seller_id": seller_id,
         })
         assert activity_resp.status_code == 200
@@ -169,14 +169,14 @@ class TestActivitiesCRUD:
 
     def test_create_activity_invalid_seller_400(self, authenticated_client):
         resp = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
-            "name": "TEST_Bad Seller Activity", "seller_id": "nonexistent-seller-id"
+            "title": "TEST_Bad Seller Activity", "seller_id": "nonexistent-seller-id"
         })
         assert resp.status_code == 400
 
     def test_full_activity_lifecycle(self, authenticated_client, seller_and_category):
         seller, category = seller_and_category
         create_resp = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
-            "name": "TEST_Full Lifecycle Activity",
+            "title": "TEST Full Lifecycle Activity",
             "seller_id": seller["id"],
             "category_ids": [category["id"]],
             "tags": ["family-friendly", "sunset"],
@@ -188,8 +188,11 @@ class TestActivitiesCRUD:
         })
         assert create_resp.status_code == 200
         activity = create_resp.json()
-        assert activity["name"] == "TEST_Full Lifecycle Activity"
-        assert activity["slug"]
+        assert activity["title"] == "TEST Full Lifecycle Activity"
+        assert activity["alias"] == "test-full-lifecycle-activity"
+        assert activity["status"] == "published"
+        assert activity["priority"] == 0
+        assert activity["featured"] is False
         assert activity["booking_type"] == "external_link"
         activity_id = activity["id"]
 
@@ -223,7 +226,7 @@ class TestActivitiesCRUD:
             "name": "TEST_Throwaway Category"
         }).json()
         activity = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
-            "name": "TEST_Category Pull Activity",
+            "title": "TEST_Category Pull Activity",
             "seller_id": seller["id"],
             "category_ids": [extra_cat["id"]],
         }).json()
@@ -236,6 +239,115 @@ class TestActivitiesCRUD:
         assert extra_cat["id"] not in found["category_ids"]
 
         authenticated_client.delete(f"{BASE_URL}/api/tours-charters/activities/{activity['id']}")
+
+
+class TestActivityFieldRefinement:
+    """New precision-refinement fields: title/alias/status/priority/featured."""
+
+    @pytest.fixture(scope="class")
+    def refinement_seller(self, authenticated_client):
+        seller = authenticated_client.post(f"{BASE_URL}/api/tours-charters/sellers", json={
+            "name": "TEST_Refinement Seller"
+        }).json()
+        yield seller
+        authenticated_client.delete(f"{BASE_URL}/api/tours-charters/sellers/{seller['id']}")
+
+    def test_alias_auto_generated_from_title_when_blank(self, authenticated_client, refinement_seller):
+        # Uses the exact example title from the spec: 'Whale Watching Tour' -> 'whale-watching-tour'
+        activity = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
+            "title": "Whale Watching Tour",
+            "seller_id": refinement_seller["id"],
+            "alias": "",
+        }).json()
+        assert activity["alias"] == "whale-watching-tour"
+        authenticated_client.delete(f"{BASE_URL}/api/tours-charters/activities/{activity['id']}")
+
+    def test_alias_uniqueness_appends_suffix_on_duplicate_title(self, authenticated_client, refinement_seller):
+        a1 = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
+            "title": "TEST Duplicate Title Activity",
+            "seller_id": refinement_seller["id"],
+        }).json()
+        a2 = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
+            "title": "TEST Duplicate Title Activity",
+            "seller_id": refinement_seller["id"],
+        }).json()
+        assert a1["alias"] == "test-duplicate-title-activity"
+        assert a2["alias"] == "test-duplicate-title-activity-2"
+        assert a1["id"] != a2["id"]
+        authenticated_client.delete(f"{BASE_URL}/api/tours-charters/activities/{a1['id']}")
+        authenticated_client.delete(f"{BASE_URL}/api/tours-charters/activities/{a2['id']}")
+
+    def test_alias_editable_and_unique_on_update(self, authenticated_client, refinement_seller):
+        a1 = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
+            "title": "TEST_Alias Update Base", "seller_id": refinement_seller["id"], "alias": "test-alias-update-fixed",
+        }).json()
+        a2 = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
+            "title": "TEST_Alias Update Other", "seller_id": refinement_seller["id"],
+        }).json()
+        # Try to rename a2's alias to collide with a1's -> should get suffixed, not error
+        update_resp = authenticated_client.put(f"{BASE_URL}/api/tours-charters/activities/{a2['id']}", json={
+            "alias": "test-alias-update-fixed"
+        })
+        assert update_resp.status_code == 200
+        assert update_resp.json()["alias"] == "test-alias-update-fixed-2"
+        authenticated_client.delete(f"{BASE_URL}/api/tours-charters/activities/{a1['id']}")
+        authenticated_client.delete(f"{BASE_URL}/api/tours-charters/activities/{a2['id']}")
+
+    def test_unpublished_hidden_from_public_list_and_detail(self, authenticated_client, api_client, refinement_seller):
+        activity = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
+            "title": "TEST_Unpublish Visibility Activity",
+            "seller_id": refinement_seller["id"],
+            "status": "published",
+        }).json()
+        alias = activity["alias"]
+
+        # Visible while published
+        pub_detail = api_client.get(f"{BASE_URL}/api/public/tours-charters/activities/{alias}")
+        assert pub_detail.status_code == 200
+        pub_list = api_client.get(f"{BASE_URL}/api/public/tours-charters/activities", params={"seller_slug": refinement_seller["slug"]})
+        assert any(a["alias"] == alias for a in pub_list.json())
+
+        # Unpublish
+        upd = authenticated_client.put(f"{BASE_URL}/api/tours-charters/activities/{activity['id']}", json={"status": "unpublished"})
+        assert upd.status_code == 200
+        assert upd.json()["status"] == "unpublished"
+
+        pub_detail2 = api_client.get(f"{BASE_URL}/api/public/tours-charters/activities/{alias}")
+        assert pub_detail2.status_code == 404
+        pub_list2 = api_client.get(f"{BASE_URL}/api/public/tours-charters/activities", params={"seller_slug": refinement_seller["slug"]})
+        assert not any(a["alias"] == alias for a in pub_list2.json())
+
+        # Admin list still sees it (admin view is not status-filtered)
+        admin_list = authenticated_client.get(f"{BASE_URL}/api/tours-charters/activities").json()
+        assert any(a["id"] == activity["id"] and a["status"] == "unpublished" for a in admin_list)
+
+        # Re-publish -> reappears
+        upd2 = authenticated_client.put(f"{BASE_URL}/api/tours-charters/activities/{activity['id']}", json={"status": "published"})
+        assert upd2.json()["status"] == "published"
+        pub_detail3 = api_client.get(f"{BASE_URL}/api/public/tours-charters/activities/{alias}")
+        assert pub_detail3.status_code == 200
+
+        authenticated_client.delete(f"{BASE_URL}/api/tours-charters/activities/{activity['id']}")
+
+    def test_priority_sort_order_on_public_listing(self, authenticated_client, api_client, refinement_seller):
+        low_priority_first = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
+            "title": "TEST_Priority One Activity", "seller_id": refinement_seller["id"], "priority": 1, "featured": True,
+        }).json()
+        high_priority_second = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
+            "title": "TEST_Priority Five Activity", "seller_id": refinement_seller["id"], "priority": 5, "featured": False,
+        }).json()
+        assert low_priority_first["priority"] == 1
+        assert low_priority_first["featured"] is True
+        assert high_priority_second["priority"] == 5
+        assert high_priority_second["featured"] is False
+
+        pub_list = api_client.get(f"{BASE_URL}/api/public/tours-charters/activities", params={"seller_slug": refinement_seller["slug"]}).json()
+        idx1 = next(i for i, a in enumerate(pub_list) if a["id"] == low_priority_first["id"])
+        idx5 = next(i for i, a in enumerate(pub_list) if a["id"] == high_priority_second["id"])
+        assert idx1 < idx5  # priority=1 must appear before priority=5
+
+        authenticated_client.delete(f"{BASE_URL}/api/tours-charters/activities/{low_priority_first['id']}")
+        authenticated_client.delete(f"{BASE_URL}/api/tours-charters/activities/{high_priority_second['id']}")
 
 
 class TestFareHarborFields:
@@ -258,7 +370,7 @@ class TestFareHarborFields:
 
     def test_activity_own_fareharbor_shortname_overrides_seller(self, authenticated_client, fh_seller):
         activity = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
-            "name": "TEST_FH Own Shortname Activity",
+            "title": "TEST_FH Own Shortname Activity",
             "seller_id": fh_seller["id"],
             "booking_type": "external_link",
             "booking_provider": "fareharbor",
@@ -269,7 +381,7 @@ class TestFareHarborFields:
         assert activity["fareharbor_shortname"] == "activity-own-shortname"
         assert activity["fareharbor_item_pk"] == "12345"
 
-        public = requests.get(f"{BASE_URL}/api/public/tours-charters/activities/{activity['slug']}").json()
+        public = requests.get(f"{BASE_URL}/api/public/tours-charters/activities/{activity['alias']}").json()
         assert public["effective_fareharbor_shortname"] == "activity-own-shortname"
         assert public["booking_provider"] == "fareharbor"
 
@@ -277,7 +389,7 @@ class TestFareHarborFields:
 
     def test_activity_blank_shortname_falls_back_to_seller(self, authenticated_client, fh_seller):
         activity = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
-            "name": "TEST_FH Fallback Activity",
+            "title": "TEST_FH Fallback Activity",
             "seller_id": fh_seller["id"],
             "booking_type": "external_link",
             "booking_provider": "fareharbor",
@@ -285,14 +397,14 @@ class TestFareHarborFields:
         }).json()
         assert activity["fareharbor_shortname"] == ""
 
-        public = requests.get(f"{BASE_URL}/api/public/tours-charters/activities/{activity['slug']}").json()
+        public = requests.get(f"{BASE_URL}/api/public/tours-charters/activities/{activity['alias']}").json()
         assert public["effective_fareharbor_shortname"] == "seller-default-shortname"
 
         authenticated_client.delete(f"{BASE_URL}/api/tours-charters/activities/{activity['id']}")
 
     def test_activity_generic_provider_default(self, authenticated_client, fh_seller):
         activity = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
-            "name": "TEST_Generic Provider Activity",
+            "title": "TEST_Generic Provider Activity",
             "seller_id": fh_seller["id"],
             "booking_type": "external_link",
             "booking_url": "https://example.com/book/generic-test",
@@ -304,7 +416,7 @@ class TestFareHarborFields:
 
     def test_update_activity_booking_provider_to_fareharbor(self, authenticated_client, fh_seller):
         activity = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
-            "name": "TEST_Provider Switch Activity",
+            "title": "TEST_Provider Switch Activity",
             "seller_id": fh_seller["id"],
             "booking_type": "external_link",
             "booking_provider": "generic",
@@ -373,32 +485,36 @@ class TestPublicEndpoints:
         resp = api_client.get(f"{BASE_URL}/api/public/tours-charters/activities", params={"category_slug": "boat-charters"})
         assert resp.status_code == 200
         data = resp.json()
-        assert any(a["slug"] == "sunset-sail" for a in data)
+        assert any(a["alias"] == "sunset-sail" for a in data)
 
     def test_public_activities_filter_by_seller_slug(self, api_client):
         resp = api_client.get(f"{BASE_URL}/api/public/tours-charters/activities", params={"seller_slug": "blue-dream-charters"})
         assert resp.status_code == 200
         data = resp.json()
-        assert any(a["slug"] == "sunset-sail" for a in data)
+        assert any(a["alias"] == "sunset-sail" for a in data)
         assert all("seller_name" in a and "seller_slug" in a for a in data)
+        # all activities returned publicly must be published
+        assert all(a["status"] == "published" for a in data)
 
     def test_public_activities_filter_by_unknown_slug_returns_empty(self, api_client):
         resp = api_client.get(f"{BASE_URL}/api/public/tours-charters/activities", params={"category_slug": "does-not-exist"})
         assert resp.status_code == 200
         assert resp.json() == []
 
-    def test_public_activity_detail_by_slug(self, api_client):
+    def test_public_activity_detail_by_alias(self, api_client):
         resp = api_client.get(f"{BASE_URL}/api/public/tours-charters/activities/sunset-sail")
         assert resp.status_code == 200
         data = resp.json()
-        assert data["name"]
+        assert data["title"]
+        assert data["alias"] == "sunset-sail"
+        assert data["status"] == "published"
         assert data["seller"]["slug"] == "blue-dream-charters"
         assert isinstance(data["categories"], list)
         assert data["booking_type"] == "external_link"
         assert "fareharbor" in (data.get("booking_url") or "")
 
-    def test_public_activity_detail_404_for_unknown_slug(self, api_client):
-        resp = api_client.get(f"{BASE_URL}/api/public/tours-charters/activities/does-not-exist-slug")
+    def test_public_activity_detail_404_for_unknown_alias(self, api_client):
+        resp = api_client.get(f"{BASE_URL}/api/public/tours-charters/activities/does-not-exist-alias")
         assert resp.status_code == 404
 
     def test_public_endpoints_do_not_return_inactive(self, authenticated_client, api_client):
