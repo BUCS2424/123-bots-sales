@@ -105,6 +105,7 @@ class SellerCreate(BaseModel):
     contact_phone: str = ""
     website: str = ""
     commission_rate: float = 0.0  # % commission owed to the platform on this seller's bookings
+    fareharbor_shortname: str = ""  # default FareHarbor company handle for this seller's activities
 
 
 class SellerUpdate(BaseModel):
@@ -115,6 +116,7 @@ class SellerUpdate(BaseModel):
     contact_phone: Optional[str] = None
     website: Optional[str] = None
     commission_rate: Optional[float] = None
+    fareharbor_shortname: Optional[str] = None
     is_active: Optional[bool] = None
 
 
@@ -128,7 +130,10 @@ class ActivityCreate(BaseModel):
     price_display: str = ""  # free-text e.g. "$150 / person" until native pricing exists
     duration: str = ""
     booking_type: str = "external_link"  # external_link | native_checkout
+    booking_provider: str = "generic"  # generic | fareharbor (only relevant when booking_type=external_link)
     booking_url: str = ""
+    fareharbor_shortname: str = ""  # overrides the seller's default shortname if set
+    fareharbor_item_pk: str = ""
 
 
 class ActivityUpdate(BaseModel):
@@ -141,7 +146,10 @@ class ActivityUpdate(BaseModel):
     price_display: Optional[str] = None
     duration: Optional[str] = None
     booking_type: Optional[str] = None
+    booking_provider: Optional[str] = None
     booking_url: Optional[str] = None
+    fareharbor_shortname: Optional[str] = None
+    fareharbor_item_pk: Optional[str] = None
     is_active: Optional[bool] = None
 
 
@@ -374,6 +382,8 @@ async def public_get_activity(slug: str, db=Depends(get_db)):
         raise HTTPException(status_code=404, detail="Activity not found")
     seller = await db.activity_sellers.find_one({"id": activity.get("seller_id")}, {"_id": 0})
     activity["seller"] = seller
+    # Effective FareHarbor shortname: activity-level override wins, else fall back to the seller's default
+    activity["effective_fareharbor_shortname"] = activity.get("fareharbor_shortname") or (seller.get("fareharbor_shortname") if seller else "")
     categories = await db.activity_categories.find({"id": {"$in": activity.get("category_ids", [])}}, {"_id": 0}).to_list(50)
     activity["categories"] = categories
     return activity

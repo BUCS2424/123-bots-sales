@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Plus, Trash2, Pencil, Sparkles, Loader2, X, Upload, Building2, Link2, ShoppingCart } from 'lucide-react';
+import { Plus, Trash2, Pencil, Sparkles, Loader2, X, Upload, Building2, Link2, ShoppingCart, Anchor } from 'lucide-react';
 import { toursChartersApi, uploadTourImage } from './toursChartersApi';
 import { toast } from '../../../hooks/use-toast';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../../../components/ui/sheet';
 
 const inputCls = 'w-full rounded-lg border border-white/10 bg-[#061a1f] px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-teal-500/50';
 const emptyActivity = {
   name: '', seller_id: '', category_ids: [], tags: [], images: [],
-  description: '', price_display: '', duration: '', booking_type: 'external_link', booking_url: '',
+  description: '', price_display: '', duration: '', booking_type: 'external_link',
+  booking_provider: 'generic', booking_url: '', fareharbor_shortname: '', fareharbor_item_pk: '',
 };
 
 const Activities = () => {
@@ -18,7 +20,7 @@ const Activities = () => {
   const [tagInput, setTagInput] = useState('');
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [newSellerModal, setNewSellerModal] = useState(null); // {name}
+  const [newSellerModal, setNewSellerModal] = useState(null); // {name, fareharbor_shortname}
   const fileRef = useRef(null);
 
   const load = () => {
@@ -63,7 +65,7 @@ const Activities = () => {
   const createQuickSeller = async () => {
     if (!newSellerModal?.name?.trim()) { toast({ title: 'Company name required', variant: 'destructive' }); return; }
     try {
-      const res = await toursChartersApi.createSeller({ name: newSellerModal.name.trim() });
+      const res = await toursChartersApi.createSeller({ name: newSellerModal.name.trim(), fareharbor_shortname: (newSellerModal.fareharbor_shortname || '').trim() });
       setSellers((prev) => [...prev, res.data]);
       setModal((m) => ({ ...m, seller_id: res.data.id }));
       setNewSellerModal(null);
@@ -133,8 +135,8 @@ const Activities = () => {
                   <div className="mt-3 flex items-center justify-between text-xs text-white/40">
                     <span>{a.price_display || 'Price TBD'}</span>
                     <span className="flex items-center gap-1">
-                      {a.booking_type === 'native_checkout' ? <ShoppingCart className="h-3 w-3" /> : <Link2 className="h-3 w-3" />}
-                      {a.booking_type === 'native_checkout' ? 'In-App Checkout' : 'External Booking'}
+                      {a.booking_type === 'native_checkout' ? <ShoppingCart className="h-3 w-3" /> : a.booking_provider === 'fareharbor' ? <Anchor className="h-3 w-3" /> : <Link2 className="h-3 w-3" />}
+                      {a.booking_type === 'native_checkout' ? 'In-App Checkout' : a.booking_provider === 'fareharbor' ? 'FareHarbor' : 'External Booking'}
                     </span>
                   </div>
                 </div>
@@ -144,13 +146,12 @@ const Activities = () => {
         )}
 
       {modal && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/60 p-4 overflow-y-auto" onClick={() => setModal(null)}>
-          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#0b1f24] p-6 text-white my-8" onClick={(e) => e.stopPropagation()} data-testid="activity-modal">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-lg font-bold"><Sparkles className="h-5 w-5 text-teal-300" /> {modal.id ? 'Edit' : 'New'} Activity</h2>
-              <button onClick={() => setModal(null)}><X className="h-5 w-5 text-white/50" /></button>
-            </div>
-            <div className="space-y-3">
+        <Sheet open={!!modal} onOpenChange={(open) => !open && setModal(null)}>
+          <SheetContent side="right" className="w-full sm:max-w-xl bg-[#0b1f24] border-white/10 text-white overflow-y-auto" data-testid="activity-modal">
+            <SheetHeader>
+              <SheetTitle className="flex items-center gap-2 text-white"><Sparkles className="h-5 w-5 text-teal-300" /> {modal.id ? 'Edit' : 'New'} Activity</SheetTitle>
+            </SheetHeader>
+            <div className="mt-4 space-y-3">
               <input className={inputCls} placeholder="Activity name (e.g. Sunset Sail)" value={modal.name} onChange={(e) => setModal({ ...modal, name: e.target.value })} data-testid="activity-name-input" />
 
               <div>
@@ -160,7 +161,7 @@ const Activities = () => {
                     <option value="">Select company...</option>
                     {sellers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
                   </select>
-                  <button onClick={() => setNewSellerModal({ name: '' })} className="whitespace-nowrap rounded-lg border border-white/10 px-3 py-2 text-xs text-white/60 hover:bg-white/10" data-testid="activity-add-seller-btn">
+                  <button onClick={() => setNewSellerModal({ name: '', fareharbor_shortname: '' })} className="whitespace-nowrap rounded-lg border border-white/10 px-3 py-2 text-xs text-white/60 hover:bg-white/10" data-testid="activity-add-seller-btn">
                     + New Company
                   </button>
                 </div>
@@ -235,7 +236,24 @@ const Activities = () => {
                   </button>
                 </div>
                 {modal.booking_type === 'external_link' && (
-                  <input className={inputCls} placeholder="https://fareharbor.com/embeds/book/..." value={modal.booking_url} onChange={(e) => setModal({ ...modal, booking_url: e.target.value })} data-testid="activity-booking-url-input" />
+                  <div className="space-y-2 rounded-lg border border-white/10 p-3">
+                    <div className="flex gap-2">
+                      <button onClick={() => setModal({ ...modal, booking_provider: 'generic' })} className={`flex-1 rounded-lg border px-3 py-1.5 text-xs ${modal.booking_provider === 'generic' ? 'border-teal-400 bg-teal-500/20 text-teal-200' : 'border-white/15 text-white/50'}`} data-testid="activity-booking-provider-generic">
+                        Generic URL
+                      </button>
+                      <button onClick={() => setModal({ ...modal, booking_provider: 'fareharbor' })} className={`flex-1 rounded-lg border px-3 py-1.5 text-xs ${modal.booking_provider === 'fareharbor' ? 'border-teal-400 bg-teal-500/20 text-teal-200' : 'border-white/15 text-white/50'}`} data-testid="activity-booking-provider-fareharbor">
+                        <Anchor className="mr-1 inline h-3.5 w-3.5" /> FareHarbor
+                      </button>
+                    </div>
+                    {modal.booking_provider === 'fareharbor' ? (
+                      <div className="grid grid-cols-2 gap-2">
+                        <input className={inputCls} placeholder="Shortname (defaults to company's)" value={modal.fareharbor_shortname} onChange={(e) => setModal({ ...modal, fareharbor_shortname: e.target.value })} data-testid="activity-fareharbor-shortname-input" />
+                        <input className={inputCls} placeholder="Item PK (optional)" value={modal.fareharbor_item_pk} onChange={(e) => setModal({ ...modal, fareharbor_item_pk: e.target.value })} data-testid="activity-fareharbor-item-input" />
+                      </div>
+                    ) : (
+                      <input className={inputCls} placeholder="https://example.com/book/..." value={modal.booking_url} onChange={(e) => setModal({ ...modal, booking_url: e.target.value })} data-testid="activity-booking-url-input" />
+                    )}
+                  </div>
                 )}
               </div>
 
@@ -243,18 +261,23 @@ const Activities = () => {
                 {saving ? 'Saving...' : 'Save Activity'}
               </button>
             </div>
-          </div>
-        </div>
+          </SheetContent>
+        </Sheet>
       )}
 
       {newSellerModal && (
-        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/70 p-4" onClick={() => setNewSellerModal(null)}>
-          <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#0b1f24] p-6 text-white" onClick={(e) => e.stopPropagation()} data-testid="new-seller-modal">
-            <h3 className="mb-3 flex items-center gap-2 text-base font-bold"><Building2 className="h-4 w-4 text-teal-300" /> New Charter Company</h3>
-            <input className={inputCls} placeholder="Company name" value={newSellerModal.name} onChange={(e) => setNewSellerModal({ name: e.target.value })} data-testid="new-seller-name-input" />
-            <button onClick={createQuickSeller} className="mt-3 w-full rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 py-2 text-sm font-semibold" data-testid="new-seller-save-btn">Add Company</button>
-          </div>
-        </div>
+        <Sheet open={!!newSellerModal} onOpenChange={(open) => !open && setNewSellerModal(null)}>
+          <SheetContent side="right" className="w-full sm:max-w-sm bg-[#0b1f24] border-white/10 text-white" data-testid="new-seller-modal">
+            <SheetHeader>
+              <SheetTitle className="flex items-center gap-2 text-white"><Building2 className="h-4 w-4 text-teal-300" /> New Charter Company</SheetTitle>
+            </SheetHeader>
+            <div className="mt-4 space-y-3">
+              <input className={inputCls} placeholder="Company name" value={newSellerModal.name} onChange={(e) => setNewSellerModal({ ...newSellerModal, name: e.target.value })} data-testid="new-seller-name-input" />
+              <input className={inputCls} placeholder="FareHarbor shortname (optional)" value={newSellerModal.fareharbor_shortname} onChange={(e) => setNewSellerModal({ ...newSellerModal, fareharbor_shortname: e.target.value })} data-testid="new-seller-fareharbor-input" />
+              <button onClick={createQuickSeller} className="w-full rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 py-2 text-sm font-semibold" data-testid="new-seller-save-btn">Add Company</button>
+            </div>
+          </SheetContent>
+        </Sheet>
       )}
     </div>
   );

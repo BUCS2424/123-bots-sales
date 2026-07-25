@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Sparkles, Loader2, ArrowLeft, Building2, Clock, Tag, ExternalLink } from 'lucide-react';
+import { Sparkles, Loader2, ArrowLeft, Building2, Clock, Tag, ExternalLink, Anchor } from 'lucide-react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { setSeoMetadata } from '../../lib/seo';
 import { useActivityMarketplaceGate, API } from './activityMarketplaceShared';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../../components/ui/sheet';
 import axios from 'axios';
 
 const ActivityDetailPage = () => {
@@ -14,6 +15,7 @@ const ActivityDetailPage = () => {
   const [activity, setActivity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [bookingOpen, setBookingOpen] = useState(false);
 
   useEffect(() => {
     if (!ready) return;
@@ -81,7 +83,11 @@ const ActivityDetailPage = () => {
                   )}
 
                   <div className="mt-8">
-                    {activity.booking_type === 'external_link' && activity.booking_url ? (
+                    {activity.booking_type === 'external_link' && activity.booking_provider === 'fareharbor' && activity.effective_fareharbor_shortname ? (
+                      <button onClick={() => setBookingOpen(true)} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 px-6 py-3 text-sm font-bold text-white transition hover:opacity-90" data-testid="activity-book-now-button">
+                        <Anchor className="h-4 w-4" /> Book Now
+                      </button>
+                    ) : activity.booking_type === 'external_link' && activity.booking_url ? (
                       <a href={activity.booking_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 px-6 py-3 text-sm font-bold text-white transition hover:opacity-90" data-testid="activity-book-now-button">
                         Book Now <ExternalLink className="h-4 w-4" />
                       </a>
@@ -98,6 +104,26 @@ const ActivityDetailPage = () => {
         </div>
       </section>
       <Footer />
+
+      {activity && (
+        <Sheet open={bookingOpen} onOpenChange={setBookingOpen}>
+          <SheetContent side="right" className="w-full sm:max-w-2xl bg-[#061a1f] border-white/10 text-white p-0 flex flex-col" data-testid="activity-booking-drawer">
+            <SheetHeader className="p-4 border-b border-white/10">
+              <SheetTitle className="flex items-center gap-2 text-white">
+                <Anchor className="h-4 w-4 text-teal-300" /> Book {activity.name}
+              </SheetTitle>
+            </SheetHeader>
+            {activity.effective_fareharbor_shortname && (
+              <iframe
+                title={`Book ${activity.name} on FareHarbor`}
+                src={`https://fareharbor.com/embeds/book/${activity.effective_fareharbor_shortname}/${activity.fareharbor_item_pk ? `items/${activity.fareharbor_item_pk}/` : ''}?full-items=yes`}
+                className="flex-1 w-full border-0"
+                data-testid="activity-booking-iframe"
+              />
+            )}
+          </SheetContent>
+        </Sheet>
+      )}
     </div>
   );
 };

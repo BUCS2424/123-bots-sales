@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Plus, Trash2, Pencil, Tag, Loader2, X, Upload } from 'lucide-react';
 import { toursChartersApi, uploadTourImage } from './toursChartersApi';
 import { toast } from '../../../hooks/use-toast';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../../../components/ui/sheet';
 
 const inputCls = 'w-full rounded-lg border border-white/10 bg-[#061a1f] px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-teal-500/50';
 
@@ -79,13 +80,12 @@ const ActivityCategories = () => {
         )}
 
       {modal && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/60 p-4" onClick={() => setModal(null)}>
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0b1f24] p-6 text-white" onClick={(e) => e.stopPropagation()} data-testid="category-modal">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-lg font-bold"><Tag className="h-5 w-5 text-teal-300" /> {modal.id ? 'Edit' : 'New'} Category</h2>
-              <button onClick={() => setModal(null)}><X className="h-5 w-5 text-white/50" /></button>
-            </div>
-            <div className="space-y-3">
+        <Sheet open={!!modal} onOpenChange={(open) => !open && setModal(null)}>
+          <SheetContent side="right" className="w-full sm:max-w-md bg-[#0b1f24] border-white/10 text-white overflow-y-auto" data-testid="category-modal">
+            <SheetHeader>
+              <SheetTitle className="flex items-center gap-2 text-white"><Tag className="h-5 w-5 text-teal-300" /> {modal.id ? 'Edit' : 'New'} Category</SheetTitle>
+            </SheetHeader>
+            <div className="mt-4 space-y-3">
               <input className={inputCls} placeholder="Category name (e.g. Boat Charters)" value={modal.name} onChange={(e) => setModal({ ...modal, name: e.target.value })} data-testid="category-name-input" />
               <input className={inputCls} placeholder="Description (optional)" value={modal.description} onChange={(e) => setModal({ ...modal, description: e.target.value })} data-testid="category-description-input" />
               <div>
@@ -108,8 +108,8 @@ const ActivityCategories = () => {
                 {saving ? 'Saving...' : 'Save'}
               </button>
             </div>
-          </div>
-        </div>
+          </SheetContent>
+        </Sheet>
       )}
     </div>
   );

@@ -1,0 +1,38 @@
+{
+  "summary": "Tested the FareHarbor booking enhancement + right-side Sheet conversion on top of the already-tested Tours/Charters module. Backend: 26/26 pytest passing (21 previous + 5 new tests for seller/activity fareharbor_shortname persistence, activity-level override vs seller-default fallback via effective_fareharbor_shortname, generic default, and provider switching via PUT). Frontend (Playwright): verified all 3 modals (category-modal, activity-modal, new-seller-modal) render as right-side slide-out Sheets (bounding boxes confirmed on the right edge), close via X, Escape key, and overlay click. Verified stacked Sheets (activity-modal + new-seller-modal on top) both slide from the right simultaneously. Verified new-seller-fareharbor-input saves correctly on quick-add. Verified the booking provider sub-toggle (Generic URL vs FareHarbor) correctly shows/hides activity-booking-url-input vs activity-fareharbor-shortname-input/activity-fareharbor-item-input, in both directions, and that editing an existing FareHarbor activity correctly reflects the saved provider + values. New activity card shows 'FareHarbor' badge with Anchor icon (vs 'External Booking' for generic). On the public Activity Detail page, verified Book Now with booking_provider=fareharbor opens a right-side drawer (activity-booking-drawer) with correctly-constructed iframe src (https://fareharbor.com/embeds/book/test-company/?full-items=yes, item_pk segment correctly omitted when blank), does not navigate away, and closes via the X button. Regression-verified booking_provider=generic still opens booking_url in a real new browser tab (target=_blank) with no drawer. Regression sanity: Dashboard, Categories CRUD, and public Directory->List->Detail navigation flow all still work. Cleaned up all TEST_ prefixed data and restored sunset-sail to its original generic/booking_url state at the end.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/public/tours-charters/activities/{slug}", "issue": "effective_fareharbor_shortname resolves to Python None (JSON null) rather than empty string when both the activity's own fareharbor_shortname is blank AND the seller document predates the fareharbor_shortname field being added (pre-existing seed sellers like 'Blue Dream Charters' lack the key entirely, so seller.get('fareharbor_shortname') returns None instead of ''). Harmless today since it's only read when booking_provider='fareharbor' and falsy-checked on the frontend, but worth a `seller.get('fareharbor_shortname', '')` default for consistency/future-proofing."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_tours_charters_marketplace.py",
+    "/app/test_reports/pytest/tours_charters_results.xml"
+  ],
+  "action_items": [
+    "Optional/minor: default seller.get('fareharbor_shortname', '') in activity_marketplace.py's public_get_activity to avoid returning null for effective_fareharbor_shortname on seed data created before this field existed."
+  ],
+  "critical_code_review_comments": [
+    "Sheet slide-out conversion (category-modal, activity-modal, new-seller-modal) is a clean, minimal-diff swap onto the existing shadcn Sheet (Radix Dialog) primitive already used elsewhere in the app - correctly inherits Escape/overlay-click/close-X behavior for free, no custom reimplementation needed.",
+    "Stacked Sheets (new-seller-modal opening on top of activity-modal) work correctly out of the box via Radix's portal/z-index layering - no z-index conflicts observed.",
+    "Booking provider sub-toggle logic in Activities.jsx cleanly nests under the existing booking_type='external_link' branch and correctly clears/shows the right input pair - matches the ActivityUpdate/ActivityCreate Pydantic models field-for-field.",
+    "iframe src construction in ActivityDetailPage.jsx exactly matches the required pattern including the conditional items/{item_pk}/ segment - verified both with and without item_pk in earlier admin form testing.",
+    "Backend effective_fareharbor_shortname fallback (activity override -> seller default) works correctly for records created after this field was added; see minor note above about legacy seed records lacking the key entirely."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_tours_charters_marketplace.py"
+  ],
+  "success_rate": {"backend": "100% (26/26)", "frontend": "100% (all specified flows verified)"},
+  "test_credentials": "Admin mel@a2gdesigns.com / BigDaddy2016!! (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "Created and fully cleaned up TEST_ prefixed sellers/activities via both API (pytest) and UI (Playwright, incl. 'TEST_FareHarbor Test Co' seller and 'TEST_FareHarbor Activity'). Final DB state restored to original seed data: 1 category 'Boat Charters', 1 seller 'Blue Dream Charters', 1 activity 'Sunset Sail' with booking_provider='generic' and booking_url='https://fareharbor.com/embeds/book/example', exactly as it was before this test run started.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "This module (both the base marketplace from iteration_88 and this FareHarbor/Sheet enhancement) is now fully verified twice with zero bugs found across both passes. If a future agent picks this up again for the real FareHarbor External API/FHDN search-and-import feature (gated behind partner credentials), note that the current iframe-embed approach and effective_fareharbor_shortname fallback field are already in place and can be built upon rather than replaced.",
+  "rca_of_the_issue": "No bugs found. All 3 modals confirmed sliding from the right (not centered), stacked-sheet layering works, the booking_provider toggle + FareHarbor fields work end-to-end from admin form to public iframe drawer with correct URL construction, and the generic provider's new-tab regression behavior is unchanged."
+}

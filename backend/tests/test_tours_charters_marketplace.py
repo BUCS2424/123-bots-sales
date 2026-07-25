@@ -238,6 +238,92 @@ class TestActivitiesCRUD:
         authenticated_client.delete(f"{BASE_URL}/api/tours-charters/activities/{activity['id']}")
 
 
+class TestFareHarborFields:
+    """New FareHarbor booking_provider fields on Seller/Activity + effective_fareharbor_shortname fallback."""
+
+    @pytest.fixture(scope="class")
+    def fh_seller(self, authenticated_client):
+        seller = authenticated_client.post(f"{BASE_URL}/api/tours-charters/sellers", json={
+            "name": "TEST_FareHarbor Seller",
+            "fareharbor_shortname": "seller-default-shortname",
+        }).json()
+        yield seller
+        authenticated_client.delete(f"{BASE_URL}/api/tours-charters/sellers/{seller['id']}")
+
+    def test_seller_persists_fareharbor_shortname(self, authenticated_client, fh_seller):
+        assert fh_seller["fareharbor_shortname"] == "seller-default-shortname"
+        get_resp = authenticated_client.get(f"{BASE_URL}/api/tours-charters/sellers")
+        found = next(s for s in get_resp.json() if s["id"] == fh_seller["id"])
+        assert found["fareharbor_shortname"] == "seller-default-shortname"
+
+    def test_activity_own_fareharbor_shortname_overrides_seller(self, authenticated_client, fh_seller):
+        activity = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
+            "name": "TEST_FH Own Shortname Activity",
+            "seller_id": fh_seller["id"],
+            "booking_type": "external_link",
+            "booking_provider": "fareharbor",
+            "fareharbor_shortname": "activity-own-shortname",
+            "fareharbor_item_pk": "12345",
+        }).json()
+        assert activity["booking_provider"] == "fareharbor"
+        assert activity["fareharbor_shortname"] == "activity-own-shortname"
+        assert activity["fareharbor_item_pk"] == "12345"
+
+        public = requests.get(f"{BASE_URL}/api/public/tours-charters/activities/{activity['slug']}").json()
+        assert public["effective_fareharbor_shortname"] == "activity-own-shortname"
+        assert public["booking_provider"] == "fareharbor"
+
+        authenticated_client.delete(f"{BASE_URL}/api/tours-charters/activities/{activity['id']}")
+
+    def test_activity_blank_shortname_falls_back_to_seller(self, authenticated_client, fh_seller):
+        activity = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
+            "name": "TEST_FH Fallback Activity",
+            "seller_id": fh_seller["id"],
+            "booking_type": "external_link",
+            "booking_provider": "fareharbor",
+            "fareharbor_shortname": "",
+        }).json()
+        assert activity["fareharbor_shortname"] == ""
+
+        public = requests.get(f"{BASE_URL}/api/public/tours-charters/activities/{activity['slug']}").json()
+        assert public["effective_fareharbor_shortname"] == "seller-default-shortname"
+
+        authenticated_client.delete(f"{BASE_URL}/api/tours-charters/activities/{activity['id']}")
+
+    def test_activity_generic_provider_default(self, authenticated_client, fh_seller):
+        activity = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
+            "name": "TEST_Generic Provider Activity",
+            "seller_id": fh_seller["id"],
+            "booking_type": "external_link",
+            "booking_url": "https://example.com/book/generic-test",
+        }).json()
+        # default booking_provider should be 'generic' when not specified
+        assert activity["booking_provider"] == "generic"
+
+        authenticated_client.delete(f"{BASE_URL}/api/tours-charters/activities/{activity['id']}")
+
+    def test_update_activity_booking_provider_to_fareharbor(self, authenticated_client, fh_seller):
+        activity = authenticated_client.post(f"{BASE_URL}/api/tours-charters/activities", json={
+            "name": "TEST_Provider Switch Activity",
+            "seller_id": fh_seller["id"],
+            "booking_type": "external_link",
+            "booking_provider": "generic",
+            "booking_url": "https://example.com/book/x",
+        }).json()
+        activity_id = activity["id"]
+
+        update_resp = authenticated_client.put(f"{BASE_URL}/api/tours-charters/activities/{activity_id}", json={
+            "booking_provider": "fareharbor",
+            "fareharbor_shortname": "switched-shortname",
+        })
+        assert update_resp.status_code == 200
+        updated = update_resp.json()
+        assert updated["booking_provider"] == "fareharbor"
+        assert updated["fareharbor_shortname"] == "switched-shortname"
+
+        authenticated_client.delete(f"{BASE_URL}/api/tours-charters/activities/{activity_id}")
+
+
 class TestDashboardStats:
     def test_dashboard_stats_shape(self, authenticated_client):
         resp = authenticated_client.get(f"{BASE_URL}/api/tours-charters/dashboard/stats")
