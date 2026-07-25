@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Plus, Trash2, Pencil, Sparkles, Loader2, X, Upload, Building2, Link2, ShoppingCart, Anchor } from 'lucide-react';
+import { Plus, Trash2, Pencil, Sparkles, Loader2, X, Upload, Building2, Link2, ShoppingCart, Anchor, Search, LayoutGrid, List as ListIcon } from 'lucide-react';
 import { toursChartersApi, uploadTourImage } from './toursChartersApi';
 import { toast } from '../../../hooks/use-toast';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../../../components/ui/sheet';
@@ -21,6 +21,10 @@ const Activities = () => {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [newSellerModal, setNewSellerModal] = useState(null); // {name, fareharbor_shortname}
+  const [viewMode, setViewMode] = useState('block'); // block | list
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterSellerId, setFilterSellerId] = useState('');
+  const [filterCategoryId, setFilterCategoryId] = useState('');
   const fileRef = useRef(null);
 
   const load = () => {
@@ -93,23 +97,89 @@ const Activities = () => {
 
   const catName = (id) => categories.find((c) => c.id === id)?.name || '';
 
+  const filteredActivities = activities.filter((a) => {
+    if (searchQuery.trim() && !a.name.toLowerCase().includes(searchQuery.trim().toLowerCase())) return false;
+    if (filterSellerId && a.seller_id !== filterSellerId) return false;
+    if (filterCategoryId && !a.category_ids?.includes(filterCategoryId)) return false;
+    return true;
+  });
+  const hasActiveFilters = searchQuery.trim() || filterSellerId || filterCategoryId;
+  const clearFilters = () => { setSearchQuery(''); setFilterSellerId(''); setFilterCategoryId(''); };
+
   return (
     <div className="-m-4 min-h-screen bg-[#061a1f] p-5 text-white lg:-m-6 lg:p-8" data-testid="activities-page">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-black"><Sparkles className="h-6 w-6 text-teal-400" /> Activities</h1>
-          <p className="text-sm text-white/40">{activities.length} activities across {sellers.length} charter companies</p>
+          <p className="text-sm text-white/40">{filteredActivities.length} of {activities.length} activities across {sellers.length} charter companies</p>
         </div>
         <button onClick={() => { setModal({ ...emptyActivity }); setTagInput(''); }} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 px-4 py-2.5 text-sm font-semibold" data-testid="add-activity-btn">
           <Plus className="h-4 w-4" /> Add Activity
         </button>
       </div>
 
+      <div className="mb-5 flex flex-wrap items-center gap-2" data-testid="activities-filter-bar">
+        <div className="relative min-w-[220px] flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
+          <input className={`${inputCls} pl-9`} placeholder="Search activity name..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} data-testid="activities-search-input" />
+        </div>
+        <select className={`${inputCls} w-auto min-w-[170px]`} value={filterSellerId} onChange={(e) => setFilterSellerId(e.target.value)} data-testid="activities-filter-seller-select">
+          <option value="">All Charter Companies</option>
+          {sellers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+        </select>
+        <select className={`${inputCls} w-auto min-w-[160px]`} value={filterCategoryId} onChange={(e) => setFilterCategoryId(e.target.value)} data-testid="activities-filter-category-select">
+          <option value="">All Categories</option>
+          {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
+        {hasActiveFilters && (
+          <button onClick={clearFilters} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-white/50 hover:bg-white/10" data-testid="activities-clear-filters-btn">
+            Clear
+          </button>
+        )}
+        <div className="flex items-center gap-1 rounded-lg border border-white/10 p-1">
+          <button onClick={() => setViewMode('block')} className={`rounded p-1.5 ${viewMode === 'block' ? 'bg-teal-500/20 text-teal-300' : 'text-white/40 hover:text-white/70'}`} data-testid="activities-view-block-btn" title="Block view">
+            <LayoutGrid className="h-4 w-4" />
+          </button>
+          <button onClick={() => setViewMode('list')} className={`rounded p-1.5 ${viewMode === 'list' ? 'bg-teal-500/20 text-teal-300' : 'text-white/40 hover:text-white/70'}`} data-testid="activities-view-list-btn" title="List view">
+            <ListIcon className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
       {loading ? <div className="flex justify-center py-20"><Loader2 className="h-7 w-7 animate-spin text-teal-400" /></div>
         : activities.length === 0 ? <div className="rounded-2xl border border-dashed border-white/10 bg-[#0b1f24] py-16 text-center text-white/40" data-testid="activities-empty">No activities yet. Add your first one.</div>
-        : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {activities.map((a) => (
+        : filteredActivities.length === 0 ? <div className="rounded-2xl border border-dashed border-white/10 bg-[#0b1f24] py-16 text-center text-white/40" data-testid="activities-filter-empty">No activities match your filters.</div>
+        : viewMode === 'list' ? (
+          <div className="overflow-hidden rounded-xl border border-white/10 bg-[#0b1f24]" data-testid="activities-list-view">
+            {filteredActivities.map((a) => (
+              <div key={a.id} className="flex items-center gap-4 border-b border-white/5 p-3 last:border-b-0 hover:bg-white/5" data-testid={`activity-row-${a.id}`}>
+                <div className="h-12 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-white/5">
+                  {a.images?.[0] ? <img src={a.images[0]} alt={a.name} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-white/20"><Sparkles className="h-5 w-5" /></div>}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold">{a.name}</p>
+                  <p className="flex items-center gap-1 truncate text-xs text-white/40"><Building2 className="h-3 w-3" /> {a.seller_name}</p>
+                </div>
+                <div className="hidden flex-wrap gap-1 sm:flex">
+                  {a.category_ids?.slice(0, 2).map((cid) => (
+                    <span key={cid} className="rounded-full bg-teal-500/15 px-2 py-0.5 text-xs text-teal-300">{catName(cid)}</span>
+                  ))}
+                </div>
+                <span className="hidden w-28 flex-shrink-0 text-xs text-white/40 md:block">{a.price_display || 'Price TBD'}</span>
+                <span className="flex w-28 flex-shrink-0 items-center gap-1 text-xs text-white/40">
+                  {a.booking_type === 'native_checkout' ? <ShoppingCart className="h-3 w-3" /> : a.booking_provider === 'fareharbor' ? <Anchor className="h-3 w-3" /> : <Link2 className="h-3 w-3" />}
+                  {a.booking_type === 'native_checkout' ? 'In-App' : a.booking_provider === 'fareharbor' ? 'FareHarbor' : 'External'}
+                </span>
+                <div className="flex flex-shrink-0 gap-1">
+                  <button onClick={() => { setModal({ ...emptyActivity, ...a }); setTagInput(''); }} className="rounded-lg p-1.5 text-white/60 hover:bg-white/10" data-testid={`activity-edit-${a.id}`}><Pencil className="h-3.5 w-3.5" /></button>
+                  <button onClick={() => del(a.id, a.name)} className="rounded-lg p-1.5 text-red-300 hover:bg-red-500/10" data-testid={`activity-delete-${a.id}`}><Trash2 className="h-3.5 w-3.5" /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" data-testid="activities-block-view">
+            {filteredActivities.map((a) => (
               <div key={a.id} className="overflow-hidden rounded-xl border border-white/10 bg-[#0b1f24]" data-testid={`activity-${a.id}`}>
                 <div className="h-32 w-full bg-white/5">
                   {a.images?.[0] ? <img src={a.images[0]} alt={a.name} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-white/20"><Sparkles className="h-8 w-8" /></div>}

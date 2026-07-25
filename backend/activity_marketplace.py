@@ -383,7 +383,7 @@ async def public_get_activity(slug: str, db=Depends(get_db)):
     seller = await db.activity_sellers.find_one({"id": activity.get("seller_id")}, {"_id": 0})
     activity["seller"] = seller
     # Effective FareHarbor shortname: activity-level override wins, else fall back to the seller's default
-    activity["effective_fareharbor_shortname"] = activity.get("fareharbor_shortname") or (seller.get("fareharbor_shortname") if seller else "")
+    activity["effective_fareharbor_shortname"] = activity.get("fareharbor_shortname") or (seller.get("fareharbor_shortname", "") if seller else "")
     categories = await db.activity_categories.find({"id": {"$in": activity.get("category_ids", [])}}, {"_id": 0}).to_list(50)
     activity["categories"] = categories
     return activity
