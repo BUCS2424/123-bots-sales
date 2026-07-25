@@ -829,6 +829,7 @@ class FeatureFlags(BaseModel):
     events_enabled: bool = False  # Show/hide Event Center (admin + storefront)
     events_landing_enabled: bool = False  # /events uses the custom landing page instead of the site-template list
     events_center_name: str = "Event Center"  # Configurable display name for the Event Center
+    activity_marketplace_enabled: bool = False  # Show/hide Tours / Charters activity directory (admin + storefront)
 
 
 @router.get("/feature-flags")
@@ -899,6 +900,7 @@ async def get_public_feature_flags(db=Depends(get_db)):
             "events_enabled": 1,
             "events_landing_enabled": 1,
             "events_center_name": 1,
+            "activity_marketplace_enabled": 1,
         },
     )
     return {
@@ -923,6 +925,7 @@ async def get_public_feature_flags(db=Depends(get_db)):
         "events_enabled": bool(settings.get("events_enabled", False)) if settings else False,
         "events_landing_enabled": bool(settings.get("events_landing_enabled", False)) if settings else False,
         "events_center_name": (settings.get("events_center_name") if settings else None) or "Event Center",
+        "activity_marketplace_enabled": bool(settings.get("activity_marketplace_enabled", False)) if settings else False,
     }
 
 

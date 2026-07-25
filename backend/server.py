@@ -1311,6 +1311,16 @@ set_event_center_db(db)
 app.include_router(event_center_router)
 app.include_router(event_center_public_router)
 
+# Include Activity & Charter Marketplace ("Tours / Charters") routers
+from activity_marketplace import (
+    router as activity_marketplace_router,
+    public_router as activity_marketplace_public_router,
+    set_database as set_activity_marketplace_db,
+)
+set_activity_marketplace_db(db)
+app.include_router(activity_marketplace_router)
+app.include_router(activity_marketplace_public_router)
+
 
 # Include location generator routers
 from location_generator import (

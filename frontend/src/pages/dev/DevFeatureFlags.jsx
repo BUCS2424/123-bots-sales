@@ -66,6 +66,7 @@ const DevFeatureFlags = () => {
     events_enabled: false,
     events_landing_enabled: false,
     events_center_name: 'Event Center',
+    activity_marketplace_enabled: false,
   });
   const [featureFlagsSaving, setFeatureFlagsSaving] = useState(false);
 
@@ -89,6 +90,7 @@ const DevFeatureFlags = () => {
     { id: 'inventory_enabled', name: 'Inventory Management', description: 'Show Inventory Management sidebar with stock levels, manufacturers, and order recommendations', category: 'CRM' },
     { id: 'events_enabled', name: 'Event Center & Ticketing', description: 'Enable the Event Center: events, venues, custom ticketing, attendees, and public event pages. When OFF, no event features show anywhere.', category: 'Events' },
     { id: 'events_landing_enabled', name: 'Events Landing Page', description: 'When ON, the EVENTS menu opens the custom immersive Event Center landing page (category tiles + upcoming list + coverflow slideshow). When OFF, it opens the standard site-template events list.', category: 'Events' },
+    { id: 'activity_marketplace_enabled', name: 'Activity & Charter Marketplace', description: 'Enable Tours / Charters: activity categories, charter-company (seller) tenants, and activity listings, plus the public ACTIVITIES nav and directory pages. When OFF, everything for this module is hidden in admin and on the storefront.', category: 'Tours & Charters' },
   ];
 
   useEffect(() => {

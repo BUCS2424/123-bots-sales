@@ -1,0 +1,105 @@
+import React, { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Sparkles, Loader2, ArrowLeft, Building2, Clock, Tag, ExternalLink } from 'lucide-react';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
+import { setSeoMetadata } from '../../lib/seo';
+import { useActivityMarketplaceGate, API } from './activityMarketplaceShared';
+import axios from 'axios';
+
+const ActivityDetailPage = () => {
+  const ready = useActivityMarketplaceGate();
+  const { slug } = useParams();
+  const [activity, setActivity] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    if (!ready) return;
+    axios.get(`${API}/api/public/tours-charters/activities/${slug}`)
+      .then((r) => {
+        setActivity(r.data);
+        setSeoMetadata({ title: `${r.data.name} | 123Bots`, description: r.data.description?.slice(0, 160) || 'Book this activity.' });
+      })
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false));
+  }, [ready, slug]);
+
+  if (!ready) return <div className="min-h-screen bg-[#061a1f]"><Header /></div>;
+
+  return (
+    <div className="min-h-screen bg-[#061a1f]" data-testid="activity-detail-page">
+      <Header />
+      <section className="pt-32 pb-24">
+        <div className="mx-auto max-w-4xl px-6">
+          <Link to="/activities" className="inline-flex items-center gap-1.5 text-sm font-semibold text-teal-300 hover:text-teal-200" data-testid="activity-detail-back-link">
+            <ArrowLeft className="h-4 w-4" /> All Activities
+          </Link>
+
+          {loading ? (
+            <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-teal-400" /></div>
+          ) : notFound || !activity ? (
+            <div className="mt-8 rounded-2xl border border-dashed border-white/10 bg-[#0b1f24] py-20 text-center text-slate-400" data-testid="activity-detail-not-found">
+              Activity not found.
+            </div>
+          ) : (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
+              <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0b1f24]">
+                <div className="relative h-72 bg-gradient-to-br from-teal-900/40 to-cyan-900/30">
+                  {activity.images?.[0] ? <img src={activity.images[0]} alt={activity.name} className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-white/20"><Sparkles className="h-16 w-16" /></div>}
+                </div>
+                <div className="p-8">
+                  <h1 className="text-3xl font-black text-white">{activity.name}</h1>
+                  {activity.seller && (
+                    <Link to={`/activities/company/${activity.seller.slug}`} className="mt-2 inline-flex items-center gap-1.5 text-sm text-teal-300 hover:text-teal-200" data-testid="activity-detail-seller-link">
+                      <Building2 className="h-4 w-4" /> {activity.seller.name}
+                    </Link>
+                  )}
+
+                  {activity.categories?.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {activity.categories.map((c) => (
+                        <span key={c.id} className="rounded-full bg-teal-500/15 px-2.5 py-1 text-xs text-teal-300">{c.name}</span>
+                      ))}
+                    </div>
+                  )}
+
+                  {activity.description && <p className="mt-5 text-slate-300 whitespace-pre-line">{activity.description}</p>}
+
+                  <div className="mt-6 flex flex-wrap items-center gap-5 text-sm text-slate-400">
+                    {activity.price_display && <span className="flex items-center gap-1.5"><Tag className="h-4 w-4 text-teal-400" /> {activity.price_display}</span>}
+                    {activity.duration && <span className="flex items-center gap-1.5"><Clock className="h-4 w-4 text-teal-400" /> {activity.duration}</span>}
+                  </div>
+
+                  {activity.tags?.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-1.5">
+                      {activity.tags.map((t) => (
+                        <span key={t} className="rounded-full border border-white/10 px-2.5 py-1 text-xs text-white/50">#{t}</span>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="mt-8">
+                    {activity.booking_type === 'external_link' && activity.booking_url ? (
+                      <a href={activity.booking_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 px-6 py-3 text-sm font-bold text-white transition hover:opacity-90" data-testid="activity-book-now-button">
+                        Book Now <ExternalLink className="h-4 w-4" />
+                      </a>
+                    ) : (
+                      <span className="inline-flex items-center gap-2 rounded-xl border border-dashed border-white/20 px-6 py-3 text-sm font-semibold text-white/40" data-testid="activity-booking-coming-soon">
+                        In-App Booking Coming Soon
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </div>
+      </section>
+      <Footer />
+    </div>
+  );
+};
+
+export default ActivityDetailPage;

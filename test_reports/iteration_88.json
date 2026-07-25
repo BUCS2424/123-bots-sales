@@ -1,0 +1,36 @@
+{
+  "summary": "Tested new 'Activity & Charter Marketplace' (Tours / Charters) module end-to-end. Backend: 21/21 pytest tests passing (feature flag get/put/public, categories/sellers/activities CRUD, dashboard stats, auth guards, public directory/list/detail endpoints, inactive-record filtering). Frontend (Playwright): verified the CRITICAL feature-flag show/hide requirement (toggling OFF hid admin sidebar item, hid public ACTIVITIES nav dropdown, and redirected all 5 public /activities* URLs to '/' and all 3 admin /admin/tours-charters* URLs to /admin/cart; toggling back ON restored all of it), admin Dashboard (6 stat cards with correct live counts 1/1/1/1/0/$0.00), Categories CRUD (create/edit/delete + list refresh), Activities CRUD (create with inline '+ New Company' quick-add seller modal, category toggle chips, tag add via Enter, multi-field form, booking-type toggle external<->native show/hide of URL field, edit, delete), and the full public flow Directory -> Category List -> Activity Detail -> Book Now (opens FareHarbor URL in new tab with target=_blank). Header ACTIVITIES dropdown with ALL ACTIVITIES / BY CHARTER COMPANY links also verified. Left flag ON and restored seed data (1 category, 1 seller, 1 activity) exactly as provided at end of test run.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_tours_charters_marketplace.py",
+    "/app/test_reports/pytest/tours_charters_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "activity_marketplace.py: consistent, well-scoped module following existing conventions (uuid ids, slugify with unique-slug retry loop, dict storage, decode_token/is_admin_or_above admin guard). No _id leakage anywhere - all queries project {'_id': 0}.",
+    "delete_category correctly $pull's the category_id from all activities.category_ids before deleting (verified via test) - good referential-integrity handling for a non-relational store.",
+    "delete_seller correctly blocks deletion (400) when activities still reference the seller - verified.",
+    "Public endpoints (/api/public/tours-charters/*) require no auth and only expose is_active:true records, correctly excluding soft-deleted/inactive rows - verified via test.",
+    "Frontend gate (activityMarketplaceShared.js useActivityMarketplaceGate) redirects home on flag-off for all 4 public page components consistently - good DRY pattern shared across Directory/ByCompany/List/Detail pages.",
+    "AdminLayout.jsx gates all 3 tours-charters routes with a single early-return Navigate to /admin/cart, and hides the sidebar accordion via a spread-conditional - clean implementation matching the Events module pattern the user referenced.",
+    "Minor note (not a bug, just an observation for main agent): the review_request's suggested Dev Feature Flags URL wasn't explicitly given, but the actual route is '/dev/settings/features' (not under /admin) - worth noting for future testing agents to avoid navigation confusion."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_tours_charters_marketplace.py"
+  ],
+  "success_rate": {"backend": "100% (21/21)", "frontend": "100% (all specified flows verified)"},
+  "test_credentials": "Admin mel@a2gdesigns.com / BigDaddy2016!! (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "Created and fully cleaned up TEST_ prefixed categories/sellers/activities via both API (pytest) and UI (Playwright) during testing. Final DB state restored exactly to the original seed data: 1 category 'Boat Charters' (boat-charters), 1 seller 'Blue Dream Charters' (blue-dream-charters, commission_rate 10), 1 activity 'Sunset Sail' (sunset-sail). activity_marketplace_enabled flag confirmed ON at end of test run.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Module fully verified both backend and frontend, no bugs found. Feature flag admin UI lives at /dev/settings/features (NOT /admin/dev/feature-flags), and the admin PUT/GET for feature flags is at /api/admin-settings/feature-flags (auth required) while the public read-only mirror is at /api/settings/feature-flags (no auth, subset of fields) - the admin_settings.py router/public_router prefixes are reversed from what their variable names suggest ('router' = /api/admin-settings, 'public_router' = /api/settings), which tripped up my first test pass; documenting here so it doesn't trip up the next agent. Per the problem statement's explicit instructions, did not flag the deferred Seller Tenants/Subcategories/Tags/Billing/Analytics admin pages, hardcoded 0/$0.00 dashboard placeholders, or non-functional native_checkout 'Coming Soon' badge as bugs - all intentional per user's phased wireframe-first approach.",
+  "rca_of_the_issue": "No bugs found. All CRITICAL requirements (feature-flag-driven complete show/hide of admin sidebar + public nav + direct URL redirects in both ON and OFF states) matched the implementation exactly, as did all 3 admin CRUD flows and the full public directory->list->detail->Book Now navigation flow."
+}

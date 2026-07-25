@@ -72,6 +72,10 @@ import EventCategoryPage from './pages/EventCategoryPage';
 import EventDetailPage from './pages/EventDetailPage';
 import EventConfirmationPage from './pages/EventConfirmationPage';
 import TicketViewPage from './pages/TicketViewPage';
+import ActivitiesDirectoryPage from './pages/activities/ActivitiesDirectoryPage';
+import ActivitiesByCompanyPage from './pages/activities/ActivitiesByCompanyPage';
+import ActivityListPage from './pages/activities/ActivityListPage';
+import ActivityDetailPage from './pages/activities/ActivityDetailPage';
 
 // Age Verification
 import AgeVerificationModal from './components/AgeVerificationModal';
@@ -274,6 +278,11 @@ const AppContent = () => {
                   <Route path="/events/confirmation" element={<EventConfirmationPage />} />
                   <Route path="/events/ticket/:code" element={<TicketViewPage />} />
                   <Route path="/events/:slug" element={<EventDetailPage />} />
+                  <Route path="/activities" element={<ActivitiesDirectoryPage />} />
+                  <Route path="/activities/companies" element={<ActivitiesByCompanyPage />} />
+                  <Route path="/activities/category/:slug" element={<ActivityListPage mode="category" />} />
+                  <Route path="/activities/company/:slug" element={<ActivityListPage mode="company" />} />
+                  <Route path="/activities/view/:slug" element={<ActivityDetailPage />} />
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/booking/:bookingSlug" element={<PublicBookingPage />} />
                     <Route path="/book/:bookingSlug" element={<PublicBookingPage />} />

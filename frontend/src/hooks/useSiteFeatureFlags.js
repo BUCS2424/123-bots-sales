@@ -24,6 +24,7 @@ export const useSiteFeatureFlags = () => {
     events_enabled: false,
     events_landing_enabled: false,
     events_center_name: 'Event Center',
+    activity_marketplace_enabled: false,
   });
 
   useEffect(() => {
@@ -71,6 +72,7 @@ export const useSiteFeatureFlags = () => {
           events_enabled: Boolean(featureData.events_enabled),
           events_landing_enabled: Boolean(featureData.events_landing_enabled),
           events_center_name: featureData.events_center_name || 'Event Center',
+          activity_marketplace_enabled: Boolean(featureData.activity_marketplace_enabled),
         });
       } catch (error) {
         // On error, fail OPEN (never lock the site behind the gate) but mark loaded.

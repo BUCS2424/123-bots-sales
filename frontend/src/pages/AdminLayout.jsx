@@ -7,7 +7,7 @@ import {
   Bell, Search, DollarSign, ShoppingBag, Gift, FolderTree, Layers, Cloud, User, Sliders, Code,
   Store, Truck, CreditCard, CheckCircle, LayoutGrid, Clock, FileText, UserPlus, Briefcase,
   Calendar, CalendarOff, Wrench, Shield, BookOpen, PiggyBank, Star, Megaphone, Mail, Zap, MessageCircle, Building2, Box, Globe, Radio as RadioIcon, Key,
-  Ticket, MapPin, CalendarDays, Plus, FileSignature
+  Ticket, MapPin, CalendarDays, Plus, FileSignature, Compass, Sparkles
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -105,6 +105,11 @@ import EventAttendees from './admin/events/EventAttendees';
 import EventTicketsSales from './admin/events/EventTicketsSales';
 import EventRevenue from './admin/events/EventRevenue';
 
+// Tours / Charters (Activity & Charter Marketplace)
+import ToursChartersDashboard from './admin/tours-charters/ToursChartersDashboard';
+import ActivityCategories from './admin/tours-charters/ActivityCategories';
+import Activities from './admin/tours-charters/Activities';
+
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
@@ -131,6 +136,7 @@ const AdminLayout = () => {
     inventory_enabled: false,
     events_enabled: false,
     events_center_name: 'Event Center',
+    activity_marketplace_enabled: false,
   });
 
   // Fetch business settings for Analytics URL
@@ -156,6 +162,7 @@ const AdminLayout = () => {
           inventory_enabled: Boolean(featureFlagsRes?.data?.inventory_enabled),
           events_enabled: Boolean(featureFlagsRes?.data?.events_enabled),
           events_center_name: featureFlagsRes?.data?.events_center_name || 'Event Center',
+          activity_marketplace_enabled: Boolean(featureFlagsRes?.data?.activity_marketplace_enabled),
         });
       } catch (error) {
         console.error('Error fetching settings:', error);
@@ -315,6 +322,17 @@ const AdminLayout = () => {
         { path: '/admin/events/new', label: 'Create An Event', icon: Plus },
         { path: '/admin/events/venues', label: 'Venues / Locations', icon: MapPin },
         { path: '/admin/events/revenue', label: 'Revenues & Reports', icon: BarChart3 },
+      ],
+    }] : []),
+    ...(featureFlags.activity_marketplace_enabled ? [{
+      id: 'tours-charters',
+      type: 'accordion',
+      label: 'Tours / Charters',
+      icon: Compass,
+      children: [
+        { path: '/admin/tours-charters', label: 'Dashboard', icon: LayoutDashboard },
+        { path: '/admin/tours-charters/categories', label: 'Categories', icon: Tag },
+        { path: '/admin/tours-charters/activities', label: 'Activities', icon: Sparkles },
       ],
     }] : []),
     {
@@ -707,6 +725,20 @@ const AdminLayout = () => {
         return <EventEditor key={eventId} eventId={eventId} />;
       }
       return <EventDashboard />;
+    }
+    // Tours / Charters (Activity & Charter Marketplace) routes
+    if (path.startsWith('/admin/tours-charters')) {
+      if (!featureFlagsLoaded) {
+        return (
+          <div className="flex items-center justify-center min-h-[300px]" data-testid="tours-charters-feature-flags-loading">
+            <div className="animate-spin w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full"></div>
+          </div>
+        );
+      }
+      if (!featureFlags.activity_marketplace_enabled) return <Navigate to="/admin/cart" replace />;
+      if (path === '/admin/tours-charters/categories') return <ActivityCategories />;
+      if (path === '/admin/tours-charters/activities') return <Activities />;
+      return <ToursChartersDashboard />;
     }
     if (path === '/admin/user-management/customers') return <AdminCustomers />;
     if (path.match(/^\/admin\/user-management\/customers\/[^/]+$/)) {

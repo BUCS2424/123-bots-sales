@@ -13,7 +13,7 @@ const Header = () => {
   const location = useLocation();
   const { cartItems, setIsCartOpen } = useCart();
   const { logoUrl } = useSiteSettings();
-  const { cart_enabled, pawn_checkout, events_enabled } = useSiteFeatureFlags();
+  const { cart_enabled, pawn_checkout, events_enabled, activity_marketplace_enabled } = useSiteFeatureFlags();
 
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -46,6 +46,13 @@ const Header = () => {
     },
     ...(cart_enabled ? [{ label: 'PARTS', href: '/shop/products?category=parts' }] : []),
     ...(events_enabled ? [{ label: 'EVENTS', href: '/events' }] : []),
+    ...(activity_marketplace_enabled ? [{
+      label: 'ACTIVITIES',
+      items: [
+        { label: 'ALL ACTIVITIES', href: '/activities' },
+        { label: 'BY CHARTER COMPANY', href: '/activities/companies' },
+      ],
+    }] : []),
     { label: 'SUPPORT', href: '/contact' },
     {
       label: 'PRODUCTS',
