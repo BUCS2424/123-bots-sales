@@ -472,8 +472,35 @@ Gated entirely by new `events_enabled` feature flag (Dev Settings → Feature Fl
 - [x] Verified by testing_agent (iteration_87.json): backend 44/44 (9 new + 35 regression), frontend 100% — hidden-when-blank, positioned-after-tax, admin-entry/customer-visible, calculator+override, per-order recalculation, and sync idempotency all confirmed working.
 - Minor/non-blocking (pre-existing, unrelated): a demo store product line item shows $0.00 price when added via Browse Catalog; `QuoteSigningPage` header shows "For undefined undefined" for leads missing first_name/last_name (should fall back to primary_contact_name/company_name).
 
+## Activity & Charter Marketplace ("Tours / Charters") Module (July 25, 2026)
+Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory, built to later be cloned into another client's codebase. Gates admin sidebar ("Tours / Charters") and public nav ("ACTIVITIES") entirely.
+
+### Completed (through iteration 90 - base module)
+- [x] Admin: Dashboard (stat cards), Categories CRUD, Activities CRUD with fields: title, alias (auto-slug), tags, status (published/unpublished), priority, multiple category_ids, featured toggle, images, description, price_display, duration, booking_type (external_link/native_checkout) + booking_provider (generic/fareharbor)
+- [x] Seller tenants (charter companies): quick-add from Activities editor; backend CRUD (`activity_marketplace.py`)
+- [x] Public: All Activities directory (`/activities`), By Charter Company directory (`/activities/company/:slug`), activity list, activity detail (`/activities/view/:alias`)
+- [x] All module modals are right-side slide-out Sheets (never centered) — categories, activities, quick-add seller, FareHarbor booking drawer
+- [x] Activity block/list views with client-side filter by charter company, title search, categories
+- [x] FareHarbor Lightframe booking (iframe drawer) for `booking_provider=fareharbor`; generic external booking URL otherwise
+
+### Completed (July 25, 2026 - this session)
+- [x] **Activity editor accordion + SEO section** (`Activities.jsx`): Activity Sheet reorganized into two accordions — "Activity Information" (all existing fields) and "SEO" (Page Title w/ 70-char counter, Meta Description w/ 160-char counter, read-only URL Handle preview, "Search Engine Indexing" robots dropdown: Index/Follow, Index/NoFollow, NoIndex/Follow, NoIndex/NoFollow, and a live Google-style SERP preview box)
+- [x] Backend `seo_title`/`seo_description`/`seo_robots` fields on Activity model, persisted via create/update
+- [x] Public `ActivityDetailPage.jsx` applies SEO via `setSeoMetadata` (title/description/robots meta tag) sourced from activity's SEO fields, with fallback to title/description
+- [x] FareHarbor Lightframe script (`fareharbor.com/embeds/api/v1/?autolightframe=yes`) injected via shared `useActivityMarketplaceGate` hook (`activityMarketplaceShared.js`), used by all 4 public activity pages (directory, by-company, list, detail) — confirmed present on every page
+- [x] **NEW: Charter Companies admin page** (`CharterCompanies.jsx`) — dedicated seller-tenant management page (previously only a quick-add existed): block/list view toggle, search by name, status filter (All/Active/Inactive), right-side Sheet editor with full field set (name, active/inactive, logo upload, description, contact email/phone, website, commission rate %, FareHarbor shortname); delete blocked with descriptive error when activities are still linked to the seller
+- [x] **NEW: "Fare Harbor" sidebar link** — added under Tours / Charters accordion (order: Dashboard, Categories, Activities, Charter Companies, Fare Harbor), external link opening `https://partner.fareharbor.com/login` in a new tab (reuses existing `child.external` sidebar pattern)
+- [x] Verified by testing_agent (iteration_91.json): backend 38/38 (7 new SEO/charter-company tests + 31 regression), frontend 100% — accordion/SEO persistence end-to-end (admin form → DB → public meta tags), Charter Companies full CRUD + filters, Fare Harbor new-tab link, no regressions
+
+### Blocked / Deferred
+- FareHarbor External API/FHDN search-import — BLOCKED, requires user's FareHarbor partner API credentials (`X-FareHarbor-API-App`/`X-FareHarbor-API-User`); user confirmed to leave this for now
+- Public "Featured" activity visual treatment — deferred, user will decide design later (data/badge already exists in admin)
+- Commission/booking-revenue tracking, booking ingestion, billing, analytics — future scope (Phase 2)
+- Native in-app booking via 123Bots cart/checkout — future scope
+- Charter Company slide-out "creation and information on each" (richer per-company profile/dashboard) — next planned enhancement per user
+
 ## Prioritized Next Actions
-- **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices
+- **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
   - Pre-launch: disable Coming Soon gate, populate shop catalog
   - Configure SMTP/Resend for shipping-failure + quote email delivery
