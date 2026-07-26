@@ -311,8 +311,13 @@ const GausiumMarvelPage = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-orange-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
-                <div className="aspect-video bg-gray-800/50 rounded-xl flex items-center justify-center">
-                  <span className="text-gray-400 text-center px-4">[Image: Power-Assisting Handle]</span>
+                <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
+                  <img
+                    src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/dxt5bgqt_image.png"
+                    alt="Gausium Marvel Power-Assisted Manual Cleaning Mode in Warehouse"
+                    className="w-full h-full object-cover rounded-xl"
+                    data-testid="marvel-power-assisting-image"
+                  />
                 </div>
               </div>
             </div>

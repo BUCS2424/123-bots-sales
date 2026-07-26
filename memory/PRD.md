@@ -583,6 +583,11 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - [x] User-supplied image (Gausium sweeper robot at a trade show/exhibition booth) applied next to **"Drop & Go Auto Deployment"** heading, replacing the previous generic Unsplash stock placeholder (`data-testid="marvel-drop-and-go-image"`).
 - Self-verified via screenshot.
 
+### Feature — Gausium Marvel "Power-Assisting Manual Mode" Image (July 26, 2026)
+- [x] User-supplied image (operator manually pushing Gausium robot with power-assisted handle bar in warehouse aisle, "Manual Cleaning Mode" caption) applied next to **"Power-Assisting Manual Mode"** heading, replacing `[Image: Power-Assisting Handle]` (`data-testid="marvel-power-assisting-image"`).
+- **All image/video placeholders on both Gausium Mira and Gausium Marvel pages are now complete.** No remaining `[Image: ...]` or `[Video: ...]` text placeholders on either product page.
+- Self-verified via screenshot.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
