@@ -344,8 +344,13 @@ const GausiumMarvelPage = () => {
           <div className="grid md:grid-cols-4 gap-8">
             {/* Manufacturing */}
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-slate-500/50 transition-all hover:transform hover:scale-105">
-              <div className="aspect-video bg-gradient-to-br from-blue-600/20 to-blue-800/20 flex items-center justify-center">
-                <span className="text-gray-400">[Image: Manufacturing]</span>
+              <div className="aspect-video bg-gradient-to-br from-blue-600/20 to-blue-800/20 flex items-center justify-center overflow-hidden">
+                <img
+                  src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/iu3t95tu_manufacturing.jpg"
+                  alt="Gausium Marvel Cleaning Robot in Manufacturing Facility Aisle"
+                  className="w-full h-full object-cover"
+                  data-testid="marvel-manufacturing-image"
+                />
               </div>
               <div className="p-6">
                 <h3 className="text-xl font-bold text-white mb-2">Manufacturing</h3>
@@ -393,8 +398,13 @@ const GausiumMarvelPage = () => {
 
             {/* Retail */}
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-slate-500/50 transition-all hover:transform hover:scale-105">
-              <div className="aspect-video bg-gradient-to-br from-cyan-600/20 to-cyan-800/20 flex items-center justify-center">
-                <span className="text-gray-400">[Image: Retail]</span>
+              <div className="aspect-video bg-gradient-to-br from-cyan-600/20 to-cyan-800/20 flex items-center justify-center overflow-hidden">
+                <img
+                  src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/t6l5twfi_retail.jpg"
+                  alt="Gausium Marvel Cleaning Robot in Retail Space"
+                  className="w-full h-full object-cover"
+                  data-testid="marvel-retail-image"
+                />
               </div>
               <div className="p-6">
                 <h3 className="text-xl font-bold text-white mb-2">Retail</h3>

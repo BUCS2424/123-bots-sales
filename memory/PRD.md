@@ -568,6 +568,12 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - Only **Manufacturing** and **Retail** cards remain placeholders in this row.
 - Self-verified via screenshot.
 
+### Feature — Gausium Marvel "Manufacturing" Image + Section Complete (July 26, 2026)
+- [x] User-supplied image (Gausium robot cleaning a manufacturing/warehouse aisle between blue shelving) applied to the **"Manufacturing"** card, replacing the `[Image: Manufacturing]` text placeholder (`data-testid="marvel-manufacturing-image"`).
+- [x] User-supplied image applied to the **"Retail"** card (Gausium robots cleaning a retail/trade-show floor), replacing `[Image: Retail]` (`data-testid="marvel-retail-image"`).
+- **All 4 cards in the "Built for Complex Spaces" row on `/products/gausium-marvel` are now complete**: Manufacturing, Warehouses, Car Parking, Retail — no remaining placeholders.
+- Self-verified via screenshot.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
