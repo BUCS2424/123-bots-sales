@@ -574,6 +574,11 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - **All 4 cards in the "Built for Complex Spaces" row on `/products/gausium-marvel` are now complete**: Manufacturing, Warehouses, Car Parking, Retail — no remaining placeholders.
 - Self-verified via screenshot.
 
+### Feature — Gausium Marvel "Self-Cleaning System" Video (July 26, 2026)
+- [x] Embedded user-provided YouTube video (`https://www.youtube.com/watch?v=FvFeKDbFQLw` — "Gausium Mira | Self-Cleaning System") in the video slot next to the **"Self-Cleaning System"** heading (Capability 3 on Marvel page), replacing `[Video: Self-Cleaning System]` (`data-testid="marvel-self-cleaning-video"`). Removed the now-unused `Play` icon import.
+- Note: page still has a further-down "[Image: Power-Assisting Handle]" placeholder in the "Power-Assisting Manual Mode" section — untouched, out of scope for this request.
+- Self-verified via screenshot.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**

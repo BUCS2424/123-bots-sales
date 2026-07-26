@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Download, CheckCircle, Play, Phone, Mail, ChevronDown, ChevronUp, ChevronRight, Zap, Factory } from 'lucide-react';
+import { Download, CheckCircle, Phone, Mail, ChevronDown, ChevronUp, ChevronRight, Zap, Factory } from 'lucide-react';
 import { setSeoMetadata } from '../lib/seo';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -286,9 +286,16 @@ const GausiumMarvelPage = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-purple-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
-                <div className="aspect-video bg-gray-800/50 rounded-xl flex items-center justify-center">
-                  <Play className="w-16 h-16 text-purple-400" />
-                  <span className="ml-4 text-gray-400">[Video: Self-Cleaning System]</span>
+                <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
+                  <iframe
+                    src="https://www.youtube.com/embed/FvFeKDbFQLw"
+                    title="Gausium Marvel Self-Cleaning System"
+                    className="w-full h-full rounded-xl"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    data-testid="marvel-self-cleaning-video"
+                  />
                 </div>
               </div>
             </div>
