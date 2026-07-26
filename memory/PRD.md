@@ -541,6 +541,10 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - Only remaining placeholder in this 3-card row is "Open API & IoT Integration" — awaiting a user-supplied image.
 - Self-verified via screenshot at `/products/gausium-mira` — both cards render correctly side-by-side.
 
+### Bug Fix — Gausium Mira "Gausium Leaves Integration" Image (July 26, 2026)
+- [x] User-supplied image (Gausium robot scrubber cleaning a retail warehouse aisle next to pallets of boxed produce) applied to the image slot to the left of the **"Gausium Leaves Integration"** heading (Capability 4: Eco-Friendly Operation), replacing the `[Image: Gausium Leaves System]` text placeholder (`data-testid="mira-gausium-leaves-image"`).
+- Self-verified via screenshot at `/products/gausium-mira`.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
