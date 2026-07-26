@@ -622,6 +622,10 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - [x] Replaced the previous product-shot image with a new user-provided image (PUDU robot in hotel lobby, "Self-Return & Auto-Charging" caption baked into the image) next to **"9-10 Hour Battery Life"** on `/products/flashbot-max` (`data-testid="flashbot-battery-image"`). Switched from `object-contain` back to `object-cover` since this is a full-bleed photo, not a white-background product shot.
 - Self-verified via screenshot — matches perfectly with adjacent "All-Day Operation" / "Fast Auto-Charging" cards.
 
+### Feature — FlashBot Max "VSLAM+ Indoor/Semi-Outdoor Navigation" Image (July 26, 2026)
+- [x] User-supplied image (FlashBot Max robot on a garden lawn with child playing on a rocking horse, semi-outdoor setting) applied next to **"VSLAM+ Indoor/Semi-Outdoor Navigation"** heading (Capability 1), replacing the previous generic Unsplash stock placeholder (`data-testid="flashbot-vslam-navigation-image"`).
+- Self-verified via screenshot — matches the "garden corridors, poolside areas" copy perfectly.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
