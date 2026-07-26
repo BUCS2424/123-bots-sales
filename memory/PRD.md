@@ -559,6 +559,10 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - Remaining placeholders on this page (Manufacturing, Car Parking, Retail cards in the same row) untouched — awaiting user images if desired.
 - Self-verified via screenshot.
 
+### Update — Gausium Mira "No Remapping Required" Video Swapped (July 26, 2026)
+- [x] Replaced the previously embedded video with a new user-provided YouTube video (`https://www.youtube.com/watch?v=Fc7AF430A9Y`) in the same slot next to **"No Remapping Required"** (`data-testid="mira-dynamic-navigation-video"`).
+- Self-verified via screenshot — new video thumbnail/embed renders correctly.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**

@@ -290,7 +290,7 @@ const GausiumMiraPage = () => {
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
                 <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
                   <iframe
-                    src="https://www.youtube.com/embed/VpiFJjuKO0Y"
+                    src="https://www.youtube.com/embed/Fc7AF430A9Y"
                     title="Gausium Mira Dynamic Navigation - No Remapping Required"
                     className="w-full h-full rounded-xl"
                     frameBorder="0"
