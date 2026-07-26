@@ -830,6 +830,16 @@ class FeatureFlags(BaseModel):
     events_landing_enabled: bool = False  # /events uses the custom landing page instead of the site-template list
     events_center_name: str = "Event Center"  # Configurable display name for the Event Center
     activity_marketplace_enabled: bool = False  # Show/hide Tours / Charters activity directory (admin + storefront)
+    fareharbor_api_app: str = ""  # FareHarbor partner API "X-FareHarbor-API-App" header value
+    fareharbor_api_user: str = ""  # FareHarbor partner API "X-FareHarbor-API-User" header value
+
+
+def _mask_secret(value: str) -> str:
+    if not value:
+        return ""
+    if len(value) <= 4:
+        return "••••"
+    return f"••••{value[-4:]}"
 
 
 @router.get("/feature-flags")
@@ -847,6 +857,9 @@ async def get_feature_flags(
     settings.pop("_id", None)
     settings.pop("type", None)
     settings.pop("updated_at", None)
+    for secret_field in ("fareharbor_api_app", "fareharbor_api_user"):
+        if settings.get(secret_field):
+            settings[secret_field] = _mask_secret(settings[secret_field])
     return settings
 
 
@@ -860,6 +873,10 @@ async def update_feature_flags(
     _require_admin_token(authorization)
     
     data = flags.model_dump()
+    existing = await db.admin_settings.find_one({"type": "feature_flags"}, {"_id": 0}) or {}
+    for secret_field in ("fareharbor_api_app", "fareharbor_api_user"):
+        if data.get(secret_field, "").startswith("••••"):
+            data[secret_field] = existing.get(secret_field, "")
     data["type"] = "feature_flags"
     data["updated_at"] = datetime.now(timezone.utc).isoformat()
     

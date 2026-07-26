@@ -23,6 +23,13 @@ export const toursChartersApi = {
   createActivity: (data) => axios.post(`${API}/tours-charters/activities`, data, { headers: authHeaders() }),
   updateActivity: (id, data) => axios.put(`${API}/tours-charters/activities/${id}`, data, { headers: authHeaders() }),
   deleteActivity: (id) => axios.delete(`${API}/tours-charters/activities/${id}`, { headers: authHeaders() }),
+  // invoices (charter company billing)
+  listInvoices: (sellerId) => axios.get(`${API}/tours-charters/invoices`, { headers: authHeaders(), params: sellerId ? { seller_id: sellerId } : {} }),
+  createInvoice: (data) => axios.post(`${API}/tours-charters/invoices`, data, { headers: authHeaders() }),
+  updateInvoice: (id, data) => axios.put(`${API}/tours-charters/invoices/${id}`, data, { headers: authHeaders() }),
+  deleteInvoice: (id) => axios.delete(`${API}/tours-charters/invoices/${id}`, { headers: authHeaders() }),
+  getInvoiceSettings: () => axios.get(`${API}/tours-charters/invoice-settings`, { headers: authHeaders() }),
+  updateInvoiceSettings: (data) => axios.put(`${API}/tours-charters/invoice-settings`, data, { headers: authHeaders() }),
 };
 
 export const uploadTourImage = async (file) => {

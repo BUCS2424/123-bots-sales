@@ -67,6 +67,8 @@ const DevFeatureFlags = () => {
     events_landing_enabled: false,
     events_center_name: 'Event Center',
     activity_marketplace_enabled: false,
+    fareharbor_api_app: '',
+    fareharbor_api_user: '',
   });
   const [featureFlagsSaving, setFeatureFlagsSaving] = useState(false);
 
@@ -703,6 +705,51 @@ const DevFeatureFlags = () => {
                       Save Name
                     </Button>
                   </div>
+                </div>
+              )}
+              {category === 'Tours & Charters' && (
+                <div className="flex flex-col gap-2 rounded-lg bg-teal-50 p-4" data-testid="fareharbor-api-settings-row">
+                  <p className="font-medium">FareHarbor Partner API Settings</p>
+                  <p className="text-sm text-gray-500">Store your FareHarbor partner API credentials here for when the FHDN search/import integration is built. These are saved securely and masked once set.</p>
+                  <div className="mt-1 grid gap-2 sm:grid-cols-2">
+                    <div>
+                      <Label className="text-xs text-gray-500">X-FareHarbor-API-App</Label>
+                      <Input
+                        value={featureFlags.fareharbor_api_app || ''}
+                        onChange={(e) => setFeatureFlags((p) => ({ ...p, fareharbor_api_app: e.target.value }))}
+                        placeholder="API App key"
+                        data-testid="fareharbor-api-app-input"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-gray-500">X-FareHarbor-API-User</Label>
+                      <Input
+                        value={featureFlags.fareharbor_api_user || ''}
+                        onChange={(e) => setFeatureFlags((p) => ({ ...p, fareharbor_api_user: e.target.value }))}
+                        placeholder="API User key"
+                        data-testid="fareharbor-api-user-input"
+                      />
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="mt-1 w-fit"
+                    disabled={featureFlagsSaving}
+                    onClick={async () => {
+                      setFeatureFlagsSaving(true);
+                      try {
+                        const token = localStorage.getItem('token');
+                        await axios.put(`${API}/api/admin-settings/feature-flags`, featureFlags, { headers: { Authorization: `Bearer ${token}` } });
+                        await loadFeatureFlagsFromDB();
+                        toast({ title: 'Saved', description: 'FareHarbor API settings updated' });
+                      } catch {
+                        toast({ title: 'Error', description: 'Failed to save FareHarbor API settings', variant: 'destructive' });
+                      } finally { setFeatureFlagsSaving(false); }
+                    }}
+                    data-testid="fareharbor-api-settings-save"
+                  >
+                    Save FareHarbor Settings
+                  </Button>
                 </div>
               )}
             </div>

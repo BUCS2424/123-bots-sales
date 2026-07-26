@@ -25,7 +25,8 @@ from datetime import datetime, timezone
 import uuid
 import re
 
-from auth import decode_token, is_admin_or_above
+from auth import decode_token, is_admin_or_above, get_password_hash, UserRole
+import secrets
 
 router = APIRouter(prefix="/api/tours-charters", tags=["Activity Marketplace"])
 public_router = APIRouter(prefix="/api/public/tours-charters", tags=["Activity Marketplace Public"])
@@ -104,8 +105,15 @@ class SellerCreate(BaseModel):
     contact_email: str = ""
     contact_phone: str = ""
     website: str = ""
-    commission_rate: float = 0.0  # % commission owed to the platform on this seller's bookings
+    commission_rate: float = 0.0  # kept for future use, not used by invoicing (billing amounts are entered manually per invoice)
     fareharbor_shortname: str = ""  # default FareHarbor company handle for this seller's activities
+    billing_address: str = ""
+    billing_city: str = ""
+    billing_state: str = ""
+    billing_zip: str = ""
+    tax_id: str = ""  # Tax ID / EIN, shown on invoices
+    invoice_email: str = ""  # billing contact email; falls back to contact_email if blank
+    payment_terms: str = "Net 30"  # e.g. Net 15, Net 30, Due on Receipt
 
 
 class SellerUpdate(BaseModel):
@@ -118,6 +126,13 @@ class SellerUpdate(BaseModel):
     commission_rate: Optional[float] = None
     fareharbor_shortname: Optional[str] = None
     is_active: Optional[bool] = None
+    billing_address: Optional[str] = None
+    billing_city: Optional[str] = None
+    billing_state: Optional[str] = None
+    billing_zip: Optional[str] = None
+    tax_id: Optional[str] = None
+    invoice_email: Optional[str] = None
+    payment_terms: Optional[str] = None
 
 
 class ActivityCreate(BaseModel):
@@ -218,6 +233,62 @@ async def delete_category(category_id: str, authorization: Optional[str] = Heade
     return {"success": True}
 
 
+async def _sync_seller_customer(db, seller: dict) -> Optional[str]:
+    """Create or update a linked Customer/User record for this charter company so it appears
+    in User Management > Customers for billing purposes. One-way sync (seller -> customer).
+    Returns the customer_id (=user id), or the existing customer_id/None if there's no email to sync."""
+    email = (seller.get("invoice_email") or seller.get("contact_email") or "").strip().lower()
+    if not email:
+        return seller.get("customer_id")
+
+    now_iso = _now_iso()
+    existing_customer_id = seller.get("customer_id")
+
+    customer_fields = {
+        "name": seller.get("name", ""),
+        "email": email,
+        "phone": seller.get("contact_phone", ""),
+        "address": seller.get("billing_address", ""),
+        "city": seller.get("billing_city", ""),
+        "state": seller.get("billing_state", ""),
+        "zip_code": seller.get("billing_zip", ""),
+        "customer_type": "charter_company",
+        "seller_id": seller.get("id"),
+    }
+
+    if existing_customer_id:
+        await db.users.update_one({"id": existing_customer_id}, {"$set": {**customer_fields, "updated_at": now_iso}})
+        await db.customers.update_one({"id": existing_customer_id}, {"$set": {**customer_fields, "updated_at": now_iso}})
+        return existing_customer_id
+
+    # No linked customer yet - only create one if this email isn't already used by a different account
+    if await db.users.find_one({"email": email}, {"_id": 0, "id": 1}):
+        return None
+
+    user_id = str(uuid.uuid4())
+    await db.users.insert_one({
+        "id": user_id,
+        "hashed_password": get_password_hash(secrets.token_urlsafe(16)),
+        "role": UserRole.USER,
+        "is_active": True,
+        "email_verified": True,
+        "total_orders": 0,
+        "total_spent": 0.0,
+        "created_at": now_iso,
+        "updated_at": now_iso,
+        **customer_fields,
+    })
+    await db.customers.insert_one({
+        "id": user_id,
+        "total_orders": 0,
+        "total_spent": 0.0,
+        "created_at": now_iso,
+        "last_order_at": None,
+        **customer_fields,
+    })
+    return user_id
+
+
 # =============== SELLER TENANTS (CHARTER COMPANIES) ===============
 
 @router.get("/sellers")
@@ -236,6 +307,7 @@ async def create_seller(payload: SellerCreate, authorization: Optional[str] = He
     doc["is_active"] = True
     doc["created_at"] = _now_iso()
     doc["updated_at"] = doc["created_at"]
+    doc["customer_id"] = await _sync_seller_customer(db, doc)
     await db.activity_sellers.insert_one(doc)
     doc.pop("_id", None)
     return doc
@@ -247,10 +319,15 @@ async def update_seller(seller_id: str, payload: SellerUpdate, authorization: Op
     updates = {k: v for k, v in payload.model_dump().items() if v is not None}
     if not updates:
         raise HTTPException(status_code=400, detail="No fields to update")
-    updates["updated_at"] = _now_iso()
-    result = await db.activity_sellers.update_one({"id": seller_id}, {"$set": updates})
-    if result.matched_count == 0:
+    existing = await db.activity_sellers.find_one({"id": seller_id}, {"_id": 0})
+    if not existing:
         raise HTTPException(status_code=404, detail="Seller not found")
+    updates["updated_at"] = _now_iso()
+    merged = {**existing, **updates}
+    customer_id = await _sync_seller_customer(db, merged)
+    if customer_id:
+        updates["customer_id"] = customer_id
+    await db.activity_sellers.update_one({"id": seller_id}, {"$set": updates})
     return await db.activity_sellers.find_one({"id": seller_id}, {"_id": 0})
 
 

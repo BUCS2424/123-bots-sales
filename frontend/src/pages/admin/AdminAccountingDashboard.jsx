@@ -6,7 +6,7 @@ import {
   Calendar, Download, Printer, RefreshCw, Filter, ChevronDown,
   ArrowUpRight, ArrowDownRight, Wallet, CreditCard, PiggyBank,
   BarChart3, PieChart, FileText, Clock, Truck, XCircle, AlertTriangle,
-  Pencil, Check, X, Save
+  Pencil, Check, X, Save, Anchor
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../components/ui/card';
@@ -44,6 +44,7 @@ const AdminAccountingDashboard = () => {
   const [dailyData, setDailyData] = useState([]);
   const [productsData, setProductsData] = useState([]);
   const [ordersBreakdown, setOrdersBreakdown] = useState(null);
+  const [toursChartersIncome, setToursChartersIncome] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   
@@ -136,17 +137,19 @@ const AdminAccountingDashboard = () => {
         params.period = '30'; // Fallback
       }
       
-      const [statsRes, dailyRes, productsRes, ordersRes] = await Promise.all([
+      const [statsRes, dailyRes, productsRes, ordersRes, toursChartersRes] = await Promise.all([
         axios.get(`${API}/dashboard/stats`, { params }),
         axios.get(`${API}/dashboard/daily`, { params }),
         axios.get(`${API}/dashboard/products`, { params: { ...params, limit: 10 } }),
         axios.get(`${API}/dashboard/orders-breakdown`, { params }),
+        axios.get(`${API}/dashboard/tours-charters-income`, { params }),
       ]);
       
       setStats(statsRes.data);
       setDailyData(dailyRes.data);
       setProductsData(productsRes.data);
       setOrdersBreakdown(ordersRes.data);
+      setToursChartersIncome(toursChartersRes.data);
     } catch (error) {
       console.error('Failed to fetch accounting data:', error);
       toast({
@@ -540,6 +543,37 @@ const AdminAccountingDashboard = () => {
             <div>
               <p className="text-xs text-gray-500">Profit</p>
               <p className="text-xl font-bold text-green-600">{formatCurrency(stats?.profit?.gross)}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Tours & Charters Income */}
+      <Card className="bg-gradient-to-br from-teal-50 to-white border-teal-100" data-testid="tours-charters-income-card">
+        <CardContent className="py-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-teal-100 flex items-center justify-center">
+                <Anchor className="w-6 h-6 text-teal-600" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-teal-700">Tours &amp; Charters Income</p>
+                <p className="text-xs text-gray-500">{toursChartersIncome?.invoice_count || 0} invoice(s) this period</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-6 text-center">
+              <div>
+                <p className="text-xs text-gray-500">Invoiced</p>
+                <p className="text-lg font-bold text-gray-900" data-testid="tours-charters-income-invoiced">{formatCurrency(toursChartersIncome?.total_invoiced)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500">Paid</p>
+                <p className="text-lg font-bold text-green-600" data-testid="tours-charters-income-paid">{formatCurrency(toursChartersIncome?.total_paid)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500">Unpaid</p>
+                <p className="text-lg font-bold text-amber-600" data-testid="tours-charters-income-unpaid">{formatCurrency(toursChartersIncome?.total_unpaid)}</p>
+              </div>
             </div>
           </div>
         </CardContent>

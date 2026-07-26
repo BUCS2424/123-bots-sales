@@ -1321,6 +1321,16 @@ set_activity_marketplace_db(db)
 app.include_router(activity_marketplace_router)
 app.include_router(activity_marketplace_public_router)
 
+# Include Tours / Charters Billing (charter company invoices + Stripe Pay Now)
+from tours_charters_billing import (
+    router as tours_charters_billing_router,
+    public_router as tours_charters_billing_public_router,
+    set_database as set_tours_charters_billing_db,
+)
+set_tours_charters_billing_db(db)
+app.include_router(tours_charters_billing_router)
+app.include_router(tours_charters_billing_public_router)
+
 
 # Include location generator routers
 from location_generator import (

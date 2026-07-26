@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Plus, Trash2, Pencil, Building2, Loader2, X, Upload, Search, LayoutGrid, List as ListIcon, Mail, Phone, Globe2, Percent, Anchor, CheckCircle2, XCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Plus, Trash2, Pencil, Building2, Loader2, X, Upload, Search, LayoutGrid, List as ListIcon, Mail, Phone, Globe2, Percent, Anchor, CheckCircle2, XCircle, BadgeCheck, Receipt, MapPin, FileText } from 'lucide-react';
 import { toursChartersApi, uploadTourImage } from './toursChartersApi';
 import { toast } from '../../../hooks/use-toast';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../../../components/ui/sheet';
@@ -8,6 +9,8 @@ const inputCls = 'w-full rounded-lg border border-white/10 bg-[#061a1f] px-3 py-
 const emptySeller = {
   name: '', description: '', logo_url: '', contact_email: '', contact_phone: '', website: '',
   commission_rate: 0, fareharbor_shortname: '', is_active: true,
+  billing_address: '', billing_city: '', billing_state: '', billing_zip: '',
+  tax_id: '', invoice_email: '', payment_terms: 'Net 30',
 };
 
 const CharterCompanies = () => {
@@ -136,6 +139,7 @@ const CharterCompanies = () => {
                   {s.is_active ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />} {s.is_active ? 'Active' : 'Inactive'}
                 </span>
                 <div className="flex flex-shrink-0 gap-1">
+                  <Link to={`/admin/tours-charters/invoices?seller_id=${s.id}`} className="rounded-lg p-1.5 text-teal-300 hover:bg-teal-500/10" data-testid={`charter-company-invoice-${s.id}`} title="Create invoice"><Receipt className="h-3.5 w-3.5" /></Link>
                   <button onClick={() => setModal({ ...emptySeller, ...s })} className="rounded-lg p-1.5 text-white/60 hover:bg-white/10" data-testid={`charter-company-edit-${s.id}`}><Pencil className="h-3.5 w-3.5" /></button>
                   <button onClick={() => del(s.id, s.name)} className="rounded-lg p-1.5 text-red-300 hover:bg-red-500/10" data-testid={`charter-company-delete-${s.id}`}><Trash2 className="h-3.5 w-3.5" /></button>
                 </div>
@@ -159,6 +163,7 @@ const CharterCompanies = () => {
                       {s.contact_email && <p className="flex items-center gap-1 truncate text-xs text-white/40"><Mail className="h-3 w-3" /> {s.contact_email}</p>}
                     </div>
                     <div className="flex flex-shrink-0 gap-1">
+                      <Link to={`/admin/tours-charters/invoices?seller_id=${s.id}`} className="rounded-lg p-1.5 text-teal-300 hover:bg-teal-500/10" data-testid={`charter-company-invoice-${s.id}`} title="Create invoice"><Receipt className="h-3.5 w-3.5" /></Link>
                       <button onClick={() => setModal({ ...emptySeller, ...s })} className="rounded-lg p-1.5 text-white/60 hover:bg-white/10" data-testid={`charter-company-edit-${s.id}`}><Pencil className="h-3.5 w-3.5" /></button>
                       <button onClick={() => del(s.id, s.name)} className="rounded-lg p-1.5 text-red-300 hover:bg-red-500/10" data-testid={`charter-company-delete-${s.id}`}><Trash2 className="h-3.5 w-3.5" /></button>
                     </div>
@@ -169,6 +174,9 @@ const CharterCompanies = () => {
                   </div>
                   {s.fareharbor_shortname && (
                     <div className="mt-2 flex items-center gap-1 text-xs text-teal-300"><Anchor className="h-3 w-3" /> FareHarbor: {s.fareharbor_shortname}</div>
+                  )}
+                  {s.customer_id && (
+                    <div className="mt-2 flex items-center gap-1 text-xs text-sky-300" data-testid={`charter-company-synced-${s.id}`}><BadgeCheck className="h-3 w-3" /> Synced to Customers</div>
                   )}
                 </div>
               </div>
@@ -181,6 +189,9 @@ const CharterCompanies = () => {
           <SheetContent side="right" className="w-full sm:max-w-xl bg-[#0b1f24] border-white/10 text-white overflow-y-auto" data-testid="charter-company-modal">
             <SheetHeader>
               <SheetTitle className="flex items-center gap-2 text-white"><Building2 className="h-5 w-5 text-teal-300" /> {modal.id ? 'Edit' : 'New'} Charter Company</SheetTitle>
+              {modal.customer_id && (
+                <p className="flex items-center gap-1.5 text-xs text-sky-300" data-testid="charter-company-sync-status"><BadgeCheck className="h-3.5 w-3.5" /> Synced to Customers (User Management)</p>
+              )}
             </SheetHeader>
             <div className="mt-4 space-y-3">
               <div>
@@ -249,6 +260,40 @@ const CharterCompanies = () => {
                 <div>
                   <label className="mb-1.5 flex items-center gap-1 text-xs font-medium text-white/60"><Anchor className="h-3 w-3" /> FareHarbor Shortname</label>
                   <input className={inputCls} placeholder="e.g. blue-water" value={modal.fareharbor_shortname} onChange={(e) => setModal({ ...modal, fareharbor_shortname: e.target.value })} data-testid="charter-company-fareharbor-input" />
+                </div>
+              </div>
+
+              <div className="border-t border-white/10 pt-3">
+                <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-white/50"><FileText className="h-3.5 w-3.5" /> Billing &amp; Invoicing</p>
+                <div className="space-y-3">
+                  <div>
+                    <label className="mb-1.5 flex items-center gap-1 text-xs font-medium text-white/60"><MapPin className="h-3 w-3" /> Billing Address</label>
+                    <input className={inputCls} placeholder="123 Bay St" value={modal.billing_address} onChange={(e) => setModal({ ...modal, billing_address: e.target.value })} data-testid="charter-company-billing-address-input" />
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <input className={inputCls} placeholder="City" value={modal.billing_city} onChange={(e) => setModal({ ...modal, billing_city: e.target.value })} data-testid="charter-company-billing-city-input" />
+                    <input className={inputCls} placeholder="State" value={modal.billing_state} onChange={(e) => setModal({ ...modal, billing_state: e.target.value })} data-testid="charter-company-billing-state-input" />
+                    <input className={inputCls} placeholder="ZIP" value={modal.billing_zip} onChange={(e) => setModal({ ...modal, billing_zip: e.target.value })} data-testid="charter-company-billing-zip-input" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="mb-1.5 block text-xs font-medium text-white/60">Tax ID / EIN</label>
+                      <input className={inputCls} placeholder="98-1234567" value={modal.tax_id} onChange={(e) => setModal({ ...modal, tax_id: e.target.value })} data-testid="charter-company-tax-id-input" />
+                    </div>
+                    <div>
+                      <label className="mb-1.5 block text-xs font-medium text-white/60">Payment Terms</label>
+                      <select className={inputCls} value={modal.payment_terms} onChange={(e) => setModal({ ...modal, payment_terms: e.target.value })} data-testid="charter-company-payment-terms-select">
+                        <option value="Due on Receipt">Due on Receipt</option>
+                        <option value="Net 15">Net 15</option>
+                        <option value="Net 30">Net 30</option>
+                        <option value="Net 60">Net 60</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="mb-1.5 flex items-center gap-1 text-xs font-medium text-white/60"><Mail className="h-3 w-3" /> Invoice Email (defaults to Contact Email)</label>
+                    <input className={inputCls} type="email" placeholder="billing@charter.com" value={modal.invoice_email} onChange={(e) => setModal({ ...modal, invoice_email: e.target.value })} data-testid="charter-company-invoice-email-input" />
+                  </div>
                 </div>
               </div>
 

@@ -981,6 +981,39 @@ async def get_dashboard_orders_breakdown(
     }
 
 
+@router.get("/dashboard/tours-charters-income")
+async def get_dashboard_tours_charters_income(
+    period: str = "30",
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None
+):
+    """Tours & Charters invoiced/paid income for the accounting dashboard"""
+    if start_date and end_date:
+        start = datetime.strptime(start_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+        end = datetime.strptime(end_date, "%Y-%m-%d").replace(tzinfo=timezone.utc) + timedelta(days=1)
+    else:
+        days = _parse_period_to_days(period)
+        end = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+        start = end - timedelta(days=days)
+
+    invoices = await db.tours_charters_invoices.find(
+        {"created_at": {"$gte": start.isoformat(), "$lt": end.isoformat()}}, {"_id": 0}
+    ).to_list(5000)
+
+    total_invoiced = sum(i.get("total", 0) for i in invoices)
+    total_paid = sum(i.get("amount_paid", 0) for i in invoices)
+    total_unpaid = sum(i.get("amount_due", 0) for i in invoices if i.get("status") != "void")
+
+    return {
+        "total_invoiced": round(total_invoiced, 2),
+        "total_paid": round(total_paid, 2),
+        "total_unpaid": round(total_unpaid, 2),
+        "invoice_count": len(invoices),
+        "paid_count": len([i for i in invoices if i.get("status") == "paid"]),
+        "unpaid_count": len([i for i in invoices if i.get("status") == "unpaid"]),
+    }
+
+
 @router.get("/dashboard/report")
 async def get_dashboard_report(
     period: str = "30",

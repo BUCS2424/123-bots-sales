@@ -74,6 +74,7 @@ import EventConfirmationPage from './pages/EventConfirmationPage';
 import TicketViewPage from './pages/TicketViewPage';
 import ActivitiesDirectoryPage from './pages/activities/ActivitiesDirectoryPage';
 import ActivitiesByCompanyPage from './pages/activities/ActivitiesByCompanyPage';
+import ToursChartersInvoiceView from './pages/activities/ToursChartersInvoiceView';
 import ActivityListPage from './pages/activities/ActivityListPage';
 import ActivityDetailPage from './pages/activities/ActivityDetailPage';
 
@@ -283,6 +284,7 @@ const AppContent = () => {
                   <Route path="/activities/category/:slug" element={<ActivityListPage mode="category" />} />
                   <Route path="/activities/company/:slug" element={<ActivityListPage mode="company" />} />
                   <Route path="/activities/view/:slug" element={<ActivityDetailPage />} />
+                  <Route path="/invoice/tours-charters/:invoiceId" element={<ToursChartersInvoiceView />} />
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/booking/:bookingSlug" element={<PublicBookingPage />} />
                     <Route path="/book/:bookingSlug" element={<PublicBookingPage />} />

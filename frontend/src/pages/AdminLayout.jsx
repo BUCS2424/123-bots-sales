@@ -7,7 +7,7 @@ import {
   Bell, Search, DollarSign, ShoppingBag, Gift, FolderTree, Layers, Cloud, User, Sliders, Code,
   Store, Truck, CreditCard, CheckCircle, LayoutGrid, Clock, FileText, UserPlus, Briefcase,
   Calendar, CalendarOff, Wrench, Shield, BookOpen, PiggyBank, Star, Megaphone, Mail, Zap, MessageCircle, Building2, Box, Globe, Radio as RadioIcon, Key,
-  Ticket, MapPin, CalendarDays, Plus, FileSignature, Compass, Sparkles, Anchor
+  Ticket, MapPin, CalendarDays, Plus, FileSignature, Compass, Sparkles, Anchor, Receipt
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -110,6 +110,7 @@ import ToursChartersDashboard from './admin/tours-charters/ToursChartersDashboar
 import ActivityCategories from './admin/tours-charters/ActivityCategories';
 import Activities from './admin/tours-charters/Activities';
 import CharterCompanies from './admin/tours-charters/CharterCompanies';
+import ToursChartersInvoices from './admin/tours-charters/ToursChartersInvoices';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -335,6 +336,7 @@ const AdminLayout = () => {
         { path: '/admin/tours-charters/categories', label: 'Categories', icon: Tag },
         { path: '/admin/tours-charters/activities', label: 'Activities', icon: Sparkles },
         { path: '/admin/tours-charters/charter-companies', label: 'Charter Companies', icon: Building2 },
+        { path: '/admin/tours-charters/invoices', label: 'Invoices', icon: Receipt },
         { external: true, href: 'https://partner.fareharbor.com/login', label: 'Fare Harbor', icon: Anchor },
       ],
     }] : []),
@@ -742,6 +744,7 @@ const AdminLayout = () => {
       if (path === '/admin/tours-charters/categories') return <ActivityCategories />;
       if (path === '/admin/tours-charters/activities') return <Activities />;
       if (path === '/admin/tours-charters/charter-companies') return <CharterCompanies />;
+      if (path === '/admin/tours-charters/invoices') return <ToursChartersInvoices />;
       return <ToursChartersDashboard />;
     }
     if (path === '/admin/user-management/customers') return <AdminCustomers />;
