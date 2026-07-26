@@ -613,6 +613,11 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - **All 3 cards in the "Versatile Applications" row on `/products/flashbot-max` are now complete**: Hotels & Resorts, Hospitals & Healthcare, Offices & Buildings — no remaining placeholders.
 - Self-verified via screenshot.
 
+### Feature — FlashBot Max "9-10 Hour Battery Life" Image (July 26, 2026)
+- [x] User-supplied image (FlashBot Max robot side-view with detachable battery pack, white studio background) applied next to **"9-10 Hour Battery Life"** heading, replacing `[Image: Auto-Charging Station]` (`data-testid="flashbot-battery-image"`). Used `object-contain` with padding to avoid cropping the white-background product shot.
+- **FlashBot Max page now has all image/video placeholders filled** except none remaining — page is fully complete.
+- Self-verified via screenshot.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
