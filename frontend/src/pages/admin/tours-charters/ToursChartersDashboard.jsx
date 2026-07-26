@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Compass, Tag, Building2, Sparkles, CalendarCheck, DollarSign, Receipt, LayoutDashboard, ArrowRight } from 'lucide-react';
+import { Compass, Tag, Building2, Sparkles, CalendarCheck, DollarSign, Receipt, MousePointerClick, ExternalLink, PanelRightOpen, TimerReset, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '../../../components/ui/card';
 import { toursChartersApi } from './toursChartersApi';
 
@@ -23,13 +23,15 @@ const StatCard = ({ icon: Icon, label, value, iconBg, iconColor, testId }) => (
 const ToursChartersDashboard = () => {
   const [stats, setStats] = useState(null);
   const [invoices, setInvoices] = useState([]);
+  const [bookingSummary, setBookingSummary] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([toursChartersApi.dashboardStats(), toursChartersApi.listInvoices()])
-      .then(([statsRes, invoicesRes]) => {
+    Promise.all([toursChartersApi.dashboardStats(), toursChartersApi.listInvoices(), toursChartersApi.bookingEventsSummary(30)])
+      .then(([statsRes, invoicesRes, bookingRes]) => {
         setStats(statsRes.data);
         setInvoices(invoicesRes.data || []);
+        setBookingSummary(bookingRes.data);
       })
       .catch(() => setStats({}))
       .finally(() => setLoading(false));
@@ -69,10 +71,44 @@ const ToursChartersDashboard = () => {
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-10" data-testid="tours-charters-dashboard-lower-grid">
             <Card className="lg:col-span-7" data-testid="tours-charters-dashboard-main-panel">
-              <CardContent className="flex h-full min-h-[220px] flex-col items-center justify-center gap-2 p-6 text-center text-gray-400">
-                <LayoutDashboard className="h-8 w-8 text-gray-300" />
-                <p className="text-sm font-medium text-gray-500">More insights coming soon</p>
-                <p className="text-xs text-gray-400">This panel is reserved for upcoming analytics.</p>
+              <CardContent className="p-5">
+                <div className="mb-1 flex items-center justify-between">
+                  <p className="flex items-center gap-1.5 text-sm font-semibold text-gray-700"><MousePointerClick className="h-4 w-4 text-teal-500" /> Booking Activity</p>
+                  <span className="text-xs text-gray-400">Last 30 days</span>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <div className="rounded-lg bg-gray-50 p-3" data-testid="booking-stat-clicks">
+                    <p className="flex items-center gap-1 text-[11px] font-medium text-gray-400"><MousePointerClick className="h-3 w-3" /> Book Now Clicks</p>
+                    <p className="mt-1 text-xl font-bold text-gray-900">{bookingSummary?.total_clicks ?? 0}</p>
+                  </div>
+                  <div className="rounded-lg bg-gray-50 p-3" data-testid="booking-stat-opened">
+                    <p className="flex items-center gap-1 text-[11px] font-medium text-gray-400"><PanelRightOpen className="h-3 w-3" /> Widget Opened</p>
+                    <p className="mt-1 text-xl font-bold text-gray-900">{bookingSummary?.drawer_opened ?? 0}</p>
+                  </div>
+                  <div className="rounded-lg bg-gray-50 p-3" data-testid="booking-stat-redirects">
+                    <p className="flex items-center gap-1 text-[11px] font-medium text-gray-400"><ExternalLink className="h-3 w-3" /> External Redirects</p>
+                    <p className="mt-1 text-xl font-bold text-gray-900">{bookingSummary?.external_redirects ?? 0}</p>
+                  </div>
+                  <div className="rounded-lg bg-gray-50 p-3" data-testid="booking-stat-engaged">
+                    <p className="flex items-center gap-1 text-[11px] font-medium text-gray-400"><TimerReset className="h-3 w-3" /> Engaged 20s+</p>
+                    <p className="mt-1 text-xl font-bold text-gray-900">{bookingSummary?.engaged_20s_plus ?? 0}</p>
+                  </div>
+                </div>
+                <p className="mt-3 text-[11px] text-gray-400">"Engaged" means the visitor kept the booking widget open 20+ seconds - a proxy signal for real intent, since FareHarbor's embed doesn't report actual payment completion back to us.</p>
+
+                {bookingSummary?.recent_events?.length > 0 && (
+                  <div className="mt-4 border-t border-gray-100 pt-3">
+                    <p className="mb-2 text-xs font-semibold text-gray-500">Recent Activity</p>
+                    <div className="max-h-40 space-y-1.5 overflow-y-auto">
+                      {bookingSummary.recent_events.slice(0, 8).map((ev) => (
+                        <div key={ev.id} className="flex items-center justify-between text-xs" data-testid={`booking-event-row-${ev.id}`}>
+                          <span className="truncate text-gray-600">{ev.activity_title || ev.activity_id} <span className="text-gray-400">- {ev.event_type.replace(/_/g, ' ')}</span></span>
+                          <span className="flex-shrink-0 text-gray-400">{ev.created_at?.slice(11, 16)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

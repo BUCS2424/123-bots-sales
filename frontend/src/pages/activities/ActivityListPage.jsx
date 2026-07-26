@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Sparkles, Loader2, ArrowLeft, Clock, Anchor, ExternalLink } from 'lucide-react';
+import { Sparkles, Loader2, ArrowLeft, Clock, Anchor, ExternalLink, SlidersHorizontal, Navigation, Hourglass, ChevronDown } from 'lucide-react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { setSeoMetadata } from '../../lib/seo';
-import { useActivityMarketplaceGate, API } from './activityMarketplaceShared';
+import { useActivityMarketplaceGate, API, trackBookingEvent, newBookingSessionId } from './activityMarketplaceShared';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../../components/ui/sheet';
 import axios from 'axios';
 
@@ -18,7 +18,9 @@ const ActivityListPage = ({ mode }) => {
   const [activities, setActivities] = useState([]);
   const [entityName, setEntityName] = useState('');
   const [loading, setLoading] = useState(true);
-  const [activeTag, setActiveTag] = useState(null);
+  const [locationFilter, setLocationFilter] = useState(null);
+  const [durationFilter, setDurationFilter] = useState(null);
+  const [openDropdown, setOpenDropdown] = useState(null);
   const [bookingActivity, setBookingActivity] = useState(null);
 
   useEffect(() => {
@@ -27,7 +29,8 @@ const ActivityListPage = ({ mode }) => {
 
   useEffect(() => {
     if (!ready) return;
-    setActiveTag(null);
+    setLocationFilter(null);
+    setDurationFilter(null);
     const param = mode === 'company' ? { seller_slug: slug } : { category_slug: slug };
     const entityEndpoint = mode === 'company' ? 'sellers' : 'categories';
     Promise.all([
@@ -40,25 +43,45 @@ const ActivityListPage = ({ mode }) => {
     }).catch(() => {}).finally(() => setLoading(false));
   }, [ready, slug, mode]);
 
-  // Tag filter pills, deduped, ordered by each activity's priority (activities already arrive priority-sorted)
-  const tagPills = useMemo(() => {
+  // Location / Duration filter option lists, deduped in first-seen order
+  const locationOptions = useMemo(() => {
     const seen = [];
-    activities.forEach((a) => (a.tags || []).forEach((t) => { if (!seen.includes(t)) seen.push(t); }));
+    activities.forEach((a) => { if (a.location && !seen.includes(a.location)) seen.push(a.location); });
     return seen;
   }, [activities]);
 
-  const filteredActivities = activeTag ? activities.filter((a) => a.tags?.includes(activeTag)) : activities;
+  const durationOptions = useMemo(() => {
+    const seen = [];
+    activities.forEach((a) => { if (a.duration && !seen.includes(a.duration)) seen.push(a.duration); });
+    return seen;
+  }, [activities]);
+
+  const filteredActivities = activities.filter((a) => (!locationFilter || a.location === locationFilter) && (!durationFilter || a.duration === durationFilter));
 
   const handleBookNow = (a, e) => {
     e.preventDefault();
     e.stopPropagation();
+    const sessionId = newBookingSessionId();
+    const baseEvent = { activity_id: a.id, activity_title: a.title, seller_id: a.seller_id, seller_name: a.seller_name, booking_provider: a.booking_provider, page_context: 'list', session_id: sessionId };
+    trackBookingEvent({ ...baseEvent, event_type: 'book_now_click' });
     if (a.booking_type === 'external_link' && a.booking_provider === 'fareharbor' && a.effective_fareharbor_shortname) {
-      setBookingActivity(a);
+      trackBookingEvent({ ...baseEvent, event_type: 'drawer_opened' });
+      setBookingActivity({ ...a, _sessionId: sessionId, _baseEvent: baseEvent, _openedAt: Date.now() });
     } else if (a.booking_type === 'external_link' && a.booking_url) {
+      trackBookingEvent({ ...baseEvent, event_type: 'external_redirect' });
       window.open(a.booking_url, '_blank', 'noopener,noreferrer');
     } else {
-      setBookingActivity(a);
+      trackBookingEvent({ ...baseEvent, event_type: 'drawer_opened' });
+      setBookingActivity({ ...a, _sessionId: sessionId, _baseEvent: baseEvent, _openedAt: Date.now() });
     }
+  };
+
+  const closeBookingDrawer = () => {
+    if (bookingActivity?._baseEvent) {
+      const duration_seconds = (Date.now() - bookingActivity._openedAt) / 1000;
+      trackBookingEvent({ ...bookingActivity._baseEvent, event_type: 'drawer_closed', duration_seconds });
+    }
+    setBookingActivity(null);
   };
 
   if (!ready) return <div className="min-h-screen bg-[#061a1f]"><Header /></div>;
@@ -67,9 +90,9 @@ const ActivityListPage = ({ mode }) => {
   const backLabel = mode === 'company' ? 'All Charter Companies' : 'All Activities';
 
   return (
-    <div className="min-h-screen bg-[#061a1f]" data-testid="activity-list-page">
+    <div className="min-h-screen bg-white" data-testid="activity-list-page">
       <Header />
-      <section className="relative overflow-hidden pt-36 pb-8">
+      <section className="relative overflow-hidden bg-[#061a1f] pt-36 pb-10">
         <div className="absolute inset-0 bg-gradient-to-b from-teal-900/30 via-transparent to-transparent" />
         <div className="relative mx-auto max-w-6xl px-6">
           <Link to={backHref} className="inline-flex items-center gap-1.5 text-sm font-semibold text-teal-300 hover:text-teal-200" data-testid="activity-list-back-link">
@@ -81,44 +104,71 @@ const ActivityListPage = ({ mode }) => {
         </div>
       </section>
 
-      {!loading && tagPills.length > 0 && (
-        <section className="mx-auto max-w-6xl px-6 pb-4" data-testid="activity-list-filter-bar">
-          <p className="mb-2 text-center text-xs font-medium uppercase tracking-widest text-white/30">Filter</p>
-          <div className="flex flex-wrap justify-center gap-2">
-            <button
-              onClick={() => setActiveTag(null)}
-              className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${!activeTag ? 'bg-teal-500 text-black' : 'border border-white/15 text-white/60 hover:border-white/30 hover:text-white'}`}
-              data-testid="activity-filter-show-all"
-            >
-              Show all
-            </button>
-            {tagPills.map((t) => (
+      {openDropdown && <div className="fixed inset-0 z-10" onClick={() => setOpenDropdown(null)} />}
+
+      {!loading && activities.length > 0 && (
+        <div className="flex flex-wrap items-center gap-5 border-b border-gray-200 bg-gray-50 px-6 py-3.5" data-testid="activity-list-filter-bar">
+          <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-gray-400">
+            <SlidersHorizontal className="h-3.5 w-3.5" /> Filter By:
+          </span>
+
+          {locationOptions.length > 0 && (
+            <div className="relative z-20">
               <button
-                key={t}
-                onClick={() => setActiveTag(t === activeTag ? null : t)}
-                className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${activeTag === t ? 'bg-teal-500 text-black' : 'border border-white/15 text-white/60 hover:border-white/30 hover:text-white'}`}
-                data-testid={`activity-filter-tag-${t.toLowerCase().replace(/\s+/g, '-')}`}
+                onClick={() => setOpenDropdown(openDropdown === 'location' ? null : 'location')}
+                className="flex items-center gap-1.5 text-sm font-semibold text-gray-600 hover:text-gray-900"
+                data-testid="activity-filter-location-btn"
               >
-                {t}
+                <Navigation className="h-3.5 w-3.5" /> {locationFilter || 'Location'} <ChevronDown className="h-3.5 w-3.5" />
               </button>
-            ))}
-          </div>
-        </section>
+              {openDropdown === 'location' && (
+                <div className="absolute left-0 top-full mt-2 w-56 rounded-lg border border-gray-200 bg-white py-1 shadow-lg" data-testid="activity-filter-location-menu">
+                  <button onClick={() => { setLocationFilter(null); setOpenDropdown(null); }} className="block w-full px-4 py-2 text-left text-sm text-gray-600 hover:bg-gray-50" data-testid="activity-filter-location-all">All Locations</button>
+                  {locationOptions.map((loc) => (
+                    <button key={loc} onClick={() => { setLocationFilter(loc); setOpenDropdown(null); }} className={`block w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${locationFilter === loc ? 'font-semibold text-teal-700' : 'text-gray-600'}`} data-testid={`activity-filter-location-${loc.toLowerCase().replace(/\s+/g, '-')}`}>{loc}</button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {durationOptions.length > 0 && (
+            <div className="relative z-20">
+              <button
+                onClick={() => setOpenDropdown(openDropdown === 'duration' ? null : 'duration')}
+                className="flex items-center gap-1.5 text-sm font-semibold text-gray-600 hover:text-gray-900"
+                data-testid="activity-filter-duration-btn"
+              >
+                <Hourglass className="h-3.5 w-3.5" /> {durationFilter || 'Duration'} <ChevronDown className="h-3.5 w-3.5" />
+              </button>
+              {openDropdown === 'duration' && (
+                <div className="absolute left-0 top-full mt-2 w-56 rounded-lg border border-gray-200 bg-white py-1 shadow-lg" data-testid="activity-filter-duration-menu">
+                  <button onClick={() => { setDurationFilter(null); setOpenDropdown(null); }} className="block w-full px-4 py-2 text-left text-sm text-gray-600 hover:bg-gray-50" data-testid="activity-filter-duration-all">All Durations</button>
+                  {durationOptions.map((d) => (
+                    <button key={d} onClick={() => { setDurationFilter(d); setOpenDropdown(null); }} className={`block w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${durationFilter === d ? 'font-semibold text-teal-700' : 'text-gray-600'}`} data-testid={`activity-filter-duration-${d.toLowerCase().replace(/\s+/g, '-')}`}>{d}</button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          <span className="ml-auto text-sm text-gray-500" data-testid="activity-list-results-count">{filteredActivities.length} results</span>
+        </div>
       )}
 
-      <section className="mx-auto max-w-6xl px-6 pb-24 pt-4">
+      <section className="mx-auto max-w-6xl bg-white px-6 py-10">
         {loading ? (
-          <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-teal-400" /></div>
+          <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-teal-500" /></div>
         ) : activities.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/10 bg-[#0b1f24] py-20 text-center text-slate-400" data-testid="activity-list-empty">
+          <div className="rounded-2xl border border-dashed border-gray-200 py-20 text-center text-gray-400" data-testid="activity-list-empty">
             No activities here yet. Check back soon!
           </div>
         ) : filteredActivities.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/10 bg-[#0b1f24] py-20 text-center text-slate-400" data-testid="activity-list-filter-empty">
+          <div className="rounded-2xl border border-dashed border-gray-200 py-20 text-center text-gray-400" data-testid="activity-list-filter-empty">
             No activities match this filter.
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredActivities.map((a, i) => (
               <motion.div key={a.id} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} data-testid={`public-activity-${a.alias}`}>
                 <div
@@ -126,42 +176,38 @@ const ActivityListPage = ({ mode }) => {
                   tabIndex={0}
                   onClick={() => navigate(`/activities/view/${a.alias}`)}
                   onKeyDown={(e) => { if (e.key === 'Enter') navigate(`/activities/view/${a.alias}`); }}
-                  className="group block cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-[#0b1f24] transition hover:border-teal-500/50"
-                >  <div className="relative h-56 bg-gradient-to-br from-teal-900/40 to-cyan-900/30">
-                    {a.images?.[0] ? <img src={a.images[0]} alt={a.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <div className="flex h-full items-center justify-center text-white/20"><Sparkles className="h-12 w-12" /></div>}
-                    {a.seller_logo_url && (
-                      <div className="absolute left-3 top-3 max-w-[45%] rounded-md bg-white/95 px-2 py-1 shadow-lg" data-testid={`activity-card-seller-logo-${a.alias}`}>
-                        <img src={a.seller_logo_url} alt={a.seller_name} className="h-8 max-w-full object-contain" />
-                      </div>
-                    )}
-                    {(a.duration || a.location) && (
-                      <div className="absolute bottom-0 left-0 max-w-[70%] bg-black/70 px-3 py-1.5 text-xs font-medium text-white" data-testid={`activity-card-info-banner-${a.alias}`}>
-                        {[a.duration, a.location].filter(Boolean).join(' - ')}
+                  className="group block cursor-pointer overflow-hidden rounded-md border border-gray-200 bg-white shadow-sm transition hover:shadow-md"
+                >
+                  <div className="relative h-52 bg-gray-100">
+                    {a.images?.[0] ? <img src={a.images[0]} alt={a.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <div className="flex h-full items-center justify-center text-gray-300"><Sparkles className="h-12 w-12" /></div>}
+                    {a.duration && (
+                      <div className="absolute left-0 top-0 flex items-center gap-1 bg-black/70 px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-wide text-white" data-testid={`activity-card-duration-badge-${a.alias}`}>
+                        <Hourglass className="h-3 w-3" /> {a.duration}
                       </div>
                     )}
                     {a.price_from && (
-                      <div className="absolute bottom-0 right-0 bg-white px-3 py-1.5 text-center leading-tight text-black" data-testid={`activity-card-price-badge-${a.alias}`}>
-                        <span className="block text-[10px] font-semibold uppercase tracking-wide">From</span>
-                        <span className="block text-sm font-black">${a.price_from}</span>
+                      <div className="absolute bottom-0 right-0 overflow-hidden rounded-tl-md text-center" data-testid={`activity-card-price-badge-${a.alias}`}>
+                        <div className="bg-white/95 px-3 py-1"><span className="text-[10px] font-bold uppercase tracking-wide text-gray-500">From</span></div>
+                        <div className="bg-slate-800 px-3 py-1"><span className="text-sm font-black text-white">${a.price_from}</span></div>
                       </div>
                     )}
                   </div>
                   <div className="p-5">
-                    <h3 className="text-xl font-bold text-white">{a.title}</h3>
+                    <h3 className="text-lg font-bold text-gray-900">{a.title}</h3>
                     {mode !== 'company' && a.seller_slug && (
                       <Link
                         to={`/activities/company/${a.seller_slug}`}
                         onClick={(e) => e.stopPropagation()}
-                        className="mt-1 inline-block text-sm font-semibold text-orange-400 hover:text-orange-300"
+                        className="mt-0.5 inline-block text-sm text-gray-500 hover:text-gray-700"
                         data-testid={`activity-card-seller-link-${a.alias}`}
                       >
                         {a.seller_name}
                       </Link>
                     )}
-                    <p className="mt-2 line-clamp-3 text-sm text-slate-400">{a.short_description || a.description || ''}</p>
+                    <p className="mt-2 line-clamp-2 text-sm text-gray-500">{a.short_description || a.description || ''}</p>
                     <button
                       onClick={(e) => handleBookNow(a, e)}
-                      className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 px-5 py-2.5 text-sm font-bold text-white transition hover:opacity-90"
+                      className="mt-4 flex w-full items-center justify-center gap-2 rounded-sm bg-blue-800 py-3 text-sm font-bold uppercase tracking-wide text-white transition hover:bg-blue-900"
                       data-testid={`activity-card-book-now-${a.alias}`}
                     >
                       {a.booking_type === 'external_link' && a.booking_provider !== 'fareharbor' && a.booking_url ? <ExternalLink className="h-4 w-4" /> : <Anchor className="h-4 w-4" />} Book Now
@@ -176,7 +222,7 @@ const ActivityListPage = ({ mode }) => {
       <Footer />
 
       {bookingActivity && (
-        <Sheet open={!!bookingActivity} onOpenChange={(open) => !open && setBookingActivity(null)}>
+        <Sheet open={!!bookingActivity} onOpenChange={(open) => !open && closeBookingDrawer()}>
           <SheetContent side="right" className="w-full sm:max-w-4xl bg-[#061a1f] border-white/10 text-white p-0 flex flex-col" data-testid="activity-list-booking-drawer">
             <SheetHeader className="p-4 border-b border-white/10">
               <SheetTitle className="flex items-center gap-2 text-white">

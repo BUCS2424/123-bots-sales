@@ -12,7 +12,7 @@ Stripe Checkout helper (get_stripe_secret_key) already used by durango_payments.
 from fastapi import APIRouter, Depends, HTTPException, Header, Request, Body
 from pydantic import BaseModel, Field
 from typing import Optional, List
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import uuid
 
 from auth import decode_token, is_admin_or_above
@@ -371,3 +371,53 @@ async def public_invoice_pay_status(invoice_id: str, session_id: str, db=Depends
         invoice = await db.tours_charters_invoices.find_one({"id": invoice_id}, {"_id": 0})
 
     return {"payment_status": checkout_status.payment_status, "status": checkout_status.status, "invoice": invoice}
+
+
+# =============== BOOK NOW FUNNEL TRACKING ===============
+# NOTE: FareHarbor Lightframe does not expose a documented client-side "booking complete"
+# postMessage event, so we cannot verify actual payment completion inside the embedded
+# iframe without official partner/webhook access. Instead we track the funnel we CAN see:
+# button click -> booking widget opened -> widget closed (with time spent as an engagement
+# proxy), and for generic external links, the outbound redirect itself.
+
+class BookingEventCreate(BaseModel):
+    activity_id: str
+    activity_title: str = ""
+    seller_id: str = ""
+    seller_name: str = ""
+    booking_provider: str = ""  # generic | fareharbor
+    event_type: str  # book_now_click | drawer_opened | drawer_closed | external_redirect
+    page_context: str = ""  # list | detail
+    session_id: str = ""  # client-generated id correlating click -> open -> close for one attempt
+    duration_seconds: Optional[float] = None  # set on drawer_closed
+
+
+@public_router.post("/booking-events")
+async def track_booking_event(payload: BookingEventCreate, db=Depends(get_db)):
+    doc = payload.model_dump()
+    doc["id"] = str(uuid.uuid4())
+    doc["created_at"] = _now_iso()
+    await db.tours_charters_booking_events.insert_one(doc)
+    return {"success": True}
+
+
+@router.get("/booking-events/summary")
+async def booking_events_summary(days: int = 30, authorization: Optional[str] = Header(None), db=Depends(get_db)):
+    _require_admin_token(authorization)
+    since = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    events = await db.tours_charters_booking_events.find({"created_at": {"$gte": since}}, {"_id": 0}).sort("created_at", -1).to_list(5000)
+
+    clicks = [e for e in events if e["event_type"] == "book_now_click"]
+    opened = [e for e in events if e["event_type"] == "drawer_opened"]
+    closed = [e for e in events if e["event_type"] == "drawer_closed"]
+    redirects = [e for e in events if e["event_type"] == "external_redirect"]
+    engaged = [e for e in closed if (e.get("duration_seconds") or 0) >= 20]
+
+    return {
+        "total_clicks": len(clicks),
+        "drawer_opened": len(opened),
+        "drawer_closed": len(closed),
+        "external_redirects": len(redirects),
+        "engaged_20s_plus": len(engaged),
+        "recent_events": events[:15],
+    }

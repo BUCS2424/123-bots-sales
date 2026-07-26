@@ -31,6 +31,8 @@ export const toursChartersApi = {
   sendInvoiceEmail: (id, data) => axios.post(`${API}/tours-charters/invoices/${id}/send-email`, data, { headers: authHeaders() }),
   getInvoiceSettings: () => axios.get(`${API}/tours-charters/invoice-settings`, { headers: authHeaders() }),
   updateInvoiceSettings: (data) => axios.put(`${API}/tours-charters/invoice-settings`, data, { headers: authHeaders() }),
+  // booking funnel tracking
+  bookingEventsSummary: (days = 30) => axios.get(`${API}/tours-charters/booking-events/summary`, { headers: authHeaders(), params: { days } }),
 };
 
 export const uploadTourImage = async (file) => {

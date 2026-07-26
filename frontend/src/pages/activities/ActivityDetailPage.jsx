@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Sparkles, Loader2, ArrowLeft, Building2, Clock, Tag, ExternalLink, Anchor } from 'lucide-react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { setSeoMetadata } from '../../lib/seo';
-import { useActivityMarketplaceGate, API } from './activityMarketplaceShared';
+import { useActivityMarketplaceGate, API, trackBookingEvent, newBookingSessionId } from './activityMarketplaceShared';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../../components/ui/sheet';
 import axios from 'axios';
 
@@ -16,6 +16,7 @@ const ActivityDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
+  const bookingSessionRef = useRef(null);
 
   useEffect(() => {
     if (!ready) return;
@@ -38,6 +39,31 @@ const ActivityDetailPage = () => {
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));
   }, [ready, slug]);
+
+  const trackAndOpenDrawer = () => {
+    const sessionId = newBookingSessionId();
+    const baseEvent = { activity_id: activity.id, activity_title: activity.title, seller_id: activity.seller_id, seller_name: activity.seller?.name, booking_provider: activity.booking_provider, page_context: 'detail', session_id: sessionId };
+    trackBookingEvent({ ...baseEvent, event_type: 'book_now_click' });
+    trackBookingEvent({ ...baseEvent, event_type: 'drawer_opened' });
+    bookingSessionRef.current = { baseEvent, openedAt: Date.now() };
+    setBookingOpen(true);
+  };
+
+  const trackExternalClick = () => {
+    const sessionId = newBookingSessionId();
+    const baseEvent = { activity_id: activity.id, activity_title: activity.title, seller_id: activity.seller_id, seller_name: activity.seller?.name, booking_provider: activity.booking_provider, page_context: 'detail', session_id: sessionId };
+    trackBookingEvent({ ...baseEvent, event_type: 'book_now_click' });
+    trackBookingEvent({ ...baseEvent, event_type: 'external_redirect' });
+  };
+
+  const handleDrawerOpenChange = (open) => {
+    setBookingOpen(open);
+    if (!open && bookingSessionRef.current) {
+      const { baseEvent, openedAt } = bookingSessionRef.current;
+      trackBookingEvent({ ...baseEvent, event_type: 'drawer_closed', duration_seconds: (Date.now() - openedAt) / 1000 });
+      bookingSessionRef.current = null;
+    }
+  };
 
   if (!ready) return <div className="min-h-screen bg-[#061a1f]"><Header /></div>;
 
@@ -95,11 +121,11 @@ const ActivityDetailPage = () => {
 
                   <div className="mt-8">
                     {activity.booking_type === 'external_link' && activity.booking_provider === 'fareharbor' && activity.effective_fareharbor_shortname ? (
-                      <button onClick={() => setBookingOpen(true)} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 px-6 py-3 text-sm font-bold text-white transition hover:opacity-90" data-testid="activity-book-now-button">
+                      <button onClick={trackAndOpenDrawer} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 px-6 py-3 text-sm font-bold text-white transition hover:opacity-90" data-testid="activity-book-now-button">
                         <Anchor className="h-4 w-4" /> Book Now
                       </button>
                     ) : activity.booking_type === 'external_link' && activity.booking_url ? (
-                      <a href={activity.booking_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 px-6 py-3 text-sm font-bold text-white transition hover:opacity-90" data-testid="activity-book-now-button">
+                      <a href={activity.booking_url} target="_blank" rel="noopener noreferrer" onClick={trackExternalClick} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 px-6 py-3 text-sm font-bold text-white transition hover:opacity-90" data-testid="activity-book-now-button">
                         Book Now <ExternalLink className="h-4 w-4" />
                       </a>
                     ) : (
@@ -117,7 +143,7 @@ const ActivityDetailPage = () => {
       <Footer />
 
       {activity && (
-        <Sheet open={bookingOpen} onOpenChange={setBookingOpen}>
+        <Sheet open={bookingOpen} onOpenChange={handleDrawerOpenChange}>
           <SheetContent side="right" className="w-full sm:max-w-4xl bg-[#061a1f] border-white/10 text-white p-0 flex flex-col" data-testid="activity-booking-drawer">
             <SheetHeader className="p-4 border-b border-white/10">
               <SheetTitle className="flex items-center gap-2 text-white">

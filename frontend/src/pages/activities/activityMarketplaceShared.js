@@ -41,3 +41,17 @@ export const useActivityMarketplaceGate = () => {
 };
 
 export { API };
+
+// Book Now funnel tracking - best-effort, fire-and-forget. FareHarbor's Lightframe
+// embed does not expose a documented client-side "booking complete" event, so we can
+// only track what's actually observable: the click, the widget open/close (with time
+// spent as an engagement proxy), and outbound redirects for generic external links.
+export const trackBookingEvent = (event) => {
+  try {
+    axios.post(`${API}/api/public/tours-charters/booking-events`, event).catch(() => {});
+  } catch {
+    // never let tracking break the booking flow
+  }
+};
+
+export const newBookingSessionId = () => `bk_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
