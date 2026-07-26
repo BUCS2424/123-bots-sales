@@ -554,6 +554,11 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - **All 3 cards in the "Complete Gausium Ecosystem" row are now complete** with real images (Smart Cloud Platform, User-Friendly Mobile App, Open API & IoT Integration) — no remaining placeholders in this section.
 - Self-verified via screenshot at `/products/gausium-mira`.
 
+### Feature — Gausium Marvel "Warehouses" Image (July 26, 2026)
+- [x] User-supplied image (Gausium robot cleaning a warehouse aisle between pallets of boxes) applied to the **"Warehouses"** card in the "Built for Complex Spaces" section of `GausiumMarvelPage.jsx` (route `/products/gausium-marvel`), replacing the `[Image: Warehouse]` text placeholder (`data-testid="marvel-warehouses-image"`).
+- Remaining placeholders on this page (Manufacturing, Car Parking, Retail cards in the same row) untouched — awaiting user images if desired.
+- Self-verified via screenshot.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
