@@ -8,7 +8,8 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '..
 const inputCls = 'w-full rounded-lg border border-white/10 bg-[#061a1f] px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-teal-500/50';
 const emptyActivity = {
   title: '', alias: '', seller_id: '', category_ids: [], tags: [], images: [],
-  description: '', price_display: '', duration: '', status: 'published', priority: 0, featured: false,
+  description: '', short_description: '', price_display: '', price_from: '', duration: '', location: '',
+  status: 'published', priority: 0, featured: false,
   booking_type: 'external_link', booking_provider: 'generic', booking_url: '', fareharbor_shortname: '', fareharbor_item_pk: '',
   seo_title: '', seo_description: '', seo_robots: 'index_follow',
 };
@@ -58,6 +59,12 @@ const Activities = () => {
       setModal((m) => ({ ...m, images: [...(m.images || []), url] }));
     } catch { toast({ title: 'Upload failed', variant: 'destructive' }); }
     finally { setUploading(false); }
+  };
+
+  const handleImageDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer?.files?.[0];
+    if (file) uploadImg(file);
   };
 
   const removeImg = (idx) => setModal((m) => ({ ...m, images: m.images.filter((_, i) => i !== idx) }));
@@ -316,11 +323,24 @@ const Activities = () => {
                 </div>
               </div>
 
-              <textarea className={inputCls} rows={3} placeholder="Description" value={modal.description} onChange={(e) => setModal({ ...modal, description: e.target.value })} data-testid="activity-description-input" />
+              <textarea className={inputCls} rows={3} placeholder="Description (full, shown on the activity detail page)" value={modal.description} onChange={(e) => setModal({ ...modal, description: e.target.value })} data-testid="activity-description-input" />
+
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-white/60">Short Description (teaser shown on public listing cards)</label>
+                <textarea className={inputCls} rows={2} placeholder="A short 1-2 sentence teaser for the listing card" value={modal.short_description} onChange={(e) => setModal({ ...modal, short_description: e.target.value })} data-testid="activity-short-description-input" />
+              </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <input className={inputCls} placeholder="Price display (e.g. $150/person)" value={modal.price_display} onChange={(e) => setModal({ ...modal, price_display: e.target.value })} data-testid="activity-price-input" />
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-white/60">From Price (card badge, e.g. 45)</label>
+                  <input className={inputCls} placeholder="45" value={modal.price_from} onChange={(e) => setModal({ ...modal, price_from: e.target.value })} data-testid="activity-price-from-input" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
                 <input className={inputCls} placeholder="Duration (e.g. 3 hours)" value={modal.duration} onChange={(e) => setModal({ ...modal, duration: e.target.value })} data-testid="activity-duration-input" />
+                <input className={inputCls} placeholder="Location (e.g. St. Thomas, USVI)" value={modal.location} onChange={(e) => setModal({ ...modal, location: e.target.value })} data-testid="activity-location-input" />
               </div>
 
               <div>
@@ -349,9 +369,15 @@ const Activities = () => {
                       <button onClick={() => removeImg(idx)} className="absolute -right-2 -top-2 rounded-full bg-black p-0.5 text-red-300"><X className="h-3.5 w-3.5" /></button>
                     </div>
                   ))}
-                  <button onClick={() => fileRef.current?.click()} className="flex h-16 w-24 items-center justify-center rounded-lg border border-dashed border-white/20 text-white/40 hover:border-white/40" data-testid="activity-image-upload">
-                    {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                  </button>
+                  <div
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={handleImageDrop}
+                    onClick={() => fileRef.current?.click()}
+                    className="flex h-16 w-24 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-lg border border-dashed border-white/20 text-white/40 hover:border-teal-400/50 hover:text-white/60"
+                    data-testid="activity-image-upload"
+                  >
+                    {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Upload className="h-4 w-4" /><span className="text-[9px]">Drop or click</span></>}
+                  </div>
                   <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => uploadImg(e.target.files?.[0])} />
                 </div>
               </div>

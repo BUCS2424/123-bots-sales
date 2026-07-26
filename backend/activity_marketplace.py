@@ -129,7 +129,10 @@ class ActivityCreate(BaseModel):
     images: List[str] = Field(default_factory=list)
     description: str = ""
     price_display: str = ""  # free-text e.g. "$150 / person" until native pricing exists
+    price_from: str = ""  # clean starting price number for the public "FROM $X" card badge, e.g. "45"
     duration: str = ""
+    location: str = ""  # e.g. "St. Thomas, U.S. Virgin Islands" - shown in the public card info banner alongside duration
+    short_description: str = ""  # short teaser shown on public listing cards (falls back to description if blank)
     status: str = "published"  # published | unpublished
     priority: int = 0  # controls display order on the public activities page (lower shows first)
     featured: bool = False  # visual treatment TBD
@@ -152,7 +155,10 @@ class ActivityUpdate(BaseModel):
     images: Optional[List[str]] = None
     description: Optional[str] = None
     price_display: Optional[str] = None
+    price_from: Optional[str] = None
     duration: Optional[str] = None
+    location: Optional[str] = None
+    short_description: Optional[str] = None
     status: Optional[str] = None
     priority: Optional[int] = None
     featured: Optional[bool] = None
@@ -390,6 +396,8 @@ async def public_list_activities(
         seller = sellers.get(a.get("seller_id"))
         a["seller_name"] = seller.get("name") if seller else ""
         a["seller_slug"] = seller.get("slug") if seller else ""
+        a["seller_logo_url"] = seller.get("logo_url", "") if seller else ""
+        a["effective_fareharbor_shortname"] = a.get("fareharbor_shortname") or (seller.get("fareharbor_shortname", "") if seller else "")
     return activities
 
 

@@ -118,7 +118,7 @@ const ActivityDetailPage = () => {
 
       {activity && (
         <Sheet open={bookingOpen} onOpenChange={setBookingOpen}>
-          <SheetContent side="right" className="w-full sm:max-w-2xl bg-[#061a1f] border-white/10 text-white p-0 flex flex-col" data-testid="activity-booking-drawer">
+          <SheetContent side="right" className="w-full sm:max-w-4xl bg-[#061a1f] border-white/10 text-white p-0 flex flex-col" data-testid="activity-booking-drawer">
             <SheetHeader className="p-4 border-b border-white/10">
               <SheetTitle className="flex items-center gap-2 text-white">
                 <Anchor className="h-4 w-4 text-teal-300" /> Book {activity.title}

@@ -28,6 +28,12 @@ const ActivityCategories = () => {
     finally { setUploading(false); }
   };
 
+  const handleImageDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer?.files?.[0];
+    if (file) uploadImg(file);
+  };
+
   const save = async () => {
     if (!modal.name?.trim()) { toast({ title: 'Name required', variant: 'destructive' }); return; }
     setSaving(true);
@@ -97,9 +103,15 @@ const ActivityCategories = () => {
                       <button onClick={() => setModal({ ...modal, image_url: '' })} className="absolute -right-2 -top-2 rounded-full bg-black p-0.5 text-red-300"><X className="h-3.5 w-3.5" /></button>
                     </div>
                   ) : (
-                    <button onClick={() => fileRef.current?.click()} className="flex h-16 w-24 items-center justify-center rounded-lg border border-dashed border-white/20 text-white/40 hover:border-white/40" data-testid="category-image-upload">
-                      {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                    </button>
+                    <div
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={handleImageDrop}
+                      onClick={() => fileRef.current?.click()}
+                      className="flex h-16 w-24 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-lg border border-dashed border-white/20 text-white/40 hover:border-teal-400/50 hover:text-white/60"
+                      data-testid="category-image-upload"
+                    >
+                      {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Upload className="h-4 w-4" /><span className="text-[9px]">Drop or click</span></>}
+                    </div>
                   )}
                   <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => uploadImg(e.target.files?.[0])} />
                 </div>

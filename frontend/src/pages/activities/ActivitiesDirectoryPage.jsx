@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Compass, Loader2, ArrowRight } from 'lucide-react';
+import { Compass, Loader2 } from 'lucide-react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { setSeoMetadata } from '../../lib/seo';
@@ -49,20 +49,18 @@ const ActivitiesDirectoryPage = () => {
             No activity categories yet. Check back soon!
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             {categories.map((c, i) => (
-              <motion.div key={c.id} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}>
-                <Link to={`/activities/category/${c.slug}`} className="group block overflow-hidden rounded-2xl border border-white/10 bg-[#0b1f24] transition hover:border-teal-500/50" data-testid={`public-category-${c.slug}`}>
-                  <div className="relative h-44 bg-gradient-to-br from-teal-900/40 to-cyan-900/30">
-                    {c.image_url ? <img src={c.image_url} alt={c.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <div className="flex h-full items-center justify-center text-white/20"><Compass className="h-12 w-12" /></div>}
-                  </div>
-                  <div className="p-5">
-                    <h3 className="text-xl font-bold text-white">{c.name}</h3>
-                    {c.description && <p className="mt-1 line-clamp-2 text-sm text-slate-400">{c.description}</p>}
-                    <div className="mt-3 flex items-center justify-between text-sm text-slate-400">
-                      <span>{c.activity_count} activit{c.activity_count === 1 ? 'y' : 'ies'}</span>
-                      <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-teal-300 transition group-hover:gap-2.5">View <ArrowRight className="h-4 w-4" /></span>
-                    </div>
+              <motion.div key={c.id} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                <Link to={`/activities/category/${c.slug}`} className="group relative block aspect-[4/3] overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-teal-900/40 to-cyan-900/30" data-testid={`public-category-${c.slug}`}>
+                  {c.image_url ? (
+                    <img src={c.image_url} alt={c.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-white/20"><Compass className="h-10 w-10" /></div>
+                  )}
+                  <div className="absolute inset-0 bg-black/10 transition group-hover:bg-black/25" />
+                  <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 justify-center px-3">
+                    <span className="bg-black/45 px-3 py-1.5 text-center text-xs font-black uppercase tracking-wide text-white sm:text-sm">{c.name}</span>
                   </div>
                 </Link>
               </motion.div>
