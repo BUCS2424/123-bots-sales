@@ -515,6 +515,7 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - [x] **Tours / Charters Dashboard** (`ToursChartersDashboard.jsx`) converted from dark-theme custom styling to the standard light admin theme (shadcn `Card`/`CardContent`, gray-900/gray-500 text, colored icon circle badges) to match `AdminDashboard.jsx` conventions
 - [x] All 6 stat boxes now sit in a single row on desktop (`grid-cols-2 sm:grid-cols-3 lg:grid-cols-6`), 2-3 per row on smaller screens
 - [x] Self-verified via screenshot + API (stats endpoint unchanged, values render correctly: 1/1/1/1/0/$0.00)
+- [x] **July 26, 2026**: Added a 70/30 two-column area below the stat boxes — 70% left panel reserved/placeholder for future analytics ("More insights coming soon"), 30% right panel is a live "Unpaid Invoices" widget listing unpaid invoices (company, invoice #, amount due) with a link to the full Invoices page. Self-verified via screenshot.
 
 ### Completed (July 26, 2026 - Charter Company Billing & Invoicing)
 - [x] **Customer sync**: Creating/editing a Charter Company (seller) now auto-creates/updates a linked login-enabled `users`+`customers` record (one-way sync, email = invoice_email or contact_email fallback), visible in User Management > Customers for unified billing visibility. Guards against clobbering unrelated accounts with the same email. "Synced to Customers" badge shown on cards + edit Sheet.
