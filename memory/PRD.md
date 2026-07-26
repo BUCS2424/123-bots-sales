@@ -631,6 +631,11 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - Note: page still has a further-down "[Video: NEO in Action - Large Area]" placeholder in the "Up to 42,000 ft²/hr Coverage" section — untouched, out of scope for this request.
 - Self-verified via screenshot.
 
+### Feature — Avidbots Neo "Up to 42,000 ft²/hr Coverage" Video (July 26, 2026)
+- [x] Embedded user-provided YouTube video (`https://www.youtube.com/watch?v=YHIvJ6u_LVM` — "Avidbots Neo the Autonomous Floor Cleaning") next to **"Up to 42,000 ft²/hr Coverage"** heading, replacing `[Video: NEO in Action - Large Area]` (`data-testid="avidbots-large-area-video"`). Removed the now-unused `Play` icon import.
+- Note: page still has "[Image: Disc Head]" and "[Image: Cylindrical Head]" placeholders further down in "Flexible Cleaning Head Options" — untouched, out of scope for this request.
+- Self-verified via screenshot.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**

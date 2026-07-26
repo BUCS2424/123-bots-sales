@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Download, CheckCircle, Play, Phone, Mail, ChevronDown, ChevronUp, ChevronRight } from 'lucide-react';
+import { Download, CheckCircle, Phone, Mail, ChevronDown, ChevronUp, ChevronRight } from 'lucide-react';
 import { setSeoMetadata } from '../lib/seo';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -295,9 +295,16 @@ const AvidbotsNeoPage = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-purple-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
-                <div className="aspect-video bg-gray-800/50 rounded-xl flex items-center justify-center">
-                  <Play className="w-16 h-16 text-purple-400" />
-                  <span className="ml-4 text-gray-400">[Video: NEO in Action - Large Area]</span>
+                <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
+                  <iframe
+                    src="https://www.youtube.com/embed/YHIvJ6u_LVM"
+                    title="Avidbots Neo Autonomous Floor Scrubbing - Large Area Coverage"
+                    className="w-full h-full rounded-xl"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    data-testid="avidbots-large-area-video"
+                  />
                 </div>
               </div>
             </div>
