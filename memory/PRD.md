@@ -549,6 +549,11 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - [x] Embedded user-provided YouTube video (`https://www.youtube.com/watch?v=VpiFJjuKO0Y` — "Gausium Mira | Navigating Narrow Aisles") in the right video slot next to the **"No Remapping Required"** heading (Capability 3: Dynamic Layout Adaptation), replacing the `[Video: Dynamic Navigation]` placeholder with a real `<iframe>` YouTube embed (`data-testid="mira-dynamic-navigation-video"`). Removed the now-unused `Play` icon import.
 - Self-verified via screenshot at `/products/gausium-mira` — video thumbnail/embed renders correctly.
 
+### Feature — Gausium Mira "Open API & IoT Integration" Image (July 26, 2026)
+- [x] User-supplied image (dark blue "Future of commercial cleaning robots" branded graphic with particle-wave visual) applied to the **"Open API & IoT Integration"** card, replacing the `[Image: IoT Integration]` text placeholder (`data-testid="mira-iot-integration-image"`).
+- **All 3 cards in the "Complete Gausium Ecosystem" row are now complete** with real images (Smart Cloud Platform, User-Friendly Mobile App, Open API & IoT Integration) — no remaining placeholders in this section.
+- Self-verified via screenshot at `/products/gausium-mira`.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
