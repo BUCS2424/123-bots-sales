@@ -362,8 +362,13 @@ const GausiumMiraPage = () => {
 
             {/* Mobile App */}
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-emerald-500/50 transition-all hover:transform hover:scale-105">
-              <div className="aspect-video bg-gradient-to-br from-blue-600/20 to-blue-800/20 flex items-center justify-center">
-                <span className="text-gray-400">[Image: Mobile App Interface]</span>
+              <div className="aspect-video bg-gradient-to-br from-blue-600/20 to-blue-800/20 flex items-center justify-center overflow-hidden">
+                <img
+                  src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/302w2lwv_IoT-Integration-min.jpg"
+                  alt="Gausium Mira Mobile App on Laptop, Tablet and Phone with Cloud Dashboard and Data Statistics"
+                  className="w-full h-full object-cover"
+                  data-testid="mira-mobile-app-image"
+                />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">User-Friendly Mobile App</h3>
