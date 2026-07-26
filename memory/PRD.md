@@ -593,6 +593,11 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - Note: page still has a placeholder further down near "Locked Compartments with Multi-Factor Access" — untouched, out of scope for this request.
 - Self-verified via screenshot.
 
+### Feature — FlashBot Max "Locked Compartments" Image (July 26, 2026)
+- [x] User-supplied image (three FlashBot Max units with open storage compartments showing packages, toiletries, and personal items) applied next to **"Locked Compartments with Multi-Factor Access"** heading, replacing `[Image: Secure Compartments]` (`data-testid="flashbot-secure-compartments-image"`).
+- Page still has further placeholders (Auto-Charging Station, Hotel/Hospital/Office Delivery use cases) — untouched, out of scope for this request.
+- Self-verified via screenshot.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
