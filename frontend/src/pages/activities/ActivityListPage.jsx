@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Sparkles, Loader2, ArrowLeft, Clock, Anchor, ExternalLink } from 'lucide-react';
 import Header from '../../components/Header';
@@ -13,6 +13,7 @@ import axios from 'axios';
 // depending on which slug param is present. Same excursion-card grid look either way.
 const ActivityListPage = ({ mode }) => {
   const ready = useActivityMarketplaceGate();
+  const navigate = useNavigate();
   const { slug } = useParams();
   const [activities, setActivities] = useState([]);
   const [entityName, setEntityName] = useState('');
@@ -120,8 +121,13 @@ const ActivityListPage = ({ mode }) => {
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
             {filteredActivities.map((a, i) => (
               <motion.div key={a.id} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} data-testid={`public-activity-${a.alias}`}>
-                <Link to={`/activities/view/${a.alias}`} className="group block overflow-hidden rounded-2xl border border-white/10 bg-[#0b1f24] transition hover:border-teal-500/50">
-                  <div className="relative h-56 bg-gradient-to-br from-teal-900/40 to-cyan-900/30">
+                <div
+                  role="link"
+                  tabIndex={0}
+                  onClick={() => navigate(`/activities/view/${a.alias}`)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') navigate(`/activities/view/${a.alias}`); }}
+                  className="group block cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-[#0b1f24] transition hover:border-teal-500/50"
+                >  <div className="relative h-56 bg-gradient-to-br from-teal-900/40 to-cyan-900/30">
                     {a.images?.[0] ? <img src={a.images[0]} alt={a.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <div className="flex h-full items-center justify-center text-white/20"><Sparkles className="h-12 w-12" /></div>}
                     {a.seller_logo_url && (
                       <div className="absolute left-3 top-3 max-w-[45%] rounded-md bg-white/95 px-2 py-1 shadow-lg" data-testid={`activity-card-seller-logo-${a.alias}`}>
@@ -161,7 +167,7 @@ const ActivityListPage = ({ mode }) => {
                       {a.booking_type === 'external_link' && a.booking_provider !== 'fareharbor' && a.booking_url ? <ExternalLink className="h-4 w-4" /> : <Anchor className="h-4 w-4" />} Book Now
                     </button>
                   </div>
-                </Link>
+                </div>
               </motion.div>
             ))}
           </div>
