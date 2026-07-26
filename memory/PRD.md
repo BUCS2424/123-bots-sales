@@ -588,6 +588,11 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - **All image/video placeholders on both Gausium Mira and Gausium Marvel pages are now complete.** No remaining `[Image: ...]` or `[Video: ...]` text placeholders on either product page.
 - Self-verified via screenshot.
 
+### Feature — FlashBot Max "Complete Building Automation" Video (July 26, 2026)
+- [x] Embedded user-provided YouTube video (`https://www.youtube.com/watch?v=fsyhcoLqeRY` — "FlashBot Max: Smart Delivery Solutions for Modern Residential Buildings") next to **"Complete Building Automation"** heading on `FlashBotMaxPage.jsx` (route `/products/flashbot-max`), replacing `[Video: IoT Integration Demo]` (`data-testid="flashbot-iot-integration-video"`). Removed the now-unused `Play` icon import.
+- Note: page still has a placeholder further down near "Locked Compartments with Multi-Factor Access" — untouched, out of scope for this request.
+- Self-verified via screenshot.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
