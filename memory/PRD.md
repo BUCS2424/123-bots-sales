@@ -626,6 +626,11 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - [x] User-supplied image (FlashBot Max robot on a garden lawn with child playing on a rocking horse, semi-outdoor setting) applied next to **"VSLAM+ Indoor/Semi-Outdoor Navigation"** heading (Capability 1), replacing the previous generic Unsplash stock placeholder (`data-testid="flashbot-vslam-navigation-image"`).
 - Self-verified via screenshot — matches the "garden corridors, poolside areas" copy perfectly.
 
+### Feature — Avidbots Neo "24/7/365 Continuous Cleaning" Image (July 26, 2026)
+- [x] User-supplied image (Avidbots Neo floor scrubber cleaning a shopping mall corridor at night, Canadian flags visible overhead) applied next to **"24/7/365 Continuous Cleaning"** heading (Capability 2: Around the Clock) on `AvidbotsNeoPage.jsx` (route `/products/avidbots-neo`), replacing the broken `/images/placeholders/neo-battery-swap.png` + `[Image: Fast Battery Swapping]` placeholder (`data-testid="avidbots-battery-swap-image"`).
+- Note: page still has a further-down "[Video: NEO in Action - Large Area]" placeholder in the "Up to 42,000 ft²/hr Coverage" section — untouched, out of scope for this request.
+- Self-verified via screenshot.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**

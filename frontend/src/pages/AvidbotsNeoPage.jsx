@@ -238,9 +238,13 @@ const AvidbotsNeoPage = () => {
             <div className="order-2 md:order-1 relative">
               <div className="absolute inset-0 bg-green-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
-                <div className="aspect-video bg-gray-800/50 rounded-xl flex items-center justify-center">
-                  <img src="/images/placeholders/neo-battery-swap.png" alt="Battery Swap" className="w-full h-full object-cover rounded-xl opacity-50" />
-                  <span className="absolute text-gray-400">[Image: Fast Battery Swapping]</span>
+                <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
+                  <img
+                    src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/f1gfdvbj_image.png"
+                    alt="Avidbots Neo Autonomous Floor Scrubber Cleaning Shopping Mall Corridor at Night"
+                    className="w-full h-full object-cover rounded-xl"
+                    data-testid="avidbots-battery-swap-image"
+                  />
                 </div>
               </div>
             </div>
