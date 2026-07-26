@@ -618,6 +618,10 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - **FlashBot Max page now has all image/video placeholders filled** except none remaining — page is fully complete.
 - Self-verified via screenshot.
 
+### Update — Gausium Marvel "9-10 Hour Battery Life" Image Replaced (July 26, 2026)
+- [x] Replaced the previous product-shot image with a new user-provided image (PUDU robot in hotel lobby, "Self-Return & Auto-Charging" caption baked into the image) next to **"9-10 Hour Battery Life"** on `/products/flashbot-max` (`data-testid="flashbot-battery-image"`). Switched from `object-contain` back to `object-cover` since this is a full-bleed photo, not a white-background product shot.
+- Self-verified via screenshot — matches perfectly with adjacent "All-Day Operation" / "Fast Auto-Charging" cards.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**

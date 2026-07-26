@@ -308,9 +308,9 @@ const FlashBotMaxPage = () => {
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
                 <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
                   <img
-                    src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/nqe7kw4m_s14-1.webp"
-                    alt="FlashBot Max Delivery Robot with Removable Battery Pack"
-                    className="w-full h-full object-contain rounded-xl p-4"
+                    src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/oz302ir9_image.png"
+                    alt="PUDU Robot Self-Return and Auto-Charging in Hotel Lobby"
+                    className="w-full h-full object-cover rounded-xl"
                     data-testid="flashbot-battery-image"
                   />
                 </div>
