@@ -598,6 +598,11 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - Page still has further placeholders (Auto-Charging Station, Hotel/Hospital/Office Delivery use cases) — untouched, out of scope for this request.
 - Self-verified via screenshot.
 
+### Feature — FlashBot Max "Hotels & Resorts" Image (July 26, 2026)
+- [x] User-supplied image (FlashBot Max robot in luxury hotel corridor with AR navigation map overlay) applied to the **"Hotels & Resorts"** card in the "Versatile Applications" section, replacing `[Image: Hotel Delivery]` (`data-testid="flashbot-hotels-image"`).
+- Remaining placeholders in same row: "Hospitals & Healthcare" and "Offices & Buildings" — awaiting user images.
+- Self-verified via screenshot.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**

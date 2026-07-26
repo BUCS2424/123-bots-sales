@@ -351,8 +351,13 @@ const FlashBotMaxPage = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {/* Hotels */}
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-cyan-500/50 transition-all hover:transform hover:scale-105">
-              <div className="aspect-video bg-gradient-to-br from-cyan-600/20 to-cyan-800/20 flex items-center justify-center">
-                <span className="text-gray-400">[Image: Hotel Delivery]</span>
+              <div className="aspect-video bg-gradient-to-br from-cyan-600/20 to-cyan-800/20 flex items-center justify-center overflow-hidden">
+                <img
+                  src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/vi35y4x3_image.png"
+                  alt="FlashBot Max Delivery Robot in Luxury Hotel Corridor with AR Navigation Overlay"
+                  className="w-full h-full object-cover"
+                  data-testid="flashbot-hotels-image"
+                />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">Hotels & Resorts</h3>
