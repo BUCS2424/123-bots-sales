@@ -545,6 +545,10 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - [x] User-supplied image (Gausium robot scrubber cleaning a retail warehouse aisle next to pallets of boxed produce) applied to the image slot to the left of the **"Gausium Leaves Integration"** heading (Capability 4: Eco-Friendly Operation), replacing the `[Image: Gausium Leaves System]` text placeholder (`data-testid="mira-gausium-leaves-image"`).
 - Self-verified via screenshot at `/products/gausium-mira`.
 
+### Feature — Gausium Mira "No Remapping Required" Video Embed (July 26, 2026)
+- [x] Embedded user-provided YouTube video (`https://www.youtube.com/watch?v=VpiFJjuKO0Y` — "Gausium Mira | Navigating Narrow Aisles") in the right video slot next to the **"No Remapping Required"** heading (Capability 3: Dynamic Layout Adaptation), replacing the `[Video: Dynamic Navigation]` placeholder with a real `<iframe>` YouTube embed (`data-testid="mira-dynamic-navigation-video"`). Removed the now-unused `Play` icon import.
+- Self-verified via screenshot at `/products/gausium-mira` — video thumbnail/embed renders correctly.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
