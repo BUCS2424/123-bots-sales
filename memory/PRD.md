@@ -603,6 +603,11 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - Remaining placeholders in same row: "Hospitals & Healthcare" and "Offices & Buildings" — awaiting user images.
 - Self-verified via screenshot.
 
+### Feature — FlashBot Max "Offices & Buildings" Image (July 26, 2026)
+- [x] User-supplied image (FlashBot Max robot with 3D wireframe/hologram office building navigation visualization) applied to the **"Offices & Buildings"** card in the "Versatile Applications" section, replacing `[Image: Office Delivery]` (`data-testid="flashbot-offices-image"`).
+- Only remaining placeholder in this row: **"Hospitals & Healthcare"** — awaiting user image.
+- Self-verified via screenshot.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
