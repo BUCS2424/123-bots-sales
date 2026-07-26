@@ -18,6 +18,7 @@ import uuid
 from auth import decode_token, is_admin_or_above
 from durango_payments import get_stripe_secret_key
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionRequest
+from email_utils import send_email
 
 router = APIRouter(prefix="/api/tours-charters", tags=["Tours Charters Billing"])
 public_router = APIRouter(prefix="/api/public/tours-charters", tags=["Tours Charters Billing Public"])
@@ -213,6 +214,57 @@ async def delete_invoice(invoice_id: str, authorization: Optional[str] = Header(
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Invoice not found")
     return {"success": True}
+
+
+@router.post("/invoices/{invoice_id}/send-email")
+async def send_invoice_email(invoice_id: str, payload: dict = Body(default={}), authorization: Optional[str] = Header(None), db=Depends(get_db)):
+    _require_admin_token(authorization)
+    invoice = await db.tours_charters_invoices.find_one({"id": invoice_id}, {"_id": 0})
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    seller = await db.activity_sellers.find_one({"id": invoice.get("seller_id")}, {"_id": 0}) or {}
+    business = await db.admin_settings.find_one({"type": "business"}, {"_id": 0}) or {}
+
+    recipient = (payload.get("email") or "").strip() or seller.get("invoice_email") or seller.get("contact_email")
+    if not recipient:
+        raise HTTPException(status_code=400, detail="This charter company has no invoice or contact email on file")
+
+    origin = (payload.get("origin_url") or "").rstrip("/")
+    invoice_link = f"{origin}/invoice/tours-charters/{invoice_id}"
+    business_name = business.get("business_name", "123Bots")
+
+    subject = f"Invoice {invoice.get('invoice_number')} from {business_name}"
+    text_body = (
+        f"You have a new invoice from {business_name}.\n\n"
+        f"Invoice: {invoice.get('invoice_number')}\n"
+        f"Amount Due: ${invoice.get('amount_due', 0):.2f}\n\n"
+        f"View and pay your invoice here: {invoice_link}"
+    )
+    html_body = f"""
+    <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;">
+      <h2 style="color:#0f172a;">Invoice {invoice.get('invoice_number')}</h2>
+      <p style="color:#475569;">You have a new invoice from <strong>{business_name}</strong>.</p>
+      <p style="color:#475569;">Amount Due: <strong>${invoice.get('amount_due', 0):.2f}</strong></p>
+      <p style="margin:24px 0;">
+        <a href="{invoice_link}" style="background:#0d9488;color:#ffffff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">View &amp; Pay Invoice</a>
+      </p>
+      <p style="color:#94a3b8;font-size:12px;">Or copy this link: {invoice_link}</p>
+    </div>
+    """
+
+    email_sent = False
+    try:
+        email_sent = await send_email(recipient, subject, html_body, text_body)
+    except Exception:
+        email_sent = False
+
+    await db.tours_charters_invoices.update_one(
+        {"id": invoice_id},
+        {"$set": {"last_sent_at": _now_iso(), "last_sent_to": recipient, "updated_at": _now_iso()}},
+    )
+
+    return {"success": True, "email_sent": email_sent, "recipient": recipient, "invoice_link": invoice_link}
+
 
 
 # =============== PUBLIC INVOICE VIEW + PAYMENT ===============

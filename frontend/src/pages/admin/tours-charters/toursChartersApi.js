@@ -28,6 +28,7 @@ export const toursChartersApi = {
   createInvoice: (data) => axios.post(`${API}/tours-charters/invoices`, data, { headers: authHeaders() }),
   updateInvoice: (id, data) => axios.put(`${API}/tours-charters/invoices/${id}`, data, { headers: authHeaders() }),
   deleteInvoice: (id) => axios.delete(`${API}/tours-charters/invoices/${id}`, { headers: authHeaders() }),
+  sendInvoiceEmail: (id, data) => axios.post(`${API}/tours-charters/invoices/${id}/send-email`, data, { headers: authHeaders() }),
   getInvoiceSettings: () => axios.get(`${API}/tours-charters/invoice-settings`, { headers: authHeaders() }),
   updateInvoiceSettings: (data) => axios.put(`${API}/tours-charters/invoice-settings`, data, { headers: authHeaders() }),
 };

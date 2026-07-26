@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Plus, Trash2, Pencil, Receipt, Loader2, X, ExternalLink, CheckCircle2, Ban, Settings2 } from 'lucide-react';
+import { Plus, Trash2, Pencil, Receipt, Loader2, X, ExternalLink, CheckCircle2, Ban, Settings2, Send } from 'lucide-react';
 import { toursChartersApi } from './toursChartersApi';
 import { toast } from '../../../hooks/use-toast';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../../../components/ui/sheet';
@@ -31,6 +31,7 @@ const ToursChartersInvoices = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [invoiceSettings, setInvoiceSettings] = useState({ default_bank_info: '', default_venmo_info: '', default_check_info: '', default_custom_note: '', default_sale_agent: '' });
   const [savingSettings, setSavingSettings] = useState(false);
+  const [sendingId, setSendingId] = useState(null);
   const sellerFilter = searchParams.get('seller_id') || '';
 
   const load = () => {
@@ -109,6 +110,21 @@ const ToursChartersInvoices = () => {
     catch { toast({ title: 'Error', variant: 'destructive' }); }
   };
 
+  const sendToCompany = async (inv) => {
+    setSendingId(inv.id);
+    try {
+      const res = await toursChartersApi.sendInvoiceEmail(inv.id, { origin_url: window.location.origin });
+      if (res.data.email_sent) {
+        toast({ title: 'Email sent', description: `Invoice emailed to ${res.data.recipient}` });
+      } else {
+        try { await navigator.clipboard.writeText(res.data.invoice_link); } catch { /* clipboard may be unavailable */ }
+        toast({ title: 'Email not sent (SMTP not configured)', description: 'Invoice link copied to clipboard instead - share it manually.', variant: 'destructive' });
+      }
+      load();
+    } catch (e) { toast({ title: 'Error', description: e.response?.data?.detail, variant: 'destructive' }); }
+    finally { setSendingId(null); }
+  };
+
   const saveSettings = async () => {
     setSavingSettings(true);
     try { await toursChartersApi.updateInvoiceSettings(invoiceSettings); toast({ title: 'Invoice defaults saved' }); setSettingsOpen(false); }
@@ -160,7 +176,12 @@ const ToursChartersInvoices = () => {
             <tbody>
               {filteredInvoices.map((inv) => (
                 <tr key={inv.id} className="border-b border-white/5 last:border-b-0 hover:bg-white/5" data-testid={`invoice-row-${inv.id}`}>
-                  <td className="p-3 font-mono text-xs">{inv.invoice_number}</td>
+                  <td className="p-3 font-mono text-xs">
+                    {inv.invoice_number}
+                    {inv.last_sent_at && (
+                      <p className="mt-0.5 font-sans text-[10px] normal-case text-white/30" data-testid={`invoice-last-sent-${inv.id}`}>Sent {inv.last_sent_at.slice(0, 10)}</p>
+                    )}
+                  </td>
                   <td className="p-3">{inv.seller_name}</td>
                   <td className="p-3 text-white/60">{inv.invoice_date}</td>
                   <td className="p-3">
@@ -170,6 +191,9 @@ const ToursChartersInvoices = () => {
                   <td className="p-3 text-right text-white/60">${inv.amount_due?.toFixed(2)}</td>
                   <td className="p-3">
                     <div className="flex items-center justify-end gap-1">
+                      <button onClick={() => sendToCompany(inv)} disabled={sendingId === inv.id} className="rounded-lg p-1.5 text-sky-300 hover:bg-sky-500/10 disabled:opacity-50" title="Send to charter company" data-testid={`invoice-send-email-${inv.id}`}>
+                        {sendingId === inv.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                      </button>
                       <a href={`${BACKEND_URL}/invoice/tours-charters/${inv.id}`} target="_blank" rel="noopener noreferrer" className="rounded-lg p-1.5 text-teal-300 hover:bg-teal-500/10" title="View public invoice" data-testid={`invoice-view-${inv.id}`}><ExternalLink className="h-3.5 w-3.5" /></a>
                       {inv.status === 'unpaid' && (
                         <button onClick={() => markPaid(inv)} className="rounded-lg p-1.5 text-emerald-300 hover:bg-emerald-500/10" title="Mark paid" data-testid={`invoice-mark-paid-${inv.id}`}><CheckCircle2 className="h-3.5 w-3.5" /></button>
@@ -254,6 +278,12 @@ const ToursChartersInvoices = () => {
               <button onClick={save} disabled={saving} className="w-full rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 py-2.5 text-sm font-semibold disabled:opacity-50" data-testid="invoice-save-btn">
                 {saving ? 'Saving...' : modal.id ? 'Save Changes' : 'Create Invoice'}
               </button>
+
+              {modal.id && (
+                <button onClick={() => sendToCompany(modal)} disabled={sendingId === modal.id} className="flex w-full items-center justify-center gap-2 rounded-xl border border-sky-500/30 py-2.5 text-sm font-semibold text-sky-300 hover:bg-sky-500/10 disabled:opacity-50" data-testid="invoice-send-to-company-btn">
+                  {sendingId === modal.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Send to Charter Company
+                </button>
+              )}
             </div>
           </SheetContent>
         </Sheet>
