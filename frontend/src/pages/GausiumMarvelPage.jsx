@@ -234,8 +234,13 @@ const GausiumMarvelPage = () => {
             <div className="order-2 md:order-1 relative">
               <div className="absolute inset-0 bg-green-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
-                <div className="aspect-video bg-gray-800/50 rounded-xl flex items-center justify-center">
-                  <img src="https://images.unsplash.com/photo-1622118416167-f4c3d46eda67?w=800" alt="Drop and go deployment" className="w-full h-full object-cover rounded-xl opacity-70" />
+                <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
+                  <img
+                    src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/kqzrs46k_image.png"
+                    alt="Gausium Robot Drop and Go Auto Deployment at Trade Show Booth"
+                    className="w-full h-full object-cover rounded-xl"
+                    data-testid="marvel-drop-and-go-image"
+                  />
                 </div>
               </div>
             </div>

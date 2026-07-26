@@ -579,6 +579,10 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - Note: page still has a further-down "[Image: Power-Assisting Handle]" placeholder in the "Power-Assisting Manual Mode" section — untouched, out of scope for this request.
 - Self-verified via screenshot.
 
+### Feature — Gausium Marvel "Drop & Go Auto Deployment" Image (July 26, 2026)
+- [x] User-supplied image (Gausium sweeper robot at a trade show/exhibition booth) applied next to **"Drop & Go Auto Deployment"** heading, replacing the previous generic Unsplash stock placeholder (`data-testid="marvel-drop-and-go-image"`).
+- Self-verified via screenshot.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
