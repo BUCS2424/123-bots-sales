@@ -9,4 +9,4 @@
 - Password: peptides
 
 ## Site Password (Coming Soon Gate)
-- Password: 8487 (Currently disabled)
+- Password: 8487 (Currently DISABLED as of July 26, 2026 - was found ON, toggled off for testing convenience)
