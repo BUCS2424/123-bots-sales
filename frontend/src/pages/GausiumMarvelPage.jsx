@@ -375,8 +375,13 @@ const GausiumMarvelPage = () => {
 
             {/* Car Parking */}
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-slate-500/50 transition-all hover:transform hover:scale-105">
-              <div className="aspect-video bg-gradient-to-br from-purple-600/20 to-purple-800/20 flex items-center justify-center">
-                <span className="text-gray-400">[Image: Parking]</span>
+              <div className="aspect-video bg-gradient-to-br from-purple-600/20 to-purple-800/20 flex items-center justify-center overflow-hidden">
+                <img
+                  src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/e9a8uht2_car-parking.jpg"
+                  alt="Gausium Marvel Cleaning Robot in Underground Car Parking Garage"
+                  className="w-full h-full object-cover"
+                  data-testid="marvel-car-parking-image"
+                />
               </div>
               <div className="p-6">
                 <h3 className="text-xl font-bold text-white mb-2">Car Parking</h3>

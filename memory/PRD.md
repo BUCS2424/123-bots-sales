@@ -563,6 +563,11 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - [x] Replaced the previously embedded video with a new user-provided YouTube video (`https://www.youtube.com/watch?v=Fc7AF430A9Y`) in the same slot next to **"No Remapping Required"** (`data-testid="mira-dynamic-navigation-video"`).
 - Self-verified via screenshot — new video thumbnail/embed renders correctly.
 
+### Feature — Gausium Marvel "Car Parking" Image (July 26, 2026)
+- [x] User-supplied image (Gausium robot cleaning an underground parking garage between rows of parked cars) applied to the **"Car Parking"** card in the "Built for Complex Spaces" section of `GausiumMarvelPage.jsx`, replacing the `[Image: Parking]` text placeholder (`data-testid="marvel-car-parking-image"`).
+- Only **Manufacturing** and **Retail** cards remain placeholders in this row.
+- Self-verified via screenshot.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
