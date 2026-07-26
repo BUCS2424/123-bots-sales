@@ -346,8 +346,13 @@ const GausiumMiraPage = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {/* Smart Cloud Platform */}
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-emerald-500/50 transition-all hover:transform hover:scale-105">
-              <div className="aspect-video bg-gradient-to-br from-emerald-600/20 to-emerald-800/20 flex items-center justify-center">
-                <span className="text-gray-400">[Image: Cloud Dashboard]</span>
+              <div className="aspect-video bg-gradient-to-br from-emerald-600/20 to-emerald-800/20 flex items-center justify-center overflow-hidden">
+                <img
+                  src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/kgsj6420_remote-map-editing-gausium-scaled.webp"
+                  alt="Gausium Cloud Platform Remote Map Editing Dashboard"
+                  className="w-full h-full object-cover"
+                  data-testid="mira-smart-cloud-platform-image"
+                />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">Smart Cloud Platform</h3>

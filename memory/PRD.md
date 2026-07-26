@@ -536,6 +536,11 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - Note: user's initial phrasing referenced "Smart Cloud Platform" but the image content (laptop+tablet+phone, mobile data stats) matched the adjacent "User-Friendly Mobile App" card, confirmed via image analysis before editing. "Smart Cloud Platform" and "Open API & IoT Integration" cards still show text placeholders (untouched, out of scope for this request).
 - Self-verified via screenshot at correct preview URL (`https://booking-crm-preview-1.preview.emergentagent.com/products/gausium-mira`) — image renders correctly, no testing agent needed for this isolated visual change.
 
+### Bug Fix — Gausium Mira "Smart Cloud Platform" Image (July 26, 2026)
+- [x] User-supplied image (desktop monitor showing `cloud.gs-robot.com` map-editing dashboard — virtual wall/fencing tools, aerial facility map) applied to the **"Smart Cloud Platform"** card (same Platform Integration section), replacing the `[Image: Cloud Dashboard]` text placeholder with a real `<img>` (`data-testid="mira-smart-cloud-platform-image"`).
+- Only remaining placeholder in this 3-card row is "Open API & IoT Integration" — awaiting a user-supplied image.
+- Self-verified via screenshot at `/products/gausium-mira` — both cards render correctly side-by-side.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
