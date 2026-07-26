@@ -608,6 +608,11 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - Only remaining placeholder in this row: **"Hospitals & Healthcare"** — awaiting user image.
 - Self-verified via screenshot.
 
+### Feature — FlashBot Max "Hospitals & Healthcare" Image + Section Complete (July 26, 2026)
+- [x] User-supplied image (isometric hospital illustration with FlashBot Max robot fleet, "PUDU OS" cloud connectivity, medical rooms/staff/equipment) applied to the **"Hospitals & Healthcare"** card, replacing `[Image: Hospital Robot]` (`data-testid="flashbot-hospitals-image"`).
+- **All 3 cards in the "Versatile Applications" row on `/products/flashbot-max` are now complete**: Hotels & Resorts, Hospitals & Healthcare, Offices & Buildings — no remaining placeholders.
+- Self-verified via screenshot.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
