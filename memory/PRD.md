@@ -511,6 +511,11 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - Native in-app booking via 123Bots cart/checkout — future scope
 - Charter Company slide-out "creation and information on each" (richer per-company profile/dashboard) — next planned enhancement per user
 
+### Completed (July 26, 2026 - Dashboard light theme)
+- [x] **Tours / Charters Dashboard** (`ToursChartersDashboard.jsx`) converted from dark-theme custom styling to the standard light admin theme (shadcn `Card`/`CardContent`, gray-900/gray-500 text, colored icon circle badges) to match `AdminDashboard.jsx` conventions
+- [x] All 6 stat boxes now sit in a single row on desktop (`grid-cols-2 sm:grid-cols-3 lg:grid-cols-6`), 2-3 per row on smaller screens
+- [x] Self-verified via screenshot + API (stats endpoint unchanged, values render correctly: 1/1/1/1/0/$0.00)
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**

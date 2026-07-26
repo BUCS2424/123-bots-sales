@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Compass, Tag, Building2, Sparkles, CalendarCheck, DollarSign, Loader2 } from 'lucide-react';
+import { Compass, Tag, Building2, Sparkles, CalendarCheck, DollarSign } from 'lucide-react';
+import { Card, CardContent } from '../../../components/ui/card';
 import { toursChartersApi } from './toursChartersApi';
 
-const StatCard = ({ icon: Icon, label, value, accent, testId }) => (
-  <div
-    className="rounded-2xl border border-white/10 bg-[#0b1f24] p-5"
-    data-testid={testId}
-  >
-    <div className="mb-3 flex items-center justify-between">
-      <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${accent}`}>
-        <Icon className="h-5 w-5 text-white" />
-      </span>
-    </div>
-    <p className="text-2xl font-black text-white">{value}</p>
-    <p className="mt-1 text-xs font-medium uppercase tracking-wide text-white/40">{label}</p>
-  </div>
+const StatCard = ({ icon: Icon, label, value, iconBg, iconColor, testId }) => (
+  <Card data-testid={testId}>
+    <CardContent className="p-5">
+      <div className="flex items-center justify-between">
+        <div className="min-w-0">
+          <p className="truncate text-xs font-medium text-gray-500">{label}</p>
+          <p className="mt-1 text-2xl font-bold text-gray-900">{value}</p>
+        </div>
+        <div className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full ${iconBg}`}>
+          <Icon className={`h-5 w-5 ${iconColor}`} />
+        </div>
+      </div>
+    </CardContent>
+  </Card>
 );
 
 const ToursChartersDashboard = () => {
@@ -29,40 +31,40 @@ const ToursChartersDashboard = () => {
   }, []);
 
   const cards = [
-    { icon: Sparkles, label: 'Total Activities', value: stats?.total_activities ?? 0, accent: 'bg-teal-500', testId: 'stat-total-activities' },
-    { icon: CalendarCheck, label: 'Active Listings', value: stats?.active_activities ?? 0, accent: 'bg-cyan-500', testId: 'stat-active-activities' },
-    { icon: Tag, label: 'Activity Categories', value: stats?.total_categories ?? 0, accent: 'bg-sky-500', testId: 'stat-total-categories' },
-    { icon: Building2, label: 'Charter Companies', value: stats?.total_sellers ?? 0, accent: 'bg-blue-500', testId: 'stat-total-sellers' },
-    { icon: Compass, label: 'Bookings (Coming Soon)', value: stats?.total_bookings ?? 0, accent: 'bg-indigo-500', testId: 'stat-total-bookings' },
-    { icon: DollarSign, label: 'Commission Revenue', value: `$${(stats?.commission_revenue ?? 0).toFixed(2)}`, accent: 'bg-emerald-500', testId: 'stat-commission-revenue' },
+    { icon: Sparkles, label: 'Total Activities', value: stats?.total_activities ?? 0, iconBg: 'bg-teal-100', iconColor: 'text-teal-600', testId: 'stat-total-activities' },
+    { icon: CalendarCheck, label: 'Active Listings', value: stats?.active_activities ?? 0, iconBg: 'bg-cyan-100', iconColor: 'text-cyan-600', testId: 'stat-active-activities' },
+    { icon: Tag, label: 'Activity Categories', value: stats?.total_categories ?? 0, iconBg: 'bg-sky-100', iconColor: 'text-sky-600', testId: 'stat-total-categories' },
+    { icon: Building2, label: 'Charter Companies', value: stats?.total_sellers ?? 0, iconBg: 'bg-blue-100', iconColor: 'text-blue-600', testId: 'stat-total-sellers' },
+    { icon: Compass, label: 'Bookings (Coming Soon)', value: stats?.total_bookings ?? 0, iconBg: 'bg-indigo-100', iconColor: 'text-indigo-600', testId: 'stat-total-bookings' },
+    { icon: DollarSign, label: 'Commission Revenue', value: `$${(stats?.commission_revenue ?? 0).toFixed(2)}`, iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', testId: 'stat-commission-revenue' },
   ];
 
   return (
-    <div className="-m-4 min-h-screen bg-[#061a1f] p-5 text-white lg:-m-6 lg:p-8" data-testid="tours-charters-dashboard">
-      <div className="mb-6">
-        <h1 className="flex items-center gap-2 text-2xl font-black">
-          <Compass className="h-6 w-6 text-teal-400" /> Tours / Charters
+    <div className="space-y-6" data-testid="tours-charters-dashboard">
+      <div>
+        <h1 className="flex items-center gap-3 text-2xl font-bold text-gray-900">
+          <Compass className="h-7 w-7 text-teal-500" /> Tours / Charters
         </h1>
-        <p className="mt-1 text-sm text-white/40">Activity &amp; Charter Marketplace overview. Stat labels and metrics are placeholders and will be finalized as the module is built out.</p>
+        <p className="mt-1 text-gray-500">Activity &amp; Charter Marketplace overview. Stat labels and metrics are placeholders and will be finalized as the module is built out.</p>
       </div>
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <Loader2 className="h-7 w-7 animate-spin text-teal-400" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-teal-500 border-t-transparent" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {cards.map((c) => (
             <StatCard key={c.testId} {...c} />
           ))}
         </div>
       )}
 
-      <div className="mt-8 rounded-2xl border border-dashed border-white/10 bg-[#0b1f24] p-6 text-sm text-white/40" data-testid="tours-charters-roadmap-note">
-        <p className="font-semibold text-white/70 mb-2">Building this out step by step:</p>
+      <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-6 text-sm text-gray-500" data-testid="tours-charters-roadmap-note">
+        <p className="mb-2 font-semibold text-gray-700">Building this out step by step:</p>
         <ul className="list-disc space-y-1 pl-5">
           <li>Categories &amp; Activities — live now, manage them from the sidebar</li>
-          <li>Seller Tenants (charter companies) — quick-add from the Activities screen for now, dedicated CRM page next</li>
+          <li>Charter Companies — full CRM page live now with search/filters</li>
           <li>Subcategories, Tags, Billing (commission tracking), and Analytics — coming as this module grows</li>
         </ul>
       </div>
