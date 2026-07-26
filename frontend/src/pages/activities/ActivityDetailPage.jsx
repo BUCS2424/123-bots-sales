@@ -49,11 +49,13 @@ const ActivityDetailPage = () => {
     setBookingOpen(true);
   };
 
-  const trackExternalClick = () => {
+  const trackExternalClick = (e) => {
+    e.preventDefault();
     const sessionId = newBookingSessionId();
     const baseEvent = { activity_id: activity.id, activity_title: activity.title, seller_id: activity.seller_id, seller_name: activity.seller?.name, booking_provider: activity.booking_provider, page_context: 'detail', session_id: sessionId };
     trackBookingEvent({ ...baseEvent, event_type: 'book_now_click' });
     trackBookingEvent({ ...baseEvent, event_type: 'external_redirect' });
+    window.open(activity.booking_url, '_blank', 'noopener,noreferrer');
   };
 
   const handleDrawerOpenChange = (open) => {
@@ -125,9 +127,9 @@ const ActivityDetailPage = () => {
                         <Anchor className="h-4 w-4" /> Book Now
                       </button>
                     ) : activity.booking_type === 'external_link' && activity.booking_url ? (
-                      <a href={activity.booking_url} target="_blank" rel="noopener noreferrer" onClick={trackExternalClick} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 px-6 py-3 text-sm font-bold text-white transition hover:opacity-90" data-testid="activity-book-now-button">
+                      <button onClick={trackExternalClick} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 px-6 py-3 text-sm font-bold text-white transition hover:opacity-90" data-testid="activity-book-now-button">
                         Book Now <ExternalLink className="h-4 w-4" />
-                      </a>
+                      </button>
                     ) : (
                       <span className="inline-flex items-center gap-2 rounded-xl border border-dashed border-white/20 px-6 py-3 text-sm font-semibold text-white/40" data-testid="activity-booking-coming-soon">
                         In-App Booking Coming Soon
