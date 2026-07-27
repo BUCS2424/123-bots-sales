@@ -1,0 +1,38 @@
+{
+  "summary": "Verified bug fix for 'Product availability' (in_stock) toggle not hiding disabled products from public storefront. All 4 modified endpoints in backend/ecommerce.py (list_products, list_products_with_pricing, get_product, get_product_by_seo) now correctly exclude in_stock=false products for unauthenticated requests, mirroring the existing is_visible pattern. Verified via 10 pytest backend tests (100% pass) AND full end-to-end Playwright UI flow covering all 6 requested test scenarios using the live PUDU CC1 PRO product and the actual Admin Product Editor + public /shop grid.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "AdminProducts list page", "issue": "When only 'Visibility on Live Site' is set to Hidden (in_stock still Enabled), the products list row only shows 'Enabled'/'In stock' badges with no 'Hidden' indicator - admin can't tell at a glance that the product is hidden from the list view alone (must open editor to see). Minor UX gap, not a functional bug since public visibility correctly excludes it.", "selector": "AdminProducts.jsx product row badges", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_product_availability_visibility.py",
+    "/app/test_reports/pytest/pytest_results_availability.xml"
+  ],
+  "action_items": [
+    "No action required - bug fix verified working correctly end-to-end.",
+    "Optional/cosmetic: consider adding a 'Hidden' badge to AdminProducts list rows when is_visible=false, independent of the in_stock badge, for better admin-at-a-glance status visibility."
+  ],
+  "critical_code_review_comments": [
+    "Fix correctly applied symmetrically to is_visible pattern across all 4 public product endpoints (list, priced list, get by id, get by seo) - good consistency.",
+    "Admin/authenticated bypass logic correctly reused existing auth-check pattern (decode_token via Authorization header) rather than duplicating logic - clean.",
+    "No MongoDB _id leakage observed in any product API responses (all use {'_id': 0} projection).",
+    "ecommerce.py is a large file (1685 lines) - consider splitting product/order/shipping concerns into separate router modules for maintainability (not blocking, just a note)."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_product_availability_visibility.py"
+  ],
+  "success_rate": {"backend": "100% (10/10 pytest)", "frontend": "100% (6/6 manual UI scenarios via Playwright)"},
+  "test_credentials": "Admin: mel@a2gdesigns.com / BigDaddy2016!! (from /app/memory/test_credentials.md) - worked correctly",
+  "seed_data_creation": "None - used existing PUDU CC1 PRO product (id: 1a95914e-8136-4517-ab15-075405207856) for all tests. Restored to original Enabled+Visible state after testing (verified via final GET check: in_stock=true, is_visible=true).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Bug fix for Product availability (in_stock) vs public storefront visibility is FULLY VERIFIED and working correctly both at API level (backend/ecommerce.py 4 endpoints) and full UI flow (Admin Product Editor toggles -> public /shop grid at /shop/products?category=X and direct SEO URL). Note the actual public product grid URL is /shop/products?category={slug}, NOT /shop or /shop/{category} (those are category-card landing pages with static footer links that can cause false positives if searching page body text naively - use the /shop/products?category= route for actual product-grid assertions). New regression test file backend/tests/test_product_availability_visibility.py can be reused for future regression runs (covers in_stock disable/enable, is_visible hide/show independently, admin bypass, and cleanup fixture auto-restores state after each test).",
+  "rca_of_the_issue": "Confirmed root cause: public product endpoints in backend/ecommerce.py previously filtered only on is_visible field for unauthenticated users, never checking in_stock (which the admin UI 'Product availability' toggle actually sets). Fix added an equivalent $or exclusion filter for in_stock (True or field doesn't exist) alongside the existing is_visible filter in all 4 relevant endpoints, and added the same in_stock check to the single-product hidden-check blocks in get_product and get_product_by_seo. Fix is correct, symmetric, and does not break the independent is_visible/Hidden mechanism (verified via dedicated regression tests)."
+}

@@ -340,6 +340,8 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
             if not is_authenticated:
                 query["$and"] = query.get("$and", [])
                 query["$and"].append({"$or": [{"is_visible": True}, {"is_visible": {"$exists": False}}]})
+                # Disabled products (Product availability toggle) should not appear on the public storefront
+                query["$and"].append({"$or": [{"in_stock": True}, {"in_stock": {"$exists": False}}]})
         
         products = await db.products.find(query, {"_id": 0}).limit(limit).to_list(limit)
         for product in products:
@@ -392,6 +394,8 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
         if not is_authenticated:
             query["$and"] = query.get("$and", [])
             query["$and"].append({"$or": [{"is_visible": True}, {"is_visible": {"$exists": False}}]})
+            # Disabled products (Product availability toggle) should not appear on the public storefront
+            query["$and"].append({"$or": [{"in_stock": True}, {"in_stock": {"$exists": False}}]})
         
         products = await db.products.find(query, {"_id": 0}).limit(limit).to_list(limit)
         for product in products:
@@ -675,7 +679,8 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
         
         # Check if product is hidden and user is not authenticated
         is_visible = product.get("is_visible", True)
-        if not is_visible:
+        in_stock_enabled = product.get("in_stock", True)
+        if not is_visible or not in_stock_enabled:
             is_authenticated = False
             auth_header = request.headers.get("Authorization")
             if auth_header and auth_header.startswith("Bearer "):
@@ -925,7 +930,8 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
 
         # Check if product is hidden and user is not authenticated
         is_visible = product.get("is_visible", True)
-        if not is_visible:
+        in_stock_enabled = product.get("in_stock", True)
+        if not is_visible or not in_stock_enabled:
             is_authenticated = False
             auth_header = request.headers.get("Authorization")
             if auth_header and auth_header.startswith("Bearer "):
