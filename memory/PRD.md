@@ -636,6 +636,12 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - Note: page still has "[Image: Disc Head]" and "[Image: Cylindrical Head]" placeholders further down in "Flexible Cleaning Head Options" — untouched, out of scope for this request.
 - Self-verified via screenshot.
 
+### Bug Fix — Disabled Products Still Showing on Live Storefront (July 27, 2026)
+- **Root cause**: The Admin Product Editor's "Product availability" toggle (Enabled/Disabled) sets the `in_stock` field, but the public storefront endpoints in `backend/ecommerce.py` only ever filtered on the separate `is_visible` field ("Visibility on Live Site" toggle). So disabling a product had zero effect on public visibility — it kept showing on `/shop` and was directly reachable.
+- [x] Fixed 4 public endpoints in `backend/ecommerce.py` to also exclude `in_stock=false` products for unauthenticated/public requests, mirroring the existing `is_visible` exclusion pattern: `list_products`, `list_products_with_pricing`, `get_product` (by id), `get_product_by_seo`. Authenticated/admin users can still preview disabled products (same as existing hidden-product behavior).
+- Verified via `testing_agent_v4_fork` (iteration_95.json): 10/10 backend pytest + 6/6 frontend Playwright scenarios passed. New regression test file: `backend/tests/test_product_availability_visibility.py`.
+- Minor cosmetic gap noted (not fixed, low priority): AdminProducts list rows don't show a separate "Hidden" badge when only `is_visible=false` — must open editor to confirm. Not a functional bug.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
