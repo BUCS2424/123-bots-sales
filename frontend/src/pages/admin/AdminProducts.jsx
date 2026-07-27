@@ -537,6 +537,11 @@ const AdminProducts = () => {
                       <Badge variant="outline" data-testid={`product-stock-badge-${product.id}`}>
                         {product.in_stock ? 'In stock' : 'Out of stock'}
                       </Badge>
+                      {product.is_visible === false && (
+                        <Badge className="bg-amber-100 text-amber-700" data-testid={`product-hidden-badge-${product.id}`}>
+                          Hidden
+                        </Badge>
+                      )}
                       {(Array.isArray(product.categories) && product.categories.length > 0 ? product.categories : [product.category])
                         .filter(Boolean)
                         .slice(0, 3)

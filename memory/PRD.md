@@ -642,6 +642,10 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - Verified via `testing_agent_v4_fork` (iteration_95.json): 10/10 backend pytest + 6/6 frontend Playwright scenarios passed. New regression test file: `backend/tests/test_product_availability_visibility.py`.
 - Minor cosmetic gap noted (not fixed, low priority): AdminProducts list rows don't show a separate "Hidden" badge when only `is_visible=false` — must open editor to confirm. Not a functional bug.
 
+### Feature — "Hidden" Badge on Admin Products List (July 27, 2026)
+- [x] Added an amber "Hidden" badge (`data-testid="product-hidden-badge-{id}"`) next to the existing Enabled/Disabled and In stock/Out of stock badges on the Admin Products list (`AdminProducts.jsx`), shown whenever `is_visible === false`. Lets admins spot unpublished products at a glance without opening the editor.
+- Self-verified via screenshot — badge appears/disappears correctly as `is_visible` is toggled. Test product restored to `is_visible: true` after verification.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
