@@ -16,7 +16,7 @@ import logging
 import uuid
 from urllib.parse import urlencode
 from dotenv import load_dotenv
-from auth import decode_token
+from auth import decode_token, is_admin_or_above
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionRequest, CheckoutStatusResponse
 
 load_dotenv()
@@ -1380,15 +1380,32 @@ async def capture_paypal_order(paypal_order_id: str):
     }
 
 
+def _require_admin_from_request(request: Request):
+    """Lightweight admin check for order trash actions. Returns decoded TokenData."""
+    auth_header = request.headers.get("Authorization", "")
+    token_str = auth_header.replace("Bearer ", "").strip() if auth_header.startswith("Bearer ") else ""
+    if not token_str:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    token_data = decode_token(token_str)
+    if not token_data or not is_admin_or_above(token_data.role):
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return token_data
+
+
+class OrderIdsRequest(BaseModel):
+    order_ids: List[str]
+
+
 @router.get("/orders")
 async def get_orders(limit: int = 50, skip: int = 0):
-    """Get all orders (admin)"""
+    """Get all orders (admin). Trashed orders are excluded."""
+    query = {"is_deleted": {"$ne": True}}
     orders = await db.orders.find(
-        {},
+        query,
         {"_id": 0}
     ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
     
-    total = await db.orders.count_documents({})
+    total = await db.orders.count_documents(query)
     
     return {
         "orders": orders,
@@ -1396,6 +1413,66 @@ async def get_orders(limit: int = 50, skip: int = 0):
         "limit": limit,
         "skip": skip
     }
+
+
+@router.get("/orders/trash")
+async def get_trashed_orders(request: Request, limit: int = 500):
+    """Get all trashed (soft-deleted) orders (any admin)"""
+    _require_admin_from_request(request)
+    orders = await db.orders.find({"is_deleted": True}, {"_id": 0}).sort("deleted_at", -1).limit(limit).to_list(limit)
+    return {"orders": orders, "total": len(orders)}
+
+
+@router.post("/orders/bulk-trash")
+async def bulk_trash_orders(payload: OrderIdsRequest, request: Request):
+    """Move one or more orders to the trash (soft delete)"""
+    admin = _require_admin_from_request(request)
+    if not payload.order_ids:
+        raise HTTPException(status_code=400, detail="No order IDs provided")
+    now = datetime.now(timezone.utc)
+    result = await db.orders.update_many(
+        {"id": {"$in": payload.order_ids}},
+        {"$set": {
+            "is_deleted": True,
+            "deleted_at": now.isoformat(),
+            "deleted_by": admin.email,
+            "updated_at": now.isoformat(),
+        }}
+    )
+    return {"success": True, "trashed_count": result.modified_count}
+
+
+@router.post("/orders/bulk-restore")
+async def bulk_restore_orders(payload: OrderIdsRequest, request: Request):
+    """Restore one or more orders from the trash"""
+    _require_admin_from_request(request)
+    if not payload.order_ids:
+        raise HTTPException(status_code=400, detail="No order IDs provided")
+    now = datetime.now(timezone.utc)
+    result = await db.orders.update_many(
+        {"id": {"$in": payload.order_ids}},
+        {"$set": {"is_deleted": False, "updated_at": now.isoformat()},
+         "$unset": {"deleted_at": "", "deleted_by": ""}}
+    )
+    return {"success": True, "restored_count": result.modified_count}
+
+
+@router.post("/orders/bulk-permanent-delete")
+async def bulk_permanent_delete_orders(payload: OrderIdsRequest, request: Request):
+    """Permanently delete one or more orders that are already in the trash"""
+    _require_admin_from_request(request)
+    if not payload.order_ids:
+        raise HTTPException(status_code=400, detail="No order IDs provided")
+    result = await db.orders.delete_many({"id": {"$in": payload.order_ids}, "is_deleted": True})
+    return {"success": True, "deleted_count": result.deleted_count}
+
+
+@router.post("/orders/trash/empty")
+async def empty_orders_trash(request: Request):
+    """Permanently delete ALL trashed orders"""
+    _require_admin_from_request(request)
+    result = await db.orders.delete_many({"is_deleted": True})
+    return {"success": True, "deleted_count": result.deleted_count}
 
 
 @router.get("/orders/{order_id}")

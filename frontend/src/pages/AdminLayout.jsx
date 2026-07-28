@@ -24,6 +24,7 @@ import AdminDashboard from './admin/AdminDashboard';
 import AdminProducts from './admin/AdminProducts';
 import AdminProductEditor from './admin/AdminProductEditor';
 import AdminOrders from './admin/AdminOrders';
+import AdminOrdersTrash from './admin/AdminOrdersTrash';
 import AdminCustomers from './admin/AdminCustomers';
 import AdminInventory from './admin/AdminInventory';
 import AdminDiscounts from './admin/AdminDiscounts';
@@ -655,6 +656,7 @@ const AdminLayout = () => {
     if (path === '/admin') return <AdminDashboard />;
     if (path === '/admin/cart') return <AdminDashboard />;
     if (path === '/admin/orders') return <AdminOrders />;
+    if (path === '/admin/orders/trash') return <AdminOrdersTrash />;
     if (path === '/admin/leads') return <AdminLeadsKanban />;
     if (path === '/admin/tasks') return <A2GTasksPage />;
     if (path === '/admin/contacts') return <A2GContactsPage />;

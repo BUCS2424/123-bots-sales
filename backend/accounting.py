@@ -63,12 +63,13 @@ def _date_range(date_str: Optional[str], range_type: str):
 
 
 async def _get_orders_in_range(start: datetime, end: datetime, status_filter: Optional[str] = None):
-    """Get orders within a date range with optional status filter"""
+    """Get orders within a date range with optional status filter. Excludes trashed orders."""
     query = {
         "$or": [
             {"created_at": {"$gte": start.isoformat(), "$lt": end.isoformat()}},
             {"created_at": {"$gte": start, "$lt": end}}
-        ]
+        ],
+        "is_deleted": {"$ne": True}
     }
     if status_filter:
         query["status"] = status_filter
@@ -528,7 +529,7 @@ async def get_kpis():
         revenue_growth = round(((month_revenue - prev_revenue) / prev_revenue) * 100, 1)
     
     # All-time stats
-    all_orders = await db.orders.find({}).to_list(None)
+    all_orders = await db.orders.find({"is_deleted": {"$ne": True}}).to_list(None)
     total_revenue = sum(o.get("total", 0) for o in all_orders if o.get("status") not in ["cancelled", "refunded"])
     total_orders = len([o for o in all_orders if o.get("status") not in ["cancelled", "refunded"]])
     

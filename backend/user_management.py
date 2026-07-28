@@ -1071,7 +1071,7 @@ async def get_customer_dashboard(customer_id: str):
         {"$or": [
             {"customer_id": customer_id},
             {"customer_email": customer.get("email")}
-        ]}
+        ], "is_deleted": {"$ne": True}}
     ).sort("created_at", -1).to_list(100)
     
     # Calculate stats

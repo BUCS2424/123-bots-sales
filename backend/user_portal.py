@@ -63,7 +63,7 @@ class AddressCreate(BaseModel):
 async def get_my_orders(current_user: TokenData = Depends(get_current_user)):
     """Get all orders for the current user"""
     orders = await db.orders.find(
-        {"customer_id": current_user.user_id},
+        {"customer_id": current_user.user_id, "is_deleted": {"$ne": True}},
         {"_id": 0}
     ).sort("created_at", -1).to_list(length=100)
     
@@ -111,7 +111,7 @@ async def get_my_account(current_user: TokenData = Depends(get_current_user)):
     
     # Get order stats
     orders = await db.orders.find(
-        {"customer_id": current_user.user_id}
+        {"customer_id": current_user.user_id, "is_deleted": {"$ne": True}}
     ).to_list(length=1000)
     
     total_orders = len(orders)

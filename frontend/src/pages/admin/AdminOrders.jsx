@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import {
   Search, Eye, Package, Truck, CheckCircle, XCircle, Clock,
   ChevronDown, ChevronUp, MapPin, Mail, Phone, DollarSign, CreditCard,
-  Wallet, RefreshCw, Send, Repeat, Printer, Copy, ExternalLink, AlertTriangle
+  Wallet, RefreshCw, Send, Repeat, Printer, Copy, ExternalLink, AlertTriangle, Trash2
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
+import { Checkbox } from '../../components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../../components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
@@ -71,6 +73,8 @@ const AdminOrders = () => {
   const [calculatingShipping, setCalculatingShipping] = useState(false);
   const [shippingRateOptions, setShippingRateOptions] = useState([]);
   const [savingShipping, setSavingShipping] = useState(false);
+  const [selectedOrderIds, setSelectedOrderIds] = useState([]);
+  const [trashingOrders, setTrashingOrders] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -278,6 +282,38 @@ const AdminOrders = () => {
     }
   };
 
+  const toggleSelectOrder = (orderId) => {
+    setSelectedOrderIds((prev) =>
+      prev.includes(orderId) ? prev.filter((id) => id !== orderId) : [...prev, orderId]
+    );
+  };
+
+  const toggleSelectAllOrders = () => {
+    if (selectedOrderIds.length === filteredOrders.length) {
+      setSelectedOrderIds([]);
+    } else {
+      setSelectedOrderIds(filteredOrders.map((o) => o.id));
+    }
+  };
+
+  const handleTrashOrders = async (orderIds) => {
+    if (!orderIds || orderIds.length === 0) return;
+    if (!window.confirm(`Move ${orderIds.length} order(s) to the trash? You can restore them later from the Trash Can.`)) return;
+    setTrashingOrders(true);
+    try {
+      const response = await axios.post(`${API}/payments/orders/bulk-trash`, { order_ids: orderIds }, { headers: getAuthHeaders() });
+      toast({ title: 'Moved to Trash', description: `${response.data.trashed_count} order(s) moved to trash.` });
+      setSelectedOrderIds([]);
+      fetchOrders();
+    } catch (error) {
+      toast({ title: 'Error', description: error.response?.data?.detail || 'Failed to trash orders', variant: 'destructive' });
+    } finally {
+      setTrashingOrders(false);
+    }
+  };
+
+  const handleTrashSelectedOrders = () => handleTrashOrders(selectedOrderIds);
+
   const handleToggleRecurring = async (order, isRecurring) => {
     try {
       await axios.put(`${API}/store/orders/${order.id}/recurring?is_recurring=${isRecurring}&interval_days=30`);
@@ -368,9 +404,16 @@ const AdminOrders = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
-        <p className="text-gray-500">Manage and fulfill customer orders</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
+          <p className="text-gray-500">Manage and fulfill customer orders</p>
+        </div>
+        <Link to="/admin/orders/trash">
+          <Button variant="outline" data-testid="orders-trash-can-link">
+            <Trash2 className="w-4 h-4 mr-2" /> Trash Can
+          </Button>
+        </Link>
       </div>
 
       {/* Status Tabs */}
@@ -417,6 +460,27 @@ const AdminOrders = () => {
         </CardContent>
       </Card>
 
+      {/* Bulk Actions Bar */}
+      {selectedOrderIds.length > 0 && (
+        <div className="flex items-center justify-between p-3 bg-purple-50 border border-purple-200 rounded-lg" data-testid="orders-bulk-actions-bar">
+          <span className="text-sm font-medium text-purple-800">{selectedOrderIds.length} order(s) selected</span>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setSelectedOrderIds([])} data-testid="orders-clear-selection-button">
+              Clear
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleTrashSelectedOrders}
+              disabled={trashingOrders}
+              data-testid="orders-bulk-trash-button"
+            >
+              <Trash2 className="w-4 h-4 mr-1" /> {trashingOrders ? 'Moving to Trash…' : 'Move to Trash'}
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Orders Table */}
       <Card>
         <CardContent className="p-0">
@@ -429,6 +493,13 @@ const AdminOrders = () => {
               <table className="w-full">
                 <thead>
                   <tr className="border-b bg-gray-50">
+                    <th className="text-left py-3 px-4">
+                      <Checkbox
+                        checked={filteredOrders.length > 0 && selectedOrderIds.length === filteredOrders.length}
+                        onCheckedChange={toggleSelectAllOrders}
+                        data-testid="orders-select-all-checkbox"
+                      />
+                    </th>
                     <th className="text-left py-3 px-4 font-medium text-gray-500">Order</th>
                     <th className="text-left py-3 px-4 font-medium text-gray-500">Source</th>
                     <th className="text-left py-3 px-4 font-medium text-gray-500">Customer</th>
@@ -447,6 +518,13 @@ const AdminOrders = () => {
                     const PaymentIcon = getPaymentIcon(order.payment_method);
                     return (
                       <tr key={order.id} className="border-b hover:bg-gray-50">
+                        <td className="py-3 px-4">
+                          <Checkbox
+                            checked={selectedOrderIds.includes(order.id)}
+                            onCheckedChange={() => toggleSelectOrder(order.id)}
+                            data-testid={`orders-select-checkbox-${order.id}`}
+                          />
+                        </td>
                         <td className="py-3 px-4">
                           <span className="font-bold text-gray-900">{order.order_number}</span>
                         </td>
@@ -503,9 +581,20 @@ const AdminOrders = () => {
                           ${order.total?.toFixed(2)}
                         </td>
                         <td className="py-3 px-4 text-right">
-                          <Button variant="outline" size="sm" onClick={() => handleViewOrder(order)}>
-                            <Eye className="w-4 h-4 mr-1" /> View
-                          </Button>
+                          <div className="flex items-center justify-end gap-2">
+                            <Button variant="outline" size="sm" onClick={() => handleViewOrder(order)}>
+                              <Eye className="w-4 h-4 mr-1" /> View
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-red-600 border-red-200 hover:bg-red-50"
+                              onClick={() => handleTrashOrders([order.id])}
+                              data-testid={`orders-trash-row-button-${order.id}`}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     );

@@ -1220,8 +1220,8 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
         limit: int = 100,
         current_user: TokenData = Depends(require_admin)
     ):
-        """List all orders (admin only)"""
-        query = {}
+        """List all orders (admin only). Trashed orders are excluded."""
+        query = {"is_deleted": {"$ne": True}}
         if status:
             query["status"] = status
         if customer_email:
@@ -1229,6 +1229,59 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
         
         orders = await db.orders.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
         return orders
+
+    class OrderIdsRequest(BaseModel):
+        order_ids: List[str]
+
+    @router.get("/orders/trash", response_model=List[Order])
+    async def list_trashed_orders(current_user: TokenData = Depends(require_admin)):
+        """List all trashed (soft-deleted) orders (any admin)"""
+        orders = await db.orders.find({"is_deleted": True}, {"_id": 0}).sort("deleted_at", -1).to_list(500)
+        return orders
+
+    @router.post("/orders/bulk-trash")
+    async def bulk_trash_orders(payload: OrderIdsRequest, current_user: TokenData = Depends(require_admin)):
+        """Move one or more orders to the trash (soft delete)"""
+        if not payload.order_ids:
+            raise HTTPException(status_code=400, detail="No order IDs provided")
+        now = datetime.now(timezone.utc)
+        result = await db.orders.update_many(
+            {"id": {"$in": payload.order_ids}},
+            {"$set": {
+                "is_deleted": True,
+                "deleted_at": now.isoformat(),
+                "deleted_by": current_user.email,
+                "updated_at": now.isoformat(),
+            }}
+        )
+        return {"success": True, "trashed_count": result.modified_count}
+
+    @router.post("/orders/bulk-restore")
+    async def bulk_restore_orders(payload: OrderIdsRequest, current_user: TokenData = Depends(require_admin)):
+        """Restore one or more orders from the trash"""
+        if not payload.order_ids:
+            raise HTTPException(status_code=400, detail="No order IDs provided")
+        now = datetime.now(timezone.utc)
+        result = await db.orders.update_many(
+            {"id": {"$in": payload.order_ids}},
+            {"$set": {"is_deleted": False, "updated_at": now.isoformat()},
+             "$unset": {"deleted_at": "", "deleted_by": ""}}
+        )
+        return {"success": True, "restored_count": result.modified_count}
+
+    @router.post("/orders/bulk-permanent-delete")
+    async def bulk_permanent_delete_orders(payload: OrderIdsRequest, current_user: TokenData = Depends(require_admin)):
+        """Permanently delete one or more orders that are already in the trash"""
+        if not payload.order_ids:
+            raise HTTPException(status_code=400, detail="No order IDs provided")
+        result = await db.orders.delete_many({"id": {"$in": payload.order_ids}, "is_deleted": True})
+        return {"success": True, "deleted_count": result.deleted_count}
+
+    @router.post("/orders/trash/empty")
+    async def empty_orders_trash(current_user: TokenData = Depends(require_admin)):
+        """Permanently delete ALL trashed orders"""
+        result = await db.orders.delete_many({"is_deleted": True})
+        return {"success": True, "deleted_count": result.deleted_count}
 
     @router.get("/orders/my")
     async def get_my_orders(request: Request):
@@ -1245,7 +1298,7 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         orders = await db.orders.find(
-            {"$or": [{"customer_id": token_data.user_id}, {"customer_email": user["email"]}]},
+            {"$or": [{"customer_id": token_data.user_id}, {"customer_email": user["email"]}], "is_deleted": {"$ne": True}},
             {"_id": 0}
         ).sort("created_at", -1).to_list(200)
         return {"orders": orders}
@@ -1562,7 +1615,7 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
         
         # Total revenue (completed orders - include paid status)
         pipeline = [
-            {"$match": {"status": {"$in": ["paid", "delivered", "shipped", "processing"]}}},
+            {"$match": {"status": {"$in": ["paid", "delivered", "shipped", "processing"]}, "is_deleted": {"$ne": True}}},
             {"$group": {"_id": None, "total": {"$sum": "$total"}, "count": {"$sum": 1}}}
         ]
         result = await db.orders.aggregate(pipeline).to_list(1)
@@ -1573,7 +1626,8 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
         today_pipeline = [
             {"$match": {
                 "created_at": {"$gte": today_start.isoformat()},
-                "status": {"$in": ["paid", "delivered", "shipped", "processing", "pending", "awaiting_payment"]}
+                "status": {"$in": ["paid", "delivered", "shipped", "processing", "pending", "awaiting_payment"]},
+                "is_deleted": {"$ne": True}
             }},
             {"$group": {"_id": None, "total": {"$sum": "$total"}, "count": {"$sum": 1}}}
         ]
@@ -1587,7 +1641,7 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
         low_stock = await db.products.count_documents({"quantity": {"$lte": 3}, "in_stock": True})
         
         # Pending includes both "pending" and "awaiting_payment"
-        pending_orders = await db.orders.count_documents({"status": {"$in": ["pending", "awaiting_payment"]}})
+        pending_orders = await db.orders.count_documents({"status": {"$in": ["pending", "awaiting_payment"]}, "is_deleted": {"$ne": True}})
         
         avg_order = total_revenue / total_orders if total_orders > 0 else 0
         
@@ -1616,7 +1670,8 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
             pipeline = [
                 {"$match": {
                     "created_at": {"$gte": day_start.isoformat(), "$lt": day_end.isoformat()},
-                    "status": {"$in": ["paid", "delivered", "shipped", "processing"]}
+                    "status": {"$in": ["paid", "delivered", "shipped", "processing"]},
+                    "is_deleted": {"$ne": True}
                 }},
                 {"$group": {"_id": None, "total": {"$sum": "$total"}, "count": {"$sum": 1}}}
             ]

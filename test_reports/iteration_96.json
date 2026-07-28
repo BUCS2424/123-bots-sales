@@ -1,0 +1,39 @@
+{
+  "summary": "Full independent pass of the new Order Trash/Soft-Delete feature (backend/durango_payments.py + frontend AdminOrders.jsx/AdminOrdersTrash.jsx). All 9 requested test scenarios verified: bulk trash, per-row trash, Trash Can page listing (Deleted By/At correct), restore (bulk & single), permanent delete (single & Empty Trash), accounting/analytics exclusion, and 401 auth boundary. 10/10 pytest backend tests passed (1 accounting exclusion test needed a paid order and was verified separately via curl since no seeded order was 'paid' status). Full E2E Playwright flow through the real UI confirmed every action, toast, and data-testid works correctly. Seeded data (10 original orders) left in original state; disposable QA test orders created for destructive tests were fully purged as intended.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/store/analytics/stats", "issue": "No orders in the seeded dataset currently have status 'paid', so the automated pytest for accounting-exclusion (Test 7) skips by default; verified manually via curl instead by temporarily marking a seeded order paid, trashing it (revenue 8.5->0), restoring it, and reverting status back to awaiting_payment. Confirmed working correctly - not a bug, just a test-data limitation."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_orders_trash.py",
+    "/app/test_reports/pytest/pytest_orders_trash.xml"
+  ],
+  "action_items": [
+    "No action required - feature fully verified working end-to-end (backend + frontend + accounting exclusion + auth boundary)."
+  ],
+  "critical_code_review_comments": [
+    "_require_admin_from_request in durango_payments.py correctly returns 401 for missing/invalid token and 403 for non-admin role (matches spec 'any admin' can access, verified any admin_or_above passes).",
+    "GET /orders correctly excludes is_deleted via $ne True (handles docs where field doesn't exist, e.g. older orders with is_deleted=None) - confirmed via live data showing 'None' for older orders working fine.",
+    "bulk-restore correctly $unset's deleted_at/deleted_by rather than just nulling them - clean.",
+    "All new endpoints exclude MongoDB _id via {'_id': 0} projection - no ObjectId leakage observed.",
+    "Manual-only purge confirmed - no cron/timer found in codebase for auto-emptying trash, matches user's explicit choice.",
+    "Parallel/secondary module backend/ecommerce.py's /api/store/orders trash logic was also updated for consistency though not used by the live AdminOrders.jsx UI - not tested directly since out of scope per problem statement, but noting for awareness it exists as unused/dead code path unless something else references it."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_orders_trash.py"
+  ],
+  "success_rate": {"backend": "100% (10/10 pytest, 1 skip resolved manually via curl)", "frontend": "100% (9/9 scenarios verified via Playwright + curl)"},
+  "test_credentials": "Admin: mel@a2gdesigns.com / BigDaddy2016!! (from /app/memory/test_credentials.md) - worked correctly for both API and UI login.",
+  "seed_data_creation": "Created 3 disposable MongoDB orders (TEST-QA-TRASH-1/2/3, customer 'QA Trash Test Customer') directly in test_database.orders for destructive tests (Test 2 per-row trash + Test 5 permanent delete + Test 6 empty trash), avoiding permanent deletion of real seeded orders. All 3 were fully purged by end of testing (that was the intended outcome). Also temporarily set ORD-20260715005933-5AE6DA status to 'paid' to test accounting exclusion (Test 7), then reverted back to 'awaiting_payment' afterward. Final verification confirms all 10 original seeded orders present with is_deleted not True, and trash is empty.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Order Trash/Soft-Delete feature (backend/durango_payments.py + frontend/src/pages/admin/AdminOrders.jsx + AdminOrdersTrash.jsx) is FULLY VERIFIED and working correctly. Covered: bulk select+trash, per-row trash, Trash Can page (Deleted By/At columns correct), bulk & single restore, single & bulk (Empty Trash) permanent delete, empty-state message, accounting/analytics revenue exclusion (via curl - marking order paid then trashing dropped total_revenue from 8.5 to 0, restore brought it back), and 401 auth boundary on all 5 new endpoints without a Bearer token. New regression test file backend/tests/test_orders_trash.py can be reused going forward (note: the accounting-exclusion test will self-skip unless a 'paid' status order with non-zero total exists in the DB at test time - this is a test-data limitation, not a bug).",
+  "rca_of_the_issue": "N/A - this was a new feature verification pass, not a bug fix. No RCA needed; no bugs found."
+}

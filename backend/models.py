@@ -214,6 +214,9 @@ class Order(OrderBase):
     stripe_session_id: Optional[str] = None  # cs_... Stripe Checkout session
     last_recurring_invoice_at: Optional[datetime] = None  # Track when last invoice was sent
     recurring_invoice_count: Optional[int] = 0  # How many recurring invoices sent
+    is_deleted: bool = False  # Soft-delete / trash flag
+    deleted_at: Optional[datetime] = None
+    deleted_by: Optional[str] = None  # Email of admin who trashed the order
 
 class OrderStatusUpdate(BaseModel):
     status: str
