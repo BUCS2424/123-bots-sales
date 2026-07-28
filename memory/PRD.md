@@ -646,6 +646,12 @@ Feature-flagged (`activity_marketplace_enabled`) multi-seller activity directory
 - [x] Added an amber "Hidden" badge (`data-testid="product-hidden-badge-{id}"`) next to the existing Enabled/Disabled and In stock/Out of stock badges on the Admin Products list (`AdminProducts.jsx`), shown whenever `is_visible === false`. Lets admins spot unpublished products at a glance without opening the editor.
 - Self-verified via screenshot — badge appears/disappears correctly as `is_visible` is toggled. Test product restored to `is_visible: true` after verification.
 
+### Feature — Orders Trash Can / Soft Delete (July 28, 2026)
+- [x] Added soft-delete (trash) system for Orders per user's explicit choices: restorable + Empty Trash, any admin can access, trashed orders immediately excluded from reports/accounting, bulk select from day one, manual purge only (no auto-purge).
+- **Backend** (`backend/durango_payments.py`, the module actually powering the live `/admin/orders` page via `/api/payments/orders`): added `is_deleted`/`deleted_at`/`deleted_by` fields to `Order` model (`backend/models.py`); new endpoints `GET /orders/trash`, `POST /orders/bulk-trash`, `POST /orders/bulk-restore`, `POST /orders/bulk-permanent-delete`, `POST /orders/trash/empty`, all admin-auth-gated via lightweight `_require_admin_from_request` helper (401 no-token, 403 non-admin). Main `GET /orders` list now excludes `is_deleted=true`. Also mirrored the same exclusion into the secondary/less-used `backend/ecommerce.py` `/api/store/orders` module and `backend/accounting.py` order-based reports for consistency.
+- **Frontend**: `AdminOrders.jsx` — row + "select all" checkboxes, bulk action bar ("Move to Trash"), per-row trash icon, "Trash Can" header link. New `AdminOrdersTrash.jsx` page (route `/admin/orders/trash`) — list with Deleted By/At columns, bulk & single Restore, single & bulk permanent delete, "Empty Trash", empty state.
+- Verified via `testing_agent_v4_fork` (iteration_96.json): 100% pass — bulk/per-row trash, restore, permanent delete, empty trash, accounting/revenue exclusion (confirmed via a paid order dropping out of total_revenue when trashed and returning on restore), and 401 auth boundary on all 5 new endpoints. New regression test: `backend/tests/test_orders_trash.py`. Seeded order data left untouched.
+
 ## Prioritized Next Actions
 - **P0 (Now complete):** Kanban + External Stack API + SEO Articles + Tax Exemption + Shipping on Quotes/Orders/Invoices + Activity Marketplace SEO/Accordion + Charter Companies page
 - **P1 (Next):**
