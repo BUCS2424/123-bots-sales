@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Truck, RotateCcw, Package, Clock, MapPin, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Truck, RotateCcw, Package, Clock, MapPin } from 'lucide-react';
 import { setSeoMetadata } from '../../lib/seo';
 
 const ShippingReturnsPage = () => {
   useEffect(() => {
     setSeoMetadata({
       title: 'Shipping & Returns',
-      description: '123Bots shipping information, delivery times, and return policy. Free shipping on orders over $75!',
+      description: '123Bots shipping information, delivery times, and return policy for commercial cleaning and delivery robots.',
       keywords: 'shipping info, delivery times, return policy, 123Bots shipping',
       canonicalPath: '/shipping-returns',
     });
@@ -47,62 +47,24 @@ const ShippingReturnsPage = () => {
                 <Clock className="w-5 h-5 text-[#ff8c42]" /> Processing Time
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Orders are typically processed within <strong>2-5 business days</strong> as each item is custom made with care. Orders placed on weekends or holidays will be processed the next business day. You will receive a shipping confirmation email with tracking information once your order has shipped.
+                Parts and accessories are typically processed within <strong>2-5 business days</strong>. Robot orders are scheduled with our team after purchase, and delivery timelines depend on the equipment and your location. You will receive a shipping confirmation email with tracking information once your order has shipped.
               </p>
             </section>
 
             <section className="mb-8">
               <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-[#ff8c42]" /> Shipping Methods & Rates
+                <MapPin className="w-5 h-5 text-[#ff8c42]" /> Shipping Methods
               </h3>
-              <div className="overflow-x-auto">
-                <table data-testid="shipping-methods-rates-table" className="w-full border-collapse text-[#2c1810]">
-                  <thead>
-                    <tr className="bg-[#fff8f3]">
-                      <th data-testid="shipping-rates-header-method" className="text-left py-3 px-4 font-semibold text-[#2c1810] border">Method</th>
-                      <th data-testid="shipping-rates-header-delivery-time" className="text-left py-3 px-4 font-semibold text-[#2c1810] border">Delivery Time</th>
-                      <th data-testid="shipping-rates-header-cost" className="text-left py-3 px-4 font-semibold text-[#2c1810] border">Cost</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-[#2c1810]">
-                    <tr>
-                      <td data-testid="shipping-rate-standard-method" className="py-3 px-4 border">Standard Shipping</td>
-                      <td data-testid="shipping-rate-standard-delivery" className="py-3 px-4 border">5-7 Business Days</td>
-                      <td data-testid="shipping-rate-standard-cost" className="py-3 px-4 border">$7.99</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td data-testid="shipping-rate-expedited-method" className="py-3 px-4 border">Expedited Shipping</td>
-                      <td data-testid="shipping-rate-expedited-delivery" className="py-3 px-4 border">2-3 Business Days</td>
-                      <td data-testid="shipping-rate-expedited-cost" className="py-3 px-4 border">$14.99</td>
-                    </tr>
-                    <tr>
-                      <td data-testid="shipping-rate-priority-method" className="py-3 px-4 border">Priority Overnight</td>
-                      <td data-testid="shipping-rate-priority-delivery" className="py-3 px-4 border">1 Business Day</td>
-                      <td data-testid="shipping-rate-priority-cost" className="py-3 px-4 border">$29.99</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td data-testid="shipping-rate-free-method" className="py-3 px-4 border font-semibold text-[#ff8c42]">FREE Shipping</td>
-                      <td data-testid="shipping-rate-free-delivery" className="py-3 px-4 border">5-7 Business Days</td>
-                      <td data-testid="shipping-rate-free-cost" className="py-3 px-4 border font-semibold text-green-700">Orders over $75</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              <p className="text-gray-600 leading-relaxed">
+                Parts and accessories ship via standard parcel carriers. Robots and larger equipment typically ship via freight carrier, with delivery coordinated by our team. Exact rates and timelines depend on the item and destination - contact us for a shipping quote on your order.
+              </p>
             </section>
 
             <section className="mb-8">
               <h3 className="text-xl font-semibold text-gray-800 mb-4">Shipping Locations</h3>
               <p className="text-gray-600 leading-relaxed mb-4">
-                We currently ship to all 50 United States. International shipping may be available for select items - please contact us for a quote.
+                We currently serve customers across the states listed on our homepage. Contact us to confirm availability and shipping options for your location.
               </p>
-              <div className="bg-[#fff8f3] border-l-4 border-[#ff8c42] p-4 rounded-r-lg">
-                <div className="flex items-start gap-2">
-                  <AlertCircle className="w-5 h-5 text-[#ff8c42] flex-shrink-0 mt-0.5" />
-                  <p className="text-gray-700 text-sm">
-                    <strong>Note:</strong> We are unable to ship to P.O. Boxes for expedited or overnight shipping methods.
-                  </p>
-                </div>
-              </div>
             </section>
 
             <section className="mb-8">
@@ -110,7 +72,7 @@ const ShippingReturnsPage = () => {
                 <Package className="w-5 h-5 text-[#ff8c42]" /> Packaging
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                All orders are carefully packaged to ensure your custom products arrive in perfect condition. We use appropriate padding and protection for fragile items like tumblers and mugs. Gift wrapping may be available for select items at checkout.
+                All orders are carefully packaged and, where applicable, freighted to prevent damage during transit. For robot deliveries, our team can help coordinate receiving and setup.
               </p>
             </section>
 
@@ -137,11 +99,11 @@ const ShippingReturnsPage = () => {
             <section className="mb-8">
               <h3 className="text-xl font-semibold text-gray-800 mb-4">Return Policy</h3>
               <p className="text-gray-600 leading-relaxed mb-4">
-                We want you to love your custom products! Due to the personalized nature of our items, we have specific return policies:
+                Return eligibility varies by item - parts and accessories, and robots and other equipment, are handled differently:
               </p>
               <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
-                <li>Returns are accepted within <strong>14 days</strong> of delivery for defective or damaged items</li>
-                <li>Products must be unused and in original condition</li>
+                <li>Parts and accessories must be unused, in original packaging, and returned within our standard window - contact us to confirm eligibility for your item</li>
+                <li>Robots and other equipment purchases or leases are subject to the terms of your specific order or lease agreement</li>
                 <li>A Return Merchandise Authorization (RMA) number is required for all returns</li>
                 <li>Customer is responsible for return shipping costs unless the return is due to our error</li>
               </ul>
@@ -150,14 +112,12 @@ const ShippingReturnsPage = () => {
             <section className="mb-8">
               <h3 className="text-xl font-semibold text-gray-800 mb-4">Non-Returnable Items</h3>
               <p className="text-gray-600 leading-relaxed mb-4">
-                The following items cannot be returned:
+                The following are generally not eligible for return:
               </p>
               <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
-                <li>Custom-designed items made to your specifications (unless defective)</li>
-                <li>Personalized products with names, photos, or custom text</li>
-                <li>Used or washed apparel items</li>
-                <li>Digital download products</li>
-                <li>Products beyond the 14-day return window</li>
+                <li>Items custom-configured or specially ordered to your specifications (unless defective)</li>
+                <li>Used or installed parts</li>
+                <li>Equipment past the return window stated in your order or lease agreement</li>
               </ul>
             </section>
 
@@ -195,7 +155,7 @@ const ShippingReturnsPage = () => {
             <section>
               <h3 className="text-xl font-semibold text-gray-800 mb-4">Order Cancellations</h3>
               <p className="text-gray-600 leading-relaxed">
-                Orders may be cancelled within 2 hours of placement for a full refund, provided production has not yet begun. After this window, orders enter production and cannot be cancelled. If your order has already shipped, you will need to follow our return procedure.
+                Contact us as soon as possible if you need to cancel an order. We'll do everything we can before it ships or enters production; once an order has shipped, you'll need to follow our return procedure instead.
               </p>
             </section>
           </div>

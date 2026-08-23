@@ -41,8 +41,8 @@ const TermsConditionsPage = () => {
               <div>
                 <h3 className="font-bold text-[#2c1810] text-lg">Welcome to 123Bots</h3>
                 <p className="text-gray-700 mt-2">
-                  Thank you for choosing 123Bots for your custom printed products. 
-                  We take pride in creating unique, personalized items made with care, just for you. 
+                  Thank you for choosing 123Bots for your commercial cleaning and delivery robots.
+                  We take pride in helping businesses automate with reliable, professional-grade equipment.
                   Please review our terms and conditions below.
                 </p>
               </div>
@@ -59,25 +59,25 @@ const TermsConditionsPage = () => {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">2. Products and Services</h2>
             <p className="text-gray-600 leading-relaxed mb-4">
-              123Bots offers custom printed products including but not limited to:
+              123Bots offers products and services including but not limited to:
             </p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
-              <li>Custom t-shirts and apparel</li>
-              <li>Personalized tumblers and drinkware</li>
-              <li>Custom mugs and home goods</li>
-              <li>Printable designs and digital products</li>
-              <li>Specialty holiday and themed collections</li>
+              <li>Commercial cleaning robots</li>
+              <li>Industrial delivery robots</li>
+              <li>Replacement parts and accessories</li>
+              <li>Robot sales, leasing, and financing</li>
+              <li>Setup, service, and support</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">3. Custom Orders</h2>
-            <p className="text-gray-600 leading-relaxed mb-4">For custom designed products:</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">3. Robot Purchases &amp; Leasing</h2>
+            <p className="text-gray-600 leading-relaxed mb-4">For robot purchases and leases:</p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 ml-4">
-              <li>All custom designs must be approved before production begins</li>
-              <li>We reserve the right to refuse any design that contains offensive, copyrighted, or trademarked material without proper authorization</li>
-              <li>Production time varies based on order complexity and will be communicated at checkout</li>
-              <li>Custom orders cannot be canceled once production has begun</li>
+              <li>Pricing, availability, and lease terms are confirmed at the time of order</li>
+              <li>Delivery and setup timelines vary based on equipment and shipping method and will be communicated at checkout or by our team</li>
+              <li>Leased equipment remains subject to the terms of the applicable lease agreement</li>
+              <li>Contact our team as soon as possible to modify or cancel an order before it ships</li>
             </ul>
           </section>
 

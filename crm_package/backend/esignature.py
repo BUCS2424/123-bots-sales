@@ -326,7 +326,7 @@ async def seed_default_templates():
             "content": """
 # PAWN CONTRACT AGREEMENT
 
-**AMINO-CHAIN Peptides**
+**123 Bots**
 7860 Eddins Road, Dothan, Alabama 36301
 
 ---
@@ -359,7 +359,7 @@ async def seed_default_templates():
 ## TERMS AND CONDITIONS
 1. The Pledgor hereby pawns the above-described property to secure a loan.
 2. The Pledgor may redeem the pledged property by paying the full payoff amount on or before the due date.
-3. If the Pledgor fails to redeem the property by the due date, ownership transfers to AMINO-CHAIN Peptides.
+3. If the Pledgor fails to redeem the property by the due date, ownership transfers to 123 Bots.
 4. Interest accrues monthly on the outstanding principal balance.
 5. The Pledgor certifies they are the rightful owner of the pledged property.
 
@@ -376,7 +376,7 @@ By signing below, I acknowledge that I have read, understand, and agree to all t
             "content": """
 # STORAGE UNIT RENTAL AGREEMENT
 
-**AMINO-CHAIN Peptides**
+**123 Bots**
 7860 Eddins Road, Dothan, Alabama 36301
 
 ---
@@ -406,7 +406,7 @@ By signing below, I acknowledge that I have read, understand, and agree to all t
 1. Tenant agrees to pay rent monthly in advance.
 2. Tenant shall not store hazardous materials, illegal items, or perishables.
 3. Tenant is responsible for their own insurance on stored items.
-4. AMINO-CHAIN Peptides is not liable for loss, theft, or damage to stored items.
+4. 123 Bots is not liable for loss, theft, or damage to stored items.
 5. Tenant must provide 30 days notice to vacate.
 6. Failure to pay rent may result in lien on stored property per Alabama law.
 
@@ -423,7 +423,7 @@ By signing below, I acknowledge that I have read, understand, and agree to all t
             "content": """
 # RV SERVICE WORK ORDER
 
-**AMINO-CHAIN Peptides - RV Repair & Restoration**
+**123 Bots - RV Repair & Restoration**
 7860 Eddins Road, Dothan, Alabama 36301
 
 ---
@@ -461,7 +461,7 @@ By signing below, I acknowledge that I have read, understand, and agree to all t
 5. Vehicles not picked up within 30 days may be subject to storage fees.
 
 ## AGREEMENT
-By signing below, I authorize AMINO-CHAIN Peptides to perform the services described above and agree to the terms and conditions.
+By signing below, I authorize 123 Bots to perform the services described above and agree to the terms and conditions.
             """,
             "required_fields": ["work_order_number", "customer_name", "vehicle_info", "estimated_total"],
             "legal_text": "Customer acknowledges receipt of this work order and authorizes repairs.",

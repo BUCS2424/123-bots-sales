@@ -180,7 +180,7 @@ const PuduCc1ProPage = () => {
               <div className="absolute inset-0 bg-green-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
                 <div className="aspect-video rounded-xl overflow-hidden">
-                  <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/clejgrgp_pudu-cc1-pro-powerful-suction-silent-mopping.jpg" alt="PUDU CC1 PRO Powerful Suction Navigation" className="w-full h-full object-cover" />
+                  <img src="/legacy-assets/clejgrgp_pudu-cc1-pro-powerful-suction-silent-mopping.jpg" alt="PUDU CC1 PRO Powerful Suction Navigation" className="w-full h-full object-cover" />
                 </div>
               </div>
             </div>
@@ -237,7 +237,7 @@ const PuduCc1ProPage = () => {
               <div className="absolute inset-0 bg-orange-500/10 rounded-2xl blur-2xl" />
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
                 <div className="aspect-video rounded-xl overflow-hidden">
-                  <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/pg45n3bq_pudu-cc1-pro-component-self-monitoring.jpg" alt="PUDU CC1 PRO AI Component Self-Monitoring" className="w-full h-full object-cover" />
+                  <img src="/legacy-assets/pg45n3bq_pudu-cc1-pro-component-self-monitoring.jpg" alt="PUDU CC1 PRO AI Component Self-Monitoring" className="w-full h-full object-cover" />
                 </div>
               </div>
             </div>
@@ -271,7 +271,7 @@ const PuduCc1ProPage = () => {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-indigo-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video overflow-hidden">
-                <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/3v6id9mf_pudu-cc1-pro-VSLAM-navigation.jpg" alt="PUDU CC1 PRO VSLAM+ Navigation" className="w-full h-full object-cover" />
+                <img src="/legacy-assets/3v6id9mf_pudu-cc1-pro-VSLAM-navigation.jpg" alt="PUDU CC1 PRO VSLAM+ Navigation" className="w-full h-full object-cover" />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">VSLAM+ Navigation</h3>
@@ -282,7 +282,7 @@ const PuduCc1ProPage = () => {
 
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-indigo-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video overflow-hidden">
-                <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/t9xsqx9d_pudu-cc1-pro247-autonomous-operation.jpg" alt="PUDU CC1 PRO 24/7 Autonomous Operation" className="w-full h-full object-cover" />
+                <img src="/legacy-assets/t9xsqx9d_pudu-cc1-pro247-autonomous-operation.jpg" alt="PUDU CC1 PRO 24/7 Autonomous Operation" className="w-full h-full object-cover" />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">24/7 Autonomous Operation</h3>
@@ -293,7 +293,7 @@ const PuduCc1ProPage = () => {
 
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-indigo-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video overflow-hidden">
-                <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/qslij3kb_IoT-smart-features.jpg" alt="PUDU CC1 PRO IoT Smart Features" className="w-full h-full object-cover" />
+                <img src="/legacy-assets/qslij3kb_IoT-smart-features.jpg" alt="PUDU CC1 PRO IoT Smart Features" className="w-full h-full object-cover" />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">IoT & Smart Features</h3>

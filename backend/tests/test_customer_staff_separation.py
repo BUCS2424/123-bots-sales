@@ -213,7 +213,7 @@ class TestCustomerStaffSeparation:
         staff_emails = [s.get("email", "").lower() for s in staff]
         
         # Test customer should be in customers
-        test_customer_email = "customer.test@emergent.dev"
+        test_customer_email = "customer.test@example.com"
         if test_customer_email in customer_emails:
             assert test_customer_email not in staff_emails, "Test customer should not be in staff list"
             print(f"✅ Test customer correctly in customers list only")

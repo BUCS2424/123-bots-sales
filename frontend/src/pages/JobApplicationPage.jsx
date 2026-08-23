@@ -179,7 +179,7 @@ const JobApplicationPage = () => {
         {/* Header */}
         <div className="text-center mb-8 print:mb-4">
           <img
-            src={logoUrl || '/images/gingerkare-logo.png'}
+            src={logoUrl || '/images/legacy-logo-placeholder.png'}
             alt={siteName || '123Bots'}
             className="h-16 mx-auto mb-4 print:h-12"
             data-testid="job-application-header-logo"

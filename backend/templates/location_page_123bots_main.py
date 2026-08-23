@@ -34,7 +34,7 @@ def generate_location_page_html(
     counties: list | None = None,
     cities: list | None = None,
     base_url: str = "https://123bots.com",
-    logo_url: str = "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png",
+    logo_url: str = "/legacy-assets/legacy-hero-background.png",
     site_name: str = "123Bots",
     phone: str = "(844) 589-PEPS",
     hero_settings: dict | None = None,
@@ -65,10 +65,10 @@ def generate_location_page_html(
         else "/images/home/4-bots.jpg"
     )
     hero_card_image = hero_settings.get("hero_card_image_url", "")
-    hero_video_url = "https://customer-assets.emergentagent.com/job_62e47598-ad36-4ef0-a5ae-6e9fba5248f0/artifacts/gicykru3_123-bots-home-background.mp4"
-    hero_card_title = hero_settings.get("hero_card_title", "CUSTOM EMPORIUM")
-    hero_card_subtitle = hero_settings.get("hero_card_subtitle", "Unique & Personalized")
-    hero_card_description = hero_settings.get("hero_card_description", "Made with care, just for you")
+    hero_video_url = "/legacy-assets/gicykru3_123-bots-home-background.mp4"
+    hero_card_title = hero_settings.get("hero_card_title", "AI-Powered")
+    hero_card_subtitle = hero_settings.get("hero_card_subtitle", "Commercial Cleaning")
+    hero_card_description = hero_settings.get("hero_card_description", "Cutting-Edge Cleaning Technology")
 
     safe_location_name = escape(location_name)
     safe_state_name = escape(state_name)

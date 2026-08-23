@@ -112,7 +112,7 @@ async def send_verification_email(to_email: str, verification_code: str, user_na
                         <tr>
                             <td style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #4c1d95 100%); padding: 40px; text-align: center;">
                                 <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">123Bots</h1>
-                                <p style="color: #c4b5fd; margin: 10px 0 0 0; font-size: 14px;">Custom Emporium</p>
+                                <p style="color: #c4b5fd; margin: 10px 0 0 0; font-size: 14px;">Commercial Cleaning Robots</p>
                             </td>
                         </tr>
                         <!-- Content -->

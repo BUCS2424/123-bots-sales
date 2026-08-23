@@ -249,7 +249,7 @@ class TestLocationPreviewEndpoint:
         content = response.text
         assert "<!doctype html>" in content.lower() or "<html" in content.lower(), \
             "Response should be HTML"
-        assert "AMINO-CHAIN" in content, "HTML should contain AMINO-CHAIN branding"
+        assert "123Bots" in content, "HTML should contain 123Bots branding"
         assert "Peptide Research Supply" in content, "HTML should contain Peptide Research Supply"
         
         print("Location preview returns valid HTML with proper branding")
@@ -367,7 +367,7 @@ class TestPublicLocationPages:
         assert "<!doctype html>" in content.lower() or "<html" in content.lower(), \
             "Response should be HTML"
         assert "Florida" in content, "HTML should contain Florida"
-        assert "AMINO-CHAIN" in content, "HTML should contain AMINO-CHAIN branding"
+        assert "123Bots" in content, "HTML should contain 123Bots branding"
         
         print("Florida location page renders dynamically")
     
@@ -418,5 +418,5 @@ class TestHomepageNoRegression:
         response = requests.get(f"{BASE_URL}/api/")
         assert response.status_code == 200
         data = response.json()
-        assert data.get("message") == "AMINO-CHAIN Peptides API"
+        assert data.get("message") == "123 Bots API"
         print("API root accessible - no regression")

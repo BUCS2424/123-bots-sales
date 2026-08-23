@@ -254,12 +254,12 @@ class TestHeroMediaSettings:
     def test_cleanup_restore_default_hero_settings(self, authenticated_client):
         """Cleanup: Restore default hero settings"""
         default_settings = {
-            "hero_background_image_url": "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png",
+            "hero_background_image_url": "/legacy-assets/legacy-hero-background.png",
             "hero_video_url": "/videos/butterfly_alpha.webm",
             "hero_card_image_url": "https://images.unsplash.com/photo-1513519245088-0e12902e35ca?auto=format&fit=crop&w=1000&q=80",
-            "hero_card_title": "CUSTOM EMPORIUM",
-            "hero_card_subtitle": "Unique & Personalized",
-            "hero_card_description": "Made with care, just for you"
+            "hero_card_title": "AI-Powered",
+            "hero_card_subtitle": "Commercial Cleaning",
+            "hero_card_description": "Cutting-Edge Cleaning Technology"
         }
         
         response = authenticated_client.put(

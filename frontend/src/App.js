@@ -6,7 +6,6 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { SiteSettingsProvider, useSiteSettings } from './context/SiteSettingsContext';
 import { RadioProvider } from './context/RadioContext';
 import { Toaster } from './components/ui/toaster';
-import FloatingNav from './components/FloatingNav';
 import HomePage from './pages/HomePage';
 import ShopPage from './pages/ShopPage';
 import ProductDetailPage from './pages/ProductDetailPage';

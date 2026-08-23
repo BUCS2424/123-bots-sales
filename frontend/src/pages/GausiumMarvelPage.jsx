@@ -236,7 +236,7 @@ const GausiumMarvelPage = () => {
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
                 <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
                   <img
-                    src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/kqzrs46k_image.png"
+                    src="/legacy-assets/kqzrs46k_image.png"
                     alt="Gausium Robot Drop and Go Auto Deployment at Trade Show Booth"
                     className="w-full h-full object-cover rounded-xl"
                     data-testid="marvel-drop-and-go-image"
@@ -313,7 +313,7 @@ const GausiumMarvelPage = () => {
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
                 <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
                   <img
-                    src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/dxt5bgqt_image.png"
+                    src="/legacy-assets/dxt5bgqt_image.png"
                     alt="Gausium Marvel Power-Assisted Manual Cleaning Mode in Warehouse"
                     className="w-full h-full object-cover rounded-xl"
                     data-testid="marvel-power-assisting-image"
@@ -363,7 +363,7 @@ const GausiumMarvelPage = () => {
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-slate-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video bg-gradient-to-br from-blue-600/20 to-blue-800/20 flex items-center justify-center overflow-hidden">
                 <img
-                  src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/iu3t95tu_manufacturing.jpg"
+                  src="/legacy-assets/iu3t95tu_manufacturing.jpg"
                   alt="Gausium Marvel Cleaning Robot in Manufacturing Facility Aisle"
                   className="w-full h-full object-cover"
                   data-testid="marvel-manufacturing-image"
@@ -381,7 +381,7 @@ const GausiumMarvelPage = () => {
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-slate-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video bg-gradient-to-br from-green-600/20 to-green-800/20 flex items-center justify-center overflow-hidden">
                 <img
-                  src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/mg9kjjed_warehousing.jpg"
+                  src="/legacy-assets/mg9kjjed_warehousing.jpg"
                   alt="Gausium Marvel Cleaning Robot in Warehouse Distribution Center"
                   className="w-full h-full object-cover"
                   data-testid="marvel-warehouses-image"
@@ -399,7 +399,7 @@ const GausiumMarvelPage = () => {
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-slate-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video bg-gradient-to-br from-purple-600/20 to-purple-800/20 flex items-center justify-center overflow-hidden">
                 <img
-                  src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/e9a8uht2_car-parking.jpg"
+                  src="/legacy-assets/e9a8uht2_car-parking.jpg"
                   alt="Gausium Marvel Cleaning Robot in Underground Car Parking Garage"
                   className="w-full h-full object-cover"
                   data-testid="marvel-car-parking-image"
@@ -417,7 +417,7 @@ const GausiumMarvelPage = () => {
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-slate-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video bg-gradient-to-br from-cyan-600/20 to-cyan-800/20 flex items-center justify-center overflow-hidden">
                 <img
-                  src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/t6l5twfi_retail.jpg"
+                  src="/legacy-assets/t6l5twfi_retail.jpg"
                   alt="Gausium Marvel Cleaning Robot in Retail Space"
                   className="w-full h-full object-cover"
                   data-testid="marvel-retail-image"

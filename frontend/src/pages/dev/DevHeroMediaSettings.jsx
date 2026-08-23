@@ -9,7 +9,7 @@ import { toast } from '../../hooks/use-toast';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-const DEFAULT_BACKGROUND_IMAGE = 'https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png';
+const DEFAULT_BACKGROUND_IMAGE = '/legacy-assets/legacy-hero-background.png';
 const DEFAULT_HERO_VIDEO = '/videos/butterfly_alpha.webm';
 
 const DevHeroMediaSettings = () => {
@@ -23,9 +23,9 @@ const DevHeroMediaSettings = () => {
     hero_background_image_url: DEFAULT_BACKGROUND_IMAGE,
     hero_video_url: DEFAULT_HERO_VIDEO,
     hero_card_image_url: 'https://images.unsplash.com/photo-1513519245088-0e12902e35ca?auto=format&fit=crop&w=1000&q=80',
-    hero_card_title: 'CUSTOM EMPORIUM',
-    hero_card_subtitle: 'Unique & Personalized',
-    hero_card_description: 'Made with care, just for you',
+    hero_card_title: 'AI-Powered',
+    hero_card_subtitle: 'Commercial Cleaning',
+    hero_card_description: 'Cutting-Edge Cleaning Technology',
   });
 
   useEffect(() => {

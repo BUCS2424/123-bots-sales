@@ -98,7 +98,7 @@ class TestAdminSiteSettings:
         original_settings = get_response.json()
         
         # Update site name
-        test_site_name = "TEST_AMINO-CHAIN Peptides"
+        test_site_name = "TEST_123 Bots"
         updated_settings = {
             **original_settings,
             "site_name": test_site_name
@@ -117,7 +117,7 @@ class TestAdminSiteSettings:
         print(f"Site name updated to: {test_site_name}")
         
         # Restore original
-        original_settings["site_name"] = "AMINO-CHAIN Peptides"
+        original_settings["site_name"] = "123 Bots"
         requests.put(
             f"{BASE_URL}/api/admin-settings/site",
             headers=self.headers,
@@ -274,8 +274,8 @@ class TestAdminSiteSettings:
         # Update emails
         updated_settings = {
             **original_settings,
-            "admin_email": "test-admin@amino-chain.com",
-            "support_email": "test-support@amino-chain.com"
+            "admin_email": "test-admin@123bots.com",
+            "support_email": "test-support@123bots.com"
         }
         
         update_response = requests.put(
@@ -291,8 +291,8 @@ class TestAdminSiteSettings:
             headers=self.headers
         )
         data = verify_response.json()
-        assert data["admin_email"] == "test-admin@amino-chain.com"
-        assert data["support_email"] == "test-support@amino-chain.com"
+        assert data["admin_email"] == "test-admin@123bots.com"
+        assert data["support_email"] == "test-support@123bots.com"
         print("Contact emails updated successfully")
         
         # Restore original
@@ -340,9 +340,9 @@ class TestAdminSiteSettings:
         
         # Restore defaults
         default_settings = {
-            "site_name": "AMINO-CHAIN Peptides",
-            "site_url": "https://amino-chain.com",
-            "logo_url": "https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/hzi2b2xm_amino-chain-logo-final-1.png",
+            "site_name": "123 Bots",
+            "site_url": "https://example.com",
+            "logo_url": "https://example.com/test-logo.png",
             "favicon_url": "",
             "admin_email": "",
             "support_email": "",

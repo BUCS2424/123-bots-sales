@@ -178,16 +178,16 @@ export const useLocationSeo = (locationData) => {
     const locationLabel = type === 'state' ? name : `${name}, ${state}`;
     
     setSeoMetadata({
-      title: `Custom Printables in ${locationLabel}`,
-      description: `123Bots delivers custom printables to ${locationLabel}. T-shirts, mugs, tumblers, canvas art, and more!`,
-      keywords: `custom printing ${locationLabel}, personalized gifts ${locationLabel}, 123Bots`,
+      title: `Commercial Cleaning Robots in ${locationLabel}`,
+      description: `123Bots delivers commercial cleaning and delivery robots to ${locationLabel}. Sales, leasing, parts, and support.`,
+      keywords: `commercial cleaning robots ${locationLabel}, delivery robots ${locationLabel}, 123Bots`,
       canonicalPath: `/locations/123Bots-${locationData.slug}`,
       ogType: 'website',
       jsonLd: {
         '@context': 'https://schema.org',
         '@type': 'LocalBusiness',
         name: '123Bots',
-        description: `Custom printables and personalized gifts serving ${locationLabel}`,
+        description: `Commercial cleaning and delivery robots serving ${locationLabel}`,
         areaServed: locationLabel,
       },
     });

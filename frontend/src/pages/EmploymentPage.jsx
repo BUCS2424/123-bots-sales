@@ -183,7 +183,7 @@ const EmploymentPage = () => {
           <div className="max-w-3xl">
             <div className="flex items-center gap-3 mb-4">
               <img
-                src={logoUrl || '/images/gingerkare-logo.png'}
+                src={logoUrl || '/images/legacy-logo-placeholder.png'}
                 alt={siteName || '123Bots'}
                 className="h-12"
                 data-testid="employment-hero-logo"
@@ -696,7 +696,7 @@ const EmploymentPage = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <img
-                src={logoUrl || '/images/gingerkare-logo.png'}
+                src={logoUrl || '/images/legacy-logo-placeholder.png'}
                 alt={siteName || '123Bots'}
                 className="h-8"
                 data-testid="employment-footer-logo"

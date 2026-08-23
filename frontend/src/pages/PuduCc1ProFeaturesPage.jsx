@@ -449,7 +449,7 @@ const PuduCc1ProFeaturesPage = () => {
             <Link to="/schedule-a-demo" className="px-10 py-5 bg-white text-indigo-600 font-bold rounded-full hover:bg-gray-100 transition-colors text-lg">
               Schedule a Demo
             </Link>
-            <a href="https://customer-assets.emergentagent.com/job_d17d16d7-aec2-4c18-a380-9b1b89c02454/artifacts/6550hlup_CC1-cleaning-robot-brochure.pdf" target="_blank" rel="noopener noreferrer" className="px-10 py-5 bg-transparent border-2 border-white text-white font-bold rounded-full hover:bg-white/10 transition-colors text-lg flex items-center justify-center gap-2">
+            <a href="/legacy-assets/6550hlup_CC1-cleaning-robot-brochure.pdf" target="_blank" rel="noopener noreferrer" className="px-10 py-5 bg-transparent border-2 border-white text-white font-bold rounded-full hover:bg-white/10 transition-colors text-lg flex items-center justify-center gap-2">
               <Download className="w-5 h-5" /> Download Brochure
             </a>
             <Link to="/contact" className="px-10 py-5 bg-transparent border-2 border-white text-white font-bold rounded-full hover:bg-white/10 transition-colors text-lg flex items-center justify-center gap-2">

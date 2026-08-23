@@ -11,7 +11,7 @@ BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
 # Test credentials
 DEMO_USER = {
-    "email": "demo@aminochain.com",
+    "email": "demo@123bots.com",
     "password": "demo123"
 }
 

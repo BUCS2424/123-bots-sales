@@ -1,6 +1,6 @@
 """
 CashApp/Venmo Payment Integration Tests
-Tests for AMINO-CHAIN peptides e-commerce platform payment functionality:
+Tests for 123Bots peptides e-commerce platform payment functionality:
 - CashApp/Venmo settings API (public and admin)
 - Order creation with CashApp/Venmo payment methods
 - Order status verification (awaiting_payment)
@@ -11,7 +11,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://booking-crm-preview-1.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
 
 class TestCashAppVenmoPublicSettings:
@@ -72,20 +72,20 @@ class TestCashAppVenmoAdminSettings:
         print(f"✅ Admin settings returns: cashapp_id={data['cashapp_id']}, venmo_id={data['venmo_id']}")
 
     def test_admin_settings_has_configured_ids(self):
-        """Admin settings should have AminoChain and AminoChain-Research IDs"""
+        """Admin settings should have 123Bots and 123Bots-Research IDs"""
         response = requests.get(f"{BASE_URL}/api/payments/settings/cashapp-venmo")
         assert response.status_code == 200
         data = response.json()
         
-        assert data.get("cashapp_id") == "AminoChain", f"Expected cashapp_id='AminoChain', got {data.get('cashapp_id')}"
-        assert data.get("venmo_id") == "AminoChain-Research", f"Expected venmo_id='AminoChain-Research', got {data.get('venmo_id')}"
-        print("✅ CashApp ID='AminoChain', Venmo ID='AminoChain-Research' configured")
+        assert data.get("cashapp_id") == "123Bots", f"Expected cashapp_id='123Bots', got {data.get('cashapp_id')}"
+        assert data.get("venmo_id") == "123Bots-Research", f"Expected venmo_id='123Bots-Research', got {data.get('venmo_id')}"
+        print("✅ CashApp ID='123Bots', Venmo ID='123Bots-Research' configured")
 
     def test_update_settings_returns_200(self):
         """PUT /api/payments/settings/cashapp-venmo should update settings"""
         update_data = {
-            "cashapp_id": "AminoChain",
-            "venmo_id": "AminoChain-Research",
+            "cashapp_id": "123Bots",
+            "venmo_id": "123Bots-Research",
             "is_enabled": True,
             "instructions": "Test instructions for payment"
         }
@@ -210,9 +210,9 @@ class TestCashAppOrderCreation:
         data = response.json()
         
         assert data["payment"]["method"] == "cashapp", f"Payment method should be cashapp"
-        assert data["payment"]["payment_id"] == "AminoChain", f"Payment ID should be AminoChain"
+        assert data["payment"]["payment_id"] == "123Bots", f"Payment ID should be 123Bots"
         assert data["payment"]["status"] == "awaiting_payment", f"Payment status should be awaiting_payment"
-        print(f"✅ CashApp order includes payment_id='AminoChain'")
+        print(f"✅ CashApp order includes payment_id='123Bots'")
 
 
 class TestVenmoOrderCreation:
@@ -294,9 +294,9 @@ class TestVenmoOrderCreation:
         data = response.json()
         
         assert data["payment"]["method"] == "venmo", f"Payment method should be venmo"
-        assert data["payment"]["payment_id"] == "AminoChain-Research", f"Payment ID should be AminoChain-Research"
+        assert data["payment"]["payment_id"] == "123Bots-Research", f"Payment ID should be 123Bots-Research"
         assert data["payment"]["status"] == "awaiting_payment", f"Payment status should be awaiting_payment"
-        print(f"✅ Venmo order includes payment_id='AminoChain-Research'")
+        print(f"✅ Venmo order includes payment_id='123Bots-Research'")
 
 
 class TestOrderRetrieval:

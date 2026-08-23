@@ -182,11 +182,11 @@ class TestScreensaverSettings:
     def test_restore_default_settings(self, auth_headers):
         """Restore default settings after tests"""
         default_settings = {
-            "image_a_url": "https://customer-assets.emergentagent.com/job_65c71db2-9245-43b1-9627-564f71a23c40/artifacts/2mxzmwy8_logo-bubble-for-sleep-screen.png",
-            "image_b_url": "https://customer-assets.emergentagent.com/job_65c71db2-9245-43b1-9627-564f71a23c40/artifacts/71zcw0f9_logo-bubble-for-sleep-screen-2.png",
+            "image_a_url": "/legacy-assets/2mxzmwy8_logo-bubble-for-sleep-screen.png",
+            "image_b_url": "/legacy-assets/71zcw0f9_logo-bubble-for-sleep-screen-2.png",
             "image_a_count": 15,
             "image_b_count": 15,
-            "video_url": "https://customer-assets.emergentagent.com/job_35efb418-d957-4303-979f-4e5863096b08/artifacts/kkprzbrk_amino-chain-peptides.mov"
+            "video_url": "https://example.com/test-video.mov"
         }
         
         response = requests.put(

@@ -1,12 +1,12 @@
 """
-Production Site Tests for AMINO-CHAIN
-Tests critical endpoints on https://amino-chain.com
+Production Site Tests for 123Bots
+Tests critical endpoints on https://example.com
 """
 import pytest
 import requests
 import os
 
-BASE_URL = "https://amino-chain.com"
+BASE_URL = "https://example.com"
 
 # Test credentials
 ADMIN_EMAIL = "super@amino.com"

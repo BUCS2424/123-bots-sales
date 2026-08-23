@@ -48,7 +48,7 @@ import {
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
-const STAFF_CHAT_INITIATED_SOUND_URL = 'https://customer-assets.emergentagent.com/job_808bae03-b30d-4055-83be-4ec1ad35d078/artifacts/lomxogl2_new-notification.mp3';
+const STAFF_CHAT_INITIATED_SOUND_URL = '/legacy-assets/lomxogl2_new-notification.mp3';
 
 const getHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem('token')}`

@@ -17,7 +17,7 @@ def set_db(database):
     db = database
 
 # Legacy hardcoded logo that may still exist in previously-saved custom templates
-OLD_HARDCODED_LOGO = "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png"
+OLD_HARDCODED_LOGO = "/images/legacy-logo-placeholder.png"
 DEFAULT_SITE_LOGO = OLD_HARDCODED_LOGO
 
 
@@ -64,7 +64,7 @@ DEFAULT_TEMPLATES = {
     <tr>
       <td style="background: linear-gradient(135deg, #2c1810 0%, #3a1f12 100%); padding: 30px; text-align: center;">
         <img src="{{site_logo}}" alt="123Bots" style="height: 60px; margin-bottom: 10px;">
-        <p style="color: #ffd4b8; margin: 10px 0 0 0; font-size: 14px;">Custom Emporium</p>
+        <p style="color: #ffd4b8; margin: 10px 0 0 0; font-size: 14px;">Commercial Cleaning Robots</p>
       </td>
     </tr>
     
@@ -120,7 +120,7 @@ DEFAULT_TEMPLATES = {
     <!-- Footer -->
     <tr>
       <td style="background-color: #2c1810; padding: 30px; text-align: center;">
-        <p style="color: #ff8c42; margin: 0 0 10px 0; font-size: 12px;">CUSTOM PRINTABLES • UNIQUE GIFTS • MADE WITH CARE</p>
+        <p style="color: #ff8c42; margin: 0 0 10px 0; font-size: 12px;">COMMERCIAL CLEANING ROBOTS • SALES • LEASING • SUPPORT</p>
         <p style="color: #ffd4b8; margin: 0; font-size: 12px;">
           © {{current_year}} 123Bots. All rights reserved.
         </p>
@@ -178,7 +178,7 @@ DEFAULT_TEMPLATES = {
     </tr>
     <tr>
       <td style="background-color: #2c1810; padding: 30px; text-align: center;">
-        <p style="color: #ff8c42; margin: 0 0 10px 0; font-size: 12px;">CUSTOM PRINTABLES • UNIQUE GIFTS • MADE WITH CARE</p>
+        <p style="color: #ff8c42; margin: 0 0 10px 0; font-size: 12px;">COMMERCIAL CLEANING ROBOTS • SALES • LEASING • SUPPORT</p>
         <p style="color: #ffd4b8; margin: 0; font-size: 12px;">© {{current_year}} 123Bots. All rights reserved.</p>
       </td>
     </tr>
@@ -202,7 +202,7 @@ DEFAULT_TEMPLATES = {
     <tr>
       <td style="background: linear-gradient(135deg, #2c1810 0%, #3a1f12 100%); padding: 30px; text-align: center;">
         <img src="{{site_logo}}" alt="123Bots" style="height: 60px; margin-bottom: 10px;">
-        <p style="color: #ffd4b8; margin: 10px 0 0 0; font-size: 14px;">Custom Emporium</p>
+        <p style="color: #ffd4b8; margin: 10px 0 0 0; font-size: 14px;">Commercial Cleaning Robots</p>
       </td>
     </tr>
     <tr>
@@ -212,11 +212,11 @@ DEFAULT_TEMPLATES = {
         <p style="color: #333; line-height: 1.6;">Thank you for creating an account with us. You now have access to:</p>
         
         <ul style="color: #333; line-height: 2;">
-          <li>Custom printable designs for any occasion</li>
+          <li>Browse our full lineup of cleaning and delivery robots</li>
           <li>Fast checkout with saved addresses</li>
           <li>Order tracking and history</li>
-          <li>Early access to new collections</li>
-          <li>Exclusive member discounts</li>
+          <li>Access to parts and accessories for your equipment</li>
+          <li>Buy or lease financing options</li>
         </ul>
         
         <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
@@ -332,7 +332,7 @@ DEFAULT_TEMPLATES = {
     </tr>
     <tr>
       <td style="background-color: #2c1810; padding: 30px; text-align: center;">
-        <p style="color: #ff8c42; margin: 0 0 10px 0; font-size: 12px;">CUSTOM PRINTABLES • UNIQUE GIFTS • MADE WITH CARE</p>
+        <p style="color: #ff8c42; margin: 0 0 10px 0; font-size: 12px;">COMMERCIAL CLEANING ROBOTS • SALES • LEASING • SUPPORT</p>
         <p style="color: #ffd4b8; margin: 0; font-size: 12px;">© {{current_year}} 123Bots. All rights reserved.</p>
       </td>
     </tr>
@@ -356,7 +356,7 @@ DEFAULT_TEMPLATES = {
     <tr>
       <td style="background: linear-gradient(135deg, #2c1810 0%, #3a1f12 100%); padding: 30px; text-align: center;">
         <img src="{{site_logo}}" alt="123Bots" style="height: 60px; margin-bottom: 10px;">
-        <p style="color: #ffd4b8; margin: 10px 0 0 0; font-size: 14px;">Custom Emporium</p>
+        <p style="color: #ffd4b8; margin: 10px 0 0 0; font-size: 14px;">Commercial Cleaning Robots</p>
       </td>
     </tr>
     <tr>
@@ -527,23 +527,23 @@ async def preview_email_template(template_id: str):
     sample_data = {
         "site_logo": site_logo,
         "customer_name": "John Doe",
-        "order_number": "GK-20240101-ABC123",
+        "order_number": "ORD-20240101-ABC123",
         "order_date": "January 1, 2024",
         "order_total": "89.99",
         "order_items": """
         <table width="100%" cellpadding="0" cellspacing="0">
-          <tr><td style="padding: 10px 0; border-bottom: 1px solid #eee;"><strong>Hawaiian Shirt - Tropical Parrot</strong> x 2 - $49.99</td></tr>
-          <tr><td style="padding: 10px 0; border-bottom: 1px solid #eee;"><strong>Custom Tumbler - Christmas Edition</strong> x 1 - $24.99</td></tr>
+          <tr><td style="padding: 10px 0; border-bottom: 1px solid #eee;"><strong>Pudu CC1 Pro - Side Brush (1pcs)</strong> x 2 - $49.99</td></tr>
+          <tr><td style="padding: 10px 0; border-bottom: 1px solid #eee;"><strong>Ameripolish - Rejuvenating Cleaner (4oz)</strong> x 1 - $24.99</td></tr>
         </table>
         """,
         "cart_items": """
         <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fff8f3; border-radius: 8px; border: 1px solid #ffe4d4;">
-          <tr><td style="padding: 15px;"><strong>Hawaiian Collection T-Shirt</strong> - $34.99</td></tr>
-          <tr><td style="padding: 15px; border-top: 1px solid #ffe4d4;"><strong>Custom Mug - Cancer Support</strong> - $19.99</td></tr>
+          <tr><td style="padding: 15px;"><strong>AvidBots KAS - Squeegee Set</strong> - $34.99</td></tr>
+          <tr><td style="padding: 15px; border-top: 1px solid #ffe4d4;"><strong>Smart Floor - Orange WMRESTORATION 20"</strong> - $19.99</td></tr>
         </table>
         """,
-        "shipping_address": "123 Creative Lane<br>Artisan City, AC 12345<br>United States",
-        "order_url": "https://123bots.com/orders/GK-123",
+        "shipping_address": "123 Main Street<br>Anytown, AL 12345<br>United States",
+        "order_url": "https://123bots.com/orders/ORD-123",
         "cart_url": "https://123bots.com/checkout",
         "carrier": "USPS Priority",
         "tracking_number": "9400111899223456789012",

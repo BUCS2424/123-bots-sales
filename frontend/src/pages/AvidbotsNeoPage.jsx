@@ -240,7 +240,7 @@ const AvidbotsNeoPage = () => {
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
                 <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
                   <img
-                    src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/f1gfdvbj_image.png"
+                    src="/legacy-assets/f1gfdvbj_image.png"
                     alt="Avidbots Neo Autonomous Floor Scrubber Cleaning Shopping Mall Corridor at Night"
                     className="w-full h-full object-cover rounded-xl"
                     data-testid="avidbots-battery-swap-image"

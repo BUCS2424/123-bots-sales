@@ -66,7 +66,7 @@ const PuduMt1MaxPage = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <a
-                  href="https://customer-assets.emergentagent.com/job_d17d16d7-aec2-4c18-a380-9b1b89c02454/artifacts/t1qeb6eo_MT1_MAX_123_SPECS_BROCHURE.pdf"
+                  href="/legacy-assets/t1qeb6eo_MT1_MAX_123_SPECS_BROCHURE.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-8 py-4 bg-purple-600 text-white font-bold rounded-full hover:bg-purple-500 transition-colors flex items-center justify-center gap-2"
@@ -206,7 +206,7 @@ const PuduMt1MaxPage = () => {
                     preload="metadata"
                     className="w-full h-full object-cover"
                   >
-                    <source src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/eacmvytc_pudu-mt1-max.mp4" type="video/mp4" />
+                    <source src="/legacy-assets/eacmvytc_pudu-mt1-max.mp4" type="video/mp4" />
                   </video>
                 </div>
               </div>
@@ -220,7 +220,7 @@ const PuduMt1MaxPage = () => {
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
                 <div className="aspect-video rounded-xl overflow-hidden">
                   <img
-                    src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/69jfepv8_pudu-mt1-max-8-Hour-Runtime-No-Mid-Shift-Interruptions.jpg"
+                    src="/legacy-assets/69jfepv8_pudu-mt1-max-8-Hour-Runtime-No-Mid-Shift-Interruptions.jpg"
                     alt="PUDU MT1 MAX sweeping parking garage at night"
                     className="w-full h-full object-cover"
                   />
@@ -279,7 +279,7 @@ const PuduMt1MaxPage = () => {
                     preload="metadata"
                     className="w-full h-full object-cover"
                   >
-                    <source src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/yeyrqlat_pudu-mt1-max-2.mp4" type="video/mp4" />
+                    <source src="/legacy-assets/yeyrqlat_pudu-mt1-max-2.mp4" type="video/mp4" />
                   </video>
                 </div>
               </div>
@@ -293,7 +293,7 @@ const PuduMt1MaxPage = () => {
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
                 <div className="aspect-video rounded-xl overflow-hidden">
                   <img
-                    src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/8um4uca8_pudu-mt1-max-Fastest-in-Class.jpg"
+                    src="/legacy-assets/8um4uca8_pudu-mt1-max-Fastest-in-Class.jpg"
                     alt="PUDU MT1 MAX obstacle detection in parking garage"
                     className="w-full h-full object-cover"
                   />
@@ -344,7 +344,7 @@ const PuduMt1MaxPage = () => {
             {/* Fleet Management */}
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-purple-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video overflow-hidden">
-                <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/sy01od6d_fleet-management.png" alt="Fleet Management Dashboard" className="w-full h-full object-cover" />
+                <img src="/legacy-assets/sy01od6d_fleet-management.png" alt="Fleet Management Dashboard" className="w-full h-full object-cover" />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">Fleet Management</h3>
@@ -360,7 +360,7 @@ const PuduMt1MaxPage = () => {
             {/* IoT Integration */}
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-purple-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video overflow-hidden">
-                <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/qslij3kb_IoT-smart-features.jpg" alt="IoT Smart Integration" className="w-full h-full object-cover" />
+                <img src="/legacy-assets/qslij3kb_IoT-smart-features.jpg" alt="IoT Smart Integration" className="w-full h-full object-cover" />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">IoT Integration</h3>
@@ -376,7 +376,7 @@ const PuduMt1MaxPage = () => {
             {/* Expert Support */}
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-purple-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video overflow-hidden">
-                <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/76r9l5p9_pudu-bg1-expert-support.png" alt="Expert Support Team" className="w-full h-full object-cover" />
+                <img src="/legacy-assets/76r9l5p9_pudu-bg1-expert-support.png" alt="Expert Support Team" className="w-full h-full object-cover" />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">Expert Support</h3>

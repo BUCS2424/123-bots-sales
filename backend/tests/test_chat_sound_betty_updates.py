@@ -56,7 +56,7 @@ class TestChatBettyWelcomeMessage:
         # Verify Betty introduction text pattern
         text = welcome_message["text"]
         assert "I'm Betty" in text or "Betty" in text, f"Message should introduce Betty, got: {text[:100]}"
-        assert "research" in text.lower() or "AMINO-CHAIN" in text, "Message should mention research or AMINO-CHAIN"
+        assert "research" in text.lower() or "123Bots" in text, "Message should mention research or 123Bots"
         
         print(f"PASS: Welcome message format correct with Betty introduction")
 
@@ -66,7 +66,7 @@ class TestChatSoundURLConfiguration:
     
     def test_sound_url_is_valid(self):
         """Verify the sound URL is accessible"""
-        sound_url = "https://customer-assets.emergentagent.com/job_808bae03-b30d-4055-83be-4ec1ad35d078/artifacts/lomxogl2_new-notification.mp3"
+        sound_url = "/legacy-assets/lomxogl2_new-notification.mp3"
         
         # Just verify the URL is reachable (HEAD request to check)
         try:

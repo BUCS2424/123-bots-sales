@@ -19,7 +19,7 @@ BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 # Test credentials
 TEST_ADMIN_EMAIL = "super@amino.com"
 TEST_ADMIN_PASSWORD = "peptides"
-BACKUP_ADMIN_EMAIL = "test@emergent.dev"
+BACKUP_ADMIN_EMAIL = "test@example.com"
 BACKUP_ADMIN_PASSWORD = "TestAdmin123!"
 
 # CSV content templates

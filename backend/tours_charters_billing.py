@@ -17,7 +17,7 @@ import uuid
 
 from auth import decode_token, is_admin_or_above
 from durango_payments import get_stripe_secret_key
-from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionRequest
+from stripe_checkout import StripeCheckout, CheckoutSessionRequest
 from email_utils import send_email
 
 router = APIRouter(prefix="/api/tours-charters", tags=["Tours Charters Billing"])

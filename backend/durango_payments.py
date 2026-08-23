@@ -17,7 +17,7 @@ import uuid
 from urllib.parse import urlencode
 from dotenv import load_dotenv
 from auth import decode_token, is_admin_or_above
-from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionRequest, CheckoutStatusResponse
+from stripe_checkout import StripeCheckout, CheckoutSessionRequest, CheckoutStatusResponse
 
 load_dotenv()
 
@@ -805,9 +805,9 @@ async def process_payment(payment: PaymentRequest):
 async def _fetch_stripe_payment_intent_id(session_id: str) -> Optional[str]:
     """Read-only lookup of the PaymentIntent id (pi_...) for a Checkout Session.
 
-    emergentintegrations' CheckoutStatusResponse does not expose payment_intent,
-    so we retrieve the session directly (read-only) to capture it for admin
-    cross-reference in the Stripe Dashboard.
+    Our CheckoutStatusResponse does not expose payment_intent, so we retrieve
+    the session directly (read-only) to capture it for admin cross-reference
+    in the Stripe Dashboard.
     """
     try:
         stripe_secret = await get_stripe_secret_key()

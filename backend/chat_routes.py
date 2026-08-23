@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 import os
+import time
 import uuid
 import logging
 
@@ -97,79 +98,93 @@ agent_availability = {}
 active_visitors = {}  # Track visitors on site: {visitor_id: {page, timestamp, name, etc.}}
 visitor_chat_invites = {}  # Track pending chat invites: {visitor_id: {chat_id, agent_name, page}}
 
-# Knowledge base for Betty - 123Bots AI Assistant
-ATOM_SYSTEM_PROMPT = """You are Betty, a friendly and helpful AI assistant for 123Bots, a custom printing and personalized gifts shop.
+# Betty's knowledge is not hardcoded to any one business. It's assembled at
+# runtime from this tenant's own admin_settings / categories / products, so the
+# same code serves whatever business is configured on a given deployment.
+ASSISTANT_NAME = "Betty"
 
-## About 123Bots:
-- Family-owned business specializing in custom sublimation printing
-- Based in Alabama, shipping nationwide
-- Made-to-order products with love and care
-- Free shipping on orders over $75
+_atom_prompt_cache: Optional[str] = None
+_atom_prompt_cache_at = 0.0
+_ATOM_PROMPT_CACHE_SECONDS = 300  # rebuild periodically so admin/catalog edits show up promptly
 
-## Our Products:
 
-### CUSTOM T-SHIRTS & APPAREL:
-- Custom printed t-shirts (men's, women's, kids)
-- Hoodies and sweatshirts
-- Tank tops and jerseys
-- Matching family sets
-- Hawaiian shirts
-- Cruise-themed apparel
+def _weekly_hours_block(business: dict) -> str:
+    days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+    lines = []
+    for day in days:
+        value = (business.get(f"{day}_hours") or "").strip()
+        if value:
+            lines.append(f"- {day.capitalize()}: {value}")
+    return "\n".join(lines)
 
-### DRINKWARE:
-- Custom tumblers (20oz, 30oz, 40oz)
-- Personalized coffee mugs
-- Stainless steel water bottles
-- Wine tumblers
-- Kids' cups and sippy cups
 
-### HOME DECOR:
-- Custom canvas prints and wall art
-- Personalized throw pillows
-- Photo blankets
-- Decorative signs
-- Garden flags and house flags
+async def _build_atom_system_prompt() -> str:
+    business = await db.admin_settings.find_one({"type": "business"}, {"_id": 0}) or {}
+    site = await db.admin_settings.find_one({"type": "site"}, {"_id": 0}) or {}
 
-### ACCESSORIES & GIFTS:
-- Custom mousepads
-- Personalized keychains
-- Phone cases
-- Tote bags
-- Stickers and patches
-- Car accessories
+    business_name = (business.get("business_name") or site.get("site_name") or "our store").strip()
+    description = (business.get("description") or "").strip()
+    phone = (business.get("phone") or "").strip()
+    email = (business.get("email") or site.get("support_email") or "").strip()
+    website = (business.get("website") or site.get("site_url") or "").strip()
+    hours_block = _weekly_hours_block(business)
 
-### SPECIAL COLLECTIONS:
-- Cancer Support/Awareness merchandise (F*ck Cancer collection)
-- Holiday-themed items (Christmas, Halloween, Easter, etc.)
-- Cruise & Beach vacation wear
-- Hawaiian/Tropical designs
-- Sports team designs
-- Pet-themed products
+    categories = await db.categories.find(
+        {"parent_id": None, "is_enabled": True},
+        {"_id": 0, "name": 1, "description": 1},
+    ).sort("sort_order", 1).limit(12).to_list(length=12)
+    category_lines = [
+        f"- {c['name']}: {c['description']}" if c.get("description") else f"- {c['name']}"
+        for c in categories if c.get("name")
+    ]
+    category_block = "\n".join(category_lines) if category_lines else "(catalog not yet configured)"
 
-## Services:
-- Custom design requests - we can create designs from your ideas!
-- Bulk orders for events, businesses, and organizations
-- Rush orders available for urgent needs
-- Gift wrapping available
+    products = await db.products.find(
+        {"is_visible": True, "in_stock": True},
+        {"_id": 0, "name": 1, "sold_count": 1},
+    ).sort("sold_count", -1).limit(10).to_list(length=10)
+    product_names = [p["name"] for p in products if p.get("name")]
+    products_block = ", ".join(product_names) if product_names else "(no products listed yet)"
 
-## Ordering Information:
-- Free shipping on orders over $75
-- Standard processing: 3-5 business days
-- Most items are made-to-order
-- Secure checkout with multiple payment options
-- Easy returns within 30 days for defective items
+    contact_lines = []
+    if phone:
+        contact_lines.append(f"- Phone: {phone}")
+    if email:
+        contact_lines.append(f"- Email: {email}")
+    if website:
+        contact_lines.append(f"- Website: {website}")
+    contact_block = "\n".join(contact_lines) if contact_lines else "(no contact details configured)"
 
-## Your Behavior as Betty:
-1. Be warm, friendly, and helpful - like talking to a neighbor
-2. Help customers find the perfect personalized gift
-3. Explain our customization options and process
-4. Offer suggestions based on their needs (gifts, events, personal use)
-5. Help with questions about sizing, care instructions, and shipping
-6. Direct customers to our Design Tips articles (/research) for inspiration
-7. Offer to connect with a human for complex custom orders
-8. Keep responses helpful and conversational
+    about_block = f"About {business_name}: {description}\n\n" if description else ""
 
-If a customer wants to speak with a human or has a complex custom design request, let them know you'll connect them with our team right away."""
+    return f"""You are {ASSISTANT_NAME}, a friendly and helpful AI assistant for {business_name}.
+
+{about_block}## Contact & Hours
+{contact_block}
+{hours_block}
+
+## What We Offer
+{category_block}
+
+Popular products right now: {products_block}
+
+## Your Behavior
+1. Be warm, friendly, and conversational - like talking to a helpful neighbor.
+2. Help customers find the right product or service based on what's actually listed above.
+3. Only state prices, policies, or product details that were given to you here or by the customer - never invent specifics you don't know.
+4. If a question needs information you don't have (exact pricing, order status, a policy not listed here), say so and offer to connect them with a human team member.
+5. Keep responses concise and helpful.
+
+If a customer wants to speak with a human, or asks something outside what you know, let them know you'll connect them with the team right away."""
+
+
+async def _get_atom_system_prompt() -> str:
+    global _atom_prompt_cache, _atom_prompt_cache_at
+    now = time.monotonic()
+    if _atom_prompt_cache is None or (now - _atom_prompt_cache_at) > _ATOM_PROMPT_CACHE_SECONDS:
+        _atom_prompt_cache = await _build_atom_system_prompt()
+        _atom_prompt_cache_at = now
+    return _atom_prompt_cache
 
 # ========================================
 # PUBLIC CHAT ENDPOINTS
@@ -211,10 +226,18 @@ async def start_chat_session(
         "status": ChatStatus.ACTIVE
     }
     
+    business = await db.admin_settings.find_one({"type": "business"}, {"_id": 0, "business_name": 1})
+    site = await db.admin_settings.find_one({"type": "site"}, {"_id": 0, "site_name": 1})
+    business_name = (
+        (business or {}).get("business_name")
+        or (site or {}).get("site_name")
+        or "our store"
+    )
+
     welcome_message = {
         "id": str(uuid.uuid4()),
         "type": ChatMessageType.AI,
-        "text": "Hi there! I'm Betty, your shopping assistant at 123Bots! I can help you find the perfect custom gift, explore our personalized products, or answer questions about custom orders. What can I help you with today?",
+        "text": f"Hi there! I'm {ASSISTANT_NAME}, your assistant at {business_name}! I can help you find what you're looking for or answer questions. What can I help you with today?",
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
     
@@ -280,24 +303,25 @@ async def send_chat_message(message: ChatMessageCreate):
         )
         return {"message": user_message, "ai_response": disabled_message}
 
-    # Generate AI response using Atom (Emergent LLM with GPT-4o)
+    # Generate AI response using Atom (GPT-4o via litellm)
     try:
-        from emergentintegrations.llm.chat import LlmChat, UserMessage
-        
-        api_key = llm_key or os.environ.get("EMERGENT_LLM_KEY")
-        
+        import litellm
+
+        api_key = llm_key or os.environ.get("OPENAI_API_KEY")
+
         if not api_key:
             raise ValueError("No LLM API key available")
-        
-        chat_llm = LlmChat(
+
+        response = await litellm.acompletion(
+            model="openai/gpt-4o",
             api_key=api_key,
-            session_id=f"atom-{chat_id}",
-            system_message=ATOM_SYSTEM_PROMPT
-        ).with_model("openai", "gpt-4o")
-        
-        user_msg = UserMessage(text=message.text)
-        ai_response_text = await chat_llm.send_message(user_msg)
-        
+            messages=[
+                {"role": "system", "content": await _get_atom_system_prompt()},
+                {"role": "user", "content": message.text},
+            ],
+        )
+        ai_response_text = response.choices[0].message.content
+
         ai_message = {
             "id": str(uuid.uuid4()),
             "type": ChatMessageType.AI,

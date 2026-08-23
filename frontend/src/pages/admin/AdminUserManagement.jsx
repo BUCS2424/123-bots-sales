@@ -658,7 +658,7 @@ const AdminUserManagement = () => {
                 value={staffForm.email}
                 onChange={(e) => setStaffForm(prev => ({ ...prev, email: e.target.value }))}
                 disabled={!!editingStaff}
-                placeholder="staff@aminochain.com"
+                placeholder="staff@123bots.com"
                 data-testid="staff-email-input"
               />
             </div>

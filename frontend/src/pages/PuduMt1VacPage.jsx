@@ -183,7 +183,7 @@ const PuduMt1VacPage = () => {
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-green-500/50 transition-all hover:transform hover:scale-105">
-              <div className="aspect-video overflow-hidden"><img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/sy01od6d_fleet-management.png" alt="PUDU Fleet Management Dashboard" className="w-full h-full object-cover" /></div>
+              <div className="aspect-video overflow-hidden"><img src="/legacy-assets/sy01od6d_fleet-management.png" alt="PUDU Fleet Management Dashboard" className="w-full h-full object-cover" /></div>
               <div className="p-8"><h3 className="text-2xl font-bold text-white mb-4">Fleet Management</h3><p className="text-gray-400 mb-6">Schedule cleaning cycles, track coverage maps, and monitor air-quality metrics in real time from any device, 24/7.</p></div>
             </div>
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-green-500/50 transition-all hover:transform hover:scale-105">
@@ -191,7 +191,7 @@ const PuduMt1VacPage = () => {
               <div className="p-8"><h3 className="text-2xl font-bold text-white mb-4">IoT Integration</h3><p className="text-gray-400 mb-6">Elevator and door control for multi-floor cleaning, plus 4G/Wi-Fi connectivity to keep the MT1 VAC covering your whole facility.</p></div>
             </div>
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-green-500/50 transition-all hover:transform hover:scale-105">
-              <div className="aspect-video overflow-hidden"><img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/76r9l5p9_pudu-bg1-expert-support.png" alt="123 Bots Expert Support" className="w-full h-full object-cover" /></div>
+              <div className="aspect-video overflow-hidden"><img src="/legacy-assets/76r9l5p9_pudu-bg1-expert-support.png" alt="123 Bots Expert Support" className="w-full h-full object-cover" /></div>
               <div className="p-8"><h3 className="text-2xl font-bold text-white mb-4">Expert Support</h3><p className="text-gray-400 mb-6">From site assessment and custom cleaning plans to staff training and ongoing support, our team keeps the MT1 VAC performing at its best.</p></div>
             </div>
           </div>

@@ -32,7 +32,7 @@ class TestCustomerImpersonation:
         """Try to authenticate as test admin, fallback to super admin."""
         # Try test admin first
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "test@emergent.dev",
+            "email": "test@example.com",
             "password": "TestAdmin123!"
         })
         if response.status_code == 200:
@@ -61,7 +61,7 @@ class TestCustomerImpersonation:
         
         data = response.json()
         assert data["success"] is True
-        assert data["email"] == "customer.test@emergent.dev"
+        assert data["email"] == "customer.test@example.com"
         assert data["name"] == "Test Customer"
         assert data["password"] == "TestCustomer123!"
         assert "user_id" in data
@@ -98,7 +98,7 @@ class TestCustomerImpersonation:
         assert response.status_code == 200
         
         customers = response.json()
-        test_customer = next((c for c in customers if c.get("email") == "customer.test@emergent.dev"), None)
+        test_customer = next((c for c in customers if c.get("email") == "customer.test@example.com"), None)
         
         assert test_customer is not None, "Test customer should appear in customers list"
         assert test_customer["name"] == "Test Customer"
@@ -121,7 +121,7 @@ class TestCustomerImpersonation:
         data = response.json()
         assert "access_token" in data, "Response should include access_token"
         assert "user" in data, "Response should include user payload"
-        assert data["user"]["email"] == "customer.test@emergent.dev"
+        assert data["user"]["email"] == "customer.test@example.com"
         assert data["user"]["role"] == "user"
         print(f"✓ Impersonation successful: received token for {data['user']['email']}")
 
@@ -140,7 +140,7 @@ class TestCustomerImpersonation:
         
         assert me_response.status_code == 200
         me_data = me_response.json()
-        assert me_data["email"] == "customer.test@emergent.dev"
+        assert me_data["email"] == "customer.test@example.com"
         print(f"✓ Impersonated token verified via /auth/me")
 
     def test_impersonate_nonexistent_customer_404(self, headers):
@@ -173,7 +173,7 @@ class TestCustomerImpersonation:
         
         # Get test customer token (regular user)
         login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "customer.test@emergent.dev",
+            "email": "customer.test@example.com",
             "password": "TestCustomer123!"
         })
         
@@ -195,7 +195,7 @@ class TestCustomerImpersonation:
         
         # Get test customer token (regular user)
         login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "customer.test@emergent.dev",
+            "email": "customer.test@example.com",
             "password": "TestCustomer123!"
         })
         

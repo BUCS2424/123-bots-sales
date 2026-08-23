@@ -22,7 +22,7 @@ import {
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const DEFAULT_CHAT_ICON_URL = '/images/robots/chatbot-icon.png';
-const STAFF_CHAT_INITIATED_SOUND_URL = 'https://customer-assets.emergentagent.com/job_808bae03-b30d-4055-83be-4ec1ad35d078/artifacts/lomxogl2_new-notification.mp3';
+const STAFF_CHAT_INITIATED_SOUND_URL = '/legacy-assets/lomxogl2_new-notification.mp3';
 const AI_DISPLAY_NAME = 'Betty';
 const CHAT_AUTO_POPUP_DELAY_MS = 30000;
 const CHAT_AUTO_POPUP_SESSION_KEY = 'gk_chat_auto_popup_seen';

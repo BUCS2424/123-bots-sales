@@ -29,6 +29,7 @@ uvicorn server:app --host 0.0.0.0 --port 8001 --reload
 | `DB_NAME` | YES | Database name (e.g., `123bots`) |
 | `CORS_ORIGINS` | YES | CORS allowed origins (`*` for all) |
 | `JWT_SECRET_KEY` | Auto-generated | JWT signing secret (auto-generated if missing) |
+| `OPENAI_API_KEY` | Optional | Powers the Atom AI chat assistant (GPT-4o via litellm); chat falls back to a human-handoff message if unset |
 | `SMTP_HOST` | Optional | SMTP server for email sending |
 | `SMTP_PORT` | Optional | SMTP port (default 587) |
 | `SMTP_USER` | Optional | SMTP username |

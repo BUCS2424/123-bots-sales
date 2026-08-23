@@ -204,7 +204,7 @@ const PuduSh1Page = () => {
                     preload="metadata"
                     className="w-full h-full object-cover"
                   >
-                    <source src="https://customer-assets.emergentagent.com/job_c05bfb7f-dd8d-43d1-a2a9-4c33a73806dd/artifacts/vru5rdjt_pudu-sh1-main.mp4" type="video/mp4" />
+                    <source src="/legacy-assets/vru5rdjt_pudu-sh1-main.mp4" type="video/mp4" />
                   </video>
                 </div>
               </div>
@@ -277,7 +277,7 @@ const PuduSh1Page = () => {
                     preload="metadata"
                     className="w-full h-full object-cover"
                   >
-                    <source src="https://customer-assets.emergentagent.com/job_c05bfb7f-dd8d-43d1-a2a9-4c33a73806dd/artifacts/vru5rdjt_pudu-sh1-main.mp4" type="video/mp4" />
+                    <source src="/legacy-assets/vru5rdjt_pudu-sh1-main.mp4" type="video/mp4" />
                   </video>
                 </div>
               </div>
@@ -341,7 +341,7 @@ const PuduSh1Page = () => {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-orange-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video overflow-hidden">
-                <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/sy01od6d_fleet-management.png" alt="Fleet Management Dashboard" className="w-full h-full object-cover" />
+                <img src="/legacy-assets/sy01od6d_fleet-management.png" alt="Fleet Management Dashboard" className="w-full h-full object-cover" />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">Fleet Management</h3>
@@ -356,7 +356,7 @@ const PuduSh1Page = () => {
 
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-orange-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video overflow-hidden">
-                <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/qslij3kb_IoT-smart-features.jpg" alt="IoT Smart Features" className="w-full h-full object-cover" />
+                <img src="/legacy-assets/qslij3kb_IoT-smart-features.jpg" alt="IoT Smart Features" className="w-full h-full object-cover" />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">IoT Integration</h3>
@@ -371,7 +371,7 @@ const PuduSh1Page = () => {
 
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-orange-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video overflow-hidden">
-                <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/76r9l5p9_pudu-bg1-expert-support.png" alt="Expert Support" className="w-full h-full object-cover" />
+                <img src="/legacy-assets/76r9l5p9_pudu-bg1-expert-support.png" alt="Expert Support" className="w-full h-full object-cover" />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">Expert Support</h3>

@@ -151,7 +151,7 @@ set_johnny5_db(db)
 # Import and configure Chat System
 from chat_routes import chat_router, set_database as set_chat_db, set_llm_key as set_chat_llm_key
 set_chat_db(db)
-set_chat_llm_key(os.environ.get('EMERGENT_LLM_KEY'))
+set_chat_llm_key(os.environ.get('OPENAI_API_KEY'))
 
 # Import and configure User Portal
 from user_portal import portal_router, set_database as set_portal_db

@@ -4,7 +4,7 @@ import { ArrowLeft, MapPin, Phone, Mail, Clock, Navigation } from 'lucide-react'
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const BACKGROUND_IMAGE = 'https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png';
+const BACKGROUND_IMAGE = '/legacy-assets/legacy-hero-background.png';
 const HERO_VIDEO_DEFAULT = '/videos/butterfly_alpha.webm';
 
 const getVideoMimeType = (videoUrl) => {
@@ -50,7 +50,7 @@ const DevLocationPreview = () => {
   // Sample location data for preview
   const sampleLocation = {
     name: '123Bots',
-    tagline: 'Your Local Custom Printables Destination',
+    tagline: 'Your Local Commercial Cleaning Robot Destination',
     address: '123 Main Street',
     city: 'Dothan',
     state: 'Alabama',
@@ -63,12 +63,12 @@ const DevLocationPreview = () => {
       { day: 'Sunday', time: 'Closed' },
     ],
     services: [
-      'Custom T-Shirt Printing',
-      'Personalized Mugs & Tumblers',
-      'Canvas Art & Wall Decor',
-      'Stickers & Patches',
-      'Flags & Banners',
-      'Corporate & Event Orders',
+      'Commercial Cleaning Robots',
+      'Industrial Delivery Robots',
+      'Parts & Accessories',
+      'Buy or Lease Financing',
+      'Setup & Onboarding Support',
+      'Fleet & Corporate Orders',
     ],
   };
 

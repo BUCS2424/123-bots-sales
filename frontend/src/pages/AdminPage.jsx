@@ -151,7 +151,7 @@ const AdminPage = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <img
-                src={logoUrl || '/images/gingerkare-logo.png'}
+                src={logoUrl || '/images/legacy-logo-placeholder.png'}
                 alt={siteName || 'Site logo'}
                 className="h-12"
                 data-testid="admin-page-header-logo"

@@ -183,7 +183,7 @@ const AvidbotKasPage = () => {
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-blue-500/50 transition-all hover:transform hover:scale-105">
-              <div className="aspect-video overflow-hidden"><img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/sy01od6d_fleet-management.png" alt="Avidbots Fleet Command Dashboard" className="w-full h-full object-cover" /></div>
+              <div className="aspect-video overflow-hidden"><img src="/legacy-assets/sy01od6d_fleet-management.png" alt="Avidbots Fleet Command Dashboard" className="w-full h-full object-cover" /></div>
               <div className="p-8"><h3 className="text-2xl font-bold text-white mb-4">Cleaning Analytics</h3><p className="text-gray-400 mb-6">Track coverage, cleaning maps, and productivity in real time from any device — proof-of-clean reporting for every shift.</p></div>
             </div>
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-blue-500/50 transition-all hover:transform hover:scale-105">
@@ -191,7 +191,7 @@ const AvidbotKasPage = () => {
               <div className="p-8"><h3 className="text-2xl font-bold text-white mb-4">Connected Operation</h3><p className="text-gray-400 mb-6">Schedule cleaning cycles, receive alerts, and manage the KAS remotely with cloud connectivity for consistent, hands-off performance.</p></div>
             </div>
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-blue-500/50 transition-all hover:transform hover:scale-105">
-              <div className="aspect-video overflow-hidden"><img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/76r9l5p9_pudu-bg1-expert-support.png" alt="123 Bots Expert Support" className="w-full h-full object-cover" /></div>
+              <div className="aspect-video overflow-hidden"><img src="/legacy-assets/76r9l5p9_pudu-bg1-expert-support.png" alt="123 Bots Expert Support" className="w-full h-full object-cover" /></div>
               <div className="p-8"><h3 className="text-2xl font-bold text-white mb-4">Expert Support</h3><p className="text-gray-400 mb-6">From site assessment and deployment to staff training and ongoing service, our team keeps the KAS delivering spotless results.</p></div>
             </div>
           </div>

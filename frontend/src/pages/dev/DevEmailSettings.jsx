@@ -182,7 +182,7 @@ const DevEmailSettings = () => {
             <div className="space-y-2">
               <Label>From Email</Label>
               <Input
-                placeholder="noreply@aminochain.com"
+                placeholder="noreply@123bots.com"
                 value={settings.from_email}
                 onChange={(e) => setSettings({ ...settings, from_email: e.target.value })}
               />

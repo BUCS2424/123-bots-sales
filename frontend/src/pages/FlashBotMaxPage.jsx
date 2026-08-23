@@ -219,7 +219,7 @@ const FlashBotMaxPage = () => {
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
                 <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
                   <img
-                    src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/rlcwksxj_image.png"
+                    src="/legacy-assets/rlcwksxj_image.png"
                     alt="FlashBot Max Navigating Semi-Outdoor Garden Pathway with VSLAM+ Navigation"
                     className="w-full h-full object-cover rounded-xl"
                     data-testid="flashbot-vslam-navigation-image"
@@ -296,7 +296,7 @@ const FlashBotMaxPage = () => {
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
                 <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
                   <img
-                    src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/kbmqvwcp_FLASH-BOT-MAX-2.png"
+                    src="/legacy-assets/kbmqvwcp_FLASH-BOT-MAX-2.png"
                     alt="FlashBot Max Locked Compartments with Multi-Factor Access - Three Robots with Open Storage Compartments"
                     className="w-full h-full object-cover rounded-xl"
                     data-testid="flashbot-secure-compartments-image"
@@ -313,7 +313,7 @@ const FlashBotMaxPage = () => {
               <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
                 <div className="aspect-video bg-gray-800/50 rounded-xl overflow-hidden">
                   <img
-                    src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/oz302ir9_image.png"
+                    src="/legacy-assets/oz302ir9_image.png"
                     alt="PUDU Robot Self-Return and Auto-Charging in Hotel Lobby"
                     className="w-full h-full object-cover rounded-xl"
                     data-testid="flashbot-battery-image"
@@ -363,7 +363,7 @@ const FlashBotMaxPage = () => {
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-cyan-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video bg-gradient-to-br from-cyan-600/20 to-cyan-800/20 flex items-center justify-center overflow-hidden">
                 <img
-                  src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/vi35y4x3_image.png"
+                  src="/legacy-assets/vi35y4x3_image.png"
                   alt="FlashBot Max Delivery Robot in Luxury Hotel Corridor with AR Navigation Overlay"
                   className="w-full h-full object-cover"
                   data-testid="flashbot-hotels-image"
@@ -384,7 +384,7 @@ const FlashBotMaxPage = () => {
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-cyan-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video bg-gradient-to-br from-green-600/20 to-green-800/20 flex items-center justify-center overflow-hidden">
                 <img
-                  src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/2eny63hs_image.png"
+                  src="/legacy-assets/2eny63hs_image.png"
                   alt="FlashBot Max Fleet in Hospital with PUDU OS Cloud Connectivity Isometric Illustration"
                   className="w-full h-full object-cover"
                   data-testid="flashbot-hospitals-image"
@@ -405,7 +405,7 @@ const FlashBotMaxPage = () => {
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-cyan-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video bg-gradient-to-br from-purple-600/20 to-purple-800/20 flex items-center justify-center overflow-hidden">
                 <img
-                  src="https://customer-assets-wrfwihn1.emergentagent.net/job_60099d0b-b6b8-4bb9-b476-4e73d65c1242/artifacts/fes4lhni_image.png"
+                  src="/legacy-assets/fes4lhni_image.png"
                   alt="FlashBot Max Delivery Robot 3D Wireframe Building Navigation Visualization"
                   className="w-full h-full object-cover"
                   data-testid="flashbot-offices-image"

@@ -36,14 +36,14 @@ class TestYoycolIntegration:
 
     @pytest.fixture(scope="class")
     def store_owner_token(self) -> str:
-        """Get store owner auth token (test@emergent.dev)"""
+        """Get store owner auth token (test@example.com)"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json={
-            "email": "test@emergent.dev",
+            "email": "test@example.com",
             "password": "TestAdmin123!"
         })
         # Store owner may not exist - skip tests if not
         if response.status_code != 200:
-            pytest.skip("Store owner test@emergent.dev not found in DB - skipping store owner tests")
+            pytest.skip("Store owner test@example.com not found in DB - skipping store owner tests")
         data = response.json()
         return data.get("access_token", "")
 

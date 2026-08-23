@@ -1,0 +1,15 @@
+.git
+.emergent
+.screenshots
+frontend/node_modules
+frontend/build
+**/__pycache__
+**/*.pyc
+test_reports
+tests
+memory
+chat-system-temp
+crm_package
+tmp
+backend_test.py
+test_result.md

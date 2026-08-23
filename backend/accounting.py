@@ -1,5 +1,5 @@
 """
-Accounting Module for AMINO-CHAIN Peptides E-Commerce
+Accounting Module for 123 Bots E-Commerce
 Tracks sales revenue, orders, customers, inventory, and financial metrics.
 """
 

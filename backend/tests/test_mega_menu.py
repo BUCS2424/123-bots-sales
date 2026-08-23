@@ -7,10 +7,10 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://booking-crm-preview-1.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')
 
 # Test admin credentials
-ADMIN_EMAIL = "test@emergent.dev"
+ADMIN_EMAIL = "test@example.com"
 ADMIN_PASSWORD = "TestAdmin123!"
 
 class TestMegaMenuPublicAPI:

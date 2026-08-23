@@ -1,5 +1,5 @@
 """
-Reviews Management Module for AMINO-CHAIN Peptides
+Reviews Management Module for 123 Bots
 Handles customer reviews with verified purchase validation
 """
 

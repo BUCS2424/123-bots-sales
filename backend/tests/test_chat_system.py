@@ -45,7 +45,7 @@ class TestChatPublicEndpoints:
         welcome = data["welcome_message"]
         assert welcome["type"] == "ai", "Welcome message should be from AI"
         assert "Joffry" in welcome["text"], "Welcome should mention Joffry"
-        assert "AMINO-CHAIN" in welcome["text"], "Welcome should mention AMINO-CHAIN"
+        assert "123Bots" in welcome["text"], "Welcome should mention 123Bots"
         
         # Store for later tests
         self.__class__.session_id = data["session_id"]

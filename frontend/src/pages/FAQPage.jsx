@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { 
   ArrowLeft, HelpCircle, ChevronDown, ChevronUp, 
   ShoppingCart, Truck, Gift, CreditCard, Shield, Package,
-  Clock, FileText, Palette, Mail
+  Clock, FileText, Mail
 } from 'lucide-react';
 import { setSeoMetadata, generateFAQSchema } from '../lib/seo';
 
@@ -26,23 +26,19 @@ const FAQPage = () => {
       questions: [
         {
           q: 'Do I need an account to place an order?',
-          a: 'No, you can checkout as a guest. However, creating an account allows you to track orders, view order history, save shipping addresses, and access exclusive member discounts.'
+          a: 'No, you can check out as a guest for parts and accessories. Creating an account lets you track orders, view order history, and save shipping addresses.'
         },
         {
           q: 'What payment methods do you accept?',
-          a: 'We accept major credit cards (Visa, MasterCard, American Express, Discover), as well as PayPal, CashApp, and Venmo for your convenience. All transactions are processed securely.'
+          a: 'We accept major credit cards and other secure online payment options at checkout. For robot purchases and fleet orders, we also offer buy or lease financing - see our Buy or Lease page for details.'
+        },
+        {
+          q: 'Do you offer fleet or bulk pricing for multiple robots?',
+          a: 'Yes. If you\'re outfitting multiple locations or need several units, contact us and our team will put together a custom quote.'
         },
         {
           q: 'Can I modify or cancel my order after placing it?',
-          a: 'Orders can be modified or cancelled within 2 hours of placement, provided production has not yet begun. Since our items are custom made, once production starts, orders cannot be changed. Please contact us immediately at support@123bots.com if you need to make changes.'
-        },
-        {
-          q: 'Do you offer bulk or wholesale pricing?',
-          a: 'Yes! We offer special pricing for bulk orders, events, and businesses. Contact us with your requirements for a custom quote.'
-        },
-        {
-          q: 'Is there a minimum order amount?',
-          a: 'No, there is no minimum order amount. However, orders over $75 qualify for free standard shipping within the United States.'
+          a: 'Contact us as soon as possible at support@123bots.com or (877) 702-2687 if you need to change or cancel an order - we\'ll do everything we can before it ships.'
         }
       ]
     },
@@ -53,76 +49,40 @@ const FAQPage = () => {
       color: 'blue',
       questions: [
         {
-          q: 'How long does shipping take?',
-          a: 'Production typically takes 2-5 business days as each item is custom made. After production, standard shipping takes 5-7 business days, expedited shipping takes 2-3 business days, and overnight shipping delivers within 1 business day.'
+          q: 'Do you ship robots and equipment nationwide?',
+          a: 'Yes, we currently serve customers across our listed states. Robots typically ship via freight carrier; parts and accessories ship via standard parcel carriers. Contact us for a shipping estimate to your location.'
         },
         {
-          q: 'Do you ship internationally?',
-          a: 'We primarily ship within the United States. For international shipping inquiries, please contact us for availability and shipping quotes.'
-        },
-        {
-          q: 'How are products packaged for shipping?',
-          a: 'All items are carefully packaged to prevent damage during transit. Fragile items like tumblers and mugs include extra padding. Apparel is folded neatly in protective packaging.'
-        },
-        {
-          q: 'Can I ship to a P.O. Box?',
-          a: 'Standard shipping can be delivered to P.O. Boxes. However, expedited and overnight shipping methods require a physical street address.'
+          q: 'Is setup or installation included?',
+          a: 'Our team can walk you through setup, mapping, and onboarding for your robot after delivery. Reach out to schedule a demo or support session.'
         },
         {
           q: 'How can I track my order?',
-          a: 'Once your order ships, you will receive an email with tracking information. You can also log into your account to view tracking details for all your orders.'
+          a: 'Once your order ships, you will receive tracking information by email. You can also log into your account to view tracking details for all your orders.'
         }
       ]
     },
     {
       id: 'products',
-      title: 'Products & Customization',
+      title: 'Products & Services',
       icon: Gift,
       color: 'purple',
       questions: [
         {
           q: 'What products do you offer?',
-          a: 'We offer a wide range of custom printed products including t-shirts, tumblers, mugs, hoodies, hats, mousepads, and more. Check out our collections for holiday themes, cruise merchandise, Hawaiian designs, and custom options!'
+          a: 'We offer commercial cleaning robots (Pudu, Gausium, Avidbots) and industrial delivery robots, along with replacement parts and accessories like brushes, squeegees, and floor care chemicals.'
         },
         {
-          q: 'Can I request a custom design?',
-          a: 'Absolutely! We love creating custom designs. Use our "Request Custom Design" feature or contact us with your ideas. We\'ll work with you to bring your vision to life.'
+          q: 'Can I try a robot before buying?',
+          a: 'Yes! Use our "Schedule a Demo" page to request a no-obligation demo at your facility.'
         },
         {
-          q: 'What file formats do you accept for custom designs?',
-          a: 'We accept PNG, JPG, PDF, and vector files (AI, EPS, SVG). For best results, we recommend high-resolution images (300 DPI or higher) with transparent backgrounds when applicable.'
+          q: 'Should I buy or lease a robot?',
+          a: 'Both options are available - visit our Buy or Lease page to compare and find what fits your business best.'
         },
         {
-          q: 'How do I know what size to order for apparel?',
-          a: 'Each product page includes a size guide with detailed measurements. If you\'re between sizes, we generally recommend sizing up for a more comfortable fit.'
-        },
-        {
-          q: 'Are your tumblers dishwasher safe?',
-          a: 'We recommend hand washing our printed tumblers to preserve the design quality and longevity. Hot water and mild soap work best. Avoid abrasive scrubbers.'
-        }
-      ]
-    },
-    {
-      id: 'customization',
-      title: 'Design & Printing',
-      icon: Palette,
-      color: 'pink',
-      questions: [
-        {
-          q: 'What printing methods do you use?',
-          a: 'We use high-quality direct-to-garment (DTG) printing for apparel and sublimation printing for drinkware and other items. Both methods produce vibrant, long-lasting prints.'
-        },
-        {
-          q: 'Will the colors match exactly what I see on screen?',
-          a: 'We strive for accurate color reproduction, but slight variations may occur due to differences in monitor settings and printing materials. If exact color matching is critical, please contact us to discuss.'
-        },
-        {
-          q: 'How long will the print last?',
-          a: 'Our prints are designed to last! With proper care (following wash/care instructions), apparel prints typically last the life of the garment. Tumbler and mug prints are scratch-resistant and durable.'
-        },
-        {
-          q: 'Can I see a proof before my order is produced?',
-          a: 'For custom designs, we provide a digital proof for your approval before production begins. Standard catalog items ship as shown on the website.'
+          q: 'Do you carry parts for my specific robot model?',
+          a: 'We stock parts for the models we sell (Pudu CC1/CC1 Pro, MT1, SH1, BG1, and more). Check our Parts section, or contact support with your model to confirm availability.'
         }
       ]
     },
@@ -133,16 +93,12 @@ const FAQPage = () => {
       color: 'green',
       questions: [
         {
-          q: 'What is your return policy?',
-          a: 'Due to the custom nature of our products, we cannot accept returns on personalized items unless they are defective or damaged. Non-personalized items may be returned within 14 days if unused and in original condition.'
-        },
-        {
           q: 'What if I receive a damaged or defective item?',
-          a: 'We stand behind our quality! If you receive a damaged or defective item, contact us within 48 hours with photos of the issue. We\'ll send a replacement at no charge or provide a full refund.'
+          a: 'Contact us within 48 hours with photos of the issue and your order number, and we\'ll work with you on a replacement or repair.'
         },
         {
-          q: 'How do I request a refund?',
-          a: 'Contact us at support@123bots.com with your order number and reason for the refund request. Refunds are processed within 5-7 business days after approval.'
+          q: 'How do I request a return or refund?',
+          a: 'Contact us at support@123bots.com with your order number and reason for the request. Return eligibility can vary by item, especially for robots and installed equipment, so our team will confirm the options for your specific order.'
         }
       ]
     },
@@ -154,15 +110,15 @@ const FAQPage = () => {
       questions: [
         {
           q: 'How can I contact customer support?',
-          a: 'You can reach us at support@123bots.com or through our Contact page. We typically respond within 24-48 hours during business days.'
+          a: 'You can reach us at (877) 702-2687, support@123bots.com, or through our Contact page.'
         },
         {
           q: 'What are your business hours?',
-          a: 'Our customer support team is available Monday through Friday, 9 AM to 5 PM EST. Orders placed outside business hours will be processed the next business day.'
+          a: 'Monday-Friday 9 AM-6 PM, Saturday 10 AM-4 PM, closed Sundays.'
         },
         {
-          q: 'Do you have a physical store?',
-          a: 'We are primarily an online store. This allows us to offer competitive prices and serve customers nationwide. Check our website for any upcoming pop-up events or local markets!'
+          q: 'What areas do you serve?',
+          a: 'We currently serve businesses across our listed states - check our homepage for the full coverage list, or contact us to confirm availability in your area.'
         }
       ]
     }
@@ -176,8 +132,8 @@ const FAQPage = () => {
     
     setSeoMetadata({
       title: 'Frequently Asked Questions',
-      description: 'Find answers to common questions about 123Bots products, ordering, shipping, custom designs, and returns.',
-      keywords: 'FAQ, custom printing questions, ordering help, shipping info, 123Bots help',
+      description: 'Find answers to common questions about 123Bots commercial cleaning and delivery robots, ordering, shipping, and support.',
+      keywords: 'FAQ, commercial cleaning robots, delivery robots, ordering help, shipping info, 123Bots help',
       canonicalPath: '/faq',
       ogType: 'website',
       jsonLd: generateFAQSchema(allFaqs),

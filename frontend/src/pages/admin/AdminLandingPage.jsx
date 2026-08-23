@@ -117,7 +117,7 @@ const AdminLandingPage = () => {
         <header className="p-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <img
-              src={logoUrl || '/images/gingerkare-logo.png'}
+              src={logoUrl || '/images/legacy-logo-placeholder.png'}
               alt={siteName || '123Bots'}
               className="h-12"
               data-testid="admin-landing-header-logo"

@@ -14,7 +14,7 @@ import io
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 if not BASE_URL:
-    BASE_URL = "https://booking-crm-preview-1.preview.emergentagent.com"
+    BASE_URL = "http://localhost:8001"
 
 # Admin credentials
 ADMIN_EMAIL = "super@amino.com"

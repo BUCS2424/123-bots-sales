@@ -10,7 +10,7 @@ import uuid
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
 # Test data
-TEST_STAFF_EMAIL = f"test_staff_{uuid.uuid4().hex[:8]}@aminochain.com"
+TEST_STAFF_EMAIL = f"test_staff_{uuid.uuid4().hex[:8]}@123bots.com"
 TEST_STAFF_NAME = "TEST_Staff_Member"
 EXISTING_PRODUCT_ID = "7271c39a-8d18-4269-a594-519c1572bf76"  # BPC-157
 WHOLESALE_CUSTOMER_WITH_CUSTOM_DISCOUNT = "62ce7fcd-63e6-49f9-bf32-b0f892a8b176"  # 25% custom discount

@@ -26,12 +26,12 @@ const AdminBannerSettings = () => {
     banners: []
   });
   const [heroSettings, setHeroSettings] = useState({
-    hero_background_image_url: 'https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png',
+    hero_background_image_url: '/legacy-assets/legacy-hero-background.png',
     hero_video_url: '/videos/butterfly_alpha.webm',
     hero_card_image_url: '',
-    hero_card_title: 'CUSTOM EMPORIUM',
-    hero_card_subtitle: 'Unique & Personalized',
-    hero_card_description: 'Made with care, just for you'
+    hero_card_title: 'AI-Powered',
+    hero_card_subtitle: 'Commercial Cleaning',
+    hero_card_description: 'Cutting-Edge Cleaning Technology'
   });
   const [savingHero, setSavingHero] = useState(false);
   const [newBanner, setNewBanner] = useState({
@@ -387,7 +387,7 @@ const AdminBannerSettings = () => {
                 <Label htmlFor="hero-title">Card Title</Label>
                 <Input
                   id="hero-title"
-                  placeholder="CUSTOM EMPORIUM"
+                  placeholder="AI-Powered"
                   value={heroSettings.hero_card_title}
                   onChange={(e) => setHeroSettings(prev => ({ ...prev, hero_card_title: e.target.value }))}
                   data-testid="hero-title-input"
@@ -398,7 +398,7 @@ const AdminBannerSettings = () => {
                 <Label htmlFor="hero-subtitle">Card Subtitle</Label>
                 <Input
                   id="hero-subtitle"
-                  placeholder="Unique & Personalized"
+                  placeholder="Commercial Cleaning"
                   value={heroSettings.hero_card_subtitle}
                   onChange={(e) => setHeroSettings(prev => ({ ...prev, hero_card_subtitle: e.target.value }))}
                   data-testid="hero-subtitle-input"
@@ -409,7 +409,7 @@ const AdminBannerSettings = () => {
                 <Label htmlFor="hero-description">Card Description</Label>
                 <Input
                   id="hero-description"
-                  placeholder="Made with care, just for you"
+                  placeholder="Cutting-Edge Cleaning Technology"
                   value={heroSettings.hero_card_description}
                   onChange={(e) => setHeroSettings(prev => ({ ...prev, hero_card_description: e.target.value }))}
                   data-testid="hero-description-input"
@@ -437,9 +437,9 @@ const AdminBannerSettings = () => {
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#2c1810]/90 via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4">
-                  <p className="font-mono text-xs text-[#ff8c42] mb-1">{heroSettings.hero_card_title || 'CUSTOM EMPORIUM'}</p>
-                  <p className="font-bold text-white text-lg">{heroSettings.hero_card_subtitle || 'Unique & Personalized'}</p>
-                  <p className="text-gray-300 text-sm">{heroSettings.hero_card_description || 'Made with care, just for you'}</p>
+                  <p className="font-mono text-xs text-[#ff8c42] mb-1">{heroSettings.hero_card_title || 'AI-Powered'}</p>
+                  <p className="font-bold text-white text-lg">{heroSettings.hero_card_subtitle || 'Commercial Cleaning'}</p>
+                  <p className="text-gray-300 text-sm">{heroSettings.hero_card_description || 'Cutting-Edge Cleaning Technology'}</p>
                 </div>
               </div>
             </div>

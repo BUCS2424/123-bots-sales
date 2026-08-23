@@ -171,7 +171,7 @@ async def send_recovery_email(cart: dict, coupon: dict, is_second_email: bool = 
         <tr>
             <td style="background: linear-gradient(135deg, #6e2ea8 0%, #1a0b2e 100%); padding: 30px; text-align: center;">
                 <h1 style="color: #f4e4bc; margin: 0; font-size: 28px;">123Bots</h1>
-                <p style="color: #d4c4a8; margin: 10px 0 0 0; font-size: 14px;">Custom Emporium</p>
+                <p style="color: #d4c4a8; margin: 10px 0 0 0; font-size: 14px;">Commercial Cleaning Robots</p>
             </td>
         </tr>
         

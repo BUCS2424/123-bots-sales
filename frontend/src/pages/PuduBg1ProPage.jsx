@@ -360,7 +360,7 @@ const PuduBg1ProPage = () => {
             {/* Fleet Management */}
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-blue-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video overflow-hidden">
-                <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/sy01od6d_fleet-management.png" alt="PUDU BG1 PRO Fleet Management Dashboard" className="w-full h-full object-cover" />
+                <img src="/legacy-assets/sy01od6d_fleet-management.png" alt="PUDU BG1 PRO Fleet Management Dashboard" className="w-full h-full object-cover" />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">Fleet Management</h3>
@@ -392,7 +392,7 @@ const PuduBg1ProPage = () => {
             {/* Support */}
             <div className="bg-bots-dark rounded-2xl overflow-hidden border border-gray-800 hover:border-blue-500/50 transition-all hover:transform hover:scale-105">
               <div className="aspect-video overflow-hidden">
-                <img src="https://customer-assets.emergentagent.com/job_ef18f0c6-3791-43dc-a009-b6a410b56caf/artifacts/76r9l5p9_pudu-bg1-expert-support.png" alt="PUDU BG1 PRO Expert Support in Action" className="w-full h-full object-cover" />
+                <img src="/legacy-assets/76r9l5p9_pudu-bg1-expert-support.png" alt="PUDU BG1 PRO Expert Support in Action" className="w-full h-full object-cover" />
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-white mb-4">Expert Support</h3>

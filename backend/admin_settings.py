@@ -278,7 +278,7 @@ class SiteSettings(BaseModel):
     """Global site settings for logo, favicon, maintenance mode, etc."""
     site_name: str = "123Bots"
     site_url: str = "https://123bots.com"
-    logo_url: str = "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png"
+    logo_url: str = "/images/legacy-logo-placeholder.png"
     favicon_url: str = ""
     chatbot_icon_url: str = ""
     admin_email: str = ""
@@ -316,7 +316,7 @@ def _normalize_printful_callback_url(callback_url: Optional[str]) -> str:
 
 
 def _normalized_site_settings(settings: Optional[dict] = None) -> dict:
-    default_logo = "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/z0w87i4a_gingerkare-logo-3-blue.png"
+    default_logo = "/images/legacy-logo-placeholder.png"
     default_site_name = "123Bots"
     default_site_url = "https://123bots.com"
     data = settings or {}
@@ -415,17 +415,17 @@ class HomeBannerSettings(BaseModel):
 
 class HeroDisplaySettings(BaseModel):
     """Settings for the hero section promotional card"""
-    hero_background_image_url: str = "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png"
+    hero_background_image_url: str = "/legacy-assets/legacy-hero-background.png"
     hero_video_url: str = "/videos/butterfly_alpha.webm"
     hero_card_image_url: str = ""
-    hero_card_title: str = "CUSTOM EMPORIUM"
-    hero_card_subtitle: str = "Unique & Personalized"
-    hero_card_description: str = "Made with care, just for you"
+    hero_card_title: str = "AI-Powered"
+    hero_card_subtitle: str = "Commercial Cleaning"
+    hero_card_description: str = "Cutting-Edge Cleaning Technology"
 
 
 class ScreensaverSettings(BaseModel):
-    image_a_url: str = "https://customer-assets.emergentagent.com/job_65c71db2-9245-43b1-9627-564f71a23c40/artifacts/2mxzmwy8_logo-bubble-for-sleep-screen.png"
-    image_b_url: str = "https://customer-assets.emergentagent.com/job_65c71db2-9245-43b1-9627-564f71a23c40/artifacts/71zcw0f9_logo-bubble-for-sleep-screen-2.png"
+    image_a_url: str = "/legacy-assets/2mxzmwy8_logo-bubble-for-sleep-screen.png"
+    image_b_url: str = "/legacy-assets/71zcw0f9_logo-bubble-for-sleep-screen-2.png"
     image_a_count: int = 15
     image_b_count: int = 15
     video_url: str = "https://cdn.coverr.co/videos/coverr-waves-in-slow-motion-1579/1080p.mp4"
@@ -1241,7 +1241,7 @@ async def update_galaxy_ai_settings(settings: GalaxyAISettings, db=Depends(get_d
 async def get_hero_display_settings(db=Depends(get_db)):
     """Get hero section display settings"""
     settings = await db.admin_settings.find_one({"type": "hero_display"})
-    default_bg = "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png"
+    default_bg = "/legacy-assets/legacy-hero-background.png"
     default_video = "/videos/butterfly_alpha.webm"
     default_card = "https://images.unsplash.com/photo-1513519245088-0e12902e35ca?auto=format&fit=crop&w=1000&q=80"
 
@@ -1254,9 +1254,9 @@ async def get_hero_display_settings(db=Depends(get_db)):
         "hero_background_image_url": settings.get("hero_background_image_url") or default_bg,
         "hero_video_url": settings.get("hero_video_url") or default_video,
         "hero_card_image_url": settings.get("hero_card_image_url") or default_card,
-        "hero_card_title": settings.get("hero_card_title", "CUSTOM EMPORIUM"),
-        "hero_card_subtitle": settings.get("hero_card_subtitle", "Unique & Personalized"),
-        "hero_card_description": settings.get("hero_card_description", "Made with care, just for you"),
+        "hero_card_title": settings.get("hero_card_title", "AI-Powered"),
+        "hero_card_subtitle": settings.get("hero_card_subtitle", "Commercial Cleaning"),
+        "hero_card_description": settings.get("hero_card_description", "Cutting-Edge Cleaning Technology"),
     }
 
 
@@ -1824,7 +1824,7 @@ async def get_public_hero_display_settings(db=Depends(get_db)):
     """Get hero display settings for public display (no auth required)"""
     settings = await db.admin_settings.find_one({"type": "hero_display"})
     
-    default_bg = "https://customer-assets.emergentagent.com/job_cart-builder-21/artifacts/dk8ihy2p_gingerkare-emporuim-and-collectibles.png"
+    default_bg = "/legacy-assets/legacy-hero-background.png"
     default_video = "/videos/butterfly_alpha.webm"
     default_image = "https://images.unsplash.com/photo-1513519245088-0e12902e35ca?auto=format&fit=crop&w=1000&q=80"
     
@@ -1833,16 +1833,16 @@ async def get_public_hero_display_settings(db=Depends(get_db)):
             "hero_background_image_url": default_bg,
             "hero_video_url": default_video,
             "hero_card_image_url": default_image,
-            "hero_card_title": "CUSTOM EMPORIUM",
-            "hero_card_subtitle": "Unique & Personalized",
-            "hero_card_description": "Made with care, just for you"
+            "hero_card_title": "AI-Powered",
+            "hero_card_subtitle": "Commercial Cleaning",
+            "hero_card_description": "Cutting-Edge Cleaning Technology"
         }
     
     return {
         "hero_background_image_url": settings.get("hero_background_image_url") or default_bg,
         "hero_video_url": settings.get("hero_video_url") or default_video,
         "hero_card_image_url": settings.get("hero_card_image_url") or default_image,
-        "hero_card_title": settings.get("hero_card_title", "CUSTOM EMPORIUM"),
-        "hero_card_subtitle": settings.get("hero_card_subtitle", "Unique & Personalized"),
-        "hero_card_description": settings.get("hero_card_description", "Made with care, just for you")
+        "hero_card_title": settings.get("hero_card_title", "AI-Powered"),
+        "hero_card_subtitle": settings.get("hero_card_subtitle", "Commercial Cleaning"),
+        "hero_card_description": settings.get("hero_card_description", "Cutting-Edge Cleaning Technology")
     }
