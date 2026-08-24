@@ -197,12 +197,9 @@ async def _execute_backup_job(db, backup_id: str, file_name: str, admin_email: s
 
             await _export_db_json_dump(db, mongo_json_dump_root)
 
-            with zipfile.ZipFile(backup_path, "w", compression=zipfile.ZIP_DEFLATED) as zipf:
-                app_root = Path("/app")
-                for file_path in _iter_backup_file_paths(app_root):
-                    arcname = Path("app") / file_path.relative_to(app_root)
-                    zipf.write(file_path, arcname.as_posix())
+            uploads_root = Path("/app/uploads")
 
+            with zipfile.ZipFile(backup_path, "w", compression=zipfile.ZIP_DEFLATED) as zipf:
                 if mongodump_available:
                     for dump_file in mongo_dump_root.rglob("*"):
                         if dump_file.is_file():
@@ -214,13 +211,20 @@ async def _execute_backup_job(db, backup_id: str, file_name: str, admin_email: s
                         arcname = Path("mongodb_json_dump") / dump_file.relative_to(mongo_json_dump_root)
                         zipf.write(dump_file, arcname.as_posix())
 
+                contains_uploads = uploads_root.is_dir()
+                if contains_uploads:
+                    for file_path in _iter_backup_file_paths(uploads_root):
+                        arcname = Path("uploads") / file_path.relative_to(uploads_root)
+                        zipf.write(file_path, arcname.as_posix())
+
                 metadata = {
                     "backup_id": backup_id,
                     "created_at": datetime.now(timezone.utc).isoformat(),
                     "created_by": admin_email,
                     "db_name": db_name,
-                    "contains_env": True,
-                    "contains_project_files": True,
+                    "contains_env": False,
+                    "contains_project_files": False,
+                    "contains_uploads": contains_uploads,
                     "contains_db_dump": True,
                     "db_dump_mode": db_dump_mode,
                 }
@@ -1362,7 +1366,7 @@ async def create_system_backup(authorization: Optional[str] = Header(None), db=D
             "file_size": 0,
             "created_at": created_at,
             "created_by": admin_user.get("email"),
-            "contains_env": True,
+            "contains_env": False,
             "status": "processing",
         })
 
@@ -1513,23 +1517,14 @@ async def restore_system_backup(
             with zipfile.ZipFile(zip_path, "r") as zip_ref:
                 zip_ref.extractall(extract_path)
 
-            # Restore project files
-            source_app = extract_path / "app"
-            if source_app.exists() and source_app.is_dir():
-                for item in source_app.iterdir():
-                    relative_name = item.name
-                    if relative_name in {".git", ".emergent"}:
-                        continue
-                    if relative_name == "Storage" and (item / "backups").exists():
-                        # Do not recursively overwrite existing backup archive folder
-                        pass
-
-                    destination = Path("/app") / relative_name
-                    if item.is_dir():
-                        shutil.copytree(item, destination, dirs_exist_ok=True)
-                    else:
-                        destination.parent.mkdir(parents=True, exist_ok=True)
-                        shutil.copy2(item, destination)
+            # Restore uploaded files (product images, tax certs, chat attachments, etc.)
+            # Deliberately does NOT restore app code from the zip: this container's
+            # code comes from the deployed git image, and overwriting it on disk
+            # from an uploaded backup would desync the running process from what's
+            # actually deployed - safe to skip since the source is in git, not here.
+            source_uploads = extract_path / "uploads"
+            if source_uploads.exists() and source_uploads.is_dir():
+                shutil.copytree(source_uploads, Path("/app/uploads"), dirs_exist_ok=True)
 
             restored_db = False
 
