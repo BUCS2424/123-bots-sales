@@ -17,6 +17,10 @@ COPY backend/requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY backend/ .
+# Strip any local .env that rode along in the build context - config must
+# come from container env vars (docker-compose's env_file, docker run -e)
+# only, never a file baked into the image.
+RUN rm -f .env
 
 # Code hardcodes absolute /app/uploads paths (chat, product files, tax certs, etc.)
 RUN mkdir -p /app/uploads

@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
+import sys
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
@@ -30,6 +31,14 @@ from booking_provisioning import ensure_user_booking_calendar_setup
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
+
+# Fail loud and specific at boot if required config is missing, instead of a
+# bare KeyError traceback that's hard to diagnose from a deploy log viewer.
+_REQUIRED_ENV_VARS = ["MONGO_URL", "DB_NAME"]
+_missing_env_vars = [key for key in _REQUIRED_ENV_VARS if not os.environ.get(key)]
+if _missing_env_vars:
+    print(f"[BOOT] FATAL: missing required environment variables: {', '.join(_missing_env_vars)}", file=sys.stderr)
+    sys.exit(1)
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
@@ -1534,6 +1543,8 @@ async def startup_event():
     except Exception as e:
         logger.error(f"Startup initialization error (non-fatal): {e}")
         # Don't fail startup - let the server start and retry later
+
+    logger.info("SERVER IS LIVE AND LISTENING")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

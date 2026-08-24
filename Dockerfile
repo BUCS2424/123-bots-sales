@@ -14,6 +14,9 @@ WORKDIR /app/frontend
 COPY frontend/package.json ./
 RUN yarn install
 COPY frontend/ .
+# Strip any local .env that rode along in the build context (e.g. a
+# developer's machine) so it can't override the same-origin URL below.
+RUN rm -f .env .env.local .env.development .env.development.local
 # Same-origin deployment: frontend and API share one host/port, so use
 # relative API paths instead of an absolute cross-origin URL.
 ENV REACT_APP_BACKEND_URL=""
@@ -30,6 +33,10 @@ COPY backend/requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY backend/ .
+# Strip any local .env that rode along in the build context - config must
+# come from container env vars (docker run -e / the panel's Environment
+# tab) only, never a file baked into the image.
+RUN rm -f .env
 
 # Code hardcodes absolute /app/uploads paths (chat, product files, tax certs, etc.)
 RUN mkdir -p /app/uploads
