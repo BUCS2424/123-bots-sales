@@ -1540,3 +1540,20 @@ async def shutdown_db_client():
     from scheduler import shutdown_scheduler
     shutdown_scheduler()
     client.close()
+
+
+# ============== Serve frontend build (single-container deployment) ==============
+# Only active when a built frontend is present in the image (see root Dockerfile).
+# The split backend/frontend Docker Compose setup has no frontend/build here, so
+# this stays inert and nginx serves the frontend instead.
+_FRONTEND_BUILD_DIR = (Path("/app/frontend/build")).resolve()
+
+if _FRONTEND_BUILD_DIR.is_dir():
+    from fastapi.responses import FileResponse
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def serve_frontend(full_path: str):
+        candidate = (_FRONTEND_BUILD_DIR / full_path).resolve()
+        if full_path and candidate.is_file() and _FRONTEND_BUILD_DIR in candidate.parents:
+            return FileResponse(candidate)
+        return FileResponse(_FRONTEND_BUILD_DIR / "index.html")
