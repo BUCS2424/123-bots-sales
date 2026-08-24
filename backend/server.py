@@ -1491,25 +1491,6 @@ async def startup_event():
         else:
             logger.info(f"Super admin user already exists: {super_admin_email}")
 
-        # Create secondary super admin for testing
-        test_admin_email = "super@amino.com"
-        test_existing = await db.users.find_one({"email": test_admin_email})
-        
-        if not test_existing:
-            now = datetime.now(timezone.utc)
-            test_admin = {
-                "id": str(uuid.uuid4()),
-                "email": test_admin_email,
-                "name": "Super Admin",
-                "hashed_password": get_password_hash("peptides"),
-                "role": UserRole.SUPER_ADMIN,
-                "is_active": True,
-                "created_at": now.isoformat(),
-                "updated_at": now.isoformat()
-            }
-            await db.users.insert_one(test_admin)
-            logger.info(f"Test super admin user created: {test_admin_email}")
-
         await cleanup_non_pawn_data()
         logger.info("Verified non-pawn data cleanup marker")
 
