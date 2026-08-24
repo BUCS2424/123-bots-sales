@@ -1,5 +1,7 @@
 export const DEFAULT_SITE_NAME = '123Bots';
-export const DEFAULT_LOGO_URL = '/images/123bots-logo.png';
+// No bundled default image - an unconfigured logo renders via SiteLogo's
+// generic placeholder instead of falling back to any specific artwork.
+export const DEFAULT_LOGO_URL = '';
 export const DEFAULT_SUPPORT_EMAIL = 'support@123bots.com';
 
 export const buildSiteSettingsState = (payload = {}, loading = false) => ({

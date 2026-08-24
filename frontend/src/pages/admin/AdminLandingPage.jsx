@@ -4,6 +4,7 @@ import { Store } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 import AdminScreensaver from '../../components/AdminScreensaver';
+import SiteLogo from '../../components/SiteLogo';
 
 const AdminLandingPage = () => {
   const navigate = useNavigate();
@@ -116,8 +117,8 @@ const AdminLandingPage = () => {
         {/* Header */}
         <header className="p-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <img
-              src={logoUrl || '/images/legacy-logo-placeholder.png'}
+            <SiteLogo
+              src={logoUrl}
               alt={siteName || '123Bots'}
               className="h-12"
               data-testid="admin-landing-header-logo"

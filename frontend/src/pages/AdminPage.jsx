@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { useAuth } from '../context/AuthContext';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { toast } from '../hooks/use-toast';
+import SiteLogo from '../components/SiteLogo';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -150,8 +151,8 @@ const AdminPage = () => {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <img
-                src={logoUrl || '/images/legacy-logo-placeholder.png'}
+              <SiteLogo
+                src={logoUrl}
                 alt={siteName || 'Site logo'}
                 className="h-12"
                 data-testid="admin-page-header-logo"

@@ -16,9 +16,11 @@ def set_db(database):
     global db
     db = database
 
-# Legacy hardcoded logo that may still exist in previously-saved custom templates
+# Legacy hardcoded logo that may still exist in previously-saved custom templates -
+# kept as-is so apply_site_logo() below can keep detecting and replacing it.
 OLD_HARDCODED_LOGO = "/images/legacy-logo-placeholder.png"
-DEFAULT_SITE_LOGO = OLD_HARDCODED_LOGO
+# No bundled default image for emails with no configured logo yet.
+DEFAULT_SITE_LOGO = ""
 
 
 async def get_site_logo():

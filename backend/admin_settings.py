@@ -282,7 +282,10 @@ class SiteSettings(BaseModel):
     """Global site settings for logo, favicon, maintenance mode, etc."""
     site_name: str = "123Bots"
     site_url: str = "https://123bots.com"
-    logo_url: str = "/images/legacy-logo-placeholder.png"
+    # No bundled default image - an unconfigured logo renders as a generic
+    # placeholder client-side (SiteLogo) rather than falling back to any
+    # specific artwork here.
+    logo_url: str = ""
     favicon_url: str = ""
     chatbot_icon_url: str = ""
     admin_email: str = ""
@@ -320,7 +323,7 @@ def _normalize_printful_callback_url(callback_url: Optional[str]) -> str:
 
 
 def _normalized_site_settings(settings: Optional[dict] = None) -> dict:
-    default_logo = "/images/legacy-logo-placeholder.png"
+    default_logo = ""
     default_site_name = "123Bots"
     default_site_url = "https://123bots.com"
     data = settings or {}

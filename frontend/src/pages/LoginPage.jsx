@@ -8,6 +8,7 @@ import { Label } from '../components/ui/label';
 import { useAuth } from '../context/AuthContext';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { toast } from '../hooks/use-toast';
+import SiteLogo from '../components/SiteLogo';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -185,7 +186,7 @@ const LoginPage = () => {
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                 className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-full blur-xl"
               />
-              <img
+              <SiteLogo
                 src={siteSettings.logoUrl}
                 alt={siteSettings.siteName}
                 className="h-24 relative z-10"

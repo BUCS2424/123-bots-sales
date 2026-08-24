@@ -13,6 +13,7 @@ import { Textarea } from '../components/ui/textarea';
 import { Checkbox } from '../components/ui/checkbox';
 import { toast } from '../hooks/use-toast';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import SiteLogo from '../components/SiteLogo';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -178,8 +179,8 @@ const JobApplicationPage = () => {
       <div className="max-w-4xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8 print:mb-4">
-          <img
-            src={logoUrl || '/images/legacy-logo-placeholder.png'}
+          <SiteLogo
+            src={logoUrl}
             alt={siteName || '123Bots'}
             className="h-16 mx-auto mb-4 print:h-12"
             data-testid="job-application-header-logo"

@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../co
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import SiteLogo from '../components/SiteLogo';
 import {
   Accordion,
   AccordionContent,
@@ -182,8 +183,8 @@ const EmploymentPage = () => {
           
           <div className="max-w-3xl">
             <div className="flex items-center gap-3 mb-4">
-              <img
-                src={logoUrl || '/images/legacy-logo-placeholder.png'}
+              <SiteLogo
+                src={logoUrl}
                 alt={siteName || '123Bots'}
                 className="h-12"
                 data-testid="employment-hero-logo"
@@ -695,8 +696,8 @@ const EmploymentPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <img
-                src={logoUrl || '/images/legacy-logo-placeholder.png'}
+              <SiteLogo
+                src={logoUrl}
                 alt={siteName || '123Bots'}
                 className="h-8"
                 data-testid="employment-footer-logo"
