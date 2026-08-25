@@ -258,7 +258,9 @@ const QuoteSigningPage = () => {
   const STRIPE_FLAT = 0.30;
   const ccFee = (amount) => amount > 0 ? (amount * STRIPE_RATE) + STRIPE_FLAT : 0;
   const shippingAmount = Number(quote.shipping_cost || 0);
-  const totalWithFees = calcTotal + shippingAmount + ccFee(calcTotal);
+  const taxRatePercent = quote.tax_exempt ? 0 : Number(quote.tax_rate || 0);
+  const taxAmount = calcTotal * (taxRatePercent / 100);
+  const totalWithFees = calcTotal + taxAmount + shippingAmount + ccFee(calcTotal);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -419,6 +421,12 @@ const QuoteSigningPage = () => {
                     <div className="flex justify-between text-sm" data-testid="quote-sign-shipping-line">
                       <span className="text-gray-600">Shipping:</span>
                       <span className="font-medium">{formatCurrency(shippingAmount)}</span>
+                    </div>
+                  )}
+                  {taxAmount > 0 && (
+                    <div className="flex justify-between text-sm" data-testid="quote-sign-tax-line">
+                      <span className="text-gray-600">Tax ({taxRatePercent.toFixed(2).replace(/\.?0+$/, '')}%):</span>
+                      <span className="font-medium">{formatCurrency(taxAmount)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-sm">
@@ -704,7 +712,7 @@ const QuoteSigningPage = () => {
         signer_email: signerEmail,
         document_signatures: documentSignaturesArray,
         billing_choices: billingChoices,
-        effective_total: calcTotal
+        effective_total: totalWithFees
       });
       
       setSigned(true);

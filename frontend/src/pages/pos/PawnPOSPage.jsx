@@ -19,7 +19,6 @@ import { useSiteSettings } from '../../context/SiteSettingsContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
-const TAX_RATE = 0.10; // 10% tax
 
 // Success Modal Component
 const SuccessModal = ({ isOpen, onClose, receipt, customer, cart, paymentMethod }) => {
@@ -81,8 +80,8 @@ const SuccessModal = ({ isOpen, onClose, receipt, customer, cart, paymentMethod 
           `).join('') || ''}
         </div>
         <div class="totals">
-          <div class="row"><span>Subtotal:</span><span>$${(receipt.total / 1.1).toFixed(2)}</span></div>
-          <div class="row"><span>Tax (10%):</span><span>$${(receipt.total - receipt.total / 1.1).toFixed(2)}</span></div>
+          <div class="row"><span>Subtotal:</span><span>$${(receipt.subtotal ?? 0).toFixed(2)}</span></div>
+          <div class="row"><span>Tax (${((receipt.tax_rate ?? 0) * 100).toFixed(2).replace(/\.?0+$/, '')}%):</span><span>$${(receipt.tax_amount ?? 0).toFixed(2)}</span></div>
           <div class="row total"><span>TOTAL ${isAwaitingPayment ? 'DUE' : ''}:</span><span>$${receipt.total?.toFixed(2)}</span></div>
           ${receipt.change_due > 0 ? `
             <div class="row"><span>Cash Received:</span><span>$${(receipt.total + receipt.change_due).toFixed(2)}</span></div>
@@ -469,6 +468,7 @@ const PeptidesPOSPage = () => {
   // Recurring order state
   const [isRecurringOrder, setIsRecurringOrder] = useState(false);
   const [recurringInterval, setRecurringInterval] = useState(30);
+  const [taxSettings, setTaxSettings] = useState({ tax_enabled: false, tax_rates: [], combined_rate: 0 });
 
   const searchInputRef = useRef(null);
 
@@ -477,9 +477,26 @@ const PeptidesPOSPage = () => {
     fetchStats();
     fetchPaymentSettings();
     fetchExistingCustomers();
+    fetchTaxSettings();
     // Focus search on load
     searchInputRef.current?.focus();
   }, []);
+
+  const fetchTaxSettings = async () => {
+    try {
+      const response = await axios.get(`${API}/admin-settings/tax`);
+      const data = response.data;
+      const combinedRate = data.tax_enabled
+        ? (data.tax_rates || []).filter(r => r.active).reduce((sum, r) => sum + (r.rate || 0), 0)
+        : 0;
+      setTaxSettings({ tax_enabled: data.tax_enabled ?? false, tax_rates: data.tax_rates || [], combined_rate: combinedRate });
+    } catch (error) {
+      console.error('Error fetching tax settings:', error);
+      setTaxSettings({ tax_enabled: false, tax_rates: [], combined_rate: 0 });
+    }
+  };
+
+  const taxRate = taxSettings.tax_enabled ? taxSettings.combined_rate / 100 : 0;
 
   useEffect(() => {
     const delaySearch = setTimeout(() => {
@@ -638,7 +655,7 @@ const PeptidesPOSPage = () => {
   };
 
   const calculateTax = () => {
-    return calculateSubtotal() * TAX_RATE;
+    return calculateSubtotal() * taxRate;
   };
 
   const calculateShipping = () => {
@@ -746,7 +763,10 @@ const PeptidesPOSPage = () => {
           setReceipt({
             ...response.data.order,
             items_count: cart.length,
-            change_due: 0
+            change_due: 0,
+            subtotal: calculateSubtotal(),
+            tax_rate: taxRate,
+            tax_amount: calculateTax()
           });
           setShowSuccess(true);
           fetchStats();
@@ -764,7 +784,7 @@ const PeptidesPOSPage = () => {
           customer: customer,
           payment_method: paymentMethod,
           subtotal: calculateSubtotal(),
-          tax_rate: TAX_RATE,
+          tax_rate: taxRate,
           tax_amount: calculateTax(),
           shipping_cost: calculateShipping(),
           discount_total: cart.reduce((sum, item) => sum + item.discount, 0),
@@ -776,7 +796,12 @@ const PeptidesPOSPage = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
 
-        setReceipt(response.data);
+        setReceipt({
+          ...response.data,
+          subtotal: calculateSubtotal(),
+          tax_rate: taxRate,
+          tax_amount: calculateTax()
+        });
         setShowSuccess(true);
         fetchStats();
       }
@@ -1238,7 +1263,7 @@ const PeptidesPOSPage = () => {
                     <span>${calculateSubtotal().toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Tax ({(TAX_RATE * 100).toFixed(0)}%)</span>
+                    <span className="text-gray-600">Tax ({(taxRate * 100).toFixed(2).replace(/\.?0+$/, '')}%)</span>
                     <span>${calculateTax().toFixed(2)}</span>
                   </div>
                   {/* Shipping Line - Only for phone orders */}
