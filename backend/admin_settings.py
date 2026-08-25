@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Header, UploadFile, File
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
@@ -1817,6 +1817,40 @@ async def get_public_site_settings(db=Depends(get_db)):
     settings = await db.admin_settings.find_one({"type": "site"})
 
     return _normalized_site_settings(settings)
+
+
+@public_router.get("/manifest.json")
+async def get_public_manifest(db=Depends(get_db)):
+    """
+    PWA web app manifest, built live from the configured site name/icon.
+
+    Served as a real, stable HTTP resource rather than injected via a
+    blob: URL - Chrome's installability checker treats a manifest's URL as
+    part of the app's identity and won't reliably fire the install prompt
+    for a blob reference that's regenerated (with a new address) on every
+    page load.
+    """
+    settings = await db.admin_settings.find_one({"type": "site"})
+    site = _normalized_site_settings(settings)
+
+    icon_url = site.get("pwa_icon_url") or site.get("logo_url") or ""
+    icons = []
+    if icon_url:
+        icons = [
+            {"src": icon_url, "sizes": "192x192", "type": "image/png"},
+            {"src": icon_url, "sizes": "512x512", "type": "image/png"},
+        ]
+
+    manifest = {
+        "short_name": site.get("site_name") or "123Bots",
+        "name": site.get("site_name") or "123Bots",
+        "icons": icons,
+        "start_url": "/",
+        "display": "standalone",
+        "theme_color": "#050f17",
+        "background_color": "#050f17",
+    }
+    return JSONResponse(content=manifest, media_type="application/manifest+json")
 
 
 @public_router.get("/hero-display")
