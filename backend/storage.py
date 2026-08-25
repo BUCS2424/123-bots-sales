@@ -426,6 +426,7 @@ def get_storage_router(db, require_admin, require_super_admin):
         file: UploadFile = File(...),
         folder: str = Form(default="site"),
         resize: str = Form(default=""),
+        square: str = Form(default=""),
         current_user = Depends(require_admin)
     ):
         """Upload and optionally resize site assets (logo, favicon) to storage"""
@@ -446,24 +447,37 @@ def get_storage_router(db, require_admin, require_super_admin):
         if resize and not is_ico:
             try:
                 max_size = int(resize)
+                want_square = square.lower() in ('1', 'true', 'yes')
                 img = Image.open(io.BytesIO(content))
-                
+
                 # Convert to RGBA if needed (for transparency support)
                 if img.mode not in ('RGBA', 'RGB'):
                     img = img.convert('RGBA')
-                
-                # Calculate new dimensions maintaining aspect ratio
+
                 width, height = img.size
-                if width > max_size or height > max_size:
+                if want_square:
+                    # App icons (e.g. PWA) must be a true square matching the
+                    # declared manifest size, or browsers refuse to treat the
+                    # site as installable - scale to fit, then pad to a
+                    # centered max_size x max_size canvas.
+                    scale = min(max_size / width, max_size / height)
+                    fit_width = max(1, round(width * scale))
+                    fit_height = max(1, round(height * scale))
+                    fitted = img.convert('RGBA').resize((fit_width, fit_height), Image.Resampling.LANCZOS)
+                    canvas = Image.new('RGBA', (max_size, max_size), (0, 0, 0, 0))
+                    canvas.paste(fitted, ((max_size - fit_width) // 2, (max_size - fit_height) // 2), fitted)
+                    img = canvas
+                elif width > max_size or height > max_size:
+                    # Calculate new dimensions maintaining aspect ratio
                     if width > height:
                         new_width = max_size
                         new_height = int(height * (max_size / width))
                     else:
                         new_height = max_size
                         new_width = int(width * (max_size / height))
-                    
+
                     img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-                
+
                 # Save to bytes
                 output = io.BytesIO()
                 # Save as PNG for transparency support
@@ -471,7 +485,7 @@ def get_storage_router(db, require_admin, require_super_admin):
                 content = output.getvalue()
                 original_ext = '.png'
                 content_type = 'image/png'
-                
+
                 logger.info(f"Resized image to {img.size}")
             except Exception as e:
                 logger.warning(f"Could not resize image: {e}, using original")

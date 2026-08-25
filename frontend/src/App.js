@@ -83,6 +83,9 @@ import AgeVerificationModal from './components/AgeVerificationModal';
 // Chat Widget (Public Pages Only)
 import ChatWidget from './components/ChatWidget';
 
+// PWA Install Banner (Public Pages Only)
+import InstallPWABanner from './components/InstallPWABanner';
+
 import ChatPopout from './pages/admin/ChatPopout';
 
 const A2G_ANALYTICS_SCRIPT_ID = 'ZwSg9rf6GA';
@@ -139,6 +142,7 @@ const PublicLayout = ({ children }) => {
     <>
       <main className="min-h-screen bg-bots-dark">{children}</main>
       <ChatWidget />
+      <InstallPWABanner />
     </>
   );
 };

@@ -76,6 +76,9 @@ const DevGeneralSettings = () => {
     formData.append('file', file);
     formData.append('folder', 'site');
     formData.append('resize', type === 'favicon' ? '32' : type === 'pwa' ? '512' : '200');
+    if (type === 'pwa') {
+      formData.append('square', 'true');
+    }
     
     const response = await axios.post(`${API_URL}/api/storage/upload-site-asset`, formData, {
       headers: {
