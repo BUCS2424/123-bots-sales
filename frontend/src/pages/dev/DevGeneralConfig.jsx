@@ -18,20 +18,24 @@ const DevGeneralSettings = () => {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingFavicon, setUploadingFavicon] = useState(false);
   const [uploadingChatbotIcon, setUploadingChatbotIcon] = useState(false);
+  const [uploadingPwaIcon, setUploadingPwaIcon] = useState(false);
   const [dragOverLogo, setDragOverLogo] = useState(false);
   const [dragOverFavicon, setDragOverFavicon] = useState(false);
   const [dragOverChatbotIcon, setDragOverChatbotIcon] = useState(false);
-  
+  const [dragOverPwaIcon, setDragOverPwaIcon] = useState(false);
+
   const logoInputRef = useRef(null);
   const faviconInputRef = useRef(null);
   const chatbotIconInputRef = useRef(null);
-  
+  const pwaIconInputRef = useRef(null);
+
   // Use individual state for each field to prevent re-render issues
   const [siteName, setSiteName] = useState('123Bots');
   const [siteUrl, setSiteUrl] = useState('https://123bots.com');
   const [logoUrl, setLogoUrl] = useState('');
   const [faviconUrl, setFaviconUrl] = useState('');
   const [chatbotIconUrl, setChatbotIconUrl] = useState('');
+  const [pwaIconUrl, setPwaIconUrl] = useState('');
   const [adminEmail, setAdminEmail] = useState('');
   const [supportEmail, setSupportEmail] = useState('');
   const [maintenanceMode, setMaintenanceMode] = useState(false);
@@ -51,6 +55,7 @@ const DevGeneralSettings = () => {
           setLogoUrl(data.logo_url || '');
           setFaviconUrl(data.favicon_url || '');
           setChatbotIconUrl(data.chatbot_icon_url || '');
+          setPwaIconUrl(data.pwa_icon_url || data.logo_url || '');
           setAdminEmail(data.admin_email || '');
           setSupportEmail(data.support_email || '');
           setMaintenanceMode(data.maintenance_mode || false);
@@ -70,7 +75,7 @@ const DevGeneralSettings = () => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', 'site');
-    formData.append('resize', type === 'favicon' ? '32' : '200');
+    formData.append('resize', type === 'favicon' ? '32' : type === 'pwa' ? '512' : '200');
     
     const response = await axios.post(`${API_URL}/api/storage/upload-site-asset`, formData, {
       headers: {
@@ -148,12 +153,35 @@ const DevGeneralSettings = () => {
     }
   };
 
+  const handlePwaIconUpload = async (file) => {
+    if (!file) return;
+
+    const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif', 'image/svg+xml'];
+    if (!validTypes.includes(file.type)) {
+      toast({ title: 'Invalid file type', description: 'Please upload a PNG, JPG, WebP, GIF, or SVG image.', variant: 'destructive' });
+      return;
+    }
+
+    setUploadingPwaIcon(true);
+    try {
+      const url = await uploadFile(file, 'pwa');
+      setPwaIconUrl(url);
+      toast({ title: 'PWA icon uploaded', description: 'PWA icon has been uploaded successfully.' });
+    } catch (error) {
+      console.error('PWA icon upload error:', error);
+      toast({ title: 'Upload failed', description: 'Failed to upload PWA icon.', variant: 'destructive' });
+    } finally {
+      setUploadingPwaIcon(false);
+    }
+  };
+
   const handleDragOver = (e, type) => {
     e.preventDefault();
     e.stopPropagation();
     if (type === 'logo') setDragOverLogo(true);
     else if (type === 'favicon') setDragOverFavicon(true);
     else if (type === 'chatbot') setDragOverChatbotIcon(true);
+    else if (type === 'pwa') setDragOverPwaIcon(true);
   };
 
   const handleDragLeave = (e, type) => {
@@ -162,6 +190,7 @@ const DevGeneralSettings = () => {
     if (type === 'logo') setDragOverLogo(false);
     else if (type === 'favicon') setDragOverFavicon(false);
     else if (type === 'chatbot') setDragOverChatbotIcon(false);
+    else if (type === 'pwa') setDragOverPwaIcon(false);
   };
 
   const handleDrop = (e, type) => {
@@ -170,12 +199,14 @@ const DevGeneralSettings = () => {
     if (type === 'logo') setDragOverLogo(false);
     else if (type === 'favicon') setDragOverFavicon(false);
     else if (type === 'chatbot') setDragOverChatbotIcon(false);
-    
+    else if (type === 'pwa') setDragOverPwaIcon(false);
+
     const file = e.dataTransfer.files[0];
     if (file) {
       if (type === 'logo') handleLogoUpload(file);
       else if (type === 'favicon') handleFaviconUpload(file);
       else if (type === 'chatbot') handleChatbotIconUpload(file);
+      else if (type === 'pwa') handlePwaIconUpload(file);
     }
   };
 
@@ -189,6 +220,7 @@ const DevGeneralSettings = () => {
         logo_url: logoUrl,
         favicon_url: faviconUrl,
         chatbot_icon_url: chatbotIconUrl,
+        pwa_icon_url: pwaIconUrl,
         admin_email: adminEmail,
         support_email: supportEmail,
         maintenance_mode: maintenanceMode,
@@ -497,6 +529,77 @@ const DevGeneralSettings = () => {
                   <div className="flex flex-col items-center gap-2">
                     <Image className="w-10 h-10 text-gray-500" />
                     <span className="text-gray-400 text-sm">No chatbot icon set</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* PWA Icon Upload */}
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <Label>PWA Icon</Label>
+                <p className="text-xs text-gray-500 mb-2">Home screen icon when the site is installed as an app. Defaults to the Logo above.</p>
+                <div
+                  className={`mt-2 border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+                    dragOverPwaIcon ? 'border-[#ff8c42] bg-orange-50' : 'border-gray-300 hover:border-gray-400'
+                  } ${!isEditing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  onDragOver={(e) => isEditing && handleDragOver(e, 'pwa')}
+                  onDragLeave={(e) => handleDragLeave(e, 'pwa')}
+                  onDrop={(e) => isEditing && handleDrop(e, 'pwa')}
+                  onClick={() => isEditing && pwaIconInputRef.current?.click()}
+                  data-testid="pwa-icon-dropzone"
+                >
+                  <input
+                    ref={pwaIconInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg,image/webp,image/gif,image/svg+xml"
+                    className="hidden"
+                    onChange={(e) => handlePwaIconUpload(e.target.files[0])}
+                    disabled={!isEditing}
+                    data-testid="pwa-icon-file-input"
+                  />
+                  {uploadingPwaIcon ? (
+                    <div className="flex flex-col items-center gap-2 py-4">
+                      <Loader2 className="w-8 h-8 animate-spin text-[#ff8c42]" />
+                      <span className="text-sm text-gray-500">Uploading...</span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 py-2">
+                      <Upload className="w-8 h-8 text-gray-400" />
+                      <span className="text-sm text-gray-600">Drag & drop or click to upload</span>
+                      <span className="text-xs text-gray-400">PNG, JPG, WebP, GIF, SVG (square, 512x512 recommended)</span>
+                    </div>
+                  )}
+                </div>
+                <input
+                  type="text"
+                  value={pwaIconUrl}
+                  onChange={(e) => setPwaIconUrl(e.target.value)}
+                  disabled={!isEditing}
+                  className={`${inputClassName} mt-2`}
+                  placeholder="Or paste URL here"
+                  data-testid="pwa-icon-url-input"
+                />
+              </div>
+              <div className="flex flex-col items-center justify-center bg-gray-100 rounded-lg p-4 min-h-[140px] relative">
+                {pwaIconUrl ? (
+                  <>
+                    <img src={pwaIconUrl} alt="PWA icon preview" className="max-h-24 max-w-full object-contain" />
+                    {isEditing && (
+                      <button
+                        onClick={() => setPwaIconUrl('')}
+                        className="absolute top-2 right-2 p-1 bg-red-100 hover:bg-red-200 rounded-full"
+                        data-testid="pwa-icon-remove-btn"
+                      >
+                        <X className="w-4 h-4 text-red-600" />
+                      </button>
+                    )}
+                    <span className="text-xs text-gray-500 mt-2">Current PWA Icon</span>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center gap-2">
+                    <Image className="w-10 h-10 text-gray-300" />
+                    <span className="text-gray-400 text-sm">No PWA icon set</span>
                   </div>
                 )}
               </div>

@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "@/index.css";
 import App from "@/App";
+import * as serviceWorkerRegistration from "@/serviceWorkerRegistration";
 
 // Suppress ResizeObserver loop errors (benign error from Radix UI components)
 // This is a known issue with no functional impact
@@ -74,3 +75,5 @@ root.render(
     <App />
   </React.StrictMode>,
 );
+
+serviceWorkerRegistration.register();

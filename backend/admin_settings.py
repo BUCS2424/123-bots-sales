@@ -288,6 +288,7 @@ class SiteSettings(BaseModel):
     logo_url: str = ""
     favicon_url: str = ""
     chatbot_icon_url: str = ""
+    pwa_icon_url: str = ""
     admin_email: str = ""
     support_email: str = "support@123bots.com"
     maintenance_mode: bool = False
@@ -341,6 +342,7 @@ def _normalized_site_settings(settings: Optional[dict] = None) -> dict:
         "logo_url": raw_logo_url or default_logo,
         "favicon_url": (data.get("favicon_url") or "").strip(),
         "chatbot_icon_url": (data.get("chatbot_icon_url") or "").strip(),
+        "pwa_icon_url": (data.get("pwa_icon_url") or "").strip() or raw_logo_url,
         "admin_email": (data.get("admin_email") or "").strip(),
         "support_email": raw_support_email or "support@123bots.com",
         "maintenance_mode": bool(data.get("maintenance_mode", False)),

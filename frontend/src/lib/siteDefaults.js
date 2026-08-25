@@ -9,6 +9,7 @@ export const buildSiteSettingsState = (payload = {}, loading = false) => ({
   siteUrl: payload.site_url || '',
   logoUrl: payload.logo_url || DEFAULT_LOGO_URL,
   faviconUrl: payload.favicon_url || '',
+  pwaIconUrl: payload.pwa_icon_url || payload.logo_url || DEFAULT_LOGO_URL,
   adminEmail: payload.admin_email || '',
   supportEmail: payload.support_email || DEFAULT_SUPPORT_EMAIL,
   maintenanceMode: Boolean(payload.maintenance_mode),
