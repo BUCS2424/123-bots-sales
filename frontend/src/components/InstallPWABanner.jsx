@@ -9,6 +9,7 @@ export default function InstallPWABanner() {
   const { siteName } = useSiteSettings();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [visible, setVisible] = useState(false);
+  const [iosInstructions, setIosInstructions] = useState(false);
 
   useEffect(() => {
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
@@ -16,6 +17,16 @@ export default function InstallPWABanner() {
 
     const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || 0);
     if (dismissedAt && Date.now() - dismissedAt < DISMISS_COOLDOWN_MS) return;
+
+    // Safari on iOS/iPadOS never fires beforeinstallprompt - there's no
+    // programmatic install API there at all, so show manual instructions
+    // instead of silently never prompting these users.
+    const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase()) && !window.MSStream;
+    if (isIos) {
+      setIosInstructions(true);
+      setVisible(true);
+      return;
+    }
 
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
@@ -59,16 +70,22 @@ export default function InstallPWABanner() {
       <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
           <Download className="w-5 h-5 flex-shrink-0 text-bots-highlight" />
-          <p className="text-sm truncate">Install {siteName || 'this app'} on your device for quick access.</p>
+          <p className="text-sm truncate">
+            {iosInstructions
+              ? `Install ${siteName || 'this app'}: tap the Share icon, then "Add to Home Screen".`
+              : `Install ${siteName || 'this app'} on your device for quick access.`}
+          </p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
-          <button
-            onClick={handleInstall}
-            className="px-4 py-1.5 bg-blue-gradient text-white text-sm font-semibold rounded-md hover:opacity-90 transition-opacity"
-            data-testid="pwa-install-button"
-          >
-            Install
-          </button>
+          {!iosInstructions && (
+            <button
+              onClick={handleInstall}
+              className="px-4 py-1.5 bg-blue-gradient text-white text-sm font-semibold rounded-md hover:opacity-90 transition-opacity"
+              data-testid="pwa-install-button"
+            >
+              Install
+            </button>
+          )}
           <button
             onClick={handleDismiss}
             className="p-1.5 hover:bg-white/10 rounded-md transition-colors"
