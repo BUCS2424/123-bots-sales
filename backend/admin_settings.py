@@ -843,6 +843,7 @@ class FeatureFlags(BaseModel):
     fareharbor_api_user: str = ""  # FareHarbor partner API "X-FareHarbor-API-User" header value
     service_crm_enabled: bool = False  # Show/hide the Service CRM (admin + storefront: nav item, funnel page, homepage CTA)
     service_crm_product_name: str = "Robot"  # Brandable product name, e.g. "Get Your Robot Serviced"
+    service_repair_enabled: bool = False  # Show/hide the mechanic QR scan-in/out + loaner unit tracking system
 
 
 def _mask_secret(value: str) -> str:
@@ -931,6 +932,7 @@ async def get_public_feature_flags(db=Depends(get_db)):
             "activity_marketplace_enabled": 1,
             "service_crm_enabled": 1,
             "service_crm_product_name": 1,
+            "service_repair_enabled": 1,
         },
     )
     return {
@@ -958,6 +960,7 @@ async def get_public_feature_flags(db=Depends(get_db)):
         "activity_marketplace_enabled": bool(settings.get("activity_marketplace_enabled", False)) if settings else False,
         "service_crm_enabled": bool(settings.get("service_crm_enabled", False)) if settings else False,
         "service_crm_product_name": (settings.get("service_crm_product_name") if settings else None) or "Robot",
+        "service_repair_enabled": bool(settings.get("service_repair_enabled", False)) if settings else False,
     }
 
 

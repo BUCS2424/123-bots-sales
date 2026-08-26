@@ -71,6 +71,7 @@ const DevFeatureFlags = () => {
     fareharbor_api_user: '',
     service_crm_enabled: false,
     service_crm_product_name: 'Robot',
+    service_repair_enabled: false,
   });
   const [featureFlagsSaving, setFeatureFlagsSaving] = useState(false);
 
@@ -96,6 +97,7 @@ const DevFeatureFlags = () => {
     { id: 'events_landing_enabled', name: 'Events Landing Page', description: 'When ON, the EVENTS menu opens the custom immersive Event Center landing page (category tiles + upcoming list + coverflow slideshow). When OFF, it opens the standard site-template events list.', category: 'Events' },
     { id: 'activity_marketplace_enabled', name: 'Activity & Charter Marketplace', description: 'Enable Tours / Charters: activity categories, charter-company (seller) tenants, and activity listings, plus the public ACTIVITIES nav and directory pages. When OFF, everything for this module is hidden in admin and on the storefront.', category: 'Tours & Charters' },
     { id: 'service_crm_enabled', name: 'Service CRM', description: 'Enable the Service CRM: its own kanban/list pipeline for product-service requests, the public "Get Your [Product] Serviced" nav item and funnel page, and the homepage CTA swap (replaces Buy or Lease with Schedule a Service). When OFF, everything for this module is hidden in admin and on the storefront.', category: 'Service CRM' },
+    { id: 'service_repair_enabled', name: 'Service Repair Scanner', description: 'Enable the mechanic QR/barcode scan-in workflow: clock in/out on a service job by scanning the unit’s manufacturer serial, plus loaner-unit swap tracking. Independent of Service CRM itself. When OFF, the scan and loaner admin pages are hidden.', category: 'Service CRM' },
   ];
 
   useEffect(() => {

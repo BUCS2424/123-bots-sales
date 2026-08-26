@@ -9,6 +9,7 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime, timezone
 import uuid
+import re
 import logging
 
 from auth import decode_token, TokenData, verify_password, get_password_hash
@@ -55,6 +56,20 @@ class AddressCreate(BaseModel):
     country: str = "USA"
     phone: Optional[str] = None
     is_default: bool = False
+
+
+# ============== Service Request Endpoints ==============
+
+@portal_router.get("/my-service-requests")
+async def get_my_service_requests(current_user: TokenData = Depends(get_current_user)):
+    """Get all Service CRM requests submitted under the current user's email."""
+    if not current_user.email:
+        return []
+    requests = await db.service_requests.find(
+        {"email": {"$regex": f"^{re.escape(current_user.email)}$", "$options": "i"}},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(length=100)
+    return requests
 
 
 # ============== Order Endpoints ==============

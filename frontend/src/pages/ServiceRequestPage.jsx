@@ -1,13 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Wrench, Phone, Send, Clock, ShieldCheck, Upload, X, FileImage, Loader2 } from 'lucide-react';
+import { Html5Qrcode } from 'html5-qrcode';
+import { Wrench, Phone, Send, Clock, ShieldCheck, Upload, X, FileImage, Loader2, Camera, ScanLine } from 'lucide-react';
 import { toast } from '../hooks/use-toast';
 import axios from 'axios';
 import { setSeoMetadata } from '../lib/seo';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useSiteFeatureFlags } from '../hooks/useSiteFeatureFlags';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 const MAX_FILE_SIZE = 250 * 1024 * 1024; // 250 MB
@@ -22,6 +24,7 @@ const emptyForm = {
 
 const ServiceRequestPage = () => {
   const { service_crm_enabled: enabled, service_crm_product_name: productName, _loaded } = useSiteFeatureFlags();
+  const { isAuthenticated } = useAuth();
 
   const [formData, setFormData] = useState(emptyForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,6 +33,8 @@ const ServiceRequestPage = () => {
   const [uploadProgress, setUploadProgress] = useState({});
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef(null);
+  const [scanningSerial, setScanningSerial] = useState(false);
+  const serialScannerRef = useRef(null);
 
   useEffect(() => {
     setSeoMetadata({
@@ -95,6 +100,44 @@ const ServiceRequestPage = () => {
   };
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const stopSerialScan = useCallback(async () => {
+    if (serialScannerRef.current) {
+      try { await serialScannerRef.current.stop(); serialScannerRef.current.clear(); } catch { /* ignore */ }
+      serialScannerRef.current = null;
+    }
+    setScanningSerial(false);
+  }, []);
+
+  useEffect(() => {
+    if (!scanningSerial) return;
+    let cancelled = false;
+    const start = async () => {
+      try {
+        const html5 = new Html5Qrcode('service-request-serial-reader');
+        serialScannerRef.current = html5;
+        await html5.start(
+          { facingMode: 'environment' },
+          { fps: 10, qrbox: 240 },
+          async (decodedText) => {
+            await stopSerialScan();
+            setFormData((prev) => ({ ...prev, serial_number: decodedText }));
+            toast({ title: 'Serial Captured', description: decodedText });
+          },
+          () => {},
+        );
+        if (cancelled) await stopSerialScan();
+      } catch (e) {
+        toast({ title: 'Camera error', description: 'Could not start camera. Enter the serial manually instead.', variant: 'destructive' });
+        setScanningSerial(false);
+      }
+    };
+    start();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scanningSerial, stopSerialScan]);
+
+  useEffect(() => () => { stopSerialScan(); }, [stopSerialScan]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -255,7 +298,25 @@ const ServiceRequestPage = () => {
               <div className="grid md:grid-cols-2 gap-6 mb-6">
                 <div>
                   <label className={labelClass}>Serial Number (Optional)</label>
-                  <input type="text" name="serial_number" value={formData.serial_number} onChange={handleChange} className={inputClass} data-testid="service-request-serial" />
+                  <div className="flex gap-2">
+                    <input type="text" name="serial_number" value={formData.serial_number} onChange={handleChange} className={inputClass} data-testid="service-request-serial" />
+                    {isAuthenticated && (
+                      <button
+                        type="button"
+                        onClick={() => (scanningSerial ? stopSerialScan() : setScanningSerial(true))}
+                        className="flex-shrink-0 px-3 rounded-xl border border-gray-600 text-gray-300 hover:border-blue-400 hover:text-blue-400 transition-colors"
+                        title="Scan your unit's serial number"
+                        data-testid="service-request-scan-serial-toggle"
+                      >
+                        {scanningSerial ? <ScanLine className="w-5 h-5" /> : <Camera className="w-5 h-5" />}
+                      </button>
+                    )}
+                  </div>
+                  {scanningSerial && (
+                    <div className="mt-2 overflow-hidden rounded-xl border border-gray-600 bg-black">
+                      <div id="service-request-serial-reader" className="mx-auto w-full max-w-xs" />
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label className={labelClass}>Purchase / Install Date (Optional)</label>

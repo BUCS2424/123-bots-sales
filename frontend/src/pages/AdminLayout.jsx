@@ -7,7 +7,7 @@ import {
   Bell, Search, DollarSign, ShoppingBag, Gift, FolderTree, Layers, Cloud, User, Sliders, Code,
   Store, Truck, CreditCard, CheckCircle, LayoutGrid, Clock, FileText, UserPlus, Briefcase,
   Calendar, CalendarOff, Wrench, Shield, BookOpen, PiggyBank, Star, Megaphone, Mail, Zap, MessageCircle, Building2, Box, Globe, Radio as RadioIcon, Key,
-  Ticket, MapPin, CalendarDays, Plus, FileSignature, Compass, Sparkles, Anchor, Receipt
+  Ticket, MapPin, CalendarDays, Plus, FileSignature, Compass, Sparkles, Anchor, Receipt, ScanLine
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -60,6 +60,8 @@ import AdminEmailTemplates from './admin/AdminEmailTemplates';
 import AdminKnowledgeBase from './admin/AdminKnowledgeBase';
 import AdminLeadsKanban from './admin/AdminLeadsKanban';
 import AdminServiceCrm from './admin/AdminServiceCrm';
+import AdminServiceScan from './admin/AdminServiceScan';
+import AdminLoanerUnits from './admin/AdminLoanerUnits';
 import AdminPrintfulSettings from './admin/AdminPrintfulSettings';
 import AdminYoycolSettings from './admin/AdminYoycolSettings';
 import A2GTasksPage from './A2GTasksPage';
@@ -143,6 +145,7 @@ const AdminLayout = () => {
     activity_marketplace_enabled: false,
     service_crm_enabled: false,
     service_crm_product_name: 'Robot',
+    service_repair_enabled: false,
   });
 
   // Fetch business settings for Analytics URL
@@ -171,6 +174,7 @@ const AdminLayout = () => {
           activity_marketplace_enabled: Boolean(featureFlagsRes?.data?.activity_marketplace_enabled),
           service_crm_enabled: Boolean(featureFlagsRes?.data?.service_crm_enabled),
           service_crm_product_name: featureFlagsRes?.data?.service_crm_product_name || 'Robot',
+          service_repair_enabled: Boolean(featureFlagsRes?.data?.service_repair_enabled),
         });
       } catch (error) {
         console.error('Error fetching settings:', error);
@@ -352,6 +356,16 @@ const AdminLayout = () => {
       path: '/admin/service-crm',
       label: `${featureFlags.service_crm_product_name || 'Robot'} Service`,
       icon: Wrench,
+    }] : []),
+    ...(featureFlags.service_repair_enabled ? [{
+      id: 'service-repair',
+      type: 'accordion',
+      label: 'Service Scan',
+      icon: ScanLine,
+      children: [
+        { path: '/admin/service-repair/scan', label: 'Scan', icon: ScanLine },
+        { path: '/admin/service-repair/loaners', label: 'Loaner Units', icon: Truck },
+      ],
     }] : []),
     {
       id: 'calendar',
@@ -671,6 +685,8 @@ const AdminLayout = () => {
     if (path === '/admin/orders/trash') return <AdminOrdersTrash />;
     if (path === '/admin/leads') return <AdminLeadsKanban />;
     if (path === '/admin/service-crm') return <AdminServiceCrm />;
+    if (path === '/admin/service-repair/scan') return <AdminServiceScan />;
+    if (path === '/admin/service-repair/loaners') return <AdminLoanerUnits />;
     if (path === '/admin/tasks') return <A2GTasksPage />;
     if (path === '/admin/contacts') return <A2GContactsPage />;
     if (path.match(/^\/admin\/contacts\/[^/]+$/)) {

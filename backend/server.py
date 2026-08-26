@@ -1290,6 +1290,11 @@ from service_crm import router as service_crm_router, set_database as set_servic
 set_service_crm_db(db)
 app.include_router(service_crm_router)
 
+# Include Service Repair router (QR scan clock-in/out + loaner unit swaps)
+from service_repair import router as service_repair_router, set_database as set_service_repair_db
+set_service_repair_db(db)
+app.include_router(service_repair_router)
+
 # Include LEADS settings router
 from leads_settings import router as leads_router, set_database as set_leads_db
 set_leads_db(db)

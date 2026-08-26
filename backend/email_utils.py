@@ -372,3 +372,74 @@ def build_meeting_invite_email(
     ).strip()
 
     return html_content, text_content
+
+
+def build_service_status_email(
+    guest_name: str,
+    product_label: str,
+    event_label: str,
+    detail_message: str = "",
+    portal_url: str = "",
+    site_name: str = "123Bots",
+):
+    """Update email for a Service CRM request - status changes, unit
+    received/returned, loaner out/in. Matches the standard 123Bots
+    transactional email style (see send_two_factor_email)."""
+    subject = f"{site_name} Service Update: {event_label}"
+
+    portal_button = ""
+    if portal_url:
+        portal_button = f"""
+                                <div style="text-align:center;margin:28px 0 0 0;">
+                                    <a href="{portal_url}" style="display:inline-block;background:#ff8c42;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 32px;border-radius:999px;">View Service Status</a>
+                                </div>"""
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin:0;padding:0;font-family:Arial,sans-serif;background:#fff7f0;color:#2c1810;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="padding:32px 16px;background:#fff7f0;">
+            <tr>
+                <td align="center">
+                    <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:18px;overflow:hidden;border:1px solid #ffd9bf;box-shadow:0 10px 30px rgba(44,24,16,0.08);">
+                        <tr>
+                            <td style="padding:32px 36px;background:linear-gradient(135deg,#2c1810 0%,#5c2f12 55%,#ff8c42 100%);text-align:left;">
+                                <p style="margin:0 0 8px 0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#ffd9bf;">{site_name} Service</p>
+                                <h1 style="margin:0;font-size:26px;line-height:1.2;color:#ffffff;">{event_label}</h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:36px;">
+                                <p style="margin:0 0 12px 0;font-size:16px;line-height:1.7;color:#5c3b2a;">Hi{' ' + guest_name if guest_name else ''},</p>
+                                <p style="margin:0 0 16px 0;font-size:15px;line-height:1.7;color:#5c3b2a;">There's an update on your <strong>{product_label}</strong> service request.</p>
+                                <div style="margin:20px 0;padding:20px 24px;border-radius:14px;background:#fff2e8;border:1px solid #ffd9bf;">
+                                    <p style="margin:0;font-size:15px;line-height:1.6;color:#8b5a3c;">{detail_message or event_label}</p>
+                                </div>{portal_button}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:24px 36px;background:#fffaf6;border-top:1px solid #ffe7d4;">
+                                <p style="margin:0;font-size:12px;line-height:1.6;color:#9a6a4c;">Questions about your service? Just reply to this email.</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>
+    """
+
+    text_content = (
+        f"{event_label}\n\n"
+        f"Hi{' ' + guest_name if guest_name else ''},\n\n"
+        f"There's an update on your {product_label} service request.\n\n"
+        f"{detail_message or event_label}\n"
+        + (f"\nView status: {portal_url}\n" if portal_url else "")
+    ).strip()
+
+    return html_content, text_content

@@ -13,8 +13,41 @@ from datetime import datetime, timezone
 import uuid
 
 from auth import decode_token, is_admin_or_above
+from email_utils import send_email, build_service_status_email
 
 router = APIRouter(prefix="/api/service-crm", tags=["service-crm"])
+
+STATUS_LABELS = {
+    "new_request": "Request Received",
+    "scheduled": "Scheduled",
+    "diagnosed": "Diagnosed",
+    "awaiting_parts": "Awaiting Parts",
+    "in_repair": "In Repair",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+}
+
+
+async def _notify_status_change(db, req: dict, status: str):
+    if not req.get("email"):
+        return
+    site = await db.admin_settings.find_one({"type": "site"})
+    site_url = (site or {}).get("site_url") or "https://123bots.com"
+    site_name = (site or {}).get("site_name") or "123Bots"
+    product_label = f"{req.get('make', '')} {req.get('model', '')}".strip() or "unit"
+    event_label = STATUS_LABELS.get(status, status)
+    html, text = build_service_status_email(
+        guest_name=req.get("name", ""),
+        product_label=product_label,
+        event_label=event_label,
+        detail_message=f"Your service request is now: {event_label}.",
+        portal_url=f"{site_url}/account?tab=services",
+        site_name=site_name,
+    )
+    try:
+        await send_email(req["email"], f"{site_name} Service Update: {event_label}", html, text)
+    except Exception:
+        pass  # Never let a notification failure block the status update itself
 
 _db = None
 
@@ -117,6 +150,11 @@ async def create_service_request(payload: ServiceRequestCreate, db=Depends(get_d
         **payload.model_dump(),
         "status": "new_request",
         "technician_notes": "",
+        # Populated by service_repair.py as the unit moves through the shop:
+        # clock-in/out, unit received/returned, loaner out/in - the same
+        # feed doubles as the client-facing status timeline.
+        "activity_log": [],
+        "loaner_unit_id": None,
         "created_at": now,
         "updated_at": now,
     }
@@ -184,6 +222,8 @@ async def update_service_request(
     update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
 
     await db.service_requests.update_one({"id": request_id}, {"$set": update_data})
+    if update_data.get("status") and update_data["status"] != req.get("status"):
+        await _notify_status_change(db, {**req, **update_data}, update_data["status"])
     return {"success": True, "message": "Service request updated"}
 
 
@@ -207,6 +247,7 @@ async def update_service_request_status(
         {"id": request_id},
         {"$set": {"status": update.status, "updated_at": datetime.now(timezone.utc).isoformat()}},
     )
+    await _notify_status_change(db, req, update.status)
     return {"success": True}
 
 

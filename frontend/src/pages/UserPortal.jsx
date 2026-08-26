@@ -24,7 +24,8 @@ import {
   ShoppingBag,
   Loader2,
   Save,
-  X
+  X,
+  Wrench
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -46,8 +47,10 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 export default function UserPortal() {
   const { user, token, logout } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('orders');
+  const initialTab = new URLSearchParams(window.location.search).get('tab') === 'services' ? 'services' : 'orders';
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [orders, setOrders] = useState([]);
+  const [serviceRequests, setServiceRequests] = useState([]);
   const [addresses, setAddresses] = useState([]);
   const [customerInfo, setCustomerInfo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -74,12 +77,14 @@ export default function UserPortal() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [ordersRes, customerRes] = await Promise.all([
+      const [ordersRes, customerRes, serviceRes] = await Promise.all([
         axios.get(`${API_URL}/api/portal/my-orders`, { headers }).catch(() => ({ data: [] })),
-        axios.get(`${API_URL}/api/portal/my-account`, { headers }).catch(() => ({ data: null }))
+        axios.get(`${API_URL}/api/portal/my-account`, { headers }).catch(() => ({ data: null })),
+        axios.get(`${API_URL}/api/portal/my-service-requests`, { headers }).catch(() => ({ data: [] }))
       ]);
-      
+
       setOrders(ordersRes.data || []);
+      setServiceRequests(serviceRes.data || []);
       setCustomerInfo(customerRes.data);
       setAddresses(customerRes.data?.addresses || []);
       setProfileData({
@@ -238,10 +243,40 @@ export default function UserPortal() {
 
   const tabs = [
     { id: 'orders', label: 'My Orders', icon: Package },
+    ...(serviceRequests.length > 0 ? [{ id: 'services', label: 'My Services', icon: Wrench }] : []),
     { id: 'profile', label: 'My Profile', icon: User },
     { id: 'addresses', label: 'Addresses', icon: MapPin },
     { id: 'pricing', label: 'My Pricing', icon: CreditCard },
   ];
+
+  const ACTIVITY_LABELS = {
+    clock_in: 'Technician clocked in',
+    clock_out: 'Technician clocked out',
+    unit_received: 'Unit received at shop',
+    unit_returned: 'Unit returned to you',
+    loaner_out: 'Loaner unit issued to you',
+    loaner_in: 'Loaner unit checked in',
+  };
+
+  const SERVICE_STATUS_LABELS = {
+    new_request: 'Request Received',
+    scheduled: 'Scheduled',
+    diagnosed: 'Diagnosed',
+    awaiting_parts: 'Awaiting Parts',
+    in_repair: 'In Repair',
+    completed: 'Completed',
+    cancelled: 'Cancelled',
+  };
+
+  const SERVICE_STATUS_COLOR = {
+    new_request: 'bg-blue-100 text-blue-700',
+    scheduled: 'bg-indigo-100 text-indigo-700',
+    diagnosed: 'bg-amber-100 text-amber-700',
+    awaiting_parts: 'bg-orange-100 text-orange-700',
+    in_repair: 'bg-purple-100 text-purple-700',
+    completed: 'bg-green-100 text-green-700',
+    cancelled: 'bg-gray-100 text-gray-500',
+  };
 
   if (loading) {
     return (
@@ -414,6 +449,46 @@ export default function UserPortal() {
                     </Card>
                   ))
                 )}
+              </div>
+            )}
+
+            {/* Services Tab */}
+            {activeTab === 'services' && (
+              <div className="space-y-4" data-testid="portal-services-tab">
+                <h2 className="text-xl font-semibold">My Services</h2>
+                {serviceRequests.map((req) => (
+                  <Card key={req.id} data-testid={`portal-service-request-${req.id}`}>
+                    <CardContent className="p-5 space-y-4">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <p className="font-semibold text-slate-900">{req.make} {req.model}</p>
+                          <p className="text-xs text-slate-500">SN: {req.serial_number || 'N/A'} &middot; Submitted {new Date(req.created_at).toLocaleDateString()}</p>
+                        </div>
+                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${SERVICE_STATUS_COLOR[req.status] || 'bg-gray-100 text-gray-600'}`}>
+                          {SERVICE_STATUS_LABELS[req.status] || req.status}
+                        </span>
+                      </div>
+                      <p className="text-sm text-slate-600 bg-slate-50 rounded-lg p-3">{req.issue_description}</p>
+
+                      {req.activity_log && req.activity_log.length > 0 && (
+                        <div className="border-t pt-3">
+                          <p className="text-xs font-semibold text-slate-500 uppercase mb-2">Status Timeline</p>
+                          <div className="space-y-2">
+                            {[...req.activity_log]
+                              .filter((item) => item.type !== 'clock_in' && item.type !== 'clock_out')
+                              .reverse()
+                              .map((item) => (
+                                <div key={item.id} className="flex items-center justify-between text-sm">
+                                  <span className="text-slate-700">{ACTIVITY_LABELS[item.type] || item.type}</span>
+                                  <span className="text-xs text-slate-400">{new Date(item.timestamp).toLocaleString()}</span>
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             )}
 
