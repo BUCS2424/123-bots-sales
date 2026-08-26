@@ -27,18 +27,25 @@ const AdminInventory = () => {
 
   const fetchInventory = async () => {
     try {
+      const token = localStorage.getItem('token');
       const params = showLowStock ? '?low_stock_only=true' : '';
-      const response = await axios.get(`${API}/store/inventory${params}`);
+      const response = await axios.get(`${API}/store/inventory${params}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setInventory(response.data);
     } catch (error) {
       console.error('Failed to fetch inventory:', error);
+      toast({ title: 'Error', description: 'Failed to load inventory', variant: 'destructive' });
     }
     setLoading(false);
   };
 
   const handleUpdateQuantity = async (productId) => {
     try {
-      await axios.put(`${API}/store/inventory/${productId}?quantity=${editQuantity}`);
+      const token = localStorage.getItem('token');
+      await axios.put(`${API}/store/inventory/${productId}?quantity=${editQuantity}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       toast({ title: 'Inventory Updated', description: 'Product quantity has been updated.' });
       setEditingId(null);
       fetchInventory();

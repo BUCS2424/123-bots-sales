@@ -6,7 +6,7 @@ Inventory Management System for 123Bots
 - Weekly email reports (Mondays)
 """
 
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Header
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict
 from datetime import datetime, timezone, timedelta
@@ -133,7 +133,7 @@ def _require_admin_token(authorization: Optional[str]) -> dict:
 # ============ MANUFACTURER ENDPOINTS ============
 
 @router.get("/manufacturers")
-async def list_manufacturers(authorization: str = None):
+async def list_manufacturers(authorization: Optional[str] = Header(None)):
     _require_admin_token(authorization)
     manufacturers = await _db.manufacturers.find(
         {},
@@ -143,7 +143,7 @@ async def list_manufacturers(authorization: str = None):
 
 
 @router.post("/manufacturers")
-async def create_manufacturer(data: ManufacturerCreate, authorization: str = None):
+async def create_manufacturer(data: ManufacturerCreate, authorization: Optional[str] = Header(None)):
     _require_admin_token(authorization)
     
     # Check for duplicate code
@@ -164,7 +164,7 @@ async def create_manufacturer(data: ManufacturerCreate, authorization: str = Non
 
 
 @router.get("/manufacturers/{manufacturer_id}")
-async def get_manufacturer(manufacturer_id: str, authorization: str = None):
+async def get_manufacturer(manufacturer_id: str, authorization: Optional[str] = Header(None)):
     _require_admin_token(authorization)
     manufacturer = await _db.manufacturers.find_one({"id": manufacturer_id}, {"_id": 0})
     if not manufacturer:
@@ -173,7 +173,7 @@ async def get_manufacturer(manufacturer_id: str, authorization: str = None):
 
 
 @router.put("/manufacturers/{manufacturer_id}")
-async def update_manufacturer(manufacturer_id: str, data: ManufacturerUpdate, authorization: str = None):
+async def update_manufacturer(manufacturer_id: str, data: ManufacturerUpdate, authorization: Optional[str] = Header(None)):
     _require_admin_token(authorization)
     
     update_data = {k: v for k, v in data.model_dump().items() if v is not None}
@@ -197,7 +197,7 @@ async def update_manufacturer(manufacturer_id: str, data: ManufacturerUpdate, au
 
 
 @router.delete("/manufacturers/{manufacturer_id}")
-async def delete_manufacturer(manufacturer_id: str, authorization: str = None):
+async def delete_manufacturer(manufacturer_id: str, authorization: Optional[str] = Header(None)):
     _require_admin_token(authorization)
     
     # Check if any inventory items use this manufacturer
@@ -221,7 +221,7 @@ async def delete_manufacturer(manufacturer_id: str, authorization: str = None):
 async def list_inventory_items(
     manufacturer_id: Optional[str] = None,
     low_stock: Optional[bool] = None,
-    authorization: str = None
+    authorization: Optional[str] = Header(None)
 ):
     _require_admin_token(authorization)
     
@@ -250,7 +250,7 @@ async def list_inventory_items(
 
 
 @router.post("/items")
-async def create_inventory_item(data: InventoryItemCreate, authorization: str = None):
+async def create_inventory_item(data: InventoryItemCreate, authorization: Optional[str] = Header(None)):
     _require_admin_token(authorization)
     
     # Check manufacturer exists
@@ -279,7 +279,7 @@ async def create_inventory_item(data: InventoryItemCreate, authorization: str = 
 
 
 @router.get("/items/{item_id}")
-async def get_inventory_item(item_id: str, authorization: str = None):
+async def get_inventory_item(item_id: str, authorization: Optional[str] = Header(None)):
     _require_admin_token(authorization)
     item = await _db.inventory_items.find_one({"id": item_id}, {"_id": 0})
     if not item:
@@ -301,7 +301,7 @@ async def get_inventory_item(item_id: str, authorization: str = None):
 
 
 @router.put("/items/{item_id}")
-async def update_inventory_item(item_id: str, data: InventoryItemUpdate, authorization: str = None):
+async def update_inventory_item(item_id: str, data: InventoryItemUpdate, authorization: Optional[str] = Header(None)):
     _require_admin_token(authorization)
     
     update_data = {k: v for k, v in data.model_dump().items() if v is not None}
@@ -328,7 +328,7 @@ async def update_inventory_item(item_id: str, data: InventoryItemUpdate, authori
 
 
 @router.delete("/items/{item_id}")
-async def delete_inventory_item(item_id: str, authorization: str = None):
+async def delete_inventory_item(item_id: str, authorization: Optional[str] = Header(None)):
     _require_admin_token(authorization)
     result = await _db.inventory_items.delete_one({"id": item_id})
     if result.deleted_count == 0:
@@ -361,7 +361,7 @@ async def _log_stock_transaction(
 
 
 @router.post("/items/{item_id}/adjust")
-async def adjust_stock(item_id: str, data: StockAdjustment, authorization: str = None):
+async def adjust_stock(item_id: str, data: StockAdjustment, authorization: Optional[str] = Header(None)):
     admin = _require_admin_token(authorization)
     
     item = await _db.inventory_items.find_one({"id": item_id})
@@ -407,7 +407,7 @@ async def adjust_stock(item_id: str, data: StockAdjustment, authorization: str =
 
 
 @router.get("/items/{item_id}/transactions")
-async def get_stock_transactions(item_id: str, limit: int = 50, authorization: str = None):
+async def get_stock_transactions(item_id: str, limit: int = 50, authorization: Optional[str] = Header(None)):
     _require_admin_token(authorization)
     
     transactions = await _db.stock_transactions.find(
@@ -424,7 +424,7 @@ async def get_stock_transactions(item_id: str, limit: int = 50, authorization: s
 async def list_purchase_orders(
     manufacturer_id: Optional[str] = None,
     status: Optional[str] = None,
-    authorization: str = None
+    authorization: Optional[str] = Header(None)
 ):
     _require_admin_token(authorization)
     
@@ -449,7 +449,7 @@ async def list_purchase_orders(
 
 
 @router.post("/purchase-orders")
-async def create_purchase_order(data: PurchaseOrderCreate, authorization: str = None):
+async def create_purchase_order(data: PurchaseOrderCreate, authorization: Optional[str] = Header(None)):
     admin = _require_admin_token(authorization)
     
     # Validate manufacturer
@@ -493,7 +493,7 @@ async def create_purchase_order(data: PurchaseOrderCreate, authorization: str = 
 
 
 @router.put("/purchase-orders/{order_id}")
-async def update_purchase_order(order_id: str, data: PurchaseOrderUpdate, authorization: str = None):
+async def update_purchase_order(order_id: str, data: PurchaseOrderUpdate, authorization: Optional[str] = Header(None)):
     admin = _require_admin_token(authorization)
     
     order = await _db.purchase_orders.find_one({"id": order_id})
@@ -545,7 +545,7 @@ async def update_purchase_order(order_id: str, data: PurchaseOrderUpdate, author
 # ============ ORDER RECOMMENDATIONS ============
 
 @router.get("/recommendations")
-async def get_order_recommendations(authorization: str = None):
+async def get_order_recommendations(authorization: Optional[str] = Header(None)):
     """
     Calculate recommended order quantities based on:
     1. Current stock levels vs reorder points
@@ -712,7 +712,7 @@ async def get_order_recommendations(authorization: str = None):
 
 
 @router.get("/recommendations/settings")
-async def get_recommendation_settings(authorization: str = None):
+async def get_recommendation_settings(authorization: Optional[str] = Header(None)):
     _require_admin_token(authorization)
     
     settings = await _db.admin_settings.find_one({"type": "inventory_recommendation_settings"}, {"_id": 0})
@@ -734,7 +734,7 @@ async def get_recommendation_settings(authorization: str = None):
 
 
 @router.put("/recommendations/settings")
-async def update_recommendation_settings(data: dict, authorization: str = None):
+async def update_recommendation_settings(data: dict, authorization: Optional[str] = Header(None)):
     _require_admin_token(authorization)
     
     data["type"] = "inventory_recommendation_settings"
@@ -752,7 +752,7 @@ async def update_recommendation_settings(data: dict, authorization: str = None):
 # ============ DASHBOARD / OVERVIEW ============
 
 @router.get("/dashboard")
-async def get_inventory_dashboard(authorization: str = None):
+async def get_inventory_dashboard(authorization: Optional[str] = Header(None)):
     _require_admin_token(authorization)
     
     # Get counts
@@ -955,7 +955,7 @@ async def send_weekly_inventory_report():
 
 
 @router.post("/send-test-report")
-async def send_test_report(authorization: str = None):
+async def send_test_report(authorization: Optional[str] = Header(None)):
     """Send a test inventory report email"""
     admin = _require_admin_token(authorization)
     
@@ -969,7 +969,7 @@ async def send_test_report(authorization: str = None):
 # ============ SYNC PRODUCTS ============
 
 @router.post("/sync-products")
-async def sync_products_to_inventory(authorization: str = None):
+async def sync_products_to_inventory(authorization: Optional[str] = Header(None)):
     """
     Sync products from the store to inventory items.
     Creates inventory items for products that don't have one yet.
