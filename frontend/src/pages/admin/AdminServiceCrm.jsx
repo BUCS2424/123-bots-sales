@@ -380,38 +380,54 @@ const AdminServiceCrm = () => {
 
       <Dialog open={editOpen} onOpenChange={(open) => !open && closeEdit()}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto" data-testid="service-crm-edit-modal">
-          <DialogTitle className="flex items-center justify-between">
-            <span>Service Request</span>
+          <div className="flex items-center justify-between pb-4 border-b">
+            <DialogTitle className="text-xl font-bold text-gray-900">Service Request Details</DialogTitle>
             <button onClick={closeEdit} className="text-gray-400 hover:text-gray-600">
               <X className="w-5 h-5" />
             </button>
-          </DialogTitle>
+          </div>
 
-          <div className="space-y-5 mt-2">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Name</Label>
-                <Input value={draft.name} onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))} data-testid="service-crm-field-name" />
+          <div className="space-y-6 mt-4">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-lg font-bold text-gray-900">Contact Details</p>
+                <div className="w-40">
+                  <Select value={draft.status} onValueChange={(v) => setDraft((d) => ({ ...d, status: v }))}>
+                    <SelectTrigger data-testid="service-crm-field-status"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {DEFAULT_COLUMNS.map((c) => (
+                        <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div>
-                <Label>Status</Label>
-                <Select value={draft.status} onValueChange={(v) => setDraft((d) => ({ ...d, status: v }))}>
-                  <SelectTrigger data-testid="service-crm-field-status"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {DEFAULT_COLUMNS.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Name</Label>
+                  <Input value={draft.name} onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))} data-testid="service-crm-field-name" />
+                </div>
+                <div>
+                  <Label>Email</Label>
+                  <Input value={draft.email} onChange={(e) => setDraft((d) => ({ ...d, email: e.target.value }))} data-testid="service-crm-field-email" />
+                </div>
+                <div>
+                  <Label>Phone</Label>
+                  <Input value={draft.phone} onChange={(e) => setDraft((d) => ({ ...d, phone: e.target.value }))} data-testid="service-crm-field-phone" />
+                </div>
               </div>
-              <div>
-                <Label>Email</Label>
-                <Input value={draft.email} onChange={(e) => setDraft((d) => ({ ...d, email: e.target.value }))} data-testid="service-crm-field-email" />
-              </div>
-              <div>
-                <Label>Phone</Label>
-                <Input value={draft.phone} onChange={(e) => setDraft((d) => ({ ...d, phone: e.target.value }))} data-testid="service-crm-field-phone" />
-              </div>
+            </div>
+
+            <div className="pt-5 border-t">
+              <p className="text-lg font-bold text-gray-900 mb-3">Service Inquiry</p>
+              <Label>Issue Description</Label>
+              <Textarea
+                rows={5}
+                value={draft.issue_description}
+                onChange={(e) => setDraft((d) => ({ ...d, issue_description: e.target.value }))}
+                className="bg-gray-50"
+                data-testid="service-crm-field-issue"
+              />
             </div>
 
             <div className="pt-3 border-t">
@@ -477,12 +493,8 @@ const AdminServiceCrm = () => {
             </div>
 
             <div className="pt-3 border-t">
-              <p className="text-sm font-semibold text-gray-700 mb-3">Service Request</p>
+              <p className="text-sm font-semibold text-gray-700 mb-3">Service Scheduling</p>
               <div className="space-y-4">
-                <div>
-                  <Label>Issue Description</Label>
-                  <Textarea rows={3} value={draft.issue_description} onChange={(e) => setDraft((d) => ({ ...d, issue_description: e.target.value }))} data-testid="service-crm-field-issue" />
-                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label>Urgency</Label>
