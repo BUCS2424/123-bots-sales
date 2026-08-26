@@ -13,7 +13,7 @@ const Header = () => {
   const location = useLocation();
   const { cartItems, setIsCartOpen } = useCart();
   const { logoUrl } = useSiteSettings();
-  const { cart_enabled, pawn_checkout, events_enabled, activity_marketplace_enabled, service_crm_enabled, service_crm_product_name } = useSiteFeatureFlags();
+  const { cart_enabled, pawn_checkout, events_enabled, activity_marketplace_enabled, service_crm_enabled } = useSiteFeatureFlags();
 
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -53,7 +53,6 @@ const Header = () => {
         { label: 'BY CHARTER COMPANY', href: '/activities/companies' },
       ],
     }] : []),
-    ...(service_crm_enabled ? [{ label: `GET YOUR ${(service_crm_product_name || 'ROBOT').toUpperCase()} SERVICED`, href: '/service-request' }] : []),
     { label: 'SUPPORT', href: '/contact' },
     {
       label: 'PRODUCTS',
