@@ -1295,6 +1295,11 @@ from service_repair import router as service_repair_router, set_database as set_
 set_service_repair_db(db)
 app.include_router(service_repair_router)
 
+# Include Custom Workflows router (generic no-code step builder)
+from workflows import router as workflows_router, set_database as set_workflows_db
+set_workflows_db(db)
+app.include_router(workflows_router)
+
 # Include LEADS settings router
 from leads_settings import router as leads_router, set_database as set_leads_db
 set_leads_db(db)

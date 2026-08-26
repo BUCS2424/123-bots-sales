@@ -21,6 +21,7 @@ import uuid
 
 from auth import decode_token, is_admin_or_above
 from email_utils import send_email, build_service_status_email
+from workflows import evaluate_workflow
 
 router = APIRouter(prefix="/api/service-repair", tags=["service-repair"])
 
@@ -70,6 +71,8 @@ class LoanerUnitUpdate(BaseModel):
 
 class ServiceRequestRef(BaseModel):
     service_request_id: str
+    workflow_id: Optional[str] = None
+    workflow_answers: Optional[dict] = None
 
 
 class LoanerOutRequest(BaseModel):
@@ -104,6 +107,42 @@ async def _push_activity(db, service_request_id: str, entry: dict):
         {"id": service_request_id},
         {"$push": {"activity_log": entry}, "$set": {"updated_at": _now_iso()}},
     )
+
+
+async def _apply_workflow(db, service_request_id: str, payload: "ServiceRequestRef", actor: dict):
+    """
+    If a Custom Workflow was attached to this scan action, validate the
+    submitted answers server-side (never trust the client alone) and log
+    a workflow_completed activity entry with a human-readable summary.
+    Raises 400 if required (and currently-visible, per conditions) steps
+    are missing an answer. No-ops if no workflow was attached.
+    """
+    if not payload.workflow_id:
+        return
+
+    workflow = await db.workflows.find_one({"id": payload.workflow_id}, {"_id": 0})
+    if not workflow:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+
+    answers = payload.workflow_answers or {}
+    visible_steps, missing = evaluate_workflow(workflow.get("steps", []), answers)
+    if missing:
+        missing_labels = ", ".join(s.get("label", "") for s in missing)
+        raise HTTPException(status_code=400, detail=f"Missing required step(s): {missing_labels}")
+
+    readable_answers = {
+        step.get("label"): answers.get(step.get("id"))
+        for step in visible_steps
+        if answers.get(step.get("id")) not in (None, "")
+    }
+    entry = _append_activity(
+        "workflow_completed",
+        actor,
+        workflow_id=payload.workflow_id,
+        workflow_name=workflow.get("name"),
+        answers=readable_answers,
+    )
+    await _push_activity(db, service_request_id, entry)
 
 
 CUSTOMER_EVENT_LABELS = {
@@ -238,6 +277,7 @@ async def unit_received(
     """Log that the broken unit has physically arrived at the shop."""
     actor = _require_admin_token(authorization)
     req = await _get_service_request_or_404(db, payload.service_request_id)
+    await _apply_workflow(db, payload.service_request_id, payload, actor)
 
     entry = _append_activity("unit_received", actor)
     await _push_activity(db, payload.service_request_id, entry)
@@ -263,6 +303,7 @@ async def unit_returned(
     """Log that the repaired unit has been handed back to the customer."""
     actor = _require_admin_token(authorization)
     req = await _get_service_request_or_404(db, payload.service_request_id)
+    await _apply_workflow(db, payload.service_request_id, payload, actor)
 
     entry = _append_activity("unit_returned", actor)
     await _push_activity(db, payload.service_request_id, entry)

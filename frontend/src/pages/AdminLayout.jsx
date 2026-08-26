@@ -7,7 +7,7 @@ import {
   Bell, Search, DollarSign, ShoppingBag, Gift, FolderTree, Layers, Cloud, User, Sliders, Code,
   Store, Truck, CreditCard, CheckCircle, LayoutGrid, Clock, FileText, UserPlus, Briefcase,
   Calendar, CalendarOff, Wrench, Shield, BookOpen, PiggyBank, Star, Megaphone, Mail, Zap, MessageCircle, Building2, Box, Globe, Radio as RadioIcon, Key,
-  Ticket, MapPin, CalendarDays, Plus, FileSignature, Compass, Sparkles, Anchor, Receipt, ScanLine
+  Ticket, MapPin, CalendarDays, Plus, FileSignature, Compass, Sparkles, Anchor, Receipt, ScanLine, GitBranch
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -62,6 +62,7 @@ import AdminLeadsKanban from './admin/AdminLeadsKanban';
 import AdminServiceCrm from './admin/AdminServiceCrm';
 import AdminServiceScan from './admin/AdminServiceScan';
 import AdminLoanerUnits from './admin/AdminLoanerUnits';
+import AdminWorkflows from './admin/AdminWorkflows';
 import AdminPrintfulSettings from './admin/AdminPrintfulSettings';
 import AdminYoycolSettings from './admin/AdminYoycolSettings';
 import A2GTasksPage from './A2GTasksPage';
@@ -365,6 +366,7 @@ const AdminLayout = () => {
       children: [
         { path: '/admin/service-repair/scan', label: 'Scan', icon: ScanLine },
         { path: '/admin/service-repair/loaners', label: 'Loaner Units', icon: Truck },
+        { path: '/admin/service-repair/workflows', label: 'Workflows', icon: GitBranch },
       ],
     }] : []),
     {
@@ -687,6 +689,7 @@ const AdminLayout = () => {
     if (path === '/admin/service-crm') return <AdminServiceCrm />;
     if (path === '/admin/service-repair/scan') return <AdminServiceScan />;
     if (path === '/admin/service-repair/loaners') return <AdminLoanerUnits />;
+    if (path === '/admin/service-repair/workflows') return <AdminWorkflows />;
     if (path === '/admin/tasks') return <A2GTasksPage />;
     if (path === '/admin/contacts') return <A2GContactsPage />;
     if (path.match(/^\/admin\/contacts\/[^/]+$/)) {

@@ -9,10 +9,23 @@ import {
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Badge } from '../../components/ui/badge';
+import { Label } from '../../components/ui/label';
+import { Textarea } from '../../components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
+import { Dialog, DialogContent, DialogTitle } from '../../components/ui/dialog';
 import { toast } from '../../hooks/use-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api/service-repair`;
+const WORKFLOW_API = `${BACKEND_URL}/api/workflows`;
+const STORAGE_API = `${BACKEND_URL}/api/storage`;
+
+// Only these two scan actions currently support a guided workflow -
+// keep in sync with KNOWN_TRIGGER_EVENTS in backend/workflows.py.
+const TRIGGER_FOR_ACTION = {
+  'unit-received': 'service_repair.unit_received',
+  'unit-returned': 'service_repair.unit_returned',
+};
 
 // Manufacturer serials show up as anything from a QR code to a Code128 or
 // UPC label - scan for every format the library supports, not just QR.
@@ -56,6 +69,10 @@ const AdminServiceScan = () => {
   const [loanerPickerOpen, setLoanerPickerOpen] = useState(false);
   const [availableLoaners, setAvailableLoaners] = useState([]);
   const [loadingLoaners, setLoadingLoaners] = useState(false);
+
+  // { workflow, path, body, successMessage, answers, index } while a guided step wizard is open
+  const [wizard, setWizard] = useState(null);
+  const [wizardUploading, setWizardUploading] = useState(false);
 
   const tokenHeaders = { Authorization: `Bearer ${localStorage.getItem('token')}` };
 
@@ -131,6 +148,68 @@ const AdminServiceScan = () => {
     }
   };
 
+  // Mirrors _condition_met() in backend/workflows.py so the wizard can
+  // decide which step to show next without a round-trip per step.
+  const conditionMet = (condition, answers) => {
+    if (!condition) return true;
+    const actual = answers[condition.step_id];
+    if (actual === undefined || actual === null) return false;
+    const actualStr = String(actual).trim().toLowerCase();
+    const expectedStr = String(condition.value).trim().toLowerCase();
+    if (condition.operator === 'equals') return actualStr === expectedStr;
+    if (condition.operator === 'not_equals') return actualStr !== expectedStr;
+    if (condition.operator === 'contains') return actualStr.includes(expectedStr);
+    return false;
+  };
+
+  const visibleWizardSteps = (workflow, answers) =>
+    [...(workflow.steps || [])].sort((a, b) => a.order - b.order).filter((s) => conditionMet(s.condition, answers));
+
+  const startAction = async (path, body, successMessage) => {
+    const trigger = TRIGGER_FOR_ACTION[path];
+    if (!trigger) {
+      await runAction(path, body, successMessage);
+      return;
+    }
+    try {
+      const res = await axios.get(`${WORKFLOW_API}/for-trigger/${trigger}`, { headers: tokenHeaders });
+      const workflow = res.data;
+      if (!workflow || (workflow.steps || []).length === 0) {
+        await runAction(path, body, successMessage);
+        return;
+      }
+      setWizard({ workflow, path, body, successMessage, answers: {}, index: 0 });
+    } catch {
+      await runAction(path, body, successMessage);
+    }
+  };
+
+  const setWizardAnswer = (stepId, value) => {
+    setWizard((w) => (w ? { ...w, answers: { ...w.answers, [stepId]: value } } : w));
+  };
+
+  const handleWizardPhoto = async (stepId, file) => {
+    if (!file) return;
+    setWizardUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', 'service-repair-workflows');
+      const res = await axios.post(`${STORAGE_API}/upload`, formData, { headers: tokenHeaders });
+      setWizardAnswer(stepId, res.data.url);
+    } catch {
+      toast({ title: 'Upload failed', description: 'Could not upload photo', variant: 'destructive' });
+    } finally {
+      setWizardUploading(false);
+    }
+  };
+
+  const finishWizard = async () => {
+    const { path, body, successMessage, workflow, answers } = wizard;
+    setWizard(null);
+    await runAction(path, { ...body, workflow_id: workflow.id, workflow_answers: answers }, successMessage);
+  };
+
   const openLoanerPicker = async (serviceRequestId) => {
     setLoanerPickerOpen(serviceRequestId);
     setLoadingLoaners(true);
@@ -196,10 +275,10 @@ const AdminServiceScan = () => {
           <Button variant="outline" disabled={acting} onClick={() => runAction('clock-out', { service_request_id: req.id }, 'Clocked out')} data-testid="scan-clock-out">
             <LogOut className="w-4 h-4 mr-2" /> Clock Out
           </Button>
-          <Button variant="outline" disabled={acting} onClick={() => runAction('unit-received', { service_request_id: req.id }, 'Unit marked received')} data-testid="scan-unit-received">
+          <Button variant="outline" disabled={acting} onClick={() => startAction('unit-received', { service_request_id: req.id }, 'Unit marked received')} data-testid="scan-unit-received">
             <PackageCheck className="w-4 h-4 mr-2" /> Unit Received
           </Button>
-          <Button variant="outline" disabled={acting} onClick={() => runAction('unit-returned', { service_request_id: req.id }, 'Unit marked returned')} data-testid="scan-unit-returned">
+          <Button variant="outline" disabled={acting} onClick={() => startAction('unit-returned', { service_request_id: req.id }, 'Unit marked returned')} data-testid="scan-unit-returned">
             <PackageX className="w-4 h-4 mr-2" /> Unit Returned
           </Button>
         </div>
@@ -333,6 +412,94 @@ const AdminServiceScan = () => {
           {result.match_type === 'customer_unit' ? renderCustomerUnit() : renderLoanerUnit()}
         </div>
       )}
+
+      {wizard && (() => {
+        const steps = visibleWizardSteps(wizard.workflow, wizard.answers);
+        const step = steps[wizard.index];
+        if (!step) return null;
+        const value = wizard.answers[step.id] ?? '';
+        const isLast = wizard.index + 1 >= steps.length;
+        const goNext = () => {
+          if (step.required) {
+            const blank = value === undefined || value === null || (typeof value === 'string' && !value.trim());
+            if (blank) {
+              toast({ title: 'Required', description: 'Please answer this step before continuing', variant: 'destructive' });
+              return;
+            }
+          }
+          if (isLast) {
+            finishWizard();
+          } else {
+            setWizard((w) => ({ ...w, index: w.index + 1 }));
+          }
+        };
+        return (
+          <Dialog open onOpenChange={(open) => { if (!open) setWizard(null); }}>
+            <DialogContent className="max-w-md" data-testid="workflow-wizard-modal">
+              <DialogTitle>{wizard.workflow.name}</DialogTitle>
+              <p className="text-xs text-gray-400 -mt-2">Step {wizard.index + 1} of {steps.length}</p>
+
+              <div className="space-y-2 mt-2">
+                <Label>{step.label}{step.required && <span className="text-red-500"> *</span>}</Label>
+                {step.field_type === 'textarea' && (
+                  <Textarea rows={4} value={value} onChange={(e) => setWizardAnswer(step.id, e.target.value)} data-testid="wizard-input" />
+                )}
+                {step.field_type === 'text' && (
+                  <Input value={value} onChange={(e) => setWizardAnswer(step.id, e.target.value)} data-testid="wizard-input" />
+                )}
+                {step.field_type === 'number' && (
+                  <Input type="number" value={value} onChange={(e) => setWizardAnswer(step.id, e.target.value)} data-testid="wizard-input" />
+                )}
+                {step.field_type === 'date' && (
+                  <Input type="date" value={value} onChange={(e) => setWizardAnswer(step.id, e.target.value)} data-testid="wizard-input" />
+                )}
+                {step.field_type === 'select' && (
+                  <Select value={value} onValueChange={(v) => setWizardAnswer(step.id, v)}>
+                    <SelectTrigger data-testid="wizard-input"><SelectValue placeholder="Choose..." /></SelectTrigger>
+                    <SelectContent>
+                      {(step.options || []).filter(Boolean).map((opt) => (
+                        <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+                {step.field_type === 'checkbox' && (
+                  <div className="flex gap-2">
+                    <Button type="button" variant={value === 'yes' ? 'default' : 'outline'} className="flex-1" onClick={() => setWizardAnswer(step.id, 'yes')}>Yes</Button>
+                    <Button type="button" variant={value === 'no' ? 'default' : 'outline'} className="flex-1" onClick={() => setWizardAnswer(step.id, 'no')}>No</Button>
+                  </div>
+                )}
+                {step.field_type === 'photo' && (
+                  <div className="space-y-2">
+                    {value && <img src={value} alt="Uploaded" className="w-full max-h-40 object-contain rounded-lg border" />}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      disabled={wizardUploading}
+                      onChange={(e) => handleWizardPhoto(step.id, e.target.files?.[0])}
+                      data-testid="wizard-input"
+                    />
+                    {wizardUploading && <Loader2 className="w-4 h-4 animate-spin text-gray-400" />}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-between pt-4 border-t mt-4">
+                <Button variant="ghost" onClick={() => setWizard(null)}>Cancel</Button>
+                <div className="flex gap-2">
+                  {wizard.index > 0 && (
+                    <Button variant="outline" onClick={() => setWizard((w) => ({ ...w, index: w.index - 1 }))}>Back</Button>
+                  )}
+                  <Button className="bg-[#6e2ea8] hover:bg-[#5a2589]" onClick={goNext} disabled={wizardUploading} data-testid="wizard-next-btn">
+                    {isLast ? 'Finish' : 'Next'}
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        );
+      })()}
     </div>
   );
 };
