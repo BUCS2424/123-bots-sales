@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Html5Qrcode } from 'html5-qrcode';
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 import { Wrench, Phone, Send, Clock, ShieldCheck, Upload, X, FileImage, Loader2, Camera, ScanLine } from 'lucide-react';
 import { toast } from '../hooks/use-toast';
 import axios from 'axios';
@@ -13,6 +13,28 @@ import { useAuth } from '../context/AuthContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 const MAX_FILE_SIZE = 250 * 1024 * 1024; // 250 MB
+
+// Manufacturer serials show up as anything from a QR code to a Code128 or
+// UPC label - scan for every format the library supports, not just QR.
+const ALL_BARCODE_FORMATS = [
+  Html5QrcodeSupportedFormats.QR_CODE,
+  Html5QrcodeSupportedFormats.AZTEC,
+  Html5QrcodeSupportedFormats.CODABAR,
+  Html5QrcodeSupportedFormats.CODE_39,
+  Html5QrcodeSupportedFormats.CODE_93,
+  Html5QrcodeSupportedFormats.CODE_128,
+  Html5QrcodeSupportedFormats.DATA_MATRIX,
+  Html5QrcodeSupportedFormats.MAXICODE,
+  Html5QrcodeSupportedFormats.ITF,
+  Html5QrcodeSupportedFormats.EAN_13,
+  Html5QrcodeSupportedFormats.EAN_8,
+  Html5QrcodeSupportedFormats.PDF_417,
+  Html5QrcodeSupportedFormats.RSS_14,
+  Html5QrcodeSupportedFormats.RSS_EXPANDED,
+  Html5QrcodeSupportedFormats.UPC_A,
+  Html5QrcodeSupportedFormats.UPC_E,
+  Html5QrcodeSupportedFormats.UPC_EAN_EXTENSION,
+];
 
 const emptyForm = {
   name: '', email: '', phone: '',
@@ -114,7 +136,7 @@ const ServiceRequestPage = () => {
     let cancelled = false;
     const start = async () => {
       try {
-        const html5 = new Html5Qrcode('service-request-serial-reader');
+        const html5 = new Html5Qrcode('service-request-serial-reader', { formatsToSupport: ALL_BARCODE_FORMATS, verbose: false });
         serialScannerRef.current = html5;
         await html5.start(
           { facingMode: 'environment' },

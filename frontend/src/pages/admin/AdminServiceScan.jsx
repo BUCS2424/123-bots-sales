@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Html5Qrcode } from 'html5-qrcode';
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 import {
   Camera, ScanLine, Clock, LogIn, LogOut, PackageCheck, PackageX,
   Repeat, Loader2, AlertCircle, CheckCircle2, X, Wrench,
@@ -13,6 +13,28 @@ import { toast } from '../../hooks/use-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api/service-repair`;
+
+// Manufacturer serials show up as anything from a QR code to a Code128 or
+// UPC label - scan for every format the library supports, not just QR.
+const ALL_BARCODE_FORMATS = [
+  Html5QrcodeSupportedFormats.QR_CODE,
+  Html5QrcodeSupportedFormats.AZTEC,
+  Html5QrcodeSupportedFormats.CODABAR,
+  Html5QrcodeSupportedFormats.CODE_39,
+  Html5QrcodeSupportedFormats.CODE_93,
+  Html5QrcodeSupportedFormats.CODE_128,
+  Html5QrcodeSupportedFormats.DATA_MATRIX,
+  Html5QrcodeSupportedFormats.MAXICODE,
+  Html5QrcodeSupportedFormats.ITF,
+  Html5QrcodeSupportedFormats.EAN_13,
+  Html5QrcodeSupportedFormats.EAN_8,
+  Html5QrcodeSupportedFormats.PDF_417,
+  Html5QrcodeSupportedFormats.RSS_14,
+  Html5QrcodeSupportedFormats.RSS_EXPANDED,
+  Html5QrcodeSupportedFormats.UPC_A,
+  Html5QrcodeSupportedFormats.UPC_E,
+  Html5QrcodeSupportedFormats.UPC_EAN_EXTENSION,
+];
 
 const ACTIVITY_LABELS = {
   clock_in: 'Clocked in',
@@ -70,7 +92,7 @@ const AdminServiceScan = () => {
     let cancelled = false;
     const start = async () => {
       try {
-        const html5 = new Html5Qrcode('service-scan-reader');
+        const html5 = new Html5Qrcode('service-scan-reader', { formatsToSupport: ALL_BARCODE_FORMATS, verbose: false });
         scannerRef.current = html5;
         await html5.start(
           { facingMode: 'environment' },
