@@ -7,7 +7,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
 
 from auth import decode_token
-from email_utils import send_email
+from email_utils import send_email, build_meeting_invite_email
 from booking_provisioning import (
     DEFAULT_BOOKING_AVAILABILITY,
     ensure_booking_profile_for_user,
@@ -351,6 +351,8 @@ async def send_invite(
     settings = await get_booking_settings(target_user.get("id"), current_user)
     base_url = settings.get("video_meet_base_url", "https://meet.saysme.org")
     video_link = None
+    room_path = ""
+    is_saysme_room = False
 
     location_type = payload.location_type or settings.get("default_location_type", "online")
     if location_type == "online" and payload.use_other and payload.other_meeting_text:
@@ -359,6 +361,8 @@ async def send_invite(
         username = (target_user.get("name") or target_user.get("email", "user")).lower().replace(" ", "-")
         room = (payload.custom_room_name or f"{username}-meeting-{int(datetime.now().timestamp())}").lower().replace(" ", "-")
         video_link = f"{base_url}/{room}"
+        room_path = f"/{room}"
+        is_saysme_room = True
 
     sent = []
     failed = []
@@ -404,17 +408,21 @@ async def send_invite(
         }
         await db.bookings.insert_one(booking)
 
-        message = (
-            f"Meeting: {payload.title}\n"
-            f"Date: {payload.date} at {payload.time}\n"
-            f"Duration: {payload.duration} minutes\n"
-            f"{payload.description or ''}\n"
-            f"{('Video: ' + video_link) if video_link else ''}"
-        ).strip()
-
         if email:
             try:
-                await send_email(email, f"Meeting Invite: {payload.title}", f"<p>{message.replace(chr(10), '<br>')}</p>", message)
+                invite_html, invite_text = build_meeting_invite_email(
+                    guest_name=name,
+                    title=payload.title,
+                    date_str=payload.date,
+                    time_str=payload.time,
+                    duration_minutes=payload.duration,
+                    host_email=target_user.get("email", ""),
+                    video_link=video_link or "",
+                    room_path=room_path,
+                    timezone_name=settings.get("timezone", ""),
+                    is_saysme_room=is_saysme_room,
+                )
+                await send_email(email, f"Meeting Invite: {payload.title}", invite_html, invite_text)
                 sent.append({"type": inv_type, "value": email})
             except Exception as exc:
                 failed.append({"type": inv_type, "value": email, "error": str(exc)})

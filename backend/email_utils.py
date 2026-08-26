@@ -5,6 +5,7 @@ Retrieves SMTP settings from admin_settings collection in database
 import smtplib
 import ssl
 import asyncio
+from datetime import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import logging
@@ -229,3 +230,145 @@ async def send_two_factor_email(to_email: str, verification_code: str, user_name
     )
 
     return await send_email(to_email, subject, html_content, text_content)
+
+
+_TZ_ABBREVIATIONS = {
+    "America/New_York": "ET",
+    "America/Chicago": "CT",
+    "America/Denver": "MT",
+    "America/Phoenix": "MT",
+    "America/Los_Angeles": "PT",
+    "America/Anchorage": "AKT",
+    "Pacific/Honolulu": "HT",
+}
+
+
+def _format_meeting_datetime(date_str: str, time_str: str, tz_name: str = "") -> str:
+    """Best-effort 'August 21, 2026 at 9:00 AM ET' formatting; falls back to the raw strings."""
+    parsed_date = None
+    for fmt in ("%Y-%m-%d",):
+        try:
+            parsed_date = datetime.strptime(date_str, fmt)
+            break
+        except (ValueError, TypeError):
+            continue
+
+    parsed_time = None
+    for fmt in ("%H:%M", "%I:%M %p", "%I:%M%p"):
+        try:
+            parsed_time = datetime.strptime(time_str.strip(), fmt)
+            break
+        except (ValueError, TypeError):
+            continue
+
+    tz_abbr = _TZ_ABBREVIATIONS.get(tz_name, "")
+    suffix = f" {tz_abbr}" if tz_abbr else ""
+
+    date_part = f"{parsed_date.strftime('%B')} {parsed_date.day}, {parsed_date.year}" if parsed_date else date_str
+    if parsed_time:
+        hour_12 = parsed_time.hour % 12 or 12
+        time_part = f"{hour_12}:{parsed_time.strftime('%M %p')}"
+    else:
+        time_part = time_str
+    return f"{date_part} at {time_part}{suffix}"
+
+
+def build_meeting_invite_email(
+    guest_name: str,
+    title: str,
+    date_str: str,
+    time_str: str,
+    duration_minutes: int,
+    host_email: str,
+    video_link: str = "",
+    room_path: str = "",
+    timezone_name: str = "",
+    is_saysme_room: bool = True,
+):
+    """Dark-themed meeting invite email - matches the branded SaysMe invite design."""
+    heading = f"Meeting with {guest_name}" if guest_name else (title or "Meeting Invite")
+    when_str = _format_meeting_datetime(date_str, time_str, timezone_name)
+    room_label = "ROOM NAME" if is_saysme_room and room_path else "MEETING LINK"
+    room_value = room_path if is_saysme_room and room_path else video_link
+
+    room_row_html = ""
+    if room_value:
+        room_row_html = f"""
+                                <tr>
+                                    <td style="padding:14px 0 0 0;color:#7c7f93;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">{room_label}</td>
+                                    <td style="padding:14px 0 0 0;text-align:right;">
+                                        <span style="display:inline-block;background:#1e1e2b;color:#c7c9ff;font-family:'Courier New',monospace;font-size:13px;padding:4px 10px;border-radius:6px;">{room_value}</span>
+                                    </td>
+                                </tr>"""
+
+    button_html = ""
+    if video_link:
+        button_html = f"""
+                        <tr>
+                            <td align="center" style="padding:32px 0 0 0;">
+                                <a href="{video_link}" style="display:inline-block;background-color:#6366f1;background-image:linear-gradient(135deg,#7c7ff5,#5b5ce0);color:#ffffff;font-size:14px;font-weight:700;letter-spacing:0.5px;text-decoration:none;text-transform:uppercase;padding:16px 40px;border-radius:999px;">Join Meeting Room</a>
+                            </td>
+                        </tr>"""
+
+    footer_label = "MEET SAYS ME &bull; SECURE MULTI-POINT TRANSMISSION PROTOCOL" if is_saysme_room else "123BOTS &bull; MEETING INVITATION SYSTEM"
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;background-color:#0a0a12;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0a12;padding:40px 20px;">
+            <tr>
+                <td align="center">
+                    <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#12121c;border:1px solid #23232f;border-radius:20px;">
+                        <tr>
+                            <td style="padding:40px;">
+                                <p style="margin:0 0 14px 0;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8183f4;">Meeting Invitation</p>
+                                <h1 style="margin:0 0 16px 0;font-size:26px;font-weight:700;color:#ffffff;">{heading}</h1>
+                                <p style="margin:0;font-size:14px;line-height:1.6;color:#9ca3af;">You have been invited to a scheduled video conference by <strong style="color:#e5e7eb;">{host_email}</strong>.</p>
+
+                                <table width="100%" cellpadding="0" cellspacing="0" style="margin:28px 0 0 0;background-color:#16161f;border:1px solid #23232f;border-radius:14px;">
+                                    <tr>
+                                        <td style="padding:20px 24px;">
+                                            <table width="100%" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td style="padding:0;color:#7c7f93;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">Date &amp; Time</td>
+                                                    <td style="padding:0;text-align:right;color:#ffffff;font-size:14px;font-weight:700;">{when_str}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding:14px 0 0 0;color:#7c7f93;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">Duration</td>
+                                                    <td style="padding:14px 0 0 0;text-align:right;color:#e5e7eb;font-size:14px;">{duration_minutes} minutes</td>
+                                                </tr>{room_row_html}
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <table width="100%" cellpadding="0" cellspacing="0">{button_html}
+                                </table>
+
+                                <hr style="margin:32px 0;border:none;border-top:1px solid #23232f;">
+                                <p style="margin:0;text-align:center;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#6b7280;">{footer_label}</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>
+    """
+
+    text_content = (
+        f"{heading}\n\n"
+        f"You have been invited to a scheduled video conference by {host_email}.\n\n"
+        f"Date & Time: {when_str}\n"
+        f"Duration: {duration_minutes} minutes\n"
+        + (f"{room_label.title()}: {room_value}\n" if room_value else "")
+        + (f"\nJoin: {video_link}\n" if video_link else "")
+    ).strip()
+
+    return html_content, text_content
