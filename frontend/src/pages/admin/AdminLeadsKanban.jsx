@@ -1005,6 +1005,24 @@ const AdminLeadsKanban = () => {
                         </div>
                       </div>
 
+                      <div className="border-b border-gray-200 pb-5">
+                        <h4 className="text-[28px] font-semibold text-gray-800 mb-4">Customer Inquiry</h4>
+                        <div className="grid grid-cols-1 gap-4">
+                          {shouldShowField(selectedLead.subject, true) && (
+                            <div>
+                              <Label className="text-sm font-semibold text-gray-700">Subject</Label>
+                              <Input value={selectedLead.subject || ''} onChange={(event) => setLeadField('subject', event.target.value)} className="h-12 mt-2" data-testid="opportunity-subject-input" />
+                            </div>
+                          )}
+                          {shouldShowField(selectedLead.message, true) && (
+                            <div>
+                              <Label className="text-sm font-semibold text-gray-700">Message</Label>
+                              <Textarea rows={5} value={selectedLead.message || ''} onChange={(event) => setLeadField('message', event.target.value)} className="mt-2 bg-gray-50" data-testid="opportunity-message-input" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
                       <div>
                         <h4 className="text-[30px] font-semibold text-gray-800 mb-4">Opportunity Details</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
