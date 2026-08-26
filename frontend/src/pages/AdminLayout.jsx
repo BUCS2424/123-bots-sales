@@ -59,6 +59,7 @@ import AdminReviews from './admin/AdminReviews';
 import AdminEmailTemplates from './admin/AdminEmailTemplates';
 import AdminKnowledgeBase from './admin/AdminKnowledgeBase';
 import AdminLeadsKanban from './admin/AdminLeadsKanban';
+import AdminServiceCrm from './admin/AdminServiceCrm';
 import AdminPrintfulSettings from './admin/AdminPrintfulSettings';
 import AdminYoycolSettings from './admin/AdminYoycolSettings';
 import A2GTasksPage from './A2GTasksPage';
@@ -140,6 +141,8 @@ const AdminLayout = () => {
     events_enabled: false,
     events_center_name: 'Event Center',
     activity_marketplace_enabled: false,
+    service_crm_enabled: false,
+    service_crm_product_name: 'Robot',
   });
 
   // Fetch business settings for Analytics URL
@@ -166,6 +169,8 @@ const AdminLayout = () => {
           events_enabled: Boolean(featureFlagsRes?.data?.events_enabled),
           events_center_name: featureFlagsRes?.data?.events_center_name || 'Event Center',
           activity_marketplace_enabled: Boolean(featureFlagsRes?.data?.activity_marketplace_enabled),
+          service_crm_enabled: Boolean(featureFlagsRes?.data?.service_crm_enabled),
+          service_crm_product_name: featureFlagsRes?.data?.service_crm_product_name || 'Robot',
         });
       } catch (error) {
         console.error('Error fetching settings:', error);
@@ -340,6 +345,13 @@ const AdminLayout = () => {
         { path: '/admin/tours-charters/invoices', label: 'Invoices', icon: Receipt },
         { external: true, href: 'https://partner.fareharbor.com/login', label: 'Fare Harbor', icon: Anchor },
       ],
+    }] : []),
+    ...(featureFlags.service_crm_enabled ? [{
+      id: 'service-crm',
+      type: 'single',
+      path: '/admin/service-crm',
+      label: `${featureFlags.service_crm_product_name || 'Robot'} Service`,
+      icon: Wrench,
     }] : []),
     {
       id: 'calendar',
@@ -658,6 +670,7 @@ const AdminLayout = () => {
     if (path === '/admin/orders') return <AdminOrders />;
     if (path === '/admin/orders/trash') return <AdminOrdersTrash />;
     if (path === '/admin/leads') return <AdminLeadsKanban />;
+    if (path === '/admin/service-crm') return <AdminServiceCrm />;
     if (path === '/admin/tasks') return <A2GTasksPage />;
     if (path === '/admin/contacts') return <A2GContactsPage />;
     if (path.match(/^\/admin\/contacts\/[^/]+$/)) {

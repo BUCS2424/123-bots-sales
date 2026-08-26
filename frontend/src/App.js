@@ -65,6 +65,7 @@ import BuyLeasePage from './pages/BuyLeasePage';
 import ResourcesPage from './pages/ResourcesPage';
 import CategoryLandingPage from './pages/CategoryLandingPage';
 import PublicBookingPage from './pages/PublicBookingPage';
+import ServiceRequestPage from './pages/ServiceRequestPage';
 import QuoteSigningPage from './pages/quotes/QuoteSigningPage';
 import EventsIndexPage from './pages/EventsIndexPage';
 import EventCategoryPage from './pages/EventCategoryPage';
@@ -276,6 +277,7 @@ const AppContent = () => {
                   <Route path="/industries/:industrySlug" element={<IndustryPage />} />
                   <Route path="/schedule-a-demo" element={<ScheduleDemoPage />} />
                   <Route path="/rent-or-buy-a-cleaning-bot" element={<BuyLeasePage />} />
+                  <Route path="/service-request" element={<ServiceRequestPage />} />
                   <Route path="/123-bots-resources" element={<ResourcesPage />} />
                   <Route path="/events" element={<EventsIndexPage />} />
                   <Route path="/events/category/:catSlug" element={<EventCategoryPage />} />

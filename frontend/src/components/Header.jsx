@@ -13,7 +13,7 @@ const Header = () => {
   const location = useLocation();
   const { cartItems, setIsCartOpen } = useCart();
   const { logoUrl } = useSiteSettings();
-  const { cart_enabled, pawn_checkout, events_enabled, activity_marketplace_enabled } = useSiteFeatureFlags();
+  const { cart_enabled, pawn_checkout, events_enabled, activity_marketplace_enabled, service_crm_enabled, service_crm_product_name } = useSiteFeatureFlags();
 
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -53,6 +53,7 @@ const Header = () => {
         { label: 'BY CHARTER COMPANY', href: '/activities/companies' },
       ],
     }] : []),
+    ...(service_crm_enabled ? [{ label: `GET YOUR ${(service_crm_product_name || 'ROBOT').toUpperCase()} SERVICED`, href: '/service-request' }] : []),
     { label: 'SUPPORT', href: '/contact' },
     {
       label: 'PRODUCTS',
@@ -251,14 +252,24 @@ const Header = () => {
                 SCHEDULE A DEMO
               </Link>
 
-              {/* Buy or Lease Button */}
-              <Link
-                to="/rent-or-buy-a-cleaning-bot"
-                className="hidden lg:inline-flex px-6 py-2 bg-green-500 text-black font-semibold rounded-full hover:bg-green-400 transition-colors"
-                data-testid="nav-buy-lease"
-              >
-                BUY OR LEASE
-              </Link>
+              {/* Buy or Lease Button - replaced by Schedule a Service when Service CRM is published */}
+              {service_crm_enabled ? (
+                <Link
+                  to="/service-request"
+                  className="hidden lg:inline-flex px-6 py-2 bg-green-500 text-black font-semibold rounded-full hover:bg-green-400 transition-colors"
+                  data-testid="nav-schedule-service"
+                >
+                  SCHEDULE A SERVICE
+                </Link>
+              ) : (
+                <Link
+                  to="/rent-or-buy-a-cleaning-bot"
+                  className="hidden lg:inline-flex px-6 py-2 bg-green-500 text-black font-semibold rounded-full hover:bg-green-400 transition-colors"
+                  data-testid="nav-buy-lease"
+                >
+                  BUY OR LEASE
+                </Link>
+              )}
 
               {/* Cart Button */}
               {cart_enabled && pawn_checkout && (
@@ -359,12 +370,21 @@ const Header = () => {
                 >
                   SCHEDULE A DEMO
                 </Link>
-                <Link
-                  to="/rent-or-buy-a-cleaning-bot"
-                  className="block w-full py-3 bg-green-500 text-black font-semibold rounded-full text-center hover:bg-green-400 transition-colors"
-                >
-                  BUY OR LEASE
-                </Link>
+                {service_crm_enabled ? (
+                  <Link
+                    to="/service-request"
+                    className="block w-full py-3 bg-green-500 text-black font-semibold rounded-full text-center hover:bg-green-400 transition-colors"
+                  >
+                    SCHEDULE A SERVICE
+                  </Link>
+                ) : (
+                  <Link
+                    to="/rent-or-buy-a-cleaning-bot"
+                    className="block w-full py-3 bg-green-500 text-black font-semibold rounded-full text-center hover:bg-green-400 transition-colors"
+                  >
+                    BUY OR LEASE
+                  </Link>
+                )}
               </div>
 
               {/* Mobile secondary links (moved from hidden top bar) */}

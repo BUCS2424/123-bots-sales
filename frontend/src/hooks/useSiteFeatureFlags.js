@@ -25,6 +25,8 @@ export const useSiteFeatureFlags = () => {
     events_landing_enabled: false,
     events_center_name: 'Event Center',
     activity_marketplace_enabled: false,
+    service_crm_enabled: false,
+    service_crm_product_name: 'Robot',
   });
 
   useEffect(() => {
@@ -73,6 +75,8 @@ export const useSiteFeatureFlags = () => {
           events_landing_enabled: Boolean(featureData.events_landing_enabled),
           events_center_name: featureData.events_center_name || 'Event Center',
           activity_marketplace_enabled: Boolean(featureData.activity_marketplace_enabled),
+          service_crm_enabled: Boolean(featureData.service_crm_enabled),
+          service_crm_product_name: featureData.service_crm_product_name || 'Robot',
         });
       } catch (error) {
         // On error, fail OPEN (never lock the site behind the gate) but mark loaded.

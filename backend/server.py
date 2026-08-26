@@ -1285,6 +1285,11 @@ from leads import router as leads_kanban_router, set_database as set_leads_kanba
 set_leads_kanban_db(db)
 app.include_router(leads_kanban_router)
 
+# Include Service CRM router (parallel pipeline for product-service requests)
+from service_crm import router as service_crm_router, set_database as set_service_crm_db
+set_service_crm_db(db)
+app.include_router(service_crm_router)
+
 # Include LEADS settings router
 from leads_settings import router as leads_router, set_database as set_leads_db
 set_leads_db(db)

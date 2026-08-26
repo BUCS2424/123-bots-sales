@@ -841,6 +841,8 @@ class FeatureFlags(BaseModel):
     activity_marketplace_enabled: bool = False  # Show/hide Tours / Charters activity directory (admin + storefront)
     fareharbor_api_app: str = ""  # FareHarbor partner API "X-FareHarbor-API-App" header value
     fareharbor_api_user: str = ""  # FareHarbor partner API "X-FareHarbor-API-User" header value
+    service_crm_enabled: bool = False  # Show/hide the Service CRM (admin + storefront: nav item, funnel page, homepage CTA)
+    service_crm_product_name: str = "Robot"  # Brandable product name, e.g. "Get Your Robot Serviced"
 
 
 def _mask_secret(value: str) -> str:
@@ -927,6 +929,8 @@ async def get_public_feature_flags(db=Depends(get_db)):
             "events_landing_enabled": 1,
             "events_center_name": 1,
             "activity_marketplace_enabled": 1,
+            "service_crm_enabled": 1,
+            "service_crm_product_name": 1,
         },
     )
     return {
@@ -952,6 +956,8 @@ async def get_public_feature_flags(db=Depends(get_db)):
         "events_landing_enabled": bool(settings.get("events_landing_enabled", False)) if settings else False,
         "events_center_name": (settings.get("events_center_name") if settings else None) or "Event Center",
         "activity_marketplace_enabled": bool(settings.get("activity_marketplace_enabled", False)) if settings else False,
+        "service_crm_enabled": bool(settings.get("service_crm_enabled", False)) if settings else False,
+        "service_crm_product_name": (settings.get("service_crm_product_name") if settings else None) or "Robot",
     }
 
 

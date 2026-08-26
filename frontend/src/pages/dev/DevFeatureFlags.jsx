@@ -69,6 +69,8 @@ const DevFeatureFlags = () => {
     activity_marketplace_enabled: false,
     fareharbor_api_app: '',
     fareharbor_api_user: '',
+    service_crm_enabled: false,
+    service_crm_product_name: 'Robot',
   });
   const [featureFlagsSaving, setFeatureFlagsSaving] = useState(false);
 
@@ -93,6 +95,7 @@ const DevFeatureFlags = () => {
     { id: 'events_enabled', name: 'Event Center & Ticketing', description: 'Enable the Event Center: events, venues, custom ticketing, attendees, and public event pages. When OFF, no event features show anywhere.', category: 'Events' },
     { id: 'events_landing_enabled', name: 'Events Landing Page', description: 'When ON, the EVENTS menu opens the custom immersive Event Center landing page (category tiles + upcoming list + coverflow slideshow). When OFF, it opens the standard site-template events list.', category: 'Events' },
     { id: 'activity_marketplace_enabled', name: 'Activity & Charter Marketplace', description: 'Enable Tours / Charters: activity categories, charter-company (seller) tenants, and activity listings, plus the public ACTIVITIES nav and directory pages. When OFF, everything for this module is hidden in admin and on the storefront.', category: 'Tours & Charters' },
+    { id: 'service_crm_enabled', name: 'Service CRM', description: 'Enable the Service CRM: its own kanban/list pipeline for product-service requests, the public "Get Your [Product] Serviced" nav item and funnel page, and the homepage CTA swap (replaces Buy or Lease with Schedule a Service). When OFF, everything for this module is hidden in admin and on the storefront.', category: 'Service CRM' },
   ];
 
   useEffect(() => {
@@ -701,6 +704,40 @@ const DevFeatureFlags = () => {
                         } finally { setFeatureFlagsSaving(false); }
                       }}
                       data-testid="events-center-name-save"
+                    >
+                      Save Name
+                    </Button>
+                  </div>
+                </div>
+              )}
+              {category === 'Service CRM' && (
+                <div className="flex flex-col gap-2 rounded-lg bg-cyan-50 p-4" data-testid="service-crm-product-name-row">
+                  <p className="font-medium">Product Name</p>
+                  <p className="text-sm text-gray-500">Brandable product name used across the Service CRM - e.g. "Get Your Robot Serviced", form copy, and the homepage CTA.</p>
+                  <div className="mt-1 flex items-center gap-2">
+                    <Input
+                      value={featureFlags.service_crm_product_name || ''}
+                      onChange={(e) => setFeatureFlags((p) => ({ ...p, service_crm_product_name: e.target.value }))}
+                      placeholder="Robot"
+                      className="max-w-xs"
+                      data-testid="service-crm-product-name-input"
+                    />
+                    <Button
+                      size="sm"
+                      disabled={featureFlagsSaving}
+                      onClick={async () => {
+                        const updated = { ...featureFlags, service_crm_product_name: (featureFlags.service_crm_product_name || '').trim() || 'Robot' };
+                        setFeatureFlags(updated);
+                        setFeatureFlagsSaving(true);
+                        try {
+                          const token = localStorage.getItem('token');
+                          await axios.put(`${API}/api/admin-settings/feature-flags`, updated, { headers: { Authorization: `Bearer ${token}` } });
+                          toast({ title: 'Saved', description: 'Service CRM product name updated' });
+                        } catch {
+                          toast({ title: 'Error', description: 'Failed to save name', variant: 'destructive' });
+                        } finally { setFeatureFlagsSaving(false); }
+                      }}
+                      data-testid="service-crm-product-name-save"
                     >
                       Save Name
                     </Button>
