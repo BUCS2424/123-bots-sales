@@ -524,7 +524,7 @@ const AdminHumanResources = ({ initialTab = 'employees' }) => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid grid-cols-6 w-full max-w-4xl">
+        <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 w-full max-w-4xl h-auto">
           <TabsTrigger value="employees">Employees</TabsTrigger>
           <TabsTrigger value="timeclock">Time Clock</TabsTrigger>
           <TabsTrigger value="schedule">Schedule</TabsTrigger>
@@ -649,7 +649,7 @@ const AdminHumanResources = ({ initialTab = 'employees' }) => {
                             onChange={(e) => setEmployeeForm({ ...employeeForm, address: e.target.value })}
                           />
                         </div>
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                           <div className="space-y-2">
                             <Label>City</Label>
                             <Input
@@ -724,7 +724,7 @@ const AdminHumanResources = ({ initialTab = 'employees' }) => {
                         </div>
                         <div className="border-t pt-4">
                           <Label className="text-base font-semibold">Emergency Contact</Label>
-                          <div className="grid grid-cols-3 gap-4 mt-2">
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-2">
                             <Input
                               placeholder="Name"
                               value={employeeForm.emergency_contact?.name || ''}
@@ -1292,7 +1292,7 @@ const AdminHumanResources = ({ initialTab = 'employees' }) => {
                 {payrollData ? (
                   <div className="space-y-6">
                     {/* Summary Stats */}
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <p className="text-sm text-gray-500">Total Employees</p>
                         <p className="text-2xl font-bold">{payrollData.total_employees}</p>

@@ -194,6 +194,7 @@ const AdminWorkflows = () => {
         <Card><CardContent className="py-12 text-center text-gray-400">No workflows yet</CardContent></Card>
       ) : (
         <div className="bg-white rounded-xl border overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
               <tr className="text-left text-gray-500">
@@ -221,6 +222,7 @@ const AdminWorkflows = () => {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

@@ -119,7 +119,7 @@ const StorageSizeModal = ({ isOpen, onClose, size, onSave }) => {
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Size Name & Dimensions */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <div>
               <Label>Size Name *</Label>
               <Input
@@ -193,7 +193,7 @@ const StorageSizeModal = ({ isOpen, onClose, size, onSave }) => {
           </div>
 
           {/* Features */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div className="flex items-center gap-2">
                 <Thermometer className="w-4 h-4 text-[rgb(37, 99, 235)]" />
@@ -655,61 +655,63 @@ const AdminStorage = () => {
                 <p className="text-gray-500">Rentals will appear here when customers reserve units</p>
               </div>
             ) : (
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Billing</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {rentals.map((rental) => {
-                    const size = sizes.find(s => s.id === rental.unit_size_id);
-                    return (
-                      <tr key={rental.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3">
-                          <div>
-                            <p className="font-medium">{rental.unit_number}</p>
-                            <p className="text-sm text-gray-500">{size?.name}</p>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <p className="font-medium">{rental.customer.first_name} {rental.customer.last_name}</p>
-                          <p className="text-sm text-gray-500">{rental.customer.email}</p>
-                        </td>
-                        <td className="px-4 py-3 capitalize">{rental.billing_type}</td>
-                        <td className="px-4 py-3 font-medium">${rental.price.toFixed(2)}</td>
-                        <td className="px-4 py-3">
-                          <Badge className={
-                            rental.status === 'active' ? 'bg-green-100 text-green-800' :
-                            rental.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                            rental.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                            'bg-gray-100 text-gray-800'
-                          }>
-                            {rental.status}
-                          </Badge>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex gap-1">
-                            <Button size="sm" variant="ghost" onClick={() => { setSelectedRental(rental); setShowRentalModal(true); }}>
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                            {rental.status === 'active' && (
-                              <Button size="sm" variant="ghost" className="text-red-600" onClick={() => handleCancelRental(rental.id)}>
-                                <XCircle className="w-4 h-4" />
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Billing</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {rentals.map((rental) => {
+                      const size = sizes.find(s => s.id === rental.unit_size_id);
+                      return (
+                        <tr key={rental.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3">
+                            <div>
+                              <p className="font-medium">{rental.unit_number}</p>
+                              <p className="text-sm text-gray-500">{size?.name}</p>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <p className="font-medium">{rental.customer.first_name} {rental.customer.last_name}</p>
+                            <p className="text-sm text-gray-500">{rental.customer.email}</p>
+                          </td>
+                          <td className="px-4 py-3 capitalize">{rental.billing_type}</td>
+                          <td className="px-4 py-3 font-medium">${rental.price.toFixed(2)}</td>
+                          <td className="px-4 py-3">
+                            <Badge className={
+                              rental.status === 'active' ? 'bg-green-100 text-green-800' :
+                              rental.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                              rental.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                              'bg-gray-100 text-gray-800'
+                            }>
+                              {rental.status}
+                            </Badge>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex gap-1">
+                              <Button size="sm" variant="ghost" onClick={() => { setSelectedRental(rental); setShowRentalModal(true); }}>
+                                <Eye className="w-4 h-4" />
                               </Button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                              {rental.status === 'active' && (
+                                <Button size="sm" variant="ghost" className="text-red-600" onClick={() => handleCancelRental(rental.id)}>
+                                  <XCircle className="w-4 h-4" />
+                                </Button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             )}
           </CardContent>
         </Card>

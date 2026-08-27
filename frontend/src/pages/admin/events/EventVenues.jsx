@@ -84,7 +84,7 @@ const EventVenues = () => {
             <div className="space-y-3">
               <input className={inputCls} placeholder="Venue name *" value={modal.name} onChange={(e) => setModal({ ...modal, name: e.target.value })} data-testid="venue-name-input" />
               <input className={inputCls} placeholder="Address" value={modal.address} onChange={(e) => setModal({ ...modal, address: e.target.value })} />
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <input className={inputCls} placeholder="City" value={modal.city} onChange={(e) => setModal({ ...modal, city: e.target.value })} />
                 <input className={inputCls} placeholder="State" value={modal.state} onChange={(e) => setModal({ ...modal, state: e.target.value })} />
                 <input className={inputCls} placeholder="Zip" value={modal.zip_code} onChange={(e) => setModal({ ...modal, zip_code: e.target.value })} />

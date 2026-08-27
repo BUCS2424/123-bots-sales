@@ -990,46 +990,48 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
             </CardHeader>
             <CardContent>
               {/* Week View */}
-              <div className="border rounded-lg overflow-hidden">
-                {/* Header */}
-                <div className="grid grid-cols-7 bg-gray-50 border-b">
-                  {getWeekDays().map((day, i) => (
-                    <div key={i} className="p-3 text-center border-r last:border-r-0">
-                      <p className="text-xs text-gray-500 uppercase">
-                        {day.toLocaleDateString('en-US', { weekday: 'short' })}
-                      </p>
-                      <p className={`text-lg font-semibold ${
-                        day.toDateString() === new Date().toDateString() ? 'text-[rgb(37, 99, 235)]' : ''
-                      }`}>
-                        {day.getDate()}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Events Grid */}
-                <div className="grid grid-cols-7 min-h-[400px]">
-                  {getWeekDays().map((day, i) => {
-                    const dayEvents = getEventsForDay(day);
-                    const isToday = day.toDateString() === new Date().toDateString();
-                    
-                    return (
-                      <div key={i} className={`border-r last:border-r-0 p-2 ${isToday ? 'bg-blue-50' : ''}`}>
-                        {dayEvents.map(event => (
-                          <div
-                            key={event.id}
-                            className="mb-2 p-2 rounded text-sm text-white cursor-pointer"
-                            style={{ backgroundColor: event.color || 'rgb(37, 99, 235)' }}
-                          >
-                            <p className="font-medium truncate">{event.title}</p>
-                            <p className="text-xs opacity-80">
-                              {new Date(event.start_datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </p>
-                          </div>
-                        ))}
+              <div className="border rounded-lg overflow-x-auto">
+                <div className="min-w-[700px]">
+                  {/* Header */}
+                  <div className="grid grid-cols-7 bg-gray-50 border-b">
+                    {getWeekDays().map((day, i) => (
+                      <div key={i} className="p-3 text-center border-r last:border-r-0">
+                        <p className="text-xs text-gray-500 uppercase">
+                          {day.toLocaleDateString('en-US', { weekday: 'short' })}
+                        </p>
+                        <p className={`text-lg font-semibold ${
+                          day.toDateString() === new Date().toDateString() ? 'text-[rgb(37, 99, 235)]' : ''
+                        }`}>
+                          {day.getDate()}
+                        </p>
                       </div>
-                    );
-                  })}
+                    ))}
+                  </div>
+
+                  {/* Events Grid */}
+                  <div className="grid grid-cols-7 min-h-[400px]">
+                    {getWeekDays().map((day, i) => {
+                      const dayEvents = getEventsForDay(day);
+                      const isToday = day.toDateString() === new Date().toDateString();
+
+                      return (
+                        <div key={i} className={`border-r last:border-r-0 p-2 ${isToday ? 'bg-blue-50' : ''}`}>
+                          {dayEvents.map(event => (
+                            <div
+                              key={event.id}
+                              className="mb-2 p-2 rounded text-sm text-white cursor-pointer"
+                              style={{ backgroundColor: event.color || 'rgb(37, 99, 235)' }}
+                            >
+                              <p className="font-medium truncate">{event.title}</p>
+                              <p className="text-xs opacity-80">
+                                {new Date(event.start_datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -1226,7 +1228,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="space-y-2">
                       <Label>Year</Label>
                       <Input
@@ -1288,7 +1290,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
                   {/* Add Custom Service */}
                   <div className="border rounded-lg p-4 space-y-3">
                     <Label className="font-medium">Add Custom Service</Label>
-                    <div className="grid grid-cols-6 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
                       <div className="col-span-2">
                         <Input placeholder="Service name" value={newService.name} onChange={(e) => setNewService({ ...newService, name: e.target.value })} />
                       </div>
@@ -1499,7 +1501,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
                 <Input value={inventoryForm.location} onChange={(e) => setInventoryForm({ ...inventoryForm, location: e.target.value })} placeholder="Shelf A-3" />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label>Quantity</Label>
                 <Input type="number" value={inventoryForm.quantity} onChange={(e) => setInventoryForm({ ...inventoryForm, quantity: parseInt(e.target.value) || 0 })} />
@@ -1548,7 +1550,7 @@ const AdminRVDashboard = ({ initialTab = 'dashboard' }) => {
                 {SERVICE_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </select>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label>Labor Hours</Label>
                 <Input type="number" step="0.5" value={newService.labor_hours} onChange={(e) => setNewService({ ...newService, labor_hours: parseFloat(e.target.value) || 0 })} />

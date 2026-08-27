@@ -341,7 +341,7 @@ const AdminPeptidesCompliance = ({ initialTab = 'gun-log' }) => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-3 lg:grid-cols-6 w-full gap-1">
+        <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 w-full gap-1">
           <TabsTrigger value="gun-log" className="text-xs">
             <Shield className="w-3 h-3 mr-1" />
             Gun Log
@@ -918,7 +918,7 @@ const AdminPeptidesCompliance = ({ initialTab = 'gun-log' }) => {
               <Label className="text-base font-semibold">Firearm Information</Label>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label>Manufacturer *</Label>
                 <Input
@@ -1080,7 +1080,7 @@ const AdminPeptidesCompliance = ({ initialTab = 'gun-log' }) => {
                 required
               />
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label>Category *</Label>
                 <select

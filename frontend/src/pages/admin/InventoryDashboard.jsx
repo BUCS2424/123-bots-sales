@@ -180,7 +180,7 @@ const InventoryDashboard = () => {
             <CardContent>
               {recommendations?.recommendations?.length > 0 ? (
                 <div className="space-y-4">
-                  <div className="grid grid-cols-3 gap-4 p-4 bg-gray-900 rounded-lg">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 p-4 bg-gray-900 rounded-lg">
                     <div className="text-center">
                       <p className="text-3xl font-bold text-white">{recSummary.total_manufacturers || 0}</p>
                       <p className="text-sm text-gray-400">Manufacturers</p>

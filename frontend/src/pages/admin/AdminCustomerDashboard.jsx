@@ -492,7 +492,7 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-center">
               <div className="bg-purple-50 rounded-lg p-4">
                 <p className="text-2xl font-bold text-purple-600">{stats.total_orders}</p>
                 <p className="text-sm text-gray-500">Orders</p>
@@ -911,7 +911,7 @@ const AdminCustomerDashboard = ({ customerId: propCustomerId }) => {
                 placeholder="Apt 4B"
               />
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div>
                 <Label>City *</Label>
                 <Input

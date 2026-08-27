@@ -98,7 +98,7 @@ const AdminAccounting = ({ initialTab = 'daily' }) => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid grid-cols-5 w-full max-w-3xl">
+        <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 w-full max-w-3xl h-auto">
           <TabsTrigger value="daily" data-testid="tab-daily">Daily Snapshot</TabsTrigger>
           <TabsTrigger value="inventory" data-testid="tab-inventory">Inventory</TabsTrigger>
           <TabsTrigger value="kpis" data-testid="tab-kpis">KPIs</TabsTrigger>

@@ -239,6 +239,7 @@ export default function QuoteCatalogSettingsPage() {
           </div>
           <p className="text-xs text-gray-500">"Sync from Store" pulls your live storefront products (price, SKU, and shipping weight/dimensions) into this quote catalog so shipping can be auto-calculated on quotes.</p>
           <div className="rounded-xl border bg-white overflow-hidden" data-testid="quotes-products-table-wrap">
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 text-left">
                 <tr>
@@ -270,6 +271,7 @@ export default function QuoteCatalogSettingsPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </TabsContent>
 
@@ -282,6 +284,7 @@ export default function QuoteCatalogSettingsPage() {
             <Button onClick={openCreate} data-testid="quotes-services-add-button"><Plus className="w-4 h-4 mr-2" /> Add Service</Button>
           </div>
           <div className="rounded-xl border bg-white overflow-hidden" data-testid="quotes-services-table-wrap">
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 text-left">
                 <tr>
@@ -311,11 +314,13 @@ export default function QuoteCatalogSettingsPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </TabsContent>
 
         <TabsContent value="lead-sales" className="space-y-4" data-testid="quotes-lead-sales-tab-content">
           <div className="rounded-xl border bg-white overflow-hidden">
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 text-left">
                 <tr>
@@ -338,6 +343,7 @@ export default function QuoteCatalogSettingsPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </TabsContent>
       </Tabs>

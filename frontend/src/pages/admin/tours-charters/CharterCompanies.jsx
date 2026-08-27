@@ -270,7 +270,7 @@ const CharterCompanies = () => {
                     <label className="mb-1.5 flex items-center gap-1 text-xs font-medium text-white/60"><MapPin className="h-3 w-3" /> Billing Address</label>
                     <input className={inputCls} placeholder="123 Bay St" value={modal.billing_address} onChange={(e) => setModal({ ...modal, billing_address: e.target.value })} data-testid="charter-company-billing-address-input" />
                   </div>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     <input className={inputCls} placeholder="City" value={modal.billing_city} onChange={(e) => setModal({ ...modal, billing_city: e.target.value })} data-testid="charter-company-billing-city-input" />
                     <input className={inputCls} placeholder="State" value={modal.billing_state} onChange={(e) => setModal({ ...modal, billing_state: e.target.value })} data-testid="charter-company-billing-state-input" />
                     <input className={inputCls} placeholder="ZIP" value={modal.billing_zip} onChange={(e) => setModal({ ...modal, billing_zip: e.target.value })} data-testid="charter-company-billing-zip-input" />

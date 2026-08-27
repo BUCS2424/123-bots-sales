@@ -1511,7 +1511,7 @@ const AdminProductEditor = ({ productId: propProductId }) => {
                 <Card>
                   <CardContent className="p-6 space-y-6">
                     {/* Name, SKU, Weight Row */}
-                    <div className="grid grid-cols-3 gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
                       <div className="space-y-2">
                         <Label className="text-sm text-gray-600">Name</Label>
                         <Input
@@ -2284,7 +2284,7 @@ const AdminProductEditor = ({ productId: propProductId }) => {
                   
                   <div>
                     <Label className="mb-3 block">Package Dimensions (inches)</Label>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label className="text-xs text-gray-500">Length</Label>
                         <Input

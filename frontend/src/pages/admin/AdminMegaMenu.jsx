@@ -506,7 +506,7 @@ const AdminMegaMenu = () => {
             {/* Link Type */}
             <div>
               <Label>Link Type</Label>
-              <div className="grid grid-cols-3 gap-2 mt-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
                 {[
                   { value: 'custom', label: 'Custom URL', icon: LinkIcon },
                   { value: 'category', label: 'Category', icon: Tag },

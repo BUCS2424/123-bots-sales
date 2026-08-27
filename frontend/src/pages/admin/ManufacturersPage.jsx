@@ -310,7 +310,7 @@ const ManufacturersPage = () => {
 
               <div className="border-t border-gray-700 pt-4 mt-2">
                 <h4 className="font-medium mb-3">Contact Information</h4>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   <div>
                     <Label>Contact Name</Label>
                     <Input

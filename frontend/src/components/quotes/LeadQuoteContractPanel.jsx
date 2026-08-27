@@ -52,6 +52,7 @@ export const LeadQuoteContractPanel = ({ leadId, title = 'Quotes' }) => {
       </div>
 
       <div className="rounded-lg border bg-white overflow-hidden" data-testid="lead-quotes-table-wrap">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-gray-50 text-left">
             <tr>
@@ -101,6 +102,7 @@ export const LeadQuoteContractPanel = ({ leadId, title = 'Quotes' }) => {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

@@ -211,7 +211,7 @@ const AdminBusinessSettings = () => {
                 placeholder="123 Main Street"
               />
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div className="col-span-1">
                 <Label htmlFor="city">City</Label>
                 <Input
@@ -265,7 +265,7 @@ const AdminBusinessSettings = () => {
               { key: 'saturday_hours', label: 'Saturday' },
               { key: 'sunday_hours', label: 'Sunday' },
             ].map(({ key, label }) => (
-              <div key={key} className="grid grid-cols-3 gap-4 items-center">
+              <div key={key} className="grid grid-cols-2 sm:grid-cols-3 gap-4 items-center">
                 <Label className="text-sm font-medium">{label}</Label>
                 <Input
                   name={key}

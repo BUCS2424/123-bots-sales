@@ -279,7 +279,7 @@ const Johnny5Fulfillment = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         <Card className="bg-amber-50 border-amber-200">
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">

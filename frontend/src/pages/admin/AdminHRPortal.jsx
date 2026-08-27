@@ -424,7 +424,7 @@ const AdminHRPortal = ({ initialTab = 'jobs' }) => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-5 w-full max-w-3xl">
+        <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 w-full max-w-3xl h-auto">
           <TabsTrigger value="jobs" data-testid="tab-jobs">
             <Briefcase className="w-4 h-4 mr-2" />
             Jobs
@@ -880,7 +880,7 @@ const AdminHRPortal = ({ initialTab = 'jobs' }) => {
               />
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label>Min Pay</Label>
                 <Input

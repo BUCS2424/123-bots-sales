@@ -120,7 +120,7 @@ const Johnny5Invoice = () => {
         </div>
 
         {/* Order Info Row */}
-        <div className="grid grid-cols-3 gap-8 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 print:grid-cols-3 gap-8 mb-8">
           {/* Ship To */}
           <div>
             <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">Ship To</h3>
@@ -166,32 +166,34 @@ const Johnny5Invoice = () => {
         {/* Items Table */}
         <div className="mb-8">
           <h3 className="text-sm font-semibold text-gray-500 uppercase mb-3">Items</h3>
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="text-left py-3 px-4 font-semibold text-gray-700 border-b-2">Item</th>
-                <th className="text-center py-3 px-4 font-semibold text-gray-700 border-b-2 w-24">Qty</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-700 border-b-2 w-32">Price</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-700 border-b-2 w-32">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {order.items?.map((item, index) => (
-                <tr key={index} className="border-b">
-                  <td className="py-3 px-4">
-                    <p className="font-medium text-gray-900">{item.name || item.title}</p>
-                    {item.sku && <p className="text-sm text-gray-500">SKU: {item.sku}</p>}
-                    {item.options && <p className="text-sm text-gray-500">{item.options}</p>}
-                  </td>
-                  <td className="py-3 px-4 text-center text-gray-700">{item.quantity}</td>
-                  <td className="py-3 px-4 text-right text-gray-700">${(item.price || 0).toFixed(2)}</td>
-                  <td className="py-3 px-4 text-right font-medium text-gray-900">
-                    ${((item.price || 0) * (item.quantity || 1)).toFixed(2)}
-                  </td>
+          <div className="overflow-x-auto print:overflow-visible">
+            <table className="w-full min-w-[480px] print:min-w-0 border-collapse">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700 border-b-2">Item</th>
+                  <th className="text-center py-3 px-4 font-semibold text-gray-700 border-b-2 w-24">Qty</th>
+                  <th className="text-right py-3 px-4 font-semibold text-gray-700 border-b-2 w-32">Price</th>
+                  <th className="text-right py-3 px-4 font-semibold text-gray-700 border-b-2 w-32">Total</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {order.items?.map((item, index) => (
+                  <tr key={index} className="border-b">
+                    <td className="py-3 px-4">
+                      <p className="font-medium text-gray-900">{item.name || item.title}</p>
+                      {item.sku && <p className="text-sm text-gray-500">SKU: {item.sku}</p>}
+                      {item.options && <p className="text-sm text-gray-500">{item.options}</p>}
+                    </td>
+                    <td className="py-3 px-4 text-center text-gray-700">{item.quantity}</td>
+                    <td className="py-3 px-4 text-right text-gray-700">${(item.price || 0).toFixed(2)}</td>
+                    <td className="py-3 px-4 text-right font-medium text-gray-900">
+                      ${((item.price || 0) * (item.quantity || 1)).toFixed(2)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Totals */}

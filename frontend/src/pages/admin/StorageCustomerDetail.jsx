@@ -409,7 +409,7 @@ const StorageCustomerDetail = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-3 gap-4 text-center py-4 border-b">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-center py-4 border-b">
                     <div>
                       <p className="text-xs text-gray-500 uppercase tracking-wider">Paid Through</p>
                       <p className="text-lg font-semibold text-gray-900 mt-1">
@@ -432,7 +432,7 @@ const StorageCustomerDetail = () => {
 
                   {/* Past Due Units */}
                   {pastRentals.length > 0 && (
-                    <div className="mt-4">
+                    <div className="mt-4 overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="text-xs text-gray-500 uppercase tracking-wider">
@@ -750,33 +750,35 @@ const StorageCustomerDetail = () => {
               <CardTitle>Account Ledger</CardTitle>
             </CardHeader>
             <CardContent>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-xs text-gray-500 uppercase tracking-wider border-b">
-                    <th className="text-left py-3">Date</th>
-                    <th className="text-left py-3">Description</th>
-                    <th className="text-right py-3">Charges</th>
-                    <th className="text-right py-3">Payments</th>
-                    <th className="text-right py-3">Balance</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b">
-                    <td className="py-3">{new Date().toLocaleDateString()}</td>
-                    <td className="py-3">Monthly Storage Fee</td>
-                    <td className="py-3 text-right">$89.00</td>
-                    <td className="py-3 text-right">—</td>
-                    <td className="py-3 text-right font-medium">$89.00</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-3">{new Date().toLocaleDateString()}</td>
-                    <td className="py-3 text-green-600">Payment - Credit Card</td>
-                    <td className="py-3 text-right">—</td>
-                    <td className="py-3 text-right text-green-600">$89.00</td>
-                    <td className="py-3 text-right font-medium">$0.00</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-xs text-gray-500 uppercase tracking-wider border-b">
+                      <th className="text-left py-3">Date</th>
+                      <th className="text-left py-3">Description</th>
+                      <th className="text-right py-3">Charges</th>
+                      <th className="text-right py-3">Payments</th>
+                      <th className="text-right py-3">Balance</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b">
+                      <td className="py-3">{new Date().toLocaleDateString()}</td>
+                      <td className="py-3">Monthly Storage Fee</td>
+                      <td className="py-3 text-right">$89.00</td>
+                      <td className="py-3 text-right">—</td>
+                      <td className="py-3 text-right font-medium">$89.00</td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-3">{new Date().toLocaleDateString()}</td>
+                      <td className="py-3 text-green-600">Payment - Credit Card</td>
+                      <td className="py-3 text-right">—</td>
+                      <td className="py-3 text-right text-green-600">$89.00</td>
+                      <td className="py-3 text-right font-medium">$0.00</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

@@ -330,6 +330,7 @@ const AdminServiceCrm = () => {
         </div>
       ) : (
         <div className="bg-white rounded-xl border overflow-hidden" data-testid="service-crm-list-table">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
               <tr className="text-left text-gray-500">
@@ -375,6 +376,7 @@ const AdminServiceCrm = () => {
               )}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

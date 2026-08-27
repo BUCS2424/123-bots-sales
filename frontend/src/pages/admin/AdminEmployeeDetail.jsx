@@ -234,7 +234,7 @@ const AdminEmployeeDetail = ({ employeeId: propId }) => {
                   <EditField label="Email" value={form.email} onChange={v => set('email', v)} type="email" />
                   <EditField label="Phone" value={form.phone} onChange={v => set('phone', v)} type="tel" />
                   <EditField label="Address" value={form.address} onChange={v => set('address', v)} />
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <EditField label="City" value={form.city} onChange={v => set('city', v)} />
                     <EditField label="State" value={form.state} onChange={v => set('state', v)} />
                     <EditField label="ZIP" value={form.zip_code} onChange={v => set('zip_code', v)} />
@@ -402,7 +402,7 @@ const AdminEmployeeDetail = ({ employeeId: propId }) => {
                 <span className="text-sm font-medium">{formatMonth(leaveDate)}</span>
                 <button onClick={() => navMonth(setLeaveDate, leaveDate, 1)} className="p-1 hover:bg-gray-100 rounded" data-testid="leave-next-month"><ChevronRight className="w-4 h-4" /></button>
               </div>
-              <div className="grid grid-cols-3 gap-3 mb-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
                 <div className="bg-gray-100 rounded-lg p-3 text-center">
                   <p className="text-lg font-bold">{totalLeave}</p>
                   <p className="text-xs text-gray-500">Total</p>

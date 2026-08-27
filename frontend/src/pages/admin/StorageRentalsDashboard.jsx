@@ -322,7 +322,7 @@ const StorageRentalsDashboard = () => {
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
@@ -378,7 +378,7 @@ const StorageRentalsDashboard = () => {
       </div>
 
       {/* Kanban Board */}
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         {/* Active Tenants - 60% (3 columns) */}
         <div className="col-span-3">
           <DroppableColumn

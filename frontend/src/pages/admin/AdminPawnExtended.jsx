@@ -323,7 +323,7 @@ const AdminPeptidesExtended = ({ initialTab = 'loans' }) => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-3 lg:grid-cols-6 w-full gap-1">
+        <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 w-full gap-1">
           <TabsTrigger value="loans" className="text-xs">
             <Banknote className="w-3 h-3 mr-1" />
             Loans
@@ -946,7 +946,7 @@ const AdminPeptidesExtended = ({ initialTab = 'loans' }) => {
               <Label className="text-base font-semibold">Vehicle Information</Label>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label>Make *</Label>
                 <Input
