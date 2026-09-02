@@ -919,22 +919,22 @@ const AdminLeadsKanban = () => {
               <DialogTitle className="sr-only">
                 {isCreatingOpportunity ? 'Create Opportunity' : `Edit ${selectedLead.opportunity_name || selectedLead.name || 'Opportunity'}`}
               </DialogTitle>
-              <div className="px-7 pt-6 pb-4 border-b border-gray-200" data-testid="opportunity-modal-header">
-                <h2 className="text-4xl font-semibold text-gray-800 leading-none" data-testid="opportunity-modal-title">
+              <div className="px-4 md:px-7 pt-6 pb-4 border-b border-gray-200" data-testid="opportunity-modal-header">
+                <h2 className="text-2xl md:text-4xl font-semibold text-gray-800 leading-tight md:leading-none" data-testid="opportunity-modal-title">
                   {isCreatingOpportunity ? 'Create Opportunity' : `Edit “${selectedLead.opportunity_name || selectedLead.name || 'Opportunity'}”`}
                 </h2>
                 <p className="text-gray-500 mt-3 text-base">Add and edit opportunity details, tasks, notes and appointments.</p>
               </div>
 
-              <div className="flex-1 min-h-0 overflow-hidden flex">
-                <aside className="w-[280px] min-h-0 border-r border-gray-200 bg-[#f8f8f9] p-4 flex flex-col" data-testid="opportunity-modal-sidebar">
-                  <nav className="space-y-1 flex-1">
+              <div className="flex-1 min-h-0 overflow-hidden flex flex-col md:flex-row">
+                <aside className="w-full md:w-[280px] min-h-0 flex-shrink-0 border-b md:border-b-0 md:border-r border-gray-200 bg-[#f8f8f9] p-4 flex flex-col" data-testid="opportunity-modal-sidebar">
+                  <nav className="flex md:block gap-1 md:gap-0 md:space-y-1 flex-1 overflow-x-auto md:overflow-visible">
                     {visibleSectionTabs.map((tab) => (
                       <button
                         key={tab.id}
                         type="button"
                         onClick={() => setActiveSection(tab.id)}
-                        className={`w-full text-left px-3 py-2.5 rounded-md text-base transition-colors ${activeSection === tab.id ? 'bg-[#e8ecfb] text-[#3454b4] font-semibold' : 'text-gray-600 hover:bg-gray-200/70'}`}
+                        className={`shrink-0 whitespace-nowrap md:w-full text-left px-3 py-2.5 rounded-md text-base transition-colors ${activeSection === tab.id ? 'bg-[#e8ecfb] text-[#3454b4] font-semibold' : 'text-gray-600 hover:bg-gray-200/70'}`}
                         data-testid={`opportunity-modal-tab-${tab.id}`}
                       >
                         {tab.label}
@@ -946,9 +946,9 @@ const AdminLeadsKanban = () => {
                   </div>
                 </aside>
 
-                <section className="flex-1 min-h-0 overflow-y-auto p-6" data-testid="opportunity-modal-main-content">
+                <section className="flex-1 min-h-0 min-w-0 overflow-y-auto p-4 md:p-6" data-testid="opportunity-modal-main-content">
                   <div className="flex items-center justify-between mb-5">
-                    <h3 className="text-[30px] font-semibold text-gray-800">{visibleSectionTabs.find((tab) => tab.id === activeSection)?.label}</h3>
+                    <h3 className="text-xl md:text-[30px] font-semibold text-gray-800">{visibleSectionTabs.find((tab) => tab.id === activeSection)?.label}</h3>
                     <label className="inline-flex items-center gap-2 text-sm text-gray-600" data-testid="opportunity-hide-empty-toggle-wrap">
                       <Checkbox checked={hideEmptyFields} onCheckedChange={(value) => setHideEmptyFields(Boolean(value))} data-testid="opportunity-hide-empty-toggle" />
                       Hide Empty Fields
@@ -958,7 +958,7 @@ const AdminLeadsKanban = () => {
                   {activeSection === 'opportunity-details' && (
                     <div className="space-y-8" data-testid="opportunity-details-section">
                       <div className="border-t border-b border-gray-200 py-5">
-                        <h4 className="text-[28px] font-semibold text-gray-800 mb-4">Contact details</h4>
+                        <h4 className="text-lg md:text-[28px] font-semibold text-gray-800 mb-4">Contact details</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {shouldShowField(selectedLead.primary_contact_name, true) && (
                             <div>
@@ -1006,7 +1006,7 @@ const AdminLeadsKanban = () => {
                       </div>
 
                       <div className="border-b border-gray-200 pb-5">
-                        <h4 className="text-[28px] font-semibold text-gray-800 mb-4">Customer Inquiry</h4>
+                        <h4 className="text-lg md:text-[28px] font-semibold text-gray-800 mb-4">Customer Inquiry</h4>
                         <div className="grid grid-cols-1 gap-4">
                           {shouldShowField(selectedLead.subject, true) && (
                             <div>
@@ -1024,7 +1024,7 @@ const AdminLeadsKanban = () => {
                       </div>
 
                       <div>
-                        <h4 className="text-[30px] font-semibold text-gray-800 mb-4">Opportunity Details</h4>
+                        <h4 className="text-xl md:text-[30px] font-semibold text-gray-800 mb-4">Opportunity Details</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {shouldShowField(selectedLead.opportunity_name, true) && (
                             <div className="md:col-span-2">
@@ -1527,12 +1527,12 @@ const AdminLeadsKanban = () => {
                 </section>
               </div>
 
-              <div className="border-t border-gray-200 px-7 py-4 flex items-center justify-between gap-4" data-testid="opportunity-modal-footer">
-                <div className="text-sm text-gray-500" data-testid="opportunity-modal-audit-info">
+              <div className="border-t border-gray-200 px-4 md:px-7 py-4 flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4" data-testid="opportunity-modal-footer">
+                <div className="text-sm text-gray-500 break-all md:break-normal" data-testid="opportunity-modal-audit-info">
                   <p>Created on: {formatDate(selectedLead.created_at)}</p>
                   <p>Audit ID: {isCreatingOpportunity ? 'Pending on save' : selectedLead.id}</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {!isCreatingOpportunity && (
                     <Button variant="outline" className="border-red-300 text-red-600 hover:bg-red-50" onClick={() => handleDelete(selectedLead)} data-testid="opportunity-modal-delete-button">
                       <Trash2 className="w-4 h-4 mr-2" />Delete
