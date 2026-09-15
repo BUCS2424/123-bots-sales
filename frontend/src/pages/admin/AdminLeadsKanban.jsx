@@ -409,6 +409,10 @@ const AdminLeadsKanban = () => {
           primary_contact_name: selectedLead.primary_contact_name,
           primary_email: selectedLead.primary_email,
           primary_phone: selectedLead.primary_phone || '',
+          address: selectedLead.address || '',
+          city: selectedLead.city || '',
+          state: selectedLead.state || '',
+          zip_code: selectedLead.zip_code || '',
           additional_contacts: selectedLead.additional_contacts || [],
           opportunity_name: selectedLead.opportunity_name,
           pipeline: selectedLead.pipeline || '001. Main Leads Pipeline',
@@ -976,6 +980,34 @@ const AdminLeadsKanban = () => {
                             <div>
                               <Label className="text-sm font-semibold text-gray-700">Primary Phone</Label>
                               <Input value={selectedLead.primary_phone || ''} onChange={(event) => setLeadField('primary_phone', event.target.value)} className="h-12 mt-2" data-testid="opportunity-primary-phone-input" />
+                            </div>
+                          )}
+                          {shouldShowField(selectedLead.address) && (
+                            <div className="md:col-span-2">
+                              <Label className="text-sm font-semibold text-gray-700">Address</Label>
+                              <Input value={selectedLead.address || ''} onChange={(event) => setLeadField('address', event.target.value)} className="h-12 mt-2" data-testid="opportunity-address-input" />
+                            </div>
+                          )}
+                          {(shouldShowField(selectedLead.city) || shouldShowField(selectedLead.state) || shouldShowField(selectedLead.zip_code)) && (
+                            <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                              {shouldShowField(selectedLead.city) && (
+                                <div>
+                                  <Label className="text-sm font-semibold text-gray-700">City</Label>
+                                  <Input value={selectedLead.city || ''} onChange={(event) => setLeadField('city', event.target.value)} className="h-12 mt-2" data-testid="opportunity-city-input" />
+                                </div>
+                              )}
+                              {shouldShowField(selectedLead.state) && (
+                                <div>
+                                  <Label className="text-sm font-semibold text-gray-700">State</Label>
+                                  <Input value={selectedLead.state || ''} onChange={(event) => setLeadField('state', event.target.value)} className="h-12 mt-2" data-testid="opportunity-state-input" />
+                                </div>
+                              )}
+                              {shouldShowField(selectedLead.zip_code) && (
+                                <div>
+                                  <Label className="text-sm font-semibold text-gray-700">Zip Code</Label>
+                                  <Input value={selectedLead.zip_code || ''} onChange={(event) => setLeadField('zip_code', event.target.value)} className="h-12 mt-2" data-testid="opportunity-zip-input" />
+                                </div>
+                              )}
                             </div>
                           )}
                           {shouldShowField(selectedLead.additional_contacts) && (

@@ -44,6 +44,10 @@ class LeadCreate(BaseModel):
     primary_contact_name: Optional[str] = ""
     primary_email: Optional[str] = ""
     primary_phone: Optional[str] = ""
+    address: Optional[str] = ""
+    city: Optional[str] = ""
+    state: Optional[str] = ""
+    zip_code: Optional[str] = ""
     additional_contacts: Optional[List[str]] = None
     opportunity_name: Optional[str] = ""
     pipeline: Optional[str] = "001. Main Leads Pipeline"
@@ -85,6 +89,10 @@ class LeadUpdate(BaseModel):
     primary_contact_name: Optional[str] = None
     primary_email: Optional[str] = None
     primary_phone: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zip_code: Optional[str] = None
     additional_contacts: Optional[List[str]] = None
     opportunity_name: Optional[str] = None
     pipeline: Optional[str] = None
@@ -348,6 +356,10 @@ async def create_lead(lead: LeadCreate, db=Depends(get_db)):
         "primary_contact_name": lead.primary_contact_name or lead.name,
         "primary_email": lead.primary_email or lead.email,
         "primary_phone": lead.primary_phone or lead.phone or "",
+        "address": lead.address or "",
+        "city": lead.city or "",
+        "state": lead.state or "",
+        "zip_code": lead.zip_code or "",
         "additional_contacts": lead.additional_contacts or [],
         "opportunity_name": lead.opportunity_name or lead.name,
         "pipeline": lead.pipeline or "001. Main Leads Pipeline",
@@ -604,8 +616,10 @@ async def convert_lead_to_client(
         "email": email,
         "name": display_name,
         "phone": lead.get("primary_phone") or lead.get("phone") or None,
+        "address": lead.get("address") or None,
         "city": lead.get("city") or None,
         "state": lead.get("state") or None,
+        "zip_code": lead.get("zip_code") or None,
         "total_orders": 0,
         "total_spent": 0.0,
         "created_at": existing_customer.get("created_at") if existing_customer else now,
