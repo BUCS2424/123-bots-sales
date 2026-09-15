@@ -740,7 +740,7 @@ const AdminLeadsKanban = () => {
   return (
     <div className="space-y-6 min-w-0" data-testid="admin-opportunities-kanban">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3" data-testid="opportunities-page-title">
               <Users className="w-8 h-8 text-[rgb(37,99,235)]" />
@@ -752,7 +752,7 @@ const AdminLeadsKanban = () => {
             <select
               value={selectedPipelineId}
               onChange={(e) => setSelectedPipelineId(e.target.value)}
-              className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm font-medium text-gray-700 shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm font-medium text-gray-700 shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
               data-testid="pipeline-selector"
             >
               {pipelines.map((p) => (
@@ -761,18 +761,18 @@ const AdminLeadsKanban = () => {
             </select>
           )}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
               placeholder="Search opportunities..."
-              className="pl-9 w-72"
+              className="pl-9 w-full sm:w-72"
               data-testid="opportunities-search-input"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={importing} data-testid="import-opportunities-button">
               {importing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
               Import CSV
