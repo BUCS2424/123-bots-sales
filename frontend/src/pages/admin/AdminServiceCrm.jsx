@@ -12,6 +12,7 @@ import {
   Trash2,
   X,
   Package,
+  Plus,
 } from 'lucide-react';
 import { Card, CardContent } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -80,6 +81,7 @@ const AdminServiceCrm = () => {
   const [dragOverColumn, setDragOverColumn] = useState(null);
 
   const [editOpen, setEditOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [draft, setDraft] = useState(emptyDraft);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -164,16 +166,43 @@ const AdminServiceCrm = () => {
   };
 
   const openEdit = (req) => {
+    setIsCreating(false);
     setDraft({ ...emptyDraft, ...req });
+    setEditOpen(true);
+  };
+
+  const openCreate = () => {
+    setIsCreating(true);
+    setDraft(emptyDraft);
     setEditOpen(true);
   };
 
   const closeEdit = () => {
     setEditOpen(false);
+    setIsCreating(false);
     setDraft(emptyDraft);
   };
 
   const saveDraft = async () => {
+    if (isCreating) {
+      if (!draft.name || !draft.email || !draft.make || !draft.model || !draft.issue_description) {
+        toast({ title: 'Missing Required Fields', description: 'Name, Email, Make, Model, and Issue Description are required.', variant: 'destructive' });
+        return;
+      }
+      setSaving(true);
+      try {
+        await axios.post(`${API}/service-crm/`, { ...draft, source: draft.source || 'admin_manual_entry' }, { headers: tokenHeaders });
+        toast({ title: 'Created', description: 'Service call created' });
+        closeEdit();
+        refresh();
+      } catch (error) {
+        toast({ title: 'Error', description: error.response?.data?.detail || 'Failed to create service call', variant: 'destructive' });
+      } finally {
+        setSaving(false);
+      }
+      return;
+    }
+
     if (!draft.id) return;
     setSaving(true);
     try {
@@ -245,6 +274,10 @@ const AdminServiceCrm = () => {
           </div>
           <Button variant="outline" onClick={refresh} data-testid="service-crm-refresh">
             <RefreshCw className="w-4 h-4" />
+          </Button>
+          <Button className="bg-[#6e2ea8] hover:bg-[#5a2589]" onClick={openCreate} data-testid="service-crm-add-call-button">
+            <Plus className="w-4 h-4 mr-2" />
+            Service Call
           </Button>
         </div>
       </div>
@@ -383,7 +416,7 @@ const AdminServiceCrm = () => {
       <Dialog open={editOpen} onOpenChange={(open) => !open && closeEdit()}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto" data-testid="service-crm-edit-modal">
           <div className="flex items-center justify-between pb-4 border-b">
-            <DialogTitle className="text-xl font-bold text-gray-900">Service Request Details</DialogTitle>
+            <DialogTitle className="text-xl font-bold text-gray-900">{isCreating ? 'New Service Call' : 'Service Request Details'}</DialogTitle>
             <button onClick={closeEdit} className="text-gray-400 hover:text-gray-600">
               <X className="w-5 h-5" />
             </button>
@@ -393,24 +426,26 @@ const AdminServiceCrm = () => {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <p className="text-lg font-bold text-gray-900">Contact Details</p>
-                <div className="w-40">
-                  <Select value={draft.status} onValueChange={(v) => setDraft((d) => ({ ...d, status: v }))}>
-                    <SelectTrigger data-testid="service-crm-field-status"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {DEFAULT_COLUMNS.map((c) => (
-                        <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                {!isCreating && (
+                  <div className="w-40">
+                    <Select value={draft.status} onValueChange={(v) => setDraft((d) => ({ ...d, status: v }))}>
+                      <SelectTrigger data-testid="service-crm-field-status"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {DEFAULT_COLUMNS.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Name</Label>
+                  <Label>Name {isCreating && <span className="text-red-500">*</span>}</Label>
                   <Input value={draft.name} onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))} data-testid="service-crm-field-name" />
                 </div>
                 <div>
-                  <Label>Email</Label>
+                  <Label>Email {isCreating && <span className="text-red-500">*</span>}</Label>
                   <Input value={draft.email} onChange={(e) => setDraft((d) => ({ ...d, email: e.target.value }))} data-testid="service-crm-field-email" />
                 </div>
                 <div>
@@ -422,7 +457,7 @@ const AdminServiceCrm = () => {
 
             <div className="pt-5 border-t">
               <p className="text-lg font-bold text-gray-900 mb-3">Service Inquiry</p>
-              <Label>Issue Description</Label>
+              <Label>Issue Description {isCreating && <span className="text-red-500">*</span>}</Label>
               <Textarea
                 rows={5}
                 value={draft.issue_description}
@@ -436,11 +471,11 @@ const AdminServiceCrm = () => {
               <p className="text-sm font-semibold text-gray-700 mb-3">Product Details</p>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Make</Label>
+                  <Label>Make {isCreating && <span className="text-red-500">*</span>}</Label>
                   <Input value={draft.make} onChange={(e) => setDraft((d) => ({ ...d, make: e.target.value }))} data-testid="service-crm-field-make" />
                 </div>
                 <div>
-                  <Label>Model</Label>
+                  <Label>Model {isCreating && <span className="text-red-500">*</span>}</Label>
                   <Input value={draft.model} onChange={(e) => setDraft((d) => ({ ...d, model: e.target.value }))} data-testid="service-crm-field-model" />
                 </div>
                 <div>
@@ -564,15 +599,17 @@ const AdminServiceCrm = () => {
             </div>
 
             <div className="flex items-center justify-between pt-4 border-t">
-              <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={deleteDraft} disabled={deleting} data-testid="service-crm-delete-button">
-                {deleting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
-                Delete
-              </Button>
+              {!isCreating ? (
+                <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={deleteDraft} disabled={deleting} data-testid="service-crm-delete-button">
+                  {deleting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
+                  Delete
+                </Button>
+              ) : <div />}
               <div className="flex gap-2">
                 <Button variant="outline" onClick={closeEdit}>Cancel</Button>
                 <Button className="bg-[#6e2ea8] hover:bg-[#5a2589]" onClick={saveDraft} disabled={saving} data-testid="service-crm-save-button">
                   {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                  Save Changes
+                  {isCreating ? 'Create Service Call' : 'Save Changes'}
                 </Button>
               </div>
             </div>
