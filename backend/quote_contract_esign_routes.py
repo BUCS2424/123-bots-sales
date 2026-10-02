@@ -681,8 +681,20 @@ async def delete_lead_quote(lead_id: str, quote_id: str, current_user=Depends(ge
     return {"success": True}
 
 
+class SendQuoteEmailRequest(BaseModel):
+    # When set, sends a one-off copy to this address instead of the lead's
+    # own email, and does NOT mark the quote as sent - lets staff preview
+    # what the client will receive without touching the real send state.
+    override_email: Optional[str] = None
+
+
 @router.post("/leads/{lead_id}/quotes/{quote_id}/send-email")
-async def send_quote_email(lead_id: str, quote_id: str, current_user=Depends(get_current_user)):
+async def send_quote_email(
+    lead_id: str,
+    quote_id: str,
+    payload: SendQuoteEmailRequest = SendQuoteEmailRequest(),
+    current_user=Depends(get_current_user),
+):
     flow = await _get_quote_flow_config_doc()
     if not flow.get("allow_send_email", True):
         raise HTTPException(status_code=400, detail="Flow rule disabled sending quotes by email")
@@ -694,31 +706,36 @@ async def send_quote_email(lead_id: str, quote_id: str, current_user=Depends(get
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
 
-    recipient = lead.get("primary_email") or lead.get("email")
+    is_test_send = bool(payload.override_email)
+    recipient = payload.override_email or lead.get("primary_email") or lead.get("email")
     if not recipient:
-        raise HTTPException(status_code=400, detail="Lead has no email")
+        raise HTTPException(status_code=400, detail="Lead has no email on file - use a test email instead")
 
-    sign_url = f"/sign/{quote_id}"
-    subject = f"Quote: {quote.get('name', 'New Quote')}"
+    site = await db.admin_settings.find_one({"type": "site"}, {"_id": 0})
+    site_url = (site or {}).get("site_url") or "https://123bots.com"
+    sign_url = f"{site_url.rstrip('/')}/sign/{quote_id}"
+    subject = f"Quote: {quote.get('name', 'New Quote')}" + (" (TEST SEND)" if is_test_send else "")
     text_body = f"Please review and sign your quote here: {sign_url}"
     html_body = f"<p>Please review and sign your quote here: <a href='{sign_url}'>{sign_url}</a></p>"
     try:
         await send_email(recipient, subject, html_body, text_body)
     except Exception:
-        pass
+        raise HTTPException(status_code=502, detail="Failed to send the email - check email settings")
 
-    update_payload = {
-        "sent_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
-    }
-    status_on_send = flow.get("status_on_send", "sent")
-    if status_on_send in ["sent", "draft"]:
-        update_payload["status"] = status_on_send
-    await db.quotes.update_one(
-        {"id": quote_id, "lead_id": lead_id, "user_id": current_user["id"]},
-        {"$set": update_payload},
-    )
-    return {"success": True, "sign_url": sign_url}
+    if not is_test_send:
+        update_payload = {
+            "sent_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }
+        status_on_send = flow.get("status_on_send", "sent")
+        if status_on_send in ["sent", "draft"]:
+            update_payload["status"] = status_on_send
+        await db.quotes.update_one(
+            {"id": quote_id, "lead_id": lead_id, "user_id": current_user["id"]},
+            {"$set": update_payload},
+        )
+
+    return {"success": True, "sign_url": sign_url, "sent_to": recipient, "test_send": is_test_send}
 
 
 @router.post("/leads/{lead_id}/quotes/{quote_id}/unlock")

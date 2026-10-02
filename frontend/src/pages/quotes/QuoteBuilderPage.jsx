@@ -356,6 +356,10 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
   const [items, setItems] = useState([{ _id: genItemId(), description: '', quantity: 1, unit_price: 0, item_type: 'custom', billing_type: 'onetime' }]);
   const [previewTab, setPreviewTab] = useState('quote');
   const [showCatalogPicker, setShowCatalogPicker] = useState(false);
+  const [sendDialogOpen, setSendDialogOpen] = useState(false);
+  const [sendTargetQuoteId, setSendTargetQuoteId] = useState(null);
+  const [testEmail, setTestEmail] = useState('');
+  const [sendingQuote, setSendingQuote] = useState(false);
   const [taxRatePercent, setTaxRatePercent] = useState(0);
   const [quoteTaxExempt, setQuoteTaxExempt] = useState(false);
   const [shippingCost, setShippingCost] = useState('');
@@ -559,25 +563,28 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
     setItems(items.filter((_, i) => i !== index));
   };
 
-  const handleSave = async () => {
+  // Saves the quote and returns its id (new or existing) on success, or
+  // null on validation/request failure - doesn't navigate or send anything,
+  // callers decide what happens next (plain save vs. save-then-send).
+  const doSave = async () => {
     if (!quoteName.trim()) {
       toast.error('Please enter a quote name');
-      return;
+      return null;
     }
     if (!items.some(i => i.description)) {
       toast.error('Please add at least one line item');
-      return;
+      return null;
     }
-    
+
     setSaving(true);
     try {
       const template = contractTemplates.find(t => t.id === contractTemplateId);
-      
+
       // Combine main contract with additional documents
-      const allDocumentIds = contractTemplateId 
+      const allDocumentIds = contractTemplateId
         ? [contractTemplateId, ...selectedDocumentIds.filter(id => id !== contractTemplateId)]
         : selectedDocumentIds;
-      
+
       const payload = {
         name: quoteName,
         notes,
@@ -597,18 +604,56 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
         total_yearly: totals.yearly
       };
 
+      let savedId = quoteId;
       if (isNewQuote) {
-        await api.post('/api/leads/' + leadId + '/quotes', payload);
+        const res = await api.post('/api/leads/' + leadId + '/quotes', payload);
+        savedId = res.data?.id;
         toast.success('Quote created');
       } else {
         await api.put('/api/leads/' + leadId + '/quotes/' + quoteId, payload);
         toast.success('Quote updated');
       }
-      navigate('/admin/leads');
+      return savedId;
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Failed to save quote');
+      return null;
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSave = async () => {
+    const id = await doSave();
+    if (id) navigate('/admin/leads');
+  };
+
+  const handleSaveAndContinue = async () => {
+    const id = await doSave();
+    if (id) {
+      setSendTargetQuoteId(id);
+      setSendDialogOpen(true);
+    }
+  };
+
+  const sendQuoteEmail = async (overrideEmail) => {
+    if (!sendTargetQuoteId) return;
+    setSendingQuote(true);
+    try {
+      const res = await api.post(
+        `/api/leads/${leadId}/quotes/${sendTargetQuoteId}/send-email`,
+        overrideEmail ? { override_email: overrideEmail } : {}
+      );
+      toast.success(overrideEmail ? `Test email sent to ${res.data.sent_to}` : `Quote sent to ${res.data.sent_to}`);
+      if (overrideEmail) {
+        setTestEmail('');
+      } else {
+        setSendDialogOpen(false);
+        navigate('/admin/leads');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to send quote email');
+    } finally {
+      setSendingQuote(false);
     }
   };
 
@@ -714,7 +759,7 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
             <Button variant="outline" onClick={handleSave} disabled={saving || quoteFlowConfig.allow_save_draft === false} data-testid="quote-builder-save-draft-button">
               <Save className="w-4 h-4 mr-2" /> Save Draft
             </Button>
-            <Button className="bg-[#014DB7]" onClick={handleSave} disabled={saving || quoteFlowConfig.allow_send_email === false} data-testid="quote-builder-save-continue-button">
+            <Button className="bg-[#014DB7]" onClick={handleSaveAndContinue} disabled={saving || quoteFlowConfig.allow_send_email === false} data-testid="quote-builder-save-continue-button">
               <Send className="w-4 h-4 mr-2" /> Save & Continue
             </Button>
           </div>
@@ -1245,6 +1290,62 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
           </div>
         </div>
       </div>
+
+      <Dialog open={sendDialogOpen} onOpenChange={(open) => !open && setSendDialogOpen(false)}>
+        <DialogContent className="max-w-md" data-testid="quote-send-dialog">
+          <DialogHeader>
+            <DialogTitle>Quote Saved - Send It?</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-5 mt-2">
+            <div className="rounded-lg border p-4 space-y-2">
+              <p className="text-sm text-gray-500">Send to the lead's email on file</p>
+              <p className="font-medium text-gray-900" data-testid="quote-send-lead-email">
+                {lead?.primary_email || lead?.email || 'No email on file for this lead'}
+              </p>
+              <Button
+                className="w-full bg-[#014DB7]"
+                onClick={() => sendQuoteEmail()}
+                disabled={sendingQuote || !(lead?.primary_email || lead?.email)}
+                data-testid="quote-send-to-lead-button"
+              >
+                {sendingQuote ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
+                Send Quote
+              </Button>
+            </div>
+
+            <div className="rounded-lg border p-4 space-y-2">
+              <p className="text-sm text-gray-500">Or send a test copy to a different address first</p>
+              <Input
+                type="email"
+                value={testEmail}
+                onChange={(e) => setTestEmail(e.target.value)}
+                placeholder="you@example.com"
+                data-testid="quote-send-test-email-input"
+              />
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => sendQuoteEmail(testEmail)}
+                disabled={sendingQuote || !testEmail.trim()}
+                data-testid="quote-send-test-button"
+              >
+                {sendingQuote ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                Send Test Email
+              </Button>
+            </div>
+
+            <div className="flex justify-end pt-1">
+              <Button
+                variant="ghost"
+                onClick={() => { setSendDialogOpen(false); navigate('/admin/leads'); }}
+                data-testid="quote-send-skip-button"
+              >
+                Skip for now
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <CatalogPickerModal
         open={showCatalogPicker}
