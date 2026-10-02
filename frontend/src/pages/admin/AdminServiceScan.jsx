@@ -365,6 +365,57 @@ const AdminServiceScan = () => {
     );
   };
 
+  const renderFleetUnit = () => {
+    const unit = result.unit;
+    const account = result.linked_account;
+    const destinationLabel = unit.destination === 'sold' ? 'Sold' : unit.destination === 'service' ? 'Service' : 'New';
+    const destinationClass = unit.destination === 'sold' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : unit.destination === 'service' ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-blue-100 text-blue-700 border-blue-200';
+    return (
+      <div className="space-y-5">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">{unit.model || 'Fleet Unit'}</h2>
+            <p className="text-sm text-gray-500">{unit.manufacturer_name} &middot; SN: {unit.serial_number}</p>
+          </div>
+          <Badge className={destinationClass}>{destinationLabel}</Badge>
+        </div>
+
+        {unit.destination === 'sold' && (
+          <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 space-y-2">
+            <p className="text-sm font-semibold text-emerald-800">Sold</p>
+            <p className="text-sm text-gray-700">
+              {unit.sold_owner_name || unit.affiliated_store || 'Owner on file'}
+              {unit.sold_owner_email && <> &middot; {unit.sold_owner_email}</>}
+            </p>
+            {account ? (
+              <Link to={`/admin/customers/${account.id}`} className="text-sm text-[#6e2ea8] hover:underline inline-block">
+                View linked account &rarr;
+              </Link>
+            ) : (
+              <p className="text-xs text-gray-400 flex items-center gap-1.5">
+                <AlertCircle className="w-3.5 h-3.5" /> No matching account found for this owner
+              </p>
+            )}
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 gap-3 text-sm">
+          {unit.affiliated_store && <div><p className="text-xs text-gray-400">Affiliated Store</p><p className="text-gray-700">{unit.affiliated_store}</p></div>}
+          {unit.software_version && <div><p className="text-xs text-gray-400">Software Version</p><p className="text-gray-700">{unit.software_version}</p></div>}
+          {unit.firmware_version && <div><p className="text-xs text-gray-400">Firmware Version</p><p className="text-gray-700">{unit.firmware_version}</p></div>}
+          {unit.warranty_remaining_days && <div><p className="text-xs text-gray-400">Warranty Remaining</p><p className="text-gray-700">{unit.warranty_remaining_days}</p></div>}
+          {unit.country && <div><p className="text-xs text-gray-400">Location</p><p className="text-gray-700">{[unit.province, unit.country].filter(Boolean).join(', ')}</p></div>}
+        </div>
+
+        {unit.notes && <p className="text-sm text-gray-600 bg-gray-50 rounded-lg p-3">{unit.notes}</p>}
+
+        <p className="text-xs text-gray-400 flex items-center gap-1.5">
+          <AlertCircle className="w-3.5 h-3.5" /> This unit isn't tied to an open service request yet - use the Fleet Console to manage it directly, or create a Service Call if it needs attention.
+        </p>
+      </div>
+    );
+  };
+
   return (
     <div className="max-w-2xl mx-auto space-y-6" data-testid="service-scan-page">
       <div className="flex items-center justify-between">
@@ -409,7 +460,7 @@ const AdminServiceScan = () => {
 
       {result && (
         <div className="bg-white border rounded-xl p-5">
-          {result.match_type === 'customer_unit' ? renderCustomerUnit() : renderLoanerUnit()}
+          {result.match_type === 'customer_unit' ? renderCustomerUnit() : result.match_type === 'fleet_unit' ? renderFleetUnit() : renderLoanerUnit()}
         </div>
       )}
 

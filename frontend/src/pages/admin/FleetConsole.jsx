@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Truck, Package, Wrench, ArrowRightLeft, Plus, Upload, Loader2, X, ExternalLink, CheckCircle2 } from 'lucide-react';
+import { Truck, Package, Wrench, ArrowRightLeft, Plus, Upload, Loader2, X, ExternalLink, CheckCircle2, DollarSign } from 'lucide-react';
 import { Card, CardContent } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -18,6 +18,7 @@ const SERVICE_REPAIR_API = `${BACKEND_URL}/api/service-repair`;
 const TABS = [
   { id: 'new', label: 'New', icon: Truck },
   { id: 'service', label: 'Service', icon: Wrench },
+  { id: 'sold', label: 'Sold', icon: DollarSign },
   { id: 'parts', label: 'Parts', icon: Package },
   { id: 'loaner', label: 'Loaner', icon: ArrowRightLeft },
 ];
@@ -87,7 +88,7 @@ const FleetConsole = () => {
 
   const openCreate = () => {
     setIsCreating(true);
-    setDraft({ ...emptyDraft, destination: activeTab === 'service' ? 'service' : 'new' });
+    setDraft({ ...emptyDraft, destination: ['service', 'sold'].includes(activeTab) ? activeTab : 'new' });
     setEditOpen(true);
   };
 
@@ -381,6 +382,7 @@ const FleetConsole = () => {
                     <SelectContent>
                       <SelectItem value="new">New</SelectItem>
                       <SelectItem value="service">Service</SelectItem>
+                      <SelectItem value="sold">Sold</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -484,7 +486,7 @@ const FleetConsole = () => {
           <DialogTitle>Import Fleet CSV</DialogTitle>
           <div className="space-y-4 mt-2">
             <p className="text-sm text-gray-600">
-              CSV must include a <strong>Destination</strong> column (New/Parts/Loaner/Service) that routes each row. Parts rows are skipped here - use the Products CSV importer for those.
+              CSV must include a <strong>Destination</strong> column (New/Parts/Loaner/Service/Sold) that routes each row. Parts rows are skipped here - use the Products CSV importer for those. Sold rows use "Affiliated Store" as the owner on file.
             </p>
             <Button onClick={() => fileInputRef.current?.click()} disabled={importing} data-testid="fleet-import-choose-file-btn">
               {importing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}

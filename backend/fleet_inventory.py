@@ -159,8 +159,8 @@ async def create_fleet_unit(
     db=Depends(get_db),
 ):
     _require_admin_token(authorization)
-    if payload.destination not in ("new", "service"):
-        raise HTTPException(status_code=400, detail="destination must be 'new' or 'service' (use /loaners for loaner units)")
+    if payload.destination not in FLEET_DESTINATIONS:
+        raise HTTPException(status_code=400, detail=f"destination must be one of {FLEET_DESTINATIONS} (use /loaners for loaner units)")
 
     conflict = await _find_serial_conflict(db, payload.serial_number)
     if conflict:
@@ -426,12 +426,12 @@ async def import_fleet_csv(
             continue
 
         routing_raw = get_csv_value(row, header_map, *ROUTING_ALIASES).strip().lower()
-        if routing_raw not in ("new", "parts", "loaner", "service"):
+        if routing_raw not in ("new", "parts", "loaner", "service", "sold"):
             skipped_count += 1
             errors.append({
                 "row": row_index,
                 "serial_number": serial_number,
-                "error": f"Invalid or missing destination value: '{routing_raw}' (must be New, Parts, Loaner, or Service)",
+                "error": f"Invalid or missing destination value: '{routing_raw}' (must be New, Parts, Loaner, Service, or Sold)",
                 "row_data": row_snapshot,
             })
             continue
@@ -482,6 +482,7 @@ async def import_fleet_csv(
             }
             await db.loaner_units.insert_one(doc)
         else:
+            affiliated_store = get_csv_value(row, header_map, "affiliated_store")
             doc = {
                 "id": str(uuid.uuid4()),
                 "manufacturer_id": "",
@@ -489,13 +490,13 @@ async def import_fleet_csv(
                 "model": model,
                 "serial_number": serial_number,
                 "mac_address": get_csv_value(row, header_map, "mac_address", "mac"),
-                "destination": routing_raw,  # "new" or "service"
+                "destination": routing_raw,  # "new", "service", or "sold"
                 "notes": notes,
                 "warranty_remaining_days": get_csv_value(row, header_map, "remaining_warranty_days"),
                 "usage_remaining_days": get_csv_value(row, header_map, "remaining_usage_days"),
                 "software_version": get_csv_value(row, header_map, "software_version"),
                 "firmware_version": get_csv_value(row, header_map, "firmware_version"),
-                "affiliated_store": get_csv_value(row, header_map, "affiliated_store"),
+                "affiliated_store": affiliated_store,
                 "affiliated_client": get_csv_value(row, header_map, "affiliated_client"),
                 "country": get_csv_value(row, header_map, "country_where_the_store_is_located", "country"),
                 "province": get_csv_value(row, header_map, "province_where_the_store_is_located", "province"),
@@ -503,6 +504,14 @@ async def import_fleet_csv(
                 "created_at": now,
                 "updated_at": now,
             }
+            if routing_raw == "sold":
+                # Backfilling an already-existing sale from before this system
+                # existed - there's no real lead/quote behind it, just whatever
+                # ownership info the sheet carries. "Affiliated Store" is the
+                # real per-unit identifier in this data (Affiliated Client is
+                # always the same company-wide account name, not per-owner).
+                doc["sold_owner_name"] = affiliated_store or None
+                doc["sold_at"] = now
             await db.fleet_units.insert_one(doc)
 
         created_count += 1

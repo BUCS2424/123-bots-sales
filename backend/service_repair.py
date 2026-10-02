@@ -17,6 +17,7 @@ from fastapi import APIRouter, Depends, HTTPException, Header
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timezone
+import re
 import uuid
 
 from auth import decode_token, is_admin_or_above
@@ -193,9 +194,11 @@ async def lookup_serial(
     db=Depends(get_db),
 ):
     """
-    Resolve a scanned manufacturer serial to either a customer's service
-    request or a loaner unit, with enough linked context for the scan UI
-    to decide which actions to offer.
+    Resolve a scanned manufacturer serial to a customer's service request, a
+    loaner unit, or a fleet unit (fleet_inventory.py's New/Service/Sold
+    registry), with enough linked context for the scan UI to decide which
+    actions to offer. For a sold fleet unit, also best-effort resolves the
+    actual customer account it belongs to, if one exists.
     """
     _require_admin_token(authorization)
     serial = serial_number.strip()
@@ -216,7 +219,24 @@ async def lookup_serial(
             linked_request = await db.service_requests.find_one({"id": loaner["current_service_request_id"]}, {"_id": 0})
         return {"match_type": "loaner_unit", "loaner": loaner, "linked_service_request": linked_request}
 
-    raise HTTPException(status_code=404, detail="No matching unit or service request found for this serial number")
+    fleet_unit = await db.fleet_units.find_one({"serial_number": serial}, {"_id": 0})
+    if fleet_unit:
+        linked_account = None
+        if fleet_unit.get("sold_owner_email"):
+            linked_account = await db.customers.find_one({"email": fleet_unit["sold_owner_email"]}, {"_id": 0})
+            if not linked_account:
+                user = await db.users.find_one({"email": fleet_unit["sold_owner_email"]}, {"_id": 0, "hashed_password": 0})
+                linked_account = user
+        elif fleet_unit.get("sold_owner_name"):
+            # Bulk-imported historical sale with no email on file - best
+            # effort name match only, may not find anything real.
+            linked_account = await db.customers.find_one(
+                {"name": {"$regex": f"^{re.escape(fleet_unit['sold_owner_name'])}$", "$options": "i"}},
+                {"_id": 0},
+            )
+        return {"match_type": "fleet_unit", "unit": fleet_unit, "linked_account": linked_account}
+
+    raise HTTPException(status_code=404, detail="No matching unit, service request, or fleet unit found for this serial number")
 
 
 # ============ CLOCK IN / OUT ============
