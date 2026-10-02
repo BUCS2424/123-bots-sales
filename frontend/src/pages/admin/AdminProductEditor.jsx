@@ -395,6 +395,7 @@ const AdminProductEditor = ({ productId: propProductId }) => {
     cost_price: '',
     in_stock: true,
     is_visible: true,
+    product_kind: 'part',
     track_quantity: false,
     quantity: '',
     requires_shipping: true,
@@ -633,6 +634,7 @@ const AdminProductEditor = ({ productId: propProductId }) => {
         cost_price: product.cost_price?.toString() || '',
         in_stock: product.in_stock ?? true,
         is_visible: product.is_visible ?? true,
+        product_kind: product.product_kind || 'part',
         track_quantity: product.track_quantity ?? false,
         quantity: product.quantity?.toString() || '',
         requires_shipping: product.requires_shipping ?? true,
@@ -829,6 +831,7 @@ const AdminProductEditor = ({ productId: propProductId }) => {
         upc: formData.upc,
         mpn: formData.mpn,
         cost_price: formData.cost_price ? parseFloat(formData.cost_price) : null,
+        product_kind: formData.product_kind || 'part',
         track_quantity: formData.track_quantity,
         shipping_weight: formData.shipping_weight ? parseFloat(formData.shipping_weight) : null,
         shipping_length: formData.shipping_length ? parseFloat(formData.shipping_length) : null,
@@ -896,6 +899,7 @@ const AdminProductEditor = ({ productId: propProductId }) => {
         upc: null, // UPC should be unique
         mpn: formData.mpn || null,
         cost_price: formData.cost_price ? parseFloat(formData.cost_price) : null,
+        product_kind: formData.product_kind || 'part',
         track_quantity: formData.track_quantity,
         requires_shipping: formData.requires_shipping,
         free_shipping: formData.free_shipping,
@@ -2574,6 +2578,26 @@ const AdminProductEditor = ({ productId: propProductId }) => {
                   />
                   <span className={formData.is_visible ? 'text-green-600 font-medium' : 'text-amber-600 font-medium'}>
                     {formData.is_visible ? 'Visible' : 'Hidden'}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Part vs Unit */}
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="font-medium text-gray-800 mb-2">Part or Unit</h3>
+                <p className="text-xs text-gray-500 mb-4">
+                  Units (whole serialized robots) are never sellable via the storefront cart - manage them in the Fleet Console and sell them through quotes instead.
+                </p>
+                <div className="flex items-center gap-3">
+                  <Switch
+                    checked={formData.product_kind === 'unit'}
+                    onCheckedChange={(checked) => setFormData({ ...formData, product_kind: checked ? 'unit' : 'part' })}
+                    data-testid="product-kind-toggle"
+                  />
+                  <span className={formData.product_kind === 'unit' ? 'text-amber-600 font-medium' : 'text-green-600 font-medium'}>
+                    {formData.product_kind === 'unit' ? 'Unit (hidden from cart)' : 'Part (cart-sellable)'}
                   </span>
                 </div>
               </CardContent>

@@ -100,23 +100,41 @@ const SortableLineItem = ({ id, item, index, products, services, onItemChange, o
   );
 };
 
-function CatalogPickerModal({ open, onClose, products, services, onAddItem, formatCurrency, navigate }) {
+function CatalogPickerModal({ open, onClose, products, services, units = [], onAddItem, formatCurrency, navigate }) {
   const [tab, setTab] = useState('products');
   const [search, setSearch] = useState('');
 
-  const filtered = (tab === 'products' ? products : services).filter(item => {
+  const sourceList = tab === 'products' ? products : tab === 'services' ? services : units;
+  const filtered = sourceList.filter(item => {
     const q = search.toLowerCase();
-    return !q || [item.name, item.description, item.category, item.sku].some(v => String(v || '').toLowerCase().includes(q));
+    if (!q) return true;
+    const haystack = tab === 'units'
+      ? [item.model, item.serial_number, item.manufacturer_name]
+      : [item.name, item.description, item.category, item.sku];
+    return haystack.some(v => String(v || '').toLowerCase().includes(q));
   });
 
   const grouped = filtered.reduce((acc, item) => {
-    const cat = item.category || 'Uncategorized';
+    const cat = (tab === 'units' ? item.manufacturer_name : item.category) || 'Uncategorized';
     if (!acc[cat]) acc[cat] = [];
     acc[cat].push(item);
     return acc;
   }, {});
 
   const handleAdd = (item) => {
+    if (tab === 'units') {
+      onAddItem({
+        item_type: 'unit',
+        fleet_unit_id: item.id,
+        serial_number: item.serial_number,
+        description: `${item.model || 'Unit'} (SN: ${item.serial_number})`,
+        quantity: 1,
+        unit_price: 0,
+        billing_type: 'onetime',
+      });
+      toast.success(`Unit ${item.serial_number} added to quote`);
+      return;
+    }
     const type = tab === 'products' ? 'product' : 'service';
     const billingType = item.price_monthly > 0 ? 'monthly' : item.price_yearly > 0 ? 'yearly' : 'onetime';
     const price = item.price_onetime || item.price_monthly || item.hourly_rate || 0;
@@ -136,7 +154,7 @@ function CatalogPickerModal({ open, onClose, products, services, onAddItem, form
     toast.success(`"${item.name}" added to quote`);
   };
 
-  const isEmpty = products.length === 0 && services.length === 0;
+  const isEmpty = products.length === 0 && services.length === 0 && units.length === 0;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -181,6 +199,13 @@ function CatalogPickerModal({ open, onClose, products, services, onAddItem, form
               >
                 <Wrench className="w-4 h-4" /> Services ({services.length})
               </button>
+              <button
+                onClick={() => setTab('units')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === 'units' ? 'bg-[#014DB7] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                data-testid="catalog-picker-units-tab"
+              >
+                <Truck className="w-4 h-4" /> Units ({units.length})
+              </button>
             </div>
 
             <div className="relative">
@@ -203,6 +228,28 @@ function CatalogPickerModal({ open, onClose, products, services, onAddItem, form
                     <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-1 mb-2">{cat}</div>
                     <div className="space-y-1">
                       {items.map((item) => {
+                        if (tab === 'units') {
+                          return (
+                            <div
+                              key={item.id}
+                              className="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-[#014DB7] hover:bg-blue-50/50 transition-colors group"
+                              data-testid={`catalog-picker-item-${item.id}`}
+                            >
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-gray-900 text-sm truncate">{item.model || 'Unit'}</p>
+                                <p className="text-xs text-gray-500 font-mono truncate">SN: {item.serial_number}</p>
+                              </div>
+                              <Button
+                                size="sm"
+                                onClick={() => handleAdd(item)}
+                                className="bg-[#014DB7] hover:bg-[#0140a0] text-white h-8 px-3 ml-3 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                data-testid={`catalog-picker-add-${item.id}`}
+                              >
+                                <Plus className="w-3 h-3 mr-1" /> Add
+                              </Button>
+                            </div>
+                          );
+                        }
                         const displayPrice = item.price_onetime || item.price_monthly || item.hourly_rate || 0;
                         const billingLabel = item.price_monthly > 0 && !item.price_onetime ? '/mo' : item.price_yearly > 0 && !item.price_onetime ? '/yr' : '';
                         return (
@@ -271,6 +318,7 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
   const [lead, setLead] = useState(null);
   const [products, setProducts] = useState([]);
   const [services, setServices] = useState([]);
+  const [units, setUnits] = useState([]);
   const [contractTemplates, setContractTemplates] = useState([]);
   const [companySettings, setCompanySettings] = useState({});
   const [quoteFormConfig, setQuoteFormConfig] = useState({
@@ -279,7 +327,6 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
     show_from_city_state_zip: true,
     show_from_phone: false,
     show_from_email: false,
-    charge_stripe_fees: true,
     deposit_value: 65,
     deposit_type: 'percent',
   });
@@ -350,6 +397,7 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
         api.get('/api/quotes/flow-config').catch(() => ({ data: { config: {} } })),
         api.get('/api/admin-settings/tax').catch(() => ({ data: {} })),
         api.get('/api/quotes/catalog/products').catch(() => ({ data: { products: [] } })),
+        api.get('/api/fleet/units/available-for-quote').catch(() => ({ data: [] })),
       ]);
       
       setLead(results[0].data);
@@ -390,6 +438,7 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
       }));
       setProducts([...storeProducts, ...quoteCatalogProducts]);
       setServices(results[2].data.services || []);
+      setUnits(Array.isArray(results[9].data) ? results[9].data : []);
       setContractTemplates(results[3].data.templates || []);
       setCompanySettings(results[4].data || {});
       setQuoteFormConfig((prev) => ({ ...prev, ...(results[5].data?.config || {}) }));
@@ -446,12 +495,7 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
   const totals = calculateTotals();
   const taxAmount = quoteTaxExempt ? 0 : totals.combined * (taxRatePercent / 100);
   const shippingAmount = shippingCost === '' || shippingCost === null || isNaN(parseFloat(shippingCost)) ? 0 : parseFloat(shippingCost);
-  const STRIPE_RATE = 0.029;
-  const STRIPE_FLAT = 0.30;
-  const ccFee = (amount) => amount > 0 ? (amount * STRIPE_RATE) + STRIPE_FLAT : 0;
-  const stripeFeesEnabled = quoteFormConfig.charge_stripe_fees !== false;
-  const stripeFeeAmount = stripeFeesEnabled ? ccFee(totals.combined) : 0;
-  const totalWithFees = totals.combined + taxAmount + shippingAmount + stripeFeeAmount;
+  const totalWithFees = totals.combined + taxAmount + shippingAmount;
   const depositType = quoteFormConfig.deposit_type === 'flat' ? 'flat' : 'percent';
   const rawDepositValue = Number(quoteFormConfig.deposit_value || 0);
   const depositAmount = Math.min(
@@ -839,12 +883,6 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
                       <span className="font-medium text-gray-600">{formatCurrency(shippingAmount)}</span>
                     </div>
                   )}
-                  {stripeFeesEnabled && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Credit Card Processing Fee (2.9% + $0.30)</span>
-                      <span className="font-medium text-gray-600">{formatCurrency(stripeFeeAmount)}</span>
-                    </div>
-                  )}
                   <div className="border-t pt-2">
                     <div className="flex justify-between">
                       <span className="font-semibold text-gray-700">Total</span>
@@ -1193,12 +1231,6 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
                       <span className="font-medium">{formatCurrency(shippingAmount)}</span>
                     </div>
                   )}
-                  {stripeFeesEnabled && (
-                    <div className="flex justify-between text-sm mt-1">
-                      <span className="opacity-70">CC Processing Fee (2.9% + $0.30)</span>
-                      <span className="font-medium">{formatCurrency(stripeFeeAmount)}</span>
-                    </div>
-                  )}
                   <div className="flex justify-between items-center mt-2 pt-2 border-t border-white/20">
                     <span className="font-semibold">Total</span>
                     <span className="text-3xl font-bold">{formatCurrency(totalWithFees)}</span>
@@ -1219,6 +1251,7 @@ function QuoteBuilderPage({ leadId: propLeadId, quoteId: propQuoteId }) {
         onClose={() => setShowCatalogPicker(false)}
         products={products}
         services={services}
+        units={units}
         onAddItem={addFromCatalogItem}
         formatCurrency={formatCurrency}
         navigate={navigate}
@@ -1320,11 +1353,12 @@ function LineItemRow({ item, index, products, services, onItemChange, onCatalogS
               <GripVertical className="w-5 h-5" />
             </div>
           )}
-          <span className={'text-xs font-medium px-2 py-1 rounded ' + 
+          <span className={'text-xs font-medium px-2 py-1 rounded ' +
             (item.item_type === 'product' ? 'bg-blue-100 text-blue-700' :
             item.item_type === 'service' ? 'bg-green-100 text-green-700' :
+            item.item_type === 'unit' ? 'bg-indigo-100 text-indigo-700' :
             'bg-gray-200 text-gray-700')}>
-            {item.item_type === 'product' ? 'Product' : item.item_type === 'service' ? 'Service' : 'Custom'}
+            {item.item_type === 'product' ? 'Product' : item.item_type === 'service' ? 'Service' : item.item_type === 'unit' ? 'Unit' : 'Custom'}
           </span>
         </div>
         <Button size="sm" variant="ghost" onClick={() => onRemove(index)} disabled={!canRemove} className="text-red-500 hover:text-red-700 h-8 w-8 p-0">
@@ -1373,10 +1407,17 @@ function LineItemRow({ item, index, products, services, onItemChange, onCatalogS
         />
       )}
 
+      {item.item_type === 'unit' && (
+        <div className="mb-3 rounded-md border border-indigo-200 bg-indigo-50 px-3 py-2">
+          <p className="text-sm font-medium text-gray-900">{item.description}</p>
+          <p className="text-xs text-gray-500">This serial is reserved on this quote - swap it by removing this line and adding a different unit.</p>
+        </div>
+      )}
+
       <div className="grid grid-cols-3 gap-3">
         <div>
           <Label className="text-xs">Billing</Label>
-          <Select value={item.billing_type || 'onetime'} onValueChange={(v) => onItemChange(index, 'billing_type', v)}>
+          <Select value={item.billing_type || 'onetime'} onValueChange={(v) => onItemChange(index, 'billing_type', v)} disabled={item.item_type === 'unit'}>
             <SelectTrigger className="mt-1 h-9"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="onetime">One-Time</SelectItem>
@@ -1387,7 +1428,7 @@ function LineItemRow({ item, index, products, services, onItemChange, onCatalogS
         </div>
         <div>
           <Label className="text-xs">Quantity</Label>
-          <Input type="number" min="1" value={item.quantity} onChange={(e) => onItemChange(index, 'quantity', e.target.value)} className="mt-1 h-9" />
+          <Input type="number" min="1" value={item.quantity} onChange={(e) => onItemChange(index, 'quantity', e.target.value)} className="mt-1 h-9" disabled={item.item_type === 'unit'} />
         </div>
         <div>
           <Label className="text-xs">Unit Price</Label>

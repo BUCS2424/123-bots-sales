@@ -45,7 +45,6 @@ export default function QuoteCatalogSettingsPage() {
     show_from_city_state_zip: true,
     show_from_phone: false,
     show_from_email: false,
-    charge_stripe_fees: true,
     deposit_value: 65,
     deposit_type: 'percent',
   });
@@ -454,15 +453,6 @@ export default function QuoteCatalogSettingsPage() {
                 </label>
               ))}
             </div>
-
-            <label className="flex items-center gap-2 text-sm" data-testid="quotes-config-charge-stripe-fees">
-              <input
-                type="checkbox"
-                checked={Boolean(quoteConfig.charge_stripe_fees)}
-                onChange={(e) => setQuoteConfig({ ...quoteConfig, charge_stripe_fees: e.target.checked })}
-              />
-              Charge Stripe fees on quote totals
-            </label>
 
             <div className="grid grid-cols-2 gap-3">
               <div>

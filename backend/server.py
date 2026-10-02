@@ -1295,6 +1295,12 @@ from service_repair import router as service_repair_router, set_database as set_
 set_service_repair_db(db)
 app.include_router(service_repair_router)
 
+# Include Fleet Inventory router (per-serial unit registry: New/Service/Sold,
+# cross-collection move into/out of Loaner, fleet CSV import)
+from fleet_inventory import router as fleet_inventory_router, set_database as set_fleet_inventory_db
+set_fleet_inventory_db(db)
+app.include_router(fleet_inventory_router)
+
 # Include Custom Workflows router (generic no-code step builder)
 from workflows import router as workflows_router, set_database as set_workflows_db
 set_workflows_db(db)

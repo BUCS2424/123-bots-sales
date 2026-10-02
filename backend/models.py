@@ -48,6 +48,12 @@ class ProductBase(BaseModel):
     has_options: bool = False
     custom_fields_data: Optional[dict] = None  # Stores values for category custom fields
     product_files: List[dict] = []  # [{id, name, url, size, content_type, is_public, uploaded_at}]
+    # "part" (default, cart-sellable) or "unit" (a whole serialized robot -
+    # managed via the Fleet Console instead, never purchasable via the
+    # storefront cart). Defaulting existing rows to "part" is a no-op
+    # migration - every product already in the catalog stays sellable
+    # exactly as before until an admin deliberately flips one to "unit".
+    product_kind: str = "part"
 
 class ProductCreate(ProductBase):
     pass
@@ -89,6 +95,7 @@ class ProductUpdate(BaseModel):
     has_options: Optional[bool] = None
     custom_fields_data: Optional[dict] = None
     product_files: Optional[List[dict]] = None
+    product_kind: Optional[str] = None
 
 class Product(ProductBase):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))

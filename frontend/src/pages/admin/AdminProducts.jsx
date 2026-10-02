@@ -31,6 +31,7 @@ const AdminProducts = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedKind, setSelectedKind] = useState('all');
   const [selectedProductIds, setSelectedProductIds] = useState([]);
   const [bulkAction, setBulkAction] = useState('none');
   const [bulkProcessing, setBulkProcessing] = useState(false);
@@ -254,6 +255,9 @@ const AdminProducts = () => {
   };
 
   const filteredProducts = products.filter(product => {
+    if (selectedKind !== 'all' && (product.product_kind || 'part') !== selectedKind) {
+      return false;
+    }
     if (selectedCategory !== 'all') {
       const productCategories = Array.isArray(product.categories) && product.categories.length > 0
         ? product.categories
@@ -446,6 +450,17 @@ const AdminProducts = () => {
                 ))}
               </SelectContent>
             </Select>
+
+            <Select value={selectedKind} onValueChange={setSelectedKind}>
+              <SelectTrigger className="w-full sm:w-44" data-testid="kind-filter">
+                <SelectValue placeholder="Part or Unit" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Part &amp; Unit</SelectItem>
+                <SelectItem value="part">Part only</SelectItem>
+                <SelectItem value="unit">Unit only</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
@@ -540,6 +555,11 @@ const AdminProducts = () => {
                       {product.is_visible === false && (
                         <Badge className="bg-amber-100 text-amber-700" data-testid={`product-hidden-badge-${product.id}`}>
                           Hidden
+                        </Badge>
+                      )}
+                      {product.product_kind === 'unit' && (
+                        <Badge className="bg-indigo-100 text-indigo-700" data-testid={`product-kind-badge-${product.id}`}>
+                          Unit (not cart-sellable)
                         </Badge>
                       )}
                       {(Array.isArray(product.categories) && product.categories.length > 0 ? product.categories : [product.category])

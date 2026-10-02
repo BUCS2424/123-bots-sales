@@ -93,6 +93,7 @@ import Johnny5Invoice from './admin/Johnny5Invoice';
 
 // Inventory Management System
 import InventoryDashboard from './admin/InventoryDashboard';
+import FleetConsole from './admin/FleetConsole';
 import ManufacturersPage from './admin/ManufacturersPage';
 import OrderRecommendationsPage from './admin/OrderRecommendationsPage';
 
@@ -306,6 +307,7 @@ const AdminLayout = () => {
       icon: Warehouse,
       children: [
         { path: '/admin/inventory-management', label: 'Dashboard', icon: LayoutDashboard },
+        { path: '/admin/fleet-console', label: 'Fleet Console', icon: ScanLine },
         { path: '/admin/inventory/items', label: 'Stock Levels', icon: Package },
         { path: '/admin/inventory/manufacturers', label: 'Manufacturers', icon: Building2 },
         { path: '/admin/inventory/recommendations', label: 'Order Recs', icon: Truck },
@@ -734,6 +736,7 @@ const AdminLayout = () => {
     if (path === '/admin/inventory') return <AdminInventory />;
     // Inventory Management System routes
     if (path === '/admin/inventory-management') return <InventoryDashboard />;
+    if (path === '/admin/fleet-console') return <FleetConsole />;
     if (path === '/admin/inventory/items') return <AdminInventory />;
     if (path === '/admin/inventory/manufacturers') return <ManufacturersPage />;
     if (path === '/admin/inventory/recommendations') return <OrderRecommendationsPage />;

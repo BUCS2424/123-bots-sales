@@ -551,15 +551,12 @@ async def delete_lead(
     return {"success": True, "message": "Lead deleted"}
 
 
-@router.post("/{lead_id}/convert-to-client", response_model=ConvertLeadToClientResponse)
-async def convert_lead_to_client(
-    lead_id: str,
-    authorization: Optional[str] = Header(None),
-    db=Depends(get_db),
-):
-    """Convert opportunity lead into a customer/user record while retaining collected data."""
-    _require_admin_token(authorization)
-
+async def convert_lead_to_client_internal(db, lead_id: str) -> "ConvertLeadToClientResponse":
+    """Core conversion logic, callable without an admin auth token - used by
+    the admin-triggered endpoint below and by the quote-sign flow
+    (quote_contract_esign_routes.py), which has no admin token since it's a
+    public, client-facing action. Idempotent: safe to call again on an
+    already-converted lead, it just re-syncs the existing user/customer."""
     lead = await db.leads.find_one({"id": lead_id}, {"_id": 0})
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
@@ -665,6 +662,16 @@ async def convert_lead_to_client(
         temporary_password=temporary_password,
     )
 
+
+@router.post("/{lead_id}/convert-to-client", response_model=ConvertLeadToClientResponse)
+async def convert_lead_to_client(
+    lead_id: str,
+    authorization: Optional[str] = Header(None),
+    db=Depends(get_db),
+):
+    """Convert opportunity lead into a customer/user record while retaining collected data."""
+    _require_admin_token(authorization)
+    return await convert_lead_to_client_internal(db, lead_id)
 
 
 # ============ IMPORT OPPORTUNITIES ============

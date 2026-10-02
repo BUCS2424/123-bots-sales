@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 from auth import decode_token
 from email_utils import send_email
+from leads import convert_lead_to_client_internal
 
 
 router = APIRouter(tags=["QuoteContractESign"])
@@ -34,13 +35,19 @@ class QuoteItem(BaseModel):
     description: str
     quantity: int = 1
     unit_price: float = 0.0
-    item_type: str = "custom"
+    item_type: str = "custom"  # "product" | "service" | "custom" | "unit"
     billing_type: str = "onetime"
     price_onetime: Optional[float] = None
     price_monthly: Optional[float] = None
     price_yearly: Optional[float] = None
     sku: Optional[str] = ""
     category: Optional[str] = ""
+    # item_type == "unit" only: a specific serialized fleet unit (see
+    # fleet_inventory.py). serial_number is denormalized so historical
+    # quotes/invoices still show which exact serial was sold even if the
+    # fleet_units doc is later edited or deleted.
+    fleet_unit_id: Optional[str] = None
+    serial_number: Optional[str] = None
 
 
 class QuoteCatalogItem(BaseModel):
@@ -64,7 +71,6 @@ class QuoteFormConfigUpdate(BaseModel):
     show_from_city_state_zip: bool = True
     show_from_phone: bool = False
     show_from_email: bool = False
-    charge_stripe_fees: bool = True
     deposit_value: float = 65
     deposit_type: str = "percent"  # percent | flat
 
@@ -208,7 +214,6 @@ async def _get_quote_form_config_doc():
         "show_from_city_state_zip": True,
         "show_from_phone": False,
         "show_from_email": False,
-        "charge_stripe_fees": True,
         "deposit_value": 65,
         "deposit_type": "percent",
     }
@@ -521,6 +526,90 @@ async def get_quote_lead_sales(current_user=Depends(get_current_user)):
     return {"sales": results}
 
 
+# ============ FLEET UNIT RESERVATION SYNC (item_type == "unit") ============
+# A quote's `items` list is always replaced wholesale on create/update (no
+# incremental add-item endpoint), so reservation state is reconciled by
+# diffing old vs new item lists rather than reserving one item at a time.
+
+def _fleet_unit_ids(items: list) -> set:
+    return {
+        item.get("fleet_unit_id")
+        for item in items
+        if item.get("item_type") == "unit" and item.get("fleet_unit_id")
+    }
+
+
+async def _check_units_available(newly_requested_ids: set):
+    """Pre-check BEFORE any quote write, so a conflict 409s before the quote
+    doc is touched rather than leaving it half-committed."""
+    for unit_id in newly_requested_ids:
+        unit = await db.fleet_units.find_one({"id": unit_id}, {"_id": 0, "destination": 1, "reserved_by_quote_id": 1})
+        if not unit:
+            raise HTTPException(status_code=409, detail=f"Unit {unit_id} no longer exists")
+        if unit.get("destination") != "new" or unit.get("reserved_by_quote_id") is not None:
+            raise HTTPException(status_code=409, detail=f"Unit {unit_id} is no longer available (already reserved or sold)")
+
+
+async def _sync_fleet_reservations(quote_id: str, old_items: list, new_items: list):
+    """Commits the reserve/release diff. Availability was already checked by
+    _check_units_available before the caller's write - the atomic
+    find_one_and_update here is the real safety net against a race between
+    that check and this commit (two admins adding the same serial at once)."""
+    old_ids = _fleet_unit_ids(old_items)
+    new_ids = _fleet_unit_ids(new_items)
+    now = datetime.now(timezone.utc).isoformat()
+
+    to_reserve = new_ids - old_ids
+    to_release = old_ids - new_ids
+
+    reserved_so_far = []
+    for unit_id in to_reserve:
+        result = await db.fleet_units.find_one_and_update(
+            {"id": unit_id, "destination": "new", "reserved_by_quote_id": None},
+            {"$set": {"reserved_by_quote_id": quote_id, "reserved_at": now, "updated_at": now}},
+        )
+        if result is None:
+            if reserved_so_far:
+                await db.fleet_units.update_many(
+                    {"id": {"$in": reserved_so_far}, "reserved_by_quote_id": quote_id},
+                    {"$set": {"reserved_by_quote_id": None, "reserved_at": None, "updated_at": now}},
+                )
+            raise HTTPException(status_code=409, detail=f"Unit {unit_id} was just reserved by someone else")
+        reserved_so_far.append(unit_id)
+
+    if to_release:
+        await db.fleet_units.update_many(
+            {"id": {"$in": list(to_release)}, "reserved_by_quote_id": quote_id},
+            {"$set": {"reserved_by_quote_id": None, "reserved_at": None, "updated_at": now}},
+        )
+
+
+async def _release_quote_reservations(quote_id: str):
+    await db.fleet_units.update_many(
+        {"reserved_by_quote_id": quote_id},
+        {"$set": {"reserved_by_quote_id": None, "reserved_at": None, "updated_at": datetime.now(timezone.utc).isoformat()}},
+    )
+
+
+def _build_invoice_doc(quote: dict, lead_id: Optional[str], user_id: Optional[str]) -> dict:
+    now = datetime.now(timezone.utc).isoformat()
+    return {
+        "id": str(uuid.uuid4()),
+        "quote_id": quote.get("id"),
+        "lead_id": lead_id,
+        "user_id": user_id,
+        "invoice_number": f"INV-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:6].upper()}",
+        "status": "draft",
+        "items": quote.get("items", []),
+        "subtotal": quote.get("subtotal", 0),
+        "tax_amount": quote.get("tax_amount", 0),
+        "shipping_cost": quote.get("shipping_cost"),
+        "total": quote.get("total", 0),
+        "created_at": now,
+        "updated_at": now,
+    }
+
+
 @router.get("/leads/{lead_id}/quotes")
 async def list_lead_quotes(lead_id: str, current_user=Depends(get_current_user)):
     quotes = await db.quotes.find({"lead_id": lead_id, "user_id": current_user["id"]}, {"_id": 0}).sort("updated_at", -1).to_list(500)
@@ -532,6 +621,9 @@ async def create_lead_quote(lead_id: str, payload: QuoteCreate, current_user=Dep
     lead = await db.leads.find_one({"id": lead_id}, {"_id": 0})
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
+
+    new_items = [item.model_dump() for item in payload.items]
+    await _check_units_available(_fleet_unit_ids(new_items))
 
     now = datetime.now(timezone.utc).isoformat()
     flow = await _get_quote_flow_config_doc()
@@ -551,12 +643,21 @@ async def create_lead_quote(lead_id: str, payload: QuoteCreate, current_user=Dep
         }
     )
     await db.quotes.insert_one(doc)
+    await _sync_fleet_reservations(doc["id"], [], new_items)
     doc.pop("_id", None)
     return doc
 
 
 @router.put("/leads/{lead_id}/quotes/{quote_id}")
 async def update_lead_quote(lead_id: str, quote_id: str, payload: QuoteCreate, current_user=Depends(get_current_user)):
+    existing = await db.quotes.find_one({"id": quote_id, "lead_id": lead_id, "user_id": current_user["id"]}, {"_id": 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Quote not found")
+
+    old_items = existing.get("items", [])
+    new_items = [item.model_dump() for item in payload.items]
+    await _check_units_available(_fleet_unit_ids(new_items) - _fleet_unit_ids(old_items))
+
     update = payload.model_dump()
     update["updated_at"] = datetime.now(timezone.utc).isoformat()
     result = await db.quotes.update_one(
@@ -565,15 +666,18 @@ async def update_lead_quote(lead_id: str, quote_id: str, payload: QuoteCreate, c
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Quote not found")
+    await _sync_fleet_reservations(quote_id, old_items, new_items)
     quote = await db.quotes.find_one({"id": quote_id, "lead_id": lead_id, "user_id": current_user["id"]}, {"_id": 0})
     return quote
 
 
 @router.delete("/leads/{lead_id}/quotes/{quote_id}")
 async def delete_lead_quote(lead_id: str, quote_id: str, current_user=Depends(get_current_user)):
-    result = await db.quotes.delete_one({"id": quote_id, "lead_id": lead_id, "user_id": current_user["id"]})
-    if result.deleted_count == 0:
+    existing = await db.quotes.find_one({"id": quote_id, "lead_id": lead_id, "user_id": current_user["id"]}, {"_id": 0, "id": 1})
+    if not existing:
         raise HTTPException(status_code=404, detail="Quote not found")
+    await _release_quote_reservations(quote_id)
+    await db.quotes.delete_one({"id": quote_id, "lead_id": lead_id, "user_id": current_user["id"]})
     return {"success": True}
 
 
@@ -640,21 +744,7 @@ async def convert_quote_to_invoice(lead_id: str, quote_id: str, current_user=Dep
     if not quote:
         raise HTTPException(status_code=404, detail="Quote not found")
 
-    invoice = {
-        "id": str(uuid.uuid4()),
-        "quote_id": quote_id,
-        "lead_id": lead_id,
-        "user_id": current_user["id"],
-        "invoice_number": f"INV-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:6].upper()}",
-        "status": "draft",
-        "items": quote.get("items", []),
-        "subtotal": quote.get("subtotal", 0),
-        "tax_amount": quote.get("tax_amount", 0),
-        "shipping_cost": quote.get("shipping_cost"),
-        "total": quote.get("total", 0),
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
-    }
+    invoice = _build_invoice_doc(quote, lead_id, current_user["id"])
     await db.invoices.insert_one(invoice)
     invoice.pop("_id", None)
     return {"success": True, "invoice": invoice}
@@ -739,6 +829,42 @@ async def sign_public_quote(quote_id: str, payload: SignaturePayload):
         {"id": quote_id},
         {"$set": update_payload},
     )
+
+    # Flip any fleet units reserved on this quote to sold, permanently
+    # recording who bought them - independent of whatever happens to the
+    # quote/invoice afterward.
+    lead_id = quote.get("lead_id")
+    lead = await db.leads.find_one({"id": lead_id}, {"_id": 0}) if lead_id else None
+    owner_name = payload.signer_name or (lead or {}).get("primary_contact_name") or (lead or {}).get("name")
+    owner_email = payload.signer_email or (lead or {}).get("primary_email") or (lead or {}).get("email")
+    await db.fleet_units.update_many(
+        {"reserved_by_quote_id": quote_id},
+        {
+            "$set": {
+                "destination": "sold",
+                "reserved_by_quote_id": None,
+                "reserved_at": None,
+                "sold_owner_name": owner_name,
+                "sold_owner_email": owner_email,
+                "sold_lead_id": lead_id,
+                "sold_quote_id": quote_id,
+                "sold_at": now,
+                "updated_at": now,
+            }
+        },
+    )
+
+    # Auto-create the invoice (previously a separate manual action) - no
+    # payment/charge is triggered here, just the record.
+    invoice = _build_invoice_doc(quote, lead_id, quote.get("user_id"))
+    await db.invoices.insert_one(invoice)
+
+    # Auto-convert the lead to a client.
+    if lead_id:
+        try:
+            await convert_lead_to_client_internal(db, lead_id)
+        except HTTPException:
+            pass  # e.g. lead has no email - don't block signing over this
 
     deposit_amount = (quote.get("total") or 0) * 0.65
     balance_amount = (quote.get("total") or 0) - deposit_amount

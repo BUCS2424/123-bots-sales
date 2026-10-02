@@ -303,6 +303,11 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
     ):
         """List all products with optional filters. Hidden products only shown to logged-in users."""
         query = {}
+        # "unit" (a whole serialized robot) is never purchasable via the
+        # storefront cart, regardless of login state - those are managed
+        # through the Fleet Console and sold via quotes instead.
+        query["$and"] = query.get("$and", [])
+        query["$and"].append({"$or": [{"product_kind": {"$ne": "unit"}}, {"product_kind": {"$exists": False}}]})
         if category:
             query["$and"] = query.get("$and", [])
             query["$and"].append({
@@ -359,6 +364,10 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
     ):
         """List all products with pricing based on customer tier. Hidden products only shown to logged-in users."""
         query = {}
+        # "unit" (a whole serialized robot) is never purchasable via the
+        # storefront cart - managed through the Fleet Console instead.
+        query["$and"] = query.get("$and", [])
+        query["$and"].append({"$or": [{"product_kind": {"$ne": "unit"}}, {"product_kind": {"$exists": False}}]})
         if category:
             query["$and"] = query.get("$and", [])
             query["$and"].append({
@@ -1315,6 +1324,15 @@ def get_ecommerce_router(db: AsyncIOMotorDatabase, require_admin):
     async def create_order(order: OrderCreate, request: Request):
         """Create a new order (public - from checkout)"""
         _ = await _enforce_checkout_access(request)
+
+        # Defense in depth against a stale cart/direct API call trying to
+        # check out a whole robot - those are sold via quotes, not the cart.
+        for item in order.items:
+            if item.item_type == "product":
+                product = await db.products.find_one({"id": item.product_id}, {"_id": 0, "product_kind": 1})
+                if product and product.get("product_kind") == "unit":
+                    raise HTTPException(status_code=400, detail="This item isn't sellable via the cart - please request a quote instead")
+
         now = datetime.now(timezone.utc)
         order_dict = order.model_dump()
         order_dict["id"] = str(uuid.uuid4())
