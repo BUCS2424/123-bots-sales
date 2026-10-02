@@ -30,6 +30,26 @@ const emptyDraft = {
   country: '', province: '',
 };
 
+// Matches backend/fleet_inventory.py's TARGET_FIELDS - what a CSV column
+// can be mapped to during import.
+const TARGET_FIELDS = [
+  { value: 'serial_number', label: 'Serial Number' },
+  { value: 'destination', label: 'Destination' },
+  { value: 'model', label: 'Model' },
+  { value: 'manufacturer_name', label: 'Manufacturer' },
+  { value: 'mac_address', label: 'MAC Address' },
+  { value: 'affiliated_store', label: 'Affiliated Store' },
+  { value: 'affiliated_client', label: 'Affiliated Client' },
+  { value: 'warranty_remaining_days', label: 'Warranty Remaining' },
+  { value: 'usage_remaining_days', label: 'Usage Remaining' },
+  { value: 'software_version', label: 'Software Version' },
+  { value: 'firmware_version', label: 'Firmware Version' },
+  { value: 'country', label: 'Country' },
+  { value: 'province', label: 'Province/State' },
+  { value: 'notes', label: 'Notes' },
+  { value: 'ignore', label: '(Ignore this column)' },
+];
+
 const FleetConsole = () => {
   const [activeTab, setActiveTab] = useState('new');
   const [units, setUnits] = useState([]);
@@ -47,6 +67,17 @@ const FleetConsole = () => {
   const [moving, setMoving] = useState(false);
 
   const [importOpen, setImportOpen] = useState(false);
+  const [importStep, setImportStep] = useState('pick'); // 'pick' | 'map' | 'confirm' | 'summary'
+  const [importFile, setImportFile] = useState(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewData, setPreviewData] = useState(null);
+  const [columnMapping, setColumnMapping] = useState({});
+  const [profiles, setProfiles] = useState([]);
+  const [selectedProfileId, setSelectedProfileId] = useState('');
+  const [useBatchDestination, setUseBatchDestination] = useState(false);
+  const [batchDestination, setBatchDestination] = useState('new');
+  const [saveAsProfile, setSaveAsProfile] = useState(false);
+  const [profileName, setProfileName] = useState('');
   const [importing, setImporting] = useState(false);
   const [importSummary, setImportSummary] = useState(null);
   const fileInputRef = useRef(null);
@@ -159,7 +190,25 @@ const FleetConsole = () => {
     }
   };
 
-  const handleImportFile = async (e) => {
+  const resetImportState = () => {
+    setImportStep('pick');
+    setImportFile(null);
+    setPreviewData(null);
+    setColumnMapping({});
+    setSelectedProfileId('');
+    setUseBatchDestination(false);
+    setBatchDestination('new');
+    setSaveAsProfile(false);
+    setProfileName('');
+    setImportSummary(null);
+  };
+
+  const closeImport = () => {
+    setImportOpen(false);
+    resetImportState();
+  };
+
+  const handlePickFile = async (e) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
@@ -167,13 +216,87 @@ const FleetConsole = () => {
       toast({ title: 'Invalid File', description: 'Please select a .csv file.', variant: 'destructive' });
       return;
     }
-    const formData = new FormData();
-    formData.append('file', file);
+    setImportFile(file);
+    setPreviewLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const [previewRes, profilesRes] = await Promise.all([
+        axios.post(`${API}/import/csv/preview`, formData, { headers: tokenHeaders }),
+        axios.get(`${API}/import/profiles`, { headers: tokenHeaders }).catch(() => ({ data: [] })),
+      ]);
+      setPreviewData(previewRes.data);
+      setColumnMapping(previewRes.data.suggested_mapping || {});
+      setSelectedProfileId(previewRes.data.matched_profile_id || '');
+      setProfiles(profilesRes.data || []);
+      const matched = (profilesRes.data || []).find((p) => p.id === previewRes.data.matched_profile_id);
+      setProfileName(matched ? matched.name : '');
+      setImportStep('map');
+    } catch (error) {
+      toast({ title: 'Error', description: error.response?.data?.detail || 'Failed to read CSV', variant: 'destructive' });
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
+
+  const applyProfile = (profileId) => {
+    setSelectedProfileId(profileId);
+    const profile = profiles.find((p) => p.id === profileId);
+    if (!profile) return;
+    setColumnMapping((prev) => {
+      const next = { ...prev };
+      (previewData?.headers || []).forEach((h) => {
+        if (profile.mapping[h.normalized]) next[h.normalized] = profile.mapping[h.normalized];
+      });
+      return next;
+    });
+    setProfileName(profile.name);
+  };
+
+  const setMappingFor = (normalized, target) => {
+    setColumnMapping((prev) => ({ ...prev, [normalized]: target }));
+  };
+
+  const mappingHasTarget = (target) => Object.values(columnMapping).includes(target);
+
+  const canContinueFromMap = () => {
+    if (!mappingHasTarget('serial_number')) return false;
+    if (!useBatchDestination && !mappingHasTarget('destination')) return false;
+    return true;
+  };
+
+  const goToConfirm = () => {
+    if (!canContinueFromMap()) {
+      toast({
+        title: 'Mapping Incomplete',
+        description: 'Map a column to Serial Number, and either map Destination or choose a default destination below.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    setImportStep('confirm');
+  };
+
+  const confirmImport = async () => {
     setImporting(true);
     try {
+      if (saveAsProfile && profileName.trim()) {
+        const sourceHeaders = (previewData?.headers || []).map((h) => h.normalized);
+        const payload = { name: profileName.trim(), mapping: columnMapping, source_headers: sourceHeaders };
+        if (selectedProfileId) {
+          await axios.put(`${API}/import/profiles/${selectedProfileId}`, payload, { headers: tokenHeaders }).catch(() => {});
+        } else {
+          await axios.post(`${API}/import/profiles`, payload, { headers: tokenHeaders }).catch(() => {});
+        }
+      }
+      const formData = new FormData();
+      formData.append('file', importFile);
+      formData.append('mapping', JSON.stringify(columnMapping));
+      if (useBatchDestination) formData.append('default_destination', batchDestination);
       const res = await axios.post(`${API}/import/csv`, formData, { headers: tokenHeaders });
       setImportSummary(res.data);
       toast({ title: 'Import Complete', description: `Created ${res.data.created_count}, skipped ${res.data.skipped_count}.` });
+      setImportStep('summary');
       refresh();
     } catch (error) {
       toast({ title: 'Import Failed', description: error.response?.data?.detail || 'Failed to import CSV', variant: 'destructive' });
@@ -205,7 +328,7 @@ const FleetConsole = () => {
           <p className="text-gray-500 text-sm mt-1">Every physical unit, in one place - New, Service, Parts, and Loaner</p>
         </div>
         <div className="flex gap-2">
-          <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleImportFile} data-testid="fleet-import-input" />
+          <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handlePickFile} data-testid="fleet-import-input" />
           <Button variant="outline" onClick={() => setImportOpen(true)} data-testid="fleet-import-btn">
             <Upload className="w-4 h-4 mr-2" /> Import CSV
           </Button>
@@ -481,19 +604,148 @@ const FleetConsole = () => {
       </Dialog>
 
       {/* Import modal */}
-      <Dialog open={importOpen} onOpenChange={setImportOpen}>
-        <DialogContent className="max-w-lg" data-testid="fleet-import-modal">
+      <Dialog open={importOpen} onOpenChange={(open) => !open && closeImport()}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto" data-testid="fleet-import-modal">
           <DialogTitle>Import Fleet CSV</DialogTitle>
-          <div className="space-y-4 mt-2">
-            <p className="text-sm text-gray-600">
-              CSV must include a <strong>Destination</strong> column (New/Parts/Loaner/Service/Sold) that routes each row. Parts rows are skipped here - use the Products CSV importer for those. Sold rows use "Affiliated Store" as the owner on file.
-            </p>
-            <Button onClick={() => fileInputRef.current?.click()} disabled={importing} data-testid="fleet-import-choose-file-btn">
-              {importing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
-              {importing ? 'Importing...' : 'Choose CSV File'}
-            </Button>
 
-            {importSummary && (
+          {importStep === 'pick' && (
+            <div className="space-y-4 mt-2">
+              <p className="text-sm text-gray-600">
+                Upload any fleet spreadsheet - you'll map its columns to the right fields next, or reuse a saved mapping. Parts are managed separately via the Products CSV importer.
+              </p>
+              <Button onClick={() => fileInputRef.current?.click()} disabled={previewLoading} data-testid="fleet-import-choose-file-btn">
+                {previewLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
+                {previewLoading ? 'Reading...' : 'Choose CSV File'}
+              </Button>
+            </div>
+          )}
+
+          {importStep === 'map' && previewData && (
+            <div className="space-y-4 mt-2">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm text-gray-500">{importFile?.name} &middot; {previewData.total_rows} row(s)</p>
+                {profiles.length > 0 && (
+                  <Select value={selectedProfileId} onValueChange={applyProfile}>
+                    <SelectTrigger className="w-56" data-testid="fleet-import-profile-select"><SelectValue placeholder="Use a saved profile..." /></SelectTrigger>
+                    <SelectContent>
+                      {profiles.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+
+              <div className="rounded-lg border p-3 space-y-2">
+                <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={useBatchDestination}
+                    onChange={(e) => setUseBatchDestination(e.target.checked)}
+                    data-testid="fleet-import-use-batch-destination"
+                  />
+                  All rows in this file are the same destination
+                </label>
+                {useBatchDestination && (
+                  <Select value={batchDestination} onValueChange={setBatchDestination}>
+                    <SelectTrigger className="w-48" data-testid="fleet-import-batch-destination-select"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="new">New</SelectItem>
+                      <SelectItem value="service">Service</SelectItem>
+                      <SelectItem value="sold">Sold</SelectItem>
+                      <SelectItem value="loaner">Loaner</SelectItem>
+                      <SelectItem value="parts">Parts</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+
+              <div className="border rounded-lg overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 border-b">
+                    <tr className="text-left text-gray-500">
+                      <th className="px-3 py-2 font-medium">CSV Column</th>
+                      <th className="px-3 py-2 font-medium">Sample Value</th>
+                      <th className="px-3 py-2 font-medium">Maps To</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {previewData.headers.map((h) => {
+                      const sample = previewData.sample_rows?.[0]?.[h.original] || '';
+                      const mappedToDestination = useBatchDestination && columnMapping[h.normalized] === 'destination';
+                      return (
+                        <tr key={h.normalized} className={`border-b last:border-0 ${mappedToDestination ? 'opacity-40' : ''}`}>
+                          <td className="px-3 py-2 font-medium text-gray-900">{h.original}</td>
+                          <td className="px-3 py-2 text-gray-500 truncate max-w-[160px]">{sample}</td>
+                          <td className="px-3 py-2">
+                            <Select
+                              value={columnMapping[h.normalized] || 'ignore'}
+                              onValueChange={(v) => setMappingFor(h.normalized, v)}
+                              disabled={mappedToDestination}
+                            >
+                              <SelectTrigger className="h-8 w-48" data-testid={`fleet-import-map-${h.normalized}`}><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                {TARGET_FIELDS.map((f) => (
+                                  <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="rounded-lg border p-3 space-y-2">
+                <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={saveAsProfile}
+                    onChange={(e) => setSaveAsProfile(e.target.checked)}
+                    data-testid="fleet-import-save-profile-toggle"
+                  />
+                  Save this mapping as a reusable profile
+                </label>
+                {saveAsProfile && (
+                  <Input
+                    value={profileName}
+                    onChange={(e) => setProfileName(e.target.value)}
+                    placeholder="Profile name (e.g. PUDU Export)"
+                    data-testid="fleet-import-profile-name-input"
+                  />
+                )}
+              </div>
+
+              <div className="flex justify-between pt-2">
+                <Button variant="outline" onClick={() => setImportStep('pick')}>Back</Button>
+                <Button className="bg-[#6e2ea8] hover:bg-[#5a2589]" onClick={goToConfirm} data-testid="fleet-import-continue-btn">
+                  Continue
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {importStep === 'confirm' && (
+            <div className="space-y-4 mt-2">
+              <p className="text-sm text-gray-700">
+                Importing <strong>{previewData?.total_rows}</strong> row(s) from <strong>{importFile?.name}</strong>
+                {useBatchDestination ? <> — all rows set to <strong className="capitalize">{batchDestination}</strong></> : null}
+                {saveAsProfile && profileName.trim() ? <> — saving mapping as "<strong>{profileName}</strong>"</> : null}.
+              </p>
+              <div className="flex justify-between pt-2">
+                <Button variant="outline" onClick={() => setImportStep('map')} disabled={importing}>Back</Button>
+                <Button className="bg-[#6e2ea8] hover:bg-[#5a2589]" onClick={confirmImport} disabled={importing} data-testid="fleet-import-confirm-btn">
+                  {importing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                  Confirm Import
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {importStep === 'summary' && importSummary && (
+            <div className="space-y-4 mt-2">
               <div className="rounded-md border p-3 space-y-2 text-sm" data-testid="fleet-import-summary">
                 <div className="grid grid-cols-3 gap-2">
                   <div className="rounded-md border p-2">Total: {importSummary.total_rows || 0}</div>
@@ -508,12 +760,12 @@ const FleetConsole = () => {
                   </div>
                 )}
               </div>
-            )}
 
-            <div className="flex justify-end">
-              <Button variant="outline" onClick={() => { setImportOpen(false); setImportSummary(null); }}>Close</Button>
+              <div className="flex justify-end">
+                <Button variant="outline" onClick={closeImport}>Close</Button>
+              </div>
             </div>
-          </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

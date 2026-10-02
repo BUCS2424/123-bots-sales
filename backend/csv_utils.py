@@ -8,9 +8,30 @@ copy-paste (leads.py's CSV import predates this and still has its own
 looser, per-field inline version).
 """
 
+import csv
+import io
 import json
 import re
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
+
+
+def read_csv_rows(raw_bytes: bytes) -> Tuple[List[str], List[dict]]:
+    """Decode + parse a CSV once. Raises ValueError on bad encoding or a
+    missing header row - callers translate that into their own HTTPException
+    (keeps this module free of any web-framework dependency)."""
+    if not raw_bytes:
+        raise ValueError("CSV file is empty")
+    try:
+        decoded = raw_bytes.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        raise ValueError("CSV must be UTF-8 encoded")
+
+    reader = csv.DictReader(io.StringIO(decoded))
+    if not reader.fieldnames:
+        raise ValueError("CSV header row is missing")
+
+    rows = [row for row in reader if row is not None]
+    return list(reader.fieldnames), rows
 
 
 def normalize_header(value: Optional[str]) -> str:

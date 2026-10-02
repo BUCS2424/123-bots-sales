@@ -20,21 +20,22 @@ Four destinations a unit can be in:
   live in the existing `loaner_units` collection (service_repair.py),
   reused as-is. Moving a unit across that boundary is a cross-collection
   operation (see /units/{id}/move).
-- "sold": terminal state, set only by the quote-sign flow.
+- "sold": terminal state, normally set by the quote-sign flow, but can also
+  be set directly (manual create, or CSV import) to backfill a unit that was
+  already sold before this system existed.
 """
 
-import csv
-import io
+import json
 import re
 import uuid
 from datetime import datetime, timezone
-from typing import Optional
+from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Header, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, Header, UploadFile, File, Form
 from pydantic import BaseModel
 
 from auth import decode_token, is_admin_or_above
-from csv_utils import normalize_header, build_header_map, get_csv_value
+from csv_utils import normalize_header, build_header_map, get_csv_value, read_csv_rows
 
 router = APIRouter(prefix="/api/fleet", tags=["fleet-inventory"])
 
@@ -367,18 +368,150 @@ async def move_unit(
 
 ROUTING_ALIASES = ("destination", "category", "routing", "new_parts_loaner_service", "type", "assignment")
 
+# One-column-per-target_field alias guesses - the knowledge that used to be
+# scattered as inline get_csv_value(...) calls, now shared by both the
+# no-mapping import fallback and the preview endpoint's auto-guesser so
+# there's exactly one place this lives. "model"/"manufacturer_name"/"notes"
+# aren't here - they involve derivation/fallback-chains/composition that
+# only make sense in the legacy (no explicit mapping) path; see
+# import_fleet_csv's branch for that logic.
+ALIAS_TABLE = {
+    "serial_number": ("sn_pid", "sn", "serial_number", "pid"),
+    "model": ("product_model", "model"),
+    "mac_address": ("mac_address", "mac"),
+    "affiliated_store": ("affiliated_store",),
+    "affiliated_client": ("affiliated_client",),
+    "warranty_remaining_days": ("remaining_warranty_days",),
+    "usage_remaining_days": ("remaining_usage_days",),
+    "software_version": ("software_version",),
+    "firmware_version": ("firmware_version",),
+    "country": ("country_where_the_store_is_located", "country"),
+    "province": ("province_where_the_store_is_located", "province"),
+    "destination": ROUTING_ALIASES,
+}
 
-@router.post("/import/csv")
-async def import_fleet_csv(
+TARGET_FIELDS = [
+    "serial_number", "destination", "model", "manufacturer_name", "mac_address",
+    "affiliated_store", "affiliated_client", "warranty_remaining_days",
+    "usage_remaining_days", "software_version", "firmware_version",
+    "country", "province", "notes", "ignore",
+]
+
+
+class FleetImportProfileCreate(BaseModel):
+    name: str
+    mapping: dict  # normalized_header -> target_field
+    source_headers: List[str]
+
+
+class FleetImportProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    mapping: Optional[dict] = None
+    source_headers: Optional[List[str]] = None
+
+
+def _validate_mapping(mapping: dict):
+    seen_targets = {}
+    for header, target in mapping.items():
+        if target not in TARGET_FIELDS:
+            raise HTTPException(status_code=400, detail=f"Unknown target field '{target}' for column '{header}'")
+        if target != "ignore":
+            if target in seen_targets:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Both '{seen_targets[target]}' and '{header}' map to '{target}' - map only one column per field",
+                )
+            seen_targets[target] = header
+
+
+# ============ IMPORT PROFILE CRUD ============
+
+@router.get("/import/profiles")
+async def list_import_profiles(authorization: Optional[str] = Header(None), db=Depends(get_db)):
+    _require_admin_token(authorization)
+    return await db.fleet_import_profiles.find({}, {"_id": 0}).sort("updated_at", -1).to_list(length=200)
+
+
+@router.post("/import/profiles")
+async def create_import_profile(
+    payload: FleetImportProfileCreate,
+    authorization: Optional[str] = Header(None),
+    db=Depends(get_db),
+):
+    _require_admin_token(authorization)
+    _validate_mapping(payload.mapping)
+    now = _now_iso()
+    doc = {"id": str(uuid.uuid4()), **payload.model_dump(), "created_at": now, "updated_at": now}
+    await db.fleet_import_profiles.insert_one(doc)
+    return {"success": True, "id": doc["id"]}
+
+
+@router.put("/import/profiles/{profile_id}")
+async def update_import_profile(
+    profile_id: str,
+    payload: FleetImportProfileUpdate,
+    authorization: Optional[str] = Header(None),
+    db=Depends(get_db),
+):
+    _require_admin_token(authorization)
+    existing = await db.fleet_import_profiles.find_one({"id": profile_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Import profile not found")
+    update_data = {k: v for k, v in payload.model_dump().items() if v is not None}
+    if "mapping" in update_data:
+        _validate_mapping(update_data["mapping"])
+    update_data["updated_at"] = _now_iso()
+    await db.fleet_import_profiles.update_one({"id": profile_id}, {"$set": update_data})
+    return {"success": True}
+
+
+@router.delete("/import/profiles/{profile_id}")
+async def delete_import_profile(
+    profile_id: str,
+    authorization: Optional[str] = Header(None),
+    db=Depends(get_db),
+):
+    _require_admin_token(authorization)
+    result = await db.fleet_import_profiles.delete_one({"id": profile_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Import profile not found")
+    return {"success": True}
+
+
+def _header_overlap_score(file_headers: set, profile_headers: set) -> float:
+    if not file_headers or not profile_headers:
+        return 0.0
+    union = file_headers | profile_headers
+    if not union:
+        return 0.0
+    return len(file_headers & profile_headers) / len(union)
+
+
+def _guess_mapping(normalized_headers: List[str]) -> dict:
+    """One-time alias-based guess for a file with no matching saved profile -
+    the same knowledge the no-mapping import path falls back to, so leaving
+    this guess untouched and importing reproduces identical legacy behavior."""
+    mapping = {}
+    for header in normalized_headers:
+        matched_target = "ignore"
+        for target, aliases in ALIAS_TABLE.items():
+            if any(normalize_header(alias) == header for alias in aliases):
+                matched_target = target
+                break
+        mapping[header] = matched_target
+    return mapping
+
+
+@router.post("/import/csv/preview")
+async def preview_fleet_csv(
     file: UploadFile = File(...),
     authorization: Optional[str] = Header(None),
     db=Depends(get_db),
 ):
-    """Import a fleet export spreadsheet. Expects a destination column
-    (New/Parts/Loaner/Service, case-insensitive) that routes each row:
-    New/Service -> fleet_units, Loaner -> loaner_units, Parts -> skipped
-    (parts are catalog products, not serialized units - use the product
-    CSV importer in ecommerce.py for those)."""
+    """Reads a fleet CSV's headers + a few sample rows and suggests a
+    column mapping - either a saved profile whose header set overlaps
+    heavily with this file, or a one-time alias guess. Never writes
+    anything; the real import is a separate call to /import/csv."""
     _require_admin_token(authorization)
 
     filename = (file.filename or "").lower()
@@ -386,32 +519,129 @@ async def import_fleet_csv(
         raise HTTPException(status_code=400, detail="Only .csv files are allowed")
 
     raw_bytes = await file.read()
-    if not raw_bytes:
-        raise HTTPException(status_code=400, detail="CSV file is empty")
     try:
-        decoded = raw_bytes.decode("utf-8-sig")
-    except UnicodeDecodeError:
-        raise HTTPException(status_code=400, detail="CSV must be UTF-8 encoded")
+        fieldnames, rows = read_csv_rows(raw_bytes)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
-    reader = csv.DictReader(io.StringIO(decoded))
-    if not reader.fieldnames:
-        raise HTTPException(status_code=400, detail="CSV header row is missing")
+    normalized_headers = [normalize_header(h) for h in fieldnames if h]
+    header_pairs = [{"normalized": normalize_header(h), "original": h} for h in fieldnames if h]
 
-    header_map = build_header_map(reader.fieldnames)
-    if not any(normalize_header(alias) in header_map for alias in ROUTING_ALIASES):
-        raise HTTPException(
-            status_code=400,
-            detail="CSV must include a destination column (New/Parts/Loaner/Service) - add a column named 'Destination'",
+    profiles = await db.fleet_import_profiles.find({}, {"_id": 0}).to_list(length=200)
+    file_header_set = set(normalized_headers)
+    best_profile = None
+    best_score = 0.0
+    for profile in profiles:
+        score = _header_overlap_score(file_header_set, set(profile.get("source_headers") or []))
+        if score > best_score:
+            best_score = score
+            best_profile = profile
+
+    if best_profile and best_score >= 0.6:
+        suggested_mapping = {h: (best_profile.get("mapping") or {}).get(h, "ignore") for h in normalized_headers}
+        matched_profile_id = best_profile["id"]
+    else:
+        suggested_mapping = _guess_mapping(normalized_headers)
+        matched_profile_id = None
+
+    return {
+        "headers": header_pairs,
+        "suggested_mapping": suggested_mapping,
+        "matched_profile_id": matched_profile_id,
+        "sample_rows": rows[:5],
+        "total_rows": len(rows),
+    }
+
+
+@router.post("/import/csv")
+async def import_fleet_csv(
+    file: UploadFile = File(...),
+    mapping: Optional[str] = Form(None),
+    default_destination: Optional[str] = Form(None),
+    authorization: Optional[str] = Header(None),
+    db=Depends(get_db),
+):
+    """Import a fleet export spreadsheet.
+
+    With no `mapping`, column recognition falls back to ALIAS_TABLE (the
+    original hardcoded guesses) - unchanged from before the column-mapper
+    UI existed, so nothing that already worked breaks.
+
+    With a `mapping` (JSON: {normalized_header: target_field}, from the
+    preview+map flow), each field is resolved via that explicit mapping
+    instead of alias guessing.
+
+    Either way, each row needs a destination (New/Parts/Loaner/Service/Sold)
+    - from a mapped/guessed column, or from `default_destination` applied to
+    every row in the file (skips needing a per-row column entirely, for
+    files where every row is genuinely the same thing). New/Service/Sold ->
+    fleet_units, Loaner -> loaner_units, Parts -> skipped (parts are catalog
+    products, not serialized units - use the product CSV importer in
+    ecommerce.py for those)."""
+    _require_admin_token(authorization)
+
+    filename = (file.filename or "").lower()
+    if not filename.endswith(".csv"):
+        raise HTTPException(status_code=400, detail="Only .csv files are allowed")
+
+    raw_bytes = await file.read()
+    try:
+        fieldnames, rows = read_csv_rows(raw_bytes)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    header_map = build_header_map(fieldnames)
+
+    parsed_mapping = None
+    if mapping:
+        try:
+            parsed_mapping = json.loads(mapping)
+        except (TypeError, ValueError):
+            raise HTTPException(status_code=400, detail="Invalid mapping payload")
+        _validate_mapping(parsed_mapping)
+
+    if default_destination:
+        default_destination = default_destination.strip().lower()
+        if default_destination not in ("new", "parts", "loaner", "service", "sold"):
+            raise HTTPException(status_code=400, detail="default_destination must be New, Parts, Loaner, Service, or Sold")
+
+    if not default_destination:
+        has_destination_column = (
+            "destination" in (parsed_mapping or {}).values()
+            if parsed_mapping
+            else any(normalize_header(alias) in header_map for alias in ROUTING_ALIASES)
         )
+        if not has_destination_column:
+            raise HTTPException(
+                status_code=400,
+                detail="Map a column to Destination, add a column named 'Destination' (New/Parts/Loaner/Service/Sold), or choose a default destination for the whole file",
+            )
+
+    reverse_mapping = {}
+    if parsed_mapping:
+        for normalized_header, target in parsed_mapping.items():
+            if target != "ignore":
+                original = header_map.get(normalized_header)
+                if original:
+                    reverse_mapping[target] = original
+
+    def resolve(row: dict, target: str, *legacy_aliases: str) -> str:
+        """Resolve one target field's value for this row - via the explicit
+        mapping if one was given, else the legacy alias guesses."""
+        if parsed_mapping:
+            original_header = reverse_mapping.get(target)
+            if not original_header:
+                return ""
+            value = row.get(original_header)
+            return str(value).strip() if value is not None else ""
+        return get_csv_value(row, header_map, *legacy_aliases)
 
     created_count = 0
     skipped_count = 0
     total_rows = 0
     errors = []
 
-    for row_index, row in enumerate(reader, start=2):
-        if row is None:
-            continue
+    for row_index, row in enumerate(rows, start=2):
         total_rows += 1
         row_snapshot = {
             normalize_header(key): (value if value is not None else "")
@@ -419,13 +649,16 @@ async def import_fleet_csv(
             if key is not None
         }
 
-        serial_number = get_csv_value(row, header_map, "sn_pid", "sn", "serial_number", "pid")
+        serial_number = resolve(row, "serial_number", *ALIAS_TABLE["serial_number"])
         if not serial_number:
             skipped_count += 1
-            errors.append({"row": row_index, "serial_number": "", "error": "Missing serial number (SN(PID))", "row_data": row_snapshot})
+            errors.append({"row": row_index, "serial_number": "", "error": "Missing serial number", "row_data": row_snapshot})
             continue
 
-        routing_raw = get_csv_value(row, header_map, *ROUTING_ALIASES).strip().lower()
+        if default_destination:
+            routing_raw = default_destination
+        else:
+            routing_raw = resolve(row, "destination", *ALIAS_TABLE["destination"]).strip().lower()
         if routing_raw not in ("new", "parts", "loaner", "service", "sold"):
             skipped_count += 1
             errors.append({
@@ -452,18 +685,32 @@ async def import_fleet_csv(
             errors.append({"row": row_index, "serial_number": serial_number, "error": f"Serial number already exists in {conflict}", "row_data": row_snapshot})
             continue
 
-        product_name = get_csv_value(row, header_map, "product_name")
-        model = get_csv_value(row, header_map, "product_model") or product_name
-        manufacturer_name = product_name.split()[0] if product_name else ""
+        if parsed_mapping:
+            model = resolve(row, "model")
+            manufacturer_name = resolve(row, "manufacturer_name")
+            notes = resolve(row, "notes")
+        else:
+            product_name = get_csv_value(row, header_map, "product_name")
+            model = get_csv_value(row, header_map, "product_model") or product_name
+            manufacturer_name = product_name.split()[0] if product_name else ""
+            notes_parts = []
+            nickname = get_csv_value(row, header_map, "machine_nickname", "nickname")
+            if nickname:
+                notes_parts.append(f"Nickname: {nickname}")
+            source_status = get_csv_value(row, header_map, "status")
+            if source_status:
+                notes_parts.append(f"Source status: {source_status}")
+            notes = "; ".join(notes_parts)
 
-        notes_parts = []
-        nickname = get_csv_value(row, header_map, "machine_nickname", "nickname")
-        if nickname:
-            notes_parts.append(f"Nickname: {nickname}")
-        source_status = get_csv_value(row, header_map, "status")
-        if source_status:
-            notes_parts.append(f"Source status: {source_status}")
-        notes = "; ".join(notes_parts)
+        affiliated_store = resolve(row, "affiliated_store", *ALIAS_TABLE["affiliated_store"])
+        affiliated_client = resolve(row, "affiliated_client", *ALIAS_TABLE["affiliated_client"])
+        mac_address = resolve(row, "mac_address", *ALIAS_TABLE["mac_address"])
+        warranty_remaining_days = resolve(row, "warranty_remaining_days", *ALIAS_TABLE["warranty_remaining_days"])
+        usage_remaining_days = resolve(row, "usage_remaining_days", *ALIAS_TABLE["usage_remaining_days"])
+        software_version = resolve(row, "software_version", *ALIAS_TABLE["software_version"])
+        firmware_version = resolve(row, "firmware_version", *ALIAS_TABLE["firmware_version"])
+        country = resolve(row, "country", *ALIAS_TABLE["country"])
+        province = resolve(row, "province", *ALIAS_TABLE["province"])
 
         now = _now_iso()
 
@@ -482,24 +729,23 @@ async def import_fleet_csv(
             }
             await db.loaner_units.insert_one(doc)
         else:
-            affiliated_store = get_csv_value(row, header_map, "affiliated_store")
             doc = {
                 "id": str(uuid.uuid4()),
                 "manufacturer_id": "",
                 "manufacturer_name": manufacturer_name,
                 "model": model,
                 "serial_number": serial_number,
-                "mac_address": get_csv_value(row, header_map, "mac_address", "mac"),
+                "mac_address": mac_address,
                 "destination": routing_raw,  # "new", "service", or "sold"
                 "notes": notes,
-                "warranty_remaining_days": get_csv_value(row, header_map, "remaining_warranty_days"),
-                "usage_remaining_days": get_csv_value(row, header_map, "remaining_usage_days"),
-                "software_version": get_csv_value(row, header_map, "software_version"),
-                "firmware_version": get_csv_value(row, header_map, "firmware_version"),
+                "warranty_remaining_days": warranty_remaining_days,
+                "usage_remaining_days": usage_remaining_days,
+                "software_version": software_version,
+                "firmware_version": firmware_version,
                 "affiliated_store": affiliated_store,
-                "affiliated_client": get_csv_value(row, header_map, "affiliated_client"),
-                "country": get_csv_value(row, header_map, "country_where_the_store_is_located", "country"),
-                "province": get_csv_value(row, header_map, "province_where_the_store_is_located", "province"),
+                "affiliated_client": affiliated_client,
+                "country": country,
+                "province": province,
                 **_unit_doc_defaults(),
                 "created_at": now,
                 "updated_at": now,
@@ -509,7 +755,7 @@ async def import_fleet_csv(
                 # existed - there's no real lead/quote behind it, just whatever
                 # ownership info the sheet carries. "Affiliated Store" is the
                 # real per-unit identifier in this data (Affiliated Client is
-                # always the same company-wide account name, not per-owner).
+                # often just the same company-wide account name, not per-owner).
                 doc["sold_owner_name"] = affiliated_store or None
                 doc["sold_at"] = now
             await db.fleet_units.insert_one(doc)
