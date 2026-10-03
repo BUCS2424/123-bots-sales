@@ -4,6 +4,7 @@ import { ChevronDown, Phone, Play, CheckCircle, ArrowRight } from 'lucide-react'
 import { setSeoMetadata, generateOrganizationSchema, generateWebsiteSchema, SEO_PRESETS } from '../lib/seo';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import FacilityConfiguratorSection from '../components/FacilityConfiguratorSection';
 
 // Product data for the robots
 const PRODUCTS = [
@@ -242,39 +243,8 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* AI Impact Section */}
-      <section className="py-20 bg-bots-dark">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            {/* Robot Animation */}
-            <div className="flex justify-center animate-fade-in-left">
-              <img 
-                src="/images/bots/screen2-robot-gif.gif" 
-                alt="AI Cleaning Robot" 
-                className="w-full max-w-md rounded-2xl shadow-2xl shadow-blue-500/20"
-              />
-            </div>
-            
-            {/* Content */}
-            <div className="text-center md:text-left animate-fade-in-right">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                HAVE YOU EVER WONDERED, HOW AI WOULD AFFECT YOUR BUSINESS...
-              </h2>
-              <div className="space-y-4 text-lg">
-                <p className="text-red-400 font-semibold">
-                  Tasks Like, Sweeping, Mopping, Vacuuming, Delivery & Snow Removal...
-                </p>
-                <p className="text-red-400 font-semibold">
-                  We Will See More Autonomous Equipment Being Used In The Workplace.
-                </p>
-                <p className="text-white text-2xl font-bold mt-6">
-                  It's Not a Matter IF You Will Use This Equipment.... It's WHEN...
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Facility Automation Configurator Section */}
+      <FacilityConfiguratorSection />
 
       {/* Products Showcase Section */}
       <section className="py-20 bg-gradient-to-b from-bots-dark via-bots-surface to-bots-dark relative overflow-hidden">
