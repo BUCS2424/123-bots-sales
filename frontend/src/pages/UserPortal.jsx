@@ -25,7 +25,11 @@ import {
   Loader2,
   Save,
   X,
-  Wrench
+  Wrench,
+  Bot,
+  Wifi,
+  WifiOff,
+  Building2
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -47,22 +51,28 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 export default function UserPortal() {
   const { user, token, logout } = useAuth();
   const navigate = useNavigate();
-  const initialTab = new URLSearchParams(window.location.search).get('tab') === 'services' ? 'services' : 'orders';
+  const requestedTab = new URLSearchParams(window.location.search).get('tab');
+  const initialTab = ['services', 'robots'].includes(requestedTab) ? requestedTab : 'orders';
   const [activeTab, setActiveTab] = useState(initialTab);
   const [orders, setOrders] = useState([]);
   const [serviceRequests, setServiceRequests] = useState([]);
   const [addresses, setAddresses] = useState([]);
+  const [robots, setRobots] = useState([]);
+  const [locations, setLocations] = useState([]);
   const [customerInfo, setCustomerInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showOrderDetail, setShowOrderDetail] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [editingLocation, setEditingLocation] = useState(null);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [profileData, setProfileData] = useState({ name: '', email: '' });
   const [passwordData, setPasswordData] = useState({ current: '', new: '', confirm: '' });
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingAddress, setSavingAddress] = useState(false);
+  const [savingLocation, setSavingLocation] = useState(false);
 
   const headers = { Authorization: `Bearer ${token}` };
 
@@ -77,14 +87,18 @@ export default function UserPortal() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [ordersRes, customerRes, serviceRes] = await Promise.all([
+      const [ordersRes, customerRes, serviceRes, robotsRes, locationsRes] = await Promise.all([
         axios.get(`${API_URL}/api/portal/my-orders`, { headers }).catch(() => ({ data: [] })),
         axios.get(`${API_URL}/api/portal/my-account`, { headers }).catch(() => ({ data: null })),
-        axios.get(`${API_URL}/api/portal/my-service-requests`, { headers }).catch(() => ({ data: [] }))
+        axios.get(`${API_URL}/api/portal/my-service-requests`, { headers }).catch(() => ({ data: [] })),
+        axios.get(`${API_URL}/api/portal/my-robots`, { headers }).catch(() => ({ data: [] })),
+        axios.get(`${API_URL}/api/portal/locations`, { headers }).catch(() => ({ data: [] }))
       ]);
 
       setOrders(ordersRes.data || []);
       setServiceRequests(serviceRes.data || []);
+      setRobots(robotsRes.data || []);
+      setLocations(locationsRes.data || []);
       setCustomerInfo(customerRes.data);
       setAddresses(customerRes.data?.addresses || []);
       setProfileData({
@@ -229,6 +243,47 @@ export default function UserPortal() {
     }
   };
 
+  const handleSaveLocation = async (locationData) => {
+    setSavingLocation(true);
+    try {
+      if (editingLocation?.id) {
+        await axios.put(`${API_URL}/api/portal/locations/${editingLocation.id}`, locationData, { headers });
+        toast.success('Location updated');
+      } else {
+        await axios.post(`${API_URL}/api/portal/locations`, locationData, { headers });
+        toast.success('Location added');
+      }
+      setShowLocationModal(false);
+      setEditingLocation(null);
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to save location');
+    } finally {
+      setSavingLocation(false);
+    }
+  };
+
+  const handleDeleteLocation = async (locationId) => {
+    if (!confirm('Delete this location? Any robots assigned to it will become unassigned.')) return;
+    try {
+      await axios.delete(`${API_URL}/api/portal/locations/${locationId}`, { headers });
+      toast.success('Location deleted');
+      fetchData();
+    } catch (error) {
+      toast.error('Failed to delete location');
+    }
+  };
+
+  const handleAssignRobotLocation = async (robotId, locationId) => {
+    try {
+      await axios.put(`${API_URL}/api/portal/my-robots/${robotId}/location`, { location_id: locationId || null }, { headers });
+      toast.success('Robot location updated');
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to update robot location');
+    }
+  };
+
   const openChat = () => {
     // Trigger the chat widget to open with user context
     window.dispatchEvent(new CustomEvent('openAtomChat', { 
@@ -243,6 +298,7 @@ export default function UserPortal() {
 
   const tabs = [
     { id: 'orders', label: 'My Orders', icon: Package },
+    ...(robots.length > 0 ? [{ id: 'robots', label: 'My Robots', icon: Bot }] : []),
     ...(serviceRequests.length > 0 ? [{ id: 'services', label: 'My Services', icon: Wrench }] : []),
     { id: 'profile', label: 'My Profile', icon: User },
     { id: 'addresses', label: 'Addresses', icon: MapPin },
@@ -489,6 +545,130 @@ export default function UserPortal() {
                     </CardContent>
                   </Card>
                 ))}
+              </div>
+            )}
+
+            {/* Robots Tab */}
+            {activeTab === 'robots' && (
+              <div className="space-y-8" data-testid="portal-robots-tab">
+                <div>
+                  <h2 className="text-xl font-semibold mb-4">My Robots</h2>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {robots.map((robot) => (
+                      <Card
+                        key={robot.id}
+                        className="hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => navigate(`/account/robots/${robot.id}`)}
+                        data-testid={`portal-robot-card-${robot.id}`}
+                      >
+                        <CardContent className="p-5">
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-11 h-11 rounded-full bg-[#6e2ea8]/10 flex items-center justify-center flex-shrink-0">
+                                <Bot className="w-5 h-5 text-[#6e2ea8]" />
+                              </div>
+                              <div>
+                                <p className="font-semibold text-slate-900">{robot.model}</p>
+                                <p className="text-xs text-slate-500 font-mono">SN: {robot.serial_number}</p>
+                              </div>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                          </div>
+
+                          <div className="mt-3 flex items-center gap-1.5 text-sm text-slate-600">
+                            <MapPin className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                            {robot.location_detail?.location_name || 'No location assigned'}
+                          </div>
+
+                          {robot.connectivity?.connection_status && (
+                            <div className="mt-1.5 flex items-center gap-1.5 text-xs">
+                              {robot.connectivity.connection_status === 'online' ? (
+                                <Wifi className="w-3.5 h-3.5 text-green-500" />
+                              ) : (
+                                <WifiOff className="w-3.5 h-3.5 text-slate-400" />
+                              )}
+                              <span className="capitalize text-slate-500">{robot.connectivity.connection_status}</span>
+                            </div>
+                          )}
+
+                          <div onClick={(e) => e.stopPropagation()} className="mt-3">
+                            <select
+                              value={robot.location_id || ''}
+                              onChange={(e) => handleAssignRobotLocation(robot.id, e.target.value)}
+                              className="w-full text-sm border rounded-md px-2.5 py-1.5 text-slate-700"
+                              data-testid={`portal-robot-location-select-${robot.id}`}
+                            >
+                              <option value="">No location assigned</option>
+                              {locations.map((loc) => (
+                                <option key={loc.id} value={loc.id}>{loc.location_name}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-semibold">My Locations</h2>
+                    <Button onClick={() => { setEditingLocation(null); setShowLocationModal(true); }}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Location
+                    </Button>
+                  </div>
+
+                  {locations.length === 0 ? (
+                    <Card>
+                      <CardContent className="py-10 text-center">
+                        <Building2 className="w-14 h-14 mx-auto text-slate-300 mb-3" />
+                        <h3 className="font-semibold">No locations saved</h3>
+                        <p className="text-slate-500 mt-1 text-sm">Add a site so you can assign your robots to a specific location.</p>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {locations.map((loc) => (
+                        <Card key={loc.id} data-testid={`portal-location-card-${loc.id}`}>
+                          <CardContent className="p-4">
+                            <p className="font-semibold">{loc.location_name}</p>
+                            {loc.address_line1 && <p className="text-sm text-slate-600">{loc.address_line1}</p>}
+                            {loc.address_line2 && <p className="text-sm text-slate-600">{loc.address_line2}</p>}
+                            {(loc.city || loc.state || loc.zip_code) && (
+                              <p className="text-sm text-slate-600">{[loc.city, loc.state, loc.zip_code].filter(Boolean).join(', ')}</p>
+                            )}
+                            {loc.site_contact_name && (
+                              <p className="text-sm text-slate-500 mt-1">
+                                Contact: {loc.site_contact_name}{loc.site_contact_phone ? ` · ${loc.site_contact_phone}` : ''}
+                              </p>
+                            )}
+                            {loc.wifi_network_name && (
+                              <p className="text-sm text-slate-500">Wi-Fi: {loc.wifi_network_name}</p>
+                            )}
+
+                            <div className="flex gap-2 mt-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => { setEditingLocation(loc); setShowLocationModal(true); }}
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDeleteLocation(loc.id)}
+                              >
+                                <Trash2 className="w-4 h-4 text-red-500" />
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
@@ -826,6 +1006,15 @@ export default function UserPortal() {
         onSave={handleSaveAddress}
         saving={savingAddress}
       />
+
+      {/* Location Modal */}
+      <LocationModal
+        open={showLocationModal}
+        onClose={() => { setShowLocationModal(false); setEditingLocation(null); }}
+        location={editingLocation}
+        onSave={handleSaveLocation}
+        saving={savingLocation}
+      />
     </div>
   );
 }
@@ -958,6 +1147,173 @@ function AddressModal({ open, onClose, address, onSave, saving }) {
             <Button type="submit" disabled={saving}>
               {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               {address ? 'Update' : 'Add'} Address
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+const emptyLocationForm = {
+  location_name: '',
+  address_line1: '',
+  address_line2: '',
+  city: '',
+  state: '',
+  zip_code: '',
+  country: '',
+  site_contact_name: '',
+  site_contact_phone: '',
+  site_contact_email: '',
+  floor_or_area: '',
+  operating_hours: '',
+  wifi_network_name: '',
+  access_notes: '',
+};
+
+// Location Modal Component - robot deployment sites (distinct from checkout
+// addresses above), carrying the site-contact/wifi/access details a robot
+// assigned here actually needs.
+function LocationModal({ open, onClose, location, onSave, saving }) {
+  const [formData, setFormData] = useState(emptyLocationForm);
+
+  useEffect(() => {
+    if (location) {
+      setFormData({ ...emptyLocationForm, ...location });
+    } else {
+      setFormData(emptyLocationForm);
+    }
+  }, [location, open]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{location ? 'Edit Location' : 'Add New Location'}</DialogTitle>
+          <DialogDescription>Where one or more of your robots are deployed.</DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label>Location Name</Label>
+            <Input
+              value={formData.location_name}
+              onChange={(e) => setFormData({ ...formData, location_name: e.target.value })}
+              placeholder="e.g. Main Lobby - 3rd Floor"
+              required
+            />
+          </div>
+          <div>
+            <Label>Address Line 1</Label>
+            <Input
+              value={formData.address_line1}
+              onChange={(e) => setFormData({ ...formData, address_line1: e.target.value })}
+            />
+          </div>
+          <div>
+            <Label>Address Line 2 (optional)</Label>
+            <Input
+              value={formData.address_line2}
+              onChange={(e) => setFormData({ ...formData, address_line2: e.target.value })}
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <Label>City</Label>
+              <Input
+                value={formData.city}
+                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>State</Label>
+              <Input
+                value={formData.state}
+                onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>ZIP Code</Label>
+              <Input
+                value={formData.zip_code}
+                onChange={(e) => setFormData({ ...formData, zip_code: e.target.value })}
+              />
+            </div>
+          </div>
+          <div>
+            <Label>Country</Label>
+            <Input
+              value={formData.country}
+              onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+            />
+          </div>
+          <div>
+            <Label>Floor / Area (optional)</Label>
+            <Input
+              value={formData.floor_or_area}
+              onChange={(e) => setFormData({ ...formData, floor_or_area: e.target.value })}
+              placeholder="e.g. Floor 3, East Wing"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Site Contact Name</Label>
+              <Input
+                value={formData.site_contact_name}
+                onChange={(e) => setFormData({ ...formData, site_contact_name: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Site Contact Phone</Label>
+              <Input
+                value={formData.site_contact_phone}
+                onChange={(e) => setFormData({ ...formData, site_contact_phone: e.target.value })}
+              />
+            </div>
+          </div>
+          <div>
+            <Label>Site Contact Email</Label>
+            <Input
+              type="email"
+              value={formData.site_contact_email}
+              onChange={(e) => setFormData({ ...formData, site_contact_email: e.target.value })}
+            />
+          </div>
+          <div>
+            <Label>Operating Hours (optional)</Label>
+            <Input
+              value={formData.operating_hours}
+              onChange={(e) => setFormData({ ...formData, operating_hours: e.target.value })}
+              placeholder="e.g. Mon-Fri 8am-6pm"
+            />
+          </div>
+          <div>
+            <Label>Wi-Fi Network Name (optional)</Label>
+            <Input
+              value={formData.wifi_network_name}
+              onChange={(e) => setFormData({ ...formData, wifi_network_name: e.target.value })}
+            />
+          </div>
+          <div>
+            <Label>Access Notes (optional)</Label>
+            <Input
+              value={formData.access_notes}
+              onChange={(e) => setFormData({ ...formData, access_notes: e.target.value })}
+              placeholder="e.g. gate code, parking instructions"
+            />
+          </div>
+
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+            <Button type="submit" disabled={saving}>
+              {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              {location ? 'Update' : 'Add'} Location
             </Button>
           </DialogFooter>
         </form>

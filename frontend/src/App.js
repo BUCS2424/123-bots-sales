@@ -39,6 +39,7 @@ import DevLocationPreview from './pages/dev/DevLocationPreview';
 
 // User Portal
 import UserPortal from './pages/UserPortal';
+import RobotDashboardPage from './pages/RobotDashboardPage';
 
 // New 123Bots Pages
 import ProductsPage from './pages/ProductsPage';
@@ -309,6 +310,7 @@ const AppContent = () => {
                   <Route path="/faq" element={<FAQPage />} />
                   <Route path="/about" element={<AboutUsPage />} />
                   <Route path="/account" element={<UserPortal />} />
+                  <Route path="/account/robots/:unitId" element={<RobotDashboardPage />} />
                   <Route path="/storage/*" element={<Navigate to="/" replace />} />
                   <Route path="/rv-repair/*" element={<Navigate to="/" replace />} />
                   <Route path="/employment/*" element={<Navigate to="/" replace />} />

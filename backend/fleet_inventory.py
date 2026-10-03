@@ -104,8 +104,12 @@ class FleetUnitUpdate(BaseModel):
     affiliated_client: Optional[str] = None
     country: Optional[str] = None
     province: Optional[str] = None
+    connectivity: Optional[dict] = None
     # destination is intentionally excluded here - reassigning a unit's
     # destination always goes through /units/{id}/move, never a plain edit.
+    # location_id is intentionally excluded here too - owned units manage
+    # their location through the customer-portal endpoints in user_portal.py,
+    # which also validate the location belongs to the same customer.
 
 
 class FleetUnitMoveRequest(BaseModel):
@@ -124,6 +128,13 @@ def _unit_doc_defaults() -> dict:
         "sold_lead_id": None,
         "sold_quote_id": None,
         "sold_at": None,
+        # Customer-portal "My Robots" fields - which saved location (see
+        # customer_locations in user_portal.py) this unit is deployed at,
+        # and a place to hold network/connection info for the future
+        # device-connectivity work (IP, status, last-seen - populated
+        # manually for now, not live-polled).
+        "location_id": None,
+        "connectivity": {},
     }
 
 
